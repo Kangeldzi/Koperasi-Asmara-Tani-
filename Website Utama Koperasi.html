@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koperasi Asmara Tani</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* RESET DAN BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c7a7b;
+            --secondary: #38b2ac;
+            --accent: #e53e3e;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gradient: linear-gradient(135deg, #2c7a7b 0%, #38b2ac 100%);
+            --gradient-reverse: linear-gradient(135deg, #38b2ac 0%, #2c7a7b 100%);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* WHATSAPP BUTTON STYLES */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            animation: slideInRight 1s ease-out, float 3s ease-in-out infinite;
+        }
+
+        .whatsapp-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 20px rgba(37, 211, 102, 0.4),
+                0 0 0 0 rgba(37, 211, 102, 0.6),
+                0 0 0 0 rgba(37, 211, 102, 0.4);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .whatsapp-button:hover {
+            transform: translateY(-5px) scale(1.1) rotate(5deg);
+            box-shadow: 
+                0 8px 30px rgba(37, 211, 102, 0.6),
+                0 0 0 15px rgba(37, 211, 102, 0.2),
+                0 0 0 30px rgba(37, 211, 102, 0.1);
+            animation: pulse-glow 1.5s infinite;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) rotate(180deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 
+                    0 8px 30px rgba(37, 211, 102, 0.6),
+                    0 0 0 0 rgba(37, 211, 102, 0.4),
+                    0 0 0 0 rgba(37, 211, 102, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 8px 30px rgba(37, 211, 102, 0.8),
+                    0 0 0 15px rgba(37, 211, 102, 0.2),
+                    0 0 0 30px rgba(37, 211, 102, 0.1);
+            }
+            100% {
+                box-shadow: 
+                    0 8px 30px rgba(37, 211, 102, 0.6),
+                    0 0 0 0 rgba(37, 211, 102, 0.4),
+                    0 0 0 0 rgba(37, 211, 102, 0.2);
+            }
+        }
+
+        .whatsapp-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            transition: all 0.3s ease;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .whatsapp-button:hover .whatsapp-img {
+            transform: scale(1.1) rotate(-5deg);
+            border-color: #e0f2fe;
+        }
+
+        .whatsapp-tooltip {
+            position: absolute;
+            right: 90px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #128C7E;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .whatsapp-button:hover .whatsapp-tooltip {
+            opacity: 1;
+            right: 100px;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #25D366;
+            animation: pulse-ring 2s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* HEADER STYLES */
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-shrink: 0;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover .logo-img {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover h1 {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .logo-subtitle {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            margin-top: 2px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover .logo-subtitle {
+            opacity: 1;
+            color: white;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .btn-login {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* HAMBURGER MENU */
+        .hamburger-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .hamburger-menu:hover {
+            transform: scale(1.1);
+        }
+
+        .hamburger-menu span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background-color: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* SIDEBAR NAVIGATION */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            transition: right 0.4s ease;
+            z-index: 1001;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            flex: 1;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-nav li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .sidebar-nav li:hover::before {
+            left: 100%;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-nav a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* STYLING KHUSUS UNTUK TOMBOL LOGOUT */
+        .sidebar-nav .logout-btn {
+            margin-top: auto;
+            background: rgba(229, 62, 62, 0.1) !important;
+            border: 1px solid rgba(229, 62, 62, 0.3) !important;
+        }
+
+        .sidebar-nav .logout-btn:hover {
+            background: rgba(229, 62, 62, 0.2) !important;
+            border-color: rgba(229, 62, 62, 0.5) !important;
+            color: #e53e3e !important;
+        }
+
+        .dropdown-menu {
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-menu a {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-toggle i {
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* OVERLAY */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* HERO SECTION - SLIDESHOW (3 SLIDES ONLY) */
+        .hero {
+            position: relative;
+            height: 80vh;
+            overflow: hidden;
+        }
+
+        .slideshow {
+            position: relative;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-content {
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            padding: 0 2rem;
+            z-index: 2;
+        }
+
+        .slide h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            font-weight: 700;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .btn-join {
+            background: var(--accent);
+            color: white;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+            cursor: pointer;
+            border: none;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .btn-join:hover {
+            background: #c53030;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+        }
+
+        .hashtag {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .slide-nav {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            z-index: 3;
+        }
+
+        .slide-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slide-dot.active {
+            background: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .slide-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 3;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .slide-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .slide-arrow.prev {
+            left: 2rem;
+        }
+
+        .slide-arrow.next {
+            right: 2rem;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* MENU KOPERASI TECHNOGLOW DYNAMIC */
+        .technoglow-section {
+            background: linear-gradient(-45deg, #00111c, #012b3a, #003a4a, #001f2b);
+            background-size: 400% 400%;
+            animation: gradientMove 12s ease infinite;
+            padding: 3rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .round-menu-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            justify-items: center;
+            align-items: center;
+            margin: auto;
+            max-width: 650px;
+            padding: 10px;
+        }
+
+        .round-button {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            text-decoration: none;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.25),
+                        inset 0 0 8px rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+            overflow: hidden;
+            animation: glowPulse 3s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+            50% { box-shadow: 0 0 20px rgba(0,255,255,0.5); }
+            100% { box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+        }
+
+        .round-button i {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            transition: transform 0.3s ease;
+        }
+
+        .round-button:hover {
+            color: #00ffff;
+            border-color: rgba(0, 255, 255, 0.6);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.7),
+                        0 0 45px rgba(0, 255, 255, 0.25);
+            transform: translateY(-5px) rotate(3deg);
+            animation: vibrate 0.25s linear infinite alternate;
+        }
+        .round-button:hover i {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .round-button::before {
+            content: "";
+            position: absolute;
+            width: 180%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(0,255,255,0.25) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: all 0.4s ease;
+            border-radius: 50%;
+        }
+        .round-button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        @keyframes vibrate {
+            0% { transform: translateY(-5px) rotate(3deg); }
+            50% { transform: translateY(-4px) rotate(-3deg); }
+            100% { transform: translateY(-6px) rotate(3deg); }
+        }
+
+        /* NEW HERO SECTION */
+        .hero-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(14, 165, 233, 0.1);
+            animation: float 15s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 40%;
+            left: 85%;
+            animation-delay: -10s;
+        }
+
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 15%;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin-bottom: 2rem;
+            animation: fadeUp 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            color: #0c4a6e;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .hero-image {
+            width: 80%;
+            max-width: 700px;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+            filter: brightness(1.05) contrast(1.1);
+            transition: all 0.5s ease;
+            animation: fadeUp 1s ease-out 0.3s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+            margin: 25px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-image:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
+            filter: brightness(1.1) contrast(1.15);
+        }
+        
+        .btn-shopping {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
+            animation: fadeUp 1s ease-out 0.6s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+            position: relative;
+            z-index: 2;
+            margin-top: 1rem;
+        }
+
+        .btn-shopping:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.6);
+            background: linear-gradient(135deg, #0284c7 0%, #075985 100%);
+        }
+
+        .btn-shopping:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(14, 165, 233, 0.4);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .features-section {
+            margin-top: 2rem;
+        }
+
+        .features-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--secondary);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .feature-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-icon i {
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-text h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
+        }
+
+        .feature-text p {
+            font-size: 0.9rem;
+            color: var(--dark);
+            line-height: 1.5;
+            opacity: 0.8;
+        }
+
+        /* PROFIL SINGKAT KOPERASI */
+        .koperasi-profile {
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1600181954664-6c6f68a3c01c?auto=format&fit=crop&w=1200&q=80') center/cover fixed no-repeat;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
+            overflow: hidden;
+        }
+
+        .koperasi-profile .overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+
+        .profile-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 850px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 25px rgba(0, 200, 255, 0.25);
+            transform: translateY(60px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .profile-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #004d66;
+            text-shadow: 0 0 10px rgba(0,255,255,0.4);
+            margin-bottom: 10px;
+        }
+
+        .profile-desc {
+            text-align: center;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #102a40;
+            margin-bottom: 25px;
+        }
+
+        .profile-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 25px;
+            justify-items: center;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0,150,200,0.4);
+            border-radius: 12px;
+            padding: 12px 10px;
+            text-align: center;
+            width: 120px;
+            height: 100px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,180,255,0.2);
+            cursor: pointer;
+        }
+
+        .info-item i {
+            font-size: 1.2rem;
+            color: #008cba;
+            margin-bottom: 5px;
+            display: block;
+            text-shadow: 0 0 5px rgba(0,150,255,0.6);
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .info-item p {
+            font-size: 0.7rem;
+            line-height: 1.2;
+            color: #043a53;
+            font-weight: 500;
+        }
+
+        .info-item strong {
+            color: #006680;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .info-item:hover {
+            background: rgba(0, 255, 255, 0.15);
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 0 25px rgba(0,255,255,0.4);
+        }
+
+        .info-item:hover i {
+            transform: scale(1.15);
+            color: #002b3d;
+        }
+
+        .fade-section.show {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            transition: all 1s ease-out;
+        }
+
+        .koperasi-profile {
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+        }
+
+        /* BERITA & KEGIATAN TERBARU */
+        .news-section {
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80') center/cover fixed no-repeat;
+            padding: 100px 20px;
+            overflow: hidden;
+        }
+
+        .news-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .news-container {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .news-title {
+            font-size: 2rem;
+            color: #003344;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(0,255,255,0.3);
+        }
+
+        .news-subtitle {
+            color: #0b2c3a;
+            font-size: 0.95rem;
+            margin-bottom: 40px;
+        }
+
+        .news-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            margin: 0 auto;
+        }
+
+        .news-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 25px;
+            padding: 10px;
+        }
+
+        .news-card {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(0,255,255,0.4);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,255,255,0.15);
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s ease;
+            position: relative;
+            min-width: 300px;
+            flex-shrink: 0;
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .news-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .news-content {
+            padding: 18px;
+            text-align: left;
+        }
+
+        .news-content h3 {
+            color: #004d66;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .news-content p {
+            color: #0b2c3a;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .news-btn {
+            display: inline-block;
+            color: #006680;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .news-btn i {
+            font-size: 0.8rem;
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .news-btn:hover {
+            color: #00cccc;
+        }
+
+        .news-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 0 35px rgba(0,255,255,0.35);
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0, 102, 128, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-dot.active {
+            background: #006680;
+            transform: scale(1.2);
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: #006680;
+            cursor: pointer;
+            z-index: 3;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-arrow:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-arrow.prev {
+            left: 10px;
+        }
+
+        .carousel-arrow.next {
+            right: 10px;
+        }
+
+        /* TESTIMONI ANGGOTA KOPERASI */
+        .testimonial-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .testimonial-container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #0c4a6e;
+            margin-bottom: 3rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeUp 1s ease-out forwards;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.15);
+            transition: all 0.4s ease;
+            animation: fadeUp 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .testimonial-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .testimonial-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .testimonial-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.25);
+        }
+
+        .testimonial-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid #e0f2fe;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .testimonial-card:hover .testimonial-image {
+            border-color: #0ea5e9;
+            transform: scale(1.05);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .testimonial-text::before,
+        .testimonial-text::after {
+            content: """;
+            font-size: 3rem;
+            color: #0ea5e9;
+            opacity: 0.3;
+            position: absolute;
+        }
+
+        .testimonial-text::before {
+            top: -15px;
+            left: -5px;
+        }
+
+        .testimonial-text::after {
+            bottom: -30px;
+            right: -5px;
+        }
+
+        .testimonial-name {
+            font-weight: 700;
+            color: #0c4a6e;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .testimonial-role {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* PERATURAN KOPERASI SECTION */
+        .regulations-section {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .regulations-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .regulations-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .regulations-header h2 {
+            font-size: 2.2rem;
+            color: #2c7a7b;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .regulations-header p {
+            font-size: 1rem;
+            color: #4a5568;
+        }
+
+        .regulations-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .regulation-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 
+                0 4px 15px rgba(44, 122, 123, 0.15),
+                0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            border-left: 4px solid #38b2ac;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .regulation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #2c7a7b 0%, #38b2ac 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .regulation-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(229, 62, 62, 0.1), 
+                transparent);
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .regulation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 8px 25px rgba(44, 122, 123, 0.25),
+                0 0 0 1px rgba(56, 178, 172, 0.1);
+        }
+
+        .regulation-card:hover::before {
+            opacity: 1;
+        }
+
+        .regulation-card:hover::after {
+            opacity: 1;
+        }
+
+        .regulation-number {
+            font-size: 0.9rem;
+            color: #38b2ac;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .regulation-number i {
+            font-size: 1.1rem;
+        }
+
+        .regulation-title {
+            font-size: 1.3rem;
+            color: #2c7a7b;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .regulation-description {
+            color: #718096;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .regulation-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: linear-gradient(135deg, #2c7a7b 0%, #38b2ac 100%);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(44, 122, 123, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .accent-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #e53e3e;
+            border-radius: 50%;
+            margin-left: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .card-accent-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #e53e3e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .card-accent-dot-1 {
+            top: 15px;
+            left: 15px;
+        }
+
+        .card-accent-dot-2 {
+            bottom: 15px;
+            right: 15px;
+            animation-delay: 1s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+
+        /* CTA SECTION */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(0,255,255,0.2), rgba(255,255,255,0.3));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            text-align: center;
+            padding: 60px 20px;
+            margin: 60px auto;
+            max-width: 900px;
+            box-shadow: 0 0 40px rgba(0,255,255,0.2);
+            animation: fadeInUp 1.2s ease-in-out;
+        }
+
+        .cta-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #003344;
+            text-shadow: 0 0 15px rgba(0,255,255,0.3);
+            margin-bottom: 10px;
+        }
+
+        .cta-subtitle {
+            color: #0a2c3a;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .cta-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(0,255,255,0.5);
+            color: #003344;
+            padding: 12px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.95rem;
+            box-shadow: 0 0 15px rgba(0,255,255,0.25);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .cta-btn i {
+            font-size: 1rem;
+        }
+
+        .cta-btn:hover {
+            background: rgba(0,255,255,0.3);
+            color: #002b3d;
+            box-shadow: 0 0 25px rgba(0,255,255,0.5);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        .cta-btn::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.6);
+            transform: skewX(-45deg);
+            transition: left 0.6s ease;
+        }
+
+        .cta-btn:hover::before {
+            left: 200%;
+        }
+
+        .cta-btn.join {
+            border-color: rgba(0,255,170,0.6);
+            color: #004d40;
+        }
+
+        .cta-btn.layanan {
+            border-color: rgba(0,150,255,0.6);
+            color: #003366;
+        }
+
+        .cta-btn.login {
+            border-color: rgba(255,170,0,0.6);
+            color: #4d3300;
+        }
+
+        .cta-btn.join:hover { background: rgba(0,255,170,0.25); }
+        .cta-btn.layanan:hover { background: rgba(0,150,255,0.25); }
+        .cta-btn.login:hover { background: rgba(255,170,0,0.25); }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+            50% { box-shadow: 0 0 25px rgba(0,255,255,0.4); }
+        }
+        .cta-btn {
+            animation: glow 3s infinite ease-in-out;
+        }
+
+        /* KONTAK SECTION */
+        .kop-kontak {
+            background: var(--gradient);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .kop-kontak h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .kop-kontak p {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .Koperasi-sosmed {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .Koperasi-sosmed a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.3rem;
+        }
+
+        .Koperasi-sosmed a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.4s ease;
+            position: relative;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            animation: footerLinkFloat 6s ease-in-out infinite;
+        }
+
+        .footer-link:nth-child(1) { animation-delay: 0s; }
+        .footer-link:nth-child(2) { animation-delay: 0.5s; }
+        .footer-link:nth-child(3) { animation-delay: 1s; }
+        .footer-link:nth-child(4) { animation-delay: 1.5s; }
+        .footer-link:nth-child(5) { animation-delay: 2s; }
+        .footer-link:nth-child(6) { animation-delay: 2.5s; }
+
+        @keyframes footerLinkFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .footer-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            border-color: rgba(0, 255, 255, 0.5);
+        }
+
+        .footer-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-link:hover::before {
+            opacity: 1;
+        }
+
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #00ffff;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .footer-link:hover::after {
+            width: 80%;
+        }
+
+        /* RESPONSIVE STYLES */
+        @media (max-width: 968px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero-content {
+                text-align: center;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-image {
+                width: calc(80% - 50px);
+                margin: 25px auto;
+            }
+
+            .regulations-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 1rem;
+            }
+
+            .logo h1 {
+                font-size: 1rem;
+            }
+
+            .logo-subtitle {
+                font-size: 0.6rem;
+            }
+
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+
+            .slide h2 {
+                font-size: 2rem;
+            }
+
+            .slide-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .slide-arrow.prev {
+                left: 1rem;
+            }
+
+            .slide-arrow.next {
+                right: 1rem;
+            }
+
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-shopping {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+
+            .hero-image {
+                width: calc(110% - 50px);
+                margin: 25px auto;
+            }
+
+            .kop-kontak {
+                padding: 2rem 1rem;
+            }
+
+            .kop-kontak h2 {
+                font-size: 1.5rem;
+            }
+
+            .kop-kontak p {
+                font-size: 1rem;
+            }
+
+            .Koperasi-sosmed a {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+
+            .profile-card {
+                padding: 30px 20px;
+            }
+            .info-item {
+                width: 100%;
+                height: auto;
+            }
+            .profile-info-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 20px;
+            }
+
+            .cta-title {
+                font-size: 1.5rem;
+            }
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .cta-btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+
+            .footer-links {
+                gap: 0.8rem;
+            }
+            
+            .footer-link {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+
+            .news-title {
+                font-size: 1.6rem;
+            }
+            
+            .news-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .news-card {
+                min-width: 280px;
+            }
+            
+            .carousel-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .testimonial-section {
+                padding: 3rem 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .testimonial-card {
+                padding: 1.5rem;
+            }
+            
+            .testimonial-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .regulations-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .regulation-card {
+                padding: 1.5rem;
+                min-height: 160px;
+            }
+            
+            .regulation-title {
+                font-size: 1.1rem;
+            }
+            
+            .regulation-description {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 0.8rem 1rem;
+            }
+
+            .header-container {
+                padding: 0;
+            }
+
+            .logo-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .logo h1 {
+                font-size: 0.9rem;
+            }
+
+            .logo-subtitle {
+                font-size: 0.55rem;
+            }
+
+            .btn {
+                padding: 0.35rem 0.7rem;
+                font-size: 0.7rem;
+            }
+
+            .hamburger-menu {
+                width: 20px;
+                height: 16px;
+            }
+            
+            .hero-title {
+                font-size: 1.6rem;
+            }
+            
+            .feature-item {
+                padding: 0.8rem;
+            }
+            
+            .slide h2 {
+                font-size: 1.6rem;
+            }
+
+            .hero-image {
+                width: calc(110% - 50px);
+                margin: 25px auto;
+            }
+
+            .kop-kontak h2 {
+                font-size: 1.3rem;
+            }
+
+            .kop-kontak p {
+                font-size: 0.9rem;
+            }
+
+            .Koperasi-sosmed {
+                gap: 1rem;
+            }
+
+            .Koperasi-sosmed a {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+
+            .koperasi-profile {
+                padding: 60px 15px;
+                min-height: 80vh;
+            }
+            .profile-card {
+                padding: 25px 15px;
+            }
+            .profile-title {
+                font-size: 1.5rem;
+            }
+            .profile-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .info-item {
+                width: 100%;
+                height: 90px;
+            }
+
+            .cta-section {
+                padding: 40px 15px;
+                margin: 40px 15px;
+            }
+            .cta-title {
+                font-size: 1.3rem;
+            }
+            .cta-btn {
+                font-size: 0.85rem;
+                padding: 10px 18px;
+            }
+
+            .footer-links {
+                gap: 0.6rem;
+            }
+            
+            .footer-link {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .news-section {
+                padding: 60px 15px;
+            }
+            
+            .news-title {
+                font-size: 1.4rem;
+            }
+            
+            .news-card {
+                min-width: 260px;
+            }
+            
+            .news-content h3 {
+                font-size: 1rem;
+            }
+            
+            .news-content p {
+                font-size: 0.85rem;
+            }
+            
+            .carousel-arrow {
+                display: none;
+            }
+
+            .section-title {
+                font-size: 1.7rem;
+            }
+            
+            .testimonial-text {
+                font-size: 0.9rem;
+            }
+
+            .regulations-section {
+                padding: 3rem 1rem;
+            }
+            
+            .regulations-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .regulation-card {
+                padding: 1.2rem;
+                min-height: 140px;
+            }
+            
+            .regulation-title {
+                font-size: 1rem;
+            }
+            
+            .regulation-description {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg" alt="Logo Koperasi" class="logo-img" id="logoImage">
+                <div class="logo-text">
+                    <h1>KOPERASI ASMARA TANI</h1>
+                    <div class="logo-subtitle">#KoperasiJenius</div>
+                </div>
+            </a>
+            <div class="header-buttons">
+                <button class="btn btn-login" id="loginBtn">LOGIN</button>
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-bars"></i> Menu</h2>
+            <button class="close-btn" id="closeSidebar">&times;</button>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="/" class="sidebar-link"><i class="fas fa-home"></i> Beranda</a></li>
+                <li><a href="https://yourblog.blogspot.com/p/susunan-pengurus.html" target="_blank" class="sidebar-link"><i class="fas fa-users"></i> Susunan Pengurus</a></li>
+                <li><a href="https://yourblog.blogspot.com/p/galeri-foto.html" target="_blank" class="sidebar-link"><i class="fas fa-images"></i> Galeri Foto</a></li>
+                <li><a href="https://yourblog.blogspot.com/p/tentang-kami.html" target="_blank" class="sidebar-link"><i class="fas fa-info-circle"></i> Tentang Kami</a></li>
+                <li>
+                    <a href="#" class="dropdown-toggle sidebar-link" id="layananToggle">
+                        <i class="fas fa-concierge-bell"></i> Layanan Kami <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <ul class="dropdown-menu" id="layananMenu">
+                        <li><a href="https://yourblog.blogspot.com/p/simpanan-pokok_wajib.html" target="_blank" class="sidebar-link submenu-link"><i class="fas fa-university"></i> Simpanan Pokok/Wajib</a></li>
+                        <li><a href="https://yourblog.blogspot.com/p/simpanan-suka_rela.html" target="_blank" class="sidebar-link submenu-link"><i class="fas fa-hand-holding-heart"></i> Simpanan Suka Rela</a></li>
+                        <li><a href="https://yourblog.blogspot.com/p/pinjaman.html" target="_blank" class="sidebar-link submenu-link"><i class="fas fa-hand-holding-usd"></i> Pinjaman</a></li>
+                        <li><a href="https://yourblog.blogspot.com/p/investasi.html" target="_blank" class="sidebar-link submenu-link"><i class="fas fa-chart-line"></i> Investasi</a></li>
+                    </ul>
+                </li>
+                <li><a href="https://yourblog.blogspot.com/p/berita.html" target="_blank" class="sidebar-link"><i class="fas fa-newspaper"></i> Berita</a></li>
+                <li><a href="https://yourblog.blogspot.com/p/kontak.html" target="_blank" class="sidebar-link"><i class="fas fa-address-book"></i> Kontak</a></li>
+                
+                <!-- TOMBOL LOGOUT/KELUAR YANG DITAMBAHKAN -->
+                <li>
+                    <a href="#" class="sidebar-link logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout/Keluar
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="mainContent">
+        <!-- HERO SECTION - SLIDESHOW (3 SLIDES ONLY) -->
+        <section class="hero">
+            <div class="slideshow">
+                <!-- SLIDE 1 -->
+                <div class="slide active" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') center/cover;">
+                    <div class="slide-content">
+                        <h2>Berpengalaman Lebih Dari 30 Tahun</h2>
+                        <button class="btn btn-join" id="joinNowBtn">GABUNG SEKARANG</button>
+                        <p class="hashtag">#KoperasiJenius</p>
+                    </div>
+                </div>
+                
+                <!-- SLIDE 2 -->
+                <div class="slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1589156280159-27698a70f29e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') center/cover;">
+                    <div class="slide-content">
+                        <h2>Koperasi Sudah Sistem Digital (Teknologi Terbarukan)</h2>
+                        <button class="btn btn-join" id="joinNowBtn4">GABUNG SEKARANG</button>
+                        <p class="hashtag">#KoperasiJenius</p>
+                    </div>
+                </div>
+                
+                <!-- SLIDE 3 - WHATSAPP REGISTRATION -->
+                <div class="slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRQZaCa6TUth7NVX6eCJ1qPshbXapigNGpFmfDa22YLpN0HCG78j5SVC1jpzn5ltotRkB3kORm6IStP1cTVwSWTsV3SD5oFaZXE6wimgXCN6DByKwJx3gIbvhniQbSuHomu4n4dXmjV-rgUhwFIwzoNiH5Jg4J51lcPvMaz5HvWQRRyuUGQeuLmbRclug/s1280/1000483634.jpg') center/cover;">
+                    <div class="slide-content">
+                        <h2>Pendaftaran Mudah Cukup Via WhatsApp</h2>
+                        <button class="btn btn-join" id="joinNowBtn3">GABUNG SEKARANG</button>
+                        <p class="hashtag">#KoperasiJenius</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE NAVIGATION -->
+                <button class="slide-arrow prev" id="prevSlide">&#10094;</button>
+                <button class="slide-arrow next" id="nextSlide">&#10095;</button>
+                <div class="slide-nav" id="slideNav">
+                    <div class="slide-dot active"></div>
+                    <div class="slide-dot"></div>
+                    <div class="slide-dot"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU KOPERASI TECHNOGLOW DYNAMIC -->
+        <section class="technoglow-section">
+            <div class="round-menu-container">
+                <a href="#" class="round-button"><i class="fa-solid fa-store"></i>Toko</a>
+                <a href="#" class="round-button"><i class="fa-solid fa-industry"></i>Unit Usaha</a>
+                <a href="#" class="round-button"><i class="fa-solid fa-briefcase"></i>Jasa</a>
+                <a href="#" class="round-button"><i class="fa-solid fa-handshake"></i>Kerja Sama</a>
+                <a href="#" class="round-button"><i class="fa-solid fa-coins"></i>Aset</a>
+                <a href="#" class="round-button"><i class="fa-solid fa-building"></i>Properti</a>
+            </div>
+        </section>
+
+        <!-- NEW HERO SECTION - PERBAIKAN PADA GAMBAR/FOTO -->
+        <section class="hero-section">
+            <div class="floating-shapes">
+                <div class="shape"></div>
+                <div class="shape"></div>
+                <div class="shape"></div>
+                <div class="shape"></div>
+            </div>
+            
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">KOPERASI ASMARA TANI BERBASIS TEKNOLOGI DIGITAL</h1>
+                    <p class="hero-subtitle">Transformasi Koperasi tradisional menuju era Digital dengan solusi lengkap untuk mengelola keuangan, simpanan, pinjaman dan Investasi dengan mudah, aman dan efisien</p>
+                </div>
+                
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhlyTddJSUBmw0x3OiivzaNnjPdVyujRYRPXVzbQHe_crT8L8d-rV2MinoLEi6-G4erS_jQpn_kXxWwLYBgONYnzcOa7sIBnd9nAfUqxzkovWqJrcahkN2b32nj6sP3vW3sGdc1iwKsKbzTTiGqSCl3HqIU6_Y84hnyOwV84TJvSY-yJchX3Uu142OJaRA/s1080/1000479969.png" alt="Koperasi Digital" class="hero-image">
+                
+                <!-- TOMBOL BELANJA SEKARANG -->
+                <a href="#" class="btn-shopping" id="belanjaHeroBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    BELANJA SEKARANG
+                </a>
+                
+                <div class="features-section">
+                    <h3 class="features-title">KENAPA HARUS KOPERASI ASMARA TANI?</h3>
+                    <div class="feature-list">
+                        <div class="feature-item" id="feature1">
+                            <div class="feature-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Daftar Anggota Cukup Lewat Handphone</h4>
+                                <p>Proses pendaftaran anggota yang cepat dan mudah melalui smartphone tanpa perlu datang ke kantor</p>
+                            </div>
+                        </div>
+                        <div class="feature-item" id="feature2">
+                            <div class="feature-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Layanan Nasabah Online 24 JAM</h4>
+                                <p>Akses layanan koperasi kapan saja melalui platform digital dengan dukungan customer service 24/7</p>
+                            </div>
+                        </div>
+                        <div class="feature-item" id="feature3">
+                            <div class="feature-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Multi Management Data Koperasi System Manual & Digital</h4>
+                                <p>Sistem terintegrasi yang menggabungkan pengelolaan data manual dan digital untuk efisiensi maksimal</p>
+                            </div>
+                        </div>
+                        <div class="feature-item" id="feature4">
+                            <div class="feature-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Kemitraan Yang Jujur, Amanah, Terpercaya & Ber-integritas</h4>
+                                <p>Berkolaborasi dengan berbagai institusi keuangan terpercaya untuk memberikan layanan terbaik</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFIL SINGKAT KOPERASI -->
+        <section class="koperasi-profile" id="profil">
+            <div class="overlay"></div>
+            <div class="profile-card fade-section">
+                <h2 class="profile-title">Profil Singkat Koperasi</h2>
+                <p class="profile-desc">
+                    <strong>Koperasi Unit Desa "Asmara Tani"</strong> berdiri sejak <strong>tahun 1972</strong> dengan tujuan utama meningkatkan <strong>kesejahteraan anggota</strong> melalui berbagai layanan seperti simpan pinjam, jasa, penjualan produk digital, dan serba usaha lainnya.
+                </p>
+
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <p><strong>Tahun Berdiri</strong><br>1972</p>
+                    </div>
+
+                    <div class="info-item">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <p><strong>Tujuan</strong><br>Kesejahteraan Anggota</p>
+                    </div>
+
+                    <div class="info-item">
+                        <i class="fa-solid fa-eye"></i>
+                        <p><strong>Visi</strong><br>Koperasi Unggul & Mandiri</p>
+                    </div>
+
+                    <div class="info-item">
+                        <i class="fa-solid fa-eye"></i>
+                        <p><strong>Misi</strong><br>Layanan Inovatif & Modern</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <i class="fa-solid fa-rocket"></i>
+                        <p><strong>Digitalisasi</strong><br>Layanan Sistem Digital</p>
+                    </div>
+
+                    <div class="info-item">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <p><strong>Jenis</strong><br>Simpan Pinjam & Jasa</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BERITA & KEGIATAN TERBARU -->
+        <section class="news-section" id="berita">
+            <div class="news-overlay"></div>
+            <div class="news-container fade-section">
+                <h2 class="news-title">📰 Berita & Kegiatan Terbaru</h2>
+                <p class="news-subtitle">Ikuti berbagai aktivitas, program, dan informasi terbaru dari Koperasi kami.</p>
+
+                <div class="news-carousel">
+                    <button class="carousel-arrow prev" id="newsPrev">&#10094;</button>
+                    <div class="news-track" id="newsTrack">
+                        <!-- 1 -->
+                        <div class="news-card fade-section">
+                            <img src="https://images.unsplash.com/photo-1522205408450-add114ad53fe?auto=format&fit=crop&w=800&q=80" alt="Rapat Anggota Tahunan">
+                            <div class="news-content">
+                                <h3>Rapat Anggota Tahunan (RAT) 2025</h3>
+                                <p>Kegiatan tahunan untuk membahas laporan keuangan, pembagian SHU, dan rencana kerja koperasi ke depan.</p>
+                                <a href="#berita-rat" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- 2 -->
+                        <div class="news-card fade-section">
+                            <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=800&q=80" alt="Kegiatan Sosial">
+                            <div class="news-content">
+                                <h3>Kegiatan Sosial Bersama Anggota</h3>
+                                <p>Koperasi berpartisipasi aktif dalam kegiatan sosial seperti bantuan sembako dan gotong royong masyarakat.</p>
+                                <a href="#berita-sosial" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- 3 -->
+                        <div class="news-card fade-section">
+                            <img src="https://images.unsplash.com/photo-1565373678747-0c274a158e86?auto=format&fit=crop&w=800&q=80" alt="Pembagian SHU">
+                            <div class="news-content">
+                                <h3>Pengumuman Pembagian SHU</h3>
+                                <p>Anggota berhak atas Sisa Hasil Usaha (SHU) sesuai kontribusi dan partisipasi selama tahun berjalan.</p>
+                                <a href="#berita-shu" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- 4 -->
+                        <div class="news-card fade-section">
+                            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" alt="Pelatihan Anggota">
+                            <div class="news-content">
+                                <h3>Program Pelatihan Anggota</h3>
+                                <p>Peningkatan kapasitas anggota melalui pelatihan digital marketing, manajemen keuangan, dan kewirausahaan.</p>
+                                <a href="#berita-pelatihan" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- 5 -->
+                        <div class="news-card fade-section">
+                            <img src="https://images.unsplash.com/photo-1603575448363-5e05be2c5c8d?auto=format&fit=crop&w=800&q=80" alt="Artikel Edukatif">
+                            <div class="news-content">
+                                <h3>Artikel Edukatif: Literasi Keuangan</h3>
+                                <p>Tips pengelolaan keuangan cerdas bagi anggota koperasi untuk mendukung kesejahteraan ekonomi keluarga.</p>
+                                <a href="#berita-artikel" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-arrow next" id="newsNext">&#10095;</button>
+                </div>
+                
+                <div class="carousel-nav" id="newsDots">
+                    <div class="carousel-dot active"></div>
+                    <div class="carousel-dot"></div>
+                    <div class="carousel-dot"></div>
+                    <div class="carousel-dot"></div>
+                    <div class="carousel-dot"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONI ANGGOTA KOPERASI -->
+        <section class="testimonial-section">
+            <div class="floating-shapes">
+                <div class="shape"></div>
+                <div class="shape"></div>
+                <div class="shape"></div>
+                <div class="shape"></div>
+            </div>
+            
+            <div class="testimonial-container">
+                <h1 class="section-title">TESTIMONI DARI ANGGOTA KOPERASI</h1>
+                
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg" alt="Eldi Sugianto, S.Kom" class="testimonial-image">
+                        <p class="testimonial-text">"Website koperasinya sangat membantu! Saya bisa cek simpanan, pinjaman kapan saja tanpa harus datang ke tempat."</p>
+                        <h3 class="testimonial-name">Eldi Sugianto, S.Kom</h3>
+                        <p class="testimonial-role">Ketua KUD Asmara Tani</p>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJIdGJ1azQv7BHdNZGb-WaUME3MEBD_d70rYWex-aOekvVpEwkafaDgh59FzUFn_-JgRndWEh-HWEBlljiHcp_hyphenhyphenvTSV4WpAwD9Wch9r3MuLGTj47nmLoPMjMPEX9YajW06-TOxn0kRfOHzxJymDhLQja08PWJvCQAeHlOd4o7MMZf-REOPPvX9sGyGHA/s320/1000053277.jpg" alt="Ayu Sapuroh" class="testimonial-image">
+                        <p class="testimonial-text">"Sekarang semua proses jadi lebih cepat dan transparan. Fitur simpanan online dan notifikasi otomatisnya sangat memudahkan!"</p>
+                        <h3 class="testimonial-name">Ayu Sapuroh</h3>
+                        <p class="testimonial-role">Anggota Koperasi Asmara Tani</p>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj6sNJ2C5GxAdW4kvditQuXPK6w7ko_-sucWSPSB14AiwCePavlT2wNPzlb5AqnLYjJ1vMVgb1Q7QIuqoePBQ_Ildkm1hJB9pkvpmenqs_qdiVZVoWX3ZlMAz3H8Oqucd4uqk5c_zai6_5l5Ba7e8oo9ZxSJEMxOjVfW94oYaTUE_DND2X7yn7YYj_TgC4/s2048/1000008724.jpg" alt="Syahrul" class="testimonial-image">
+                        <p class="testimonial-text">"Desain websitenya simpel dan mudah digunakan, bahkan oleh anggota yang tidak terlalu paham teknologi."</p>
+                        <h3 class="testimonial-name">Syahrul</h3>
+                        <p class="testimonial-role">Anggota Koperasi Asmara Tani</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PERATURAN KOPERASI SECTION -->
+        <section class="regulations-section">
+            <div class="regulations-container">
+                <div class="regulations-header">
+                    <h2>Peraturan Koperasi<span class="accent-dot"></span></h2>
+                    <p>Dokumen resmi peraturan koperasi dan UKM</p>
+                </div>
+
+                <div class="regulations-list">
+                    <!-- PERATURAN 1 -->
+                    <div class="regulation-card" style="animation-delay: 0.1s">
+                        <div class="card-accent-dot card-accent-dot-1"></div>
+                        <div class="card-accent-dot card-accent-dot-2"></div>
+                        <div class="regulation-badge">2023</div>
+                        <div class="regulation-number">
+                            <i class="fas fa-file-contract"></i>
+                            Permen Koperasi & UKM No. 8/2023
+                        </div>
+                        <h2 class="regulation-title">Tentang Usaha Simpan Pinjam Oleh Koperasi dan Digitalisasi</h2>
+                        <p class="regulation-description">
+                            Mengatur usaha simpan pinjam dan implementasi digitalisasi koperasi
+                        </p>
+                    </div>
+
+                    <!-- PERATURAN 2 -->
+                    <div class="regulation-card" style="animation-delay: 0.3s">
+                        <div class="card-accent-dot card-accent-dot-1"></div>
+                        <div class="card-accent-dot card-accent-dot-2"></div>
+                        <div class="regulation-badge">2024</div>
+                        <div class="regulation-number">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            Permen Koperasi & UKM No. 2/2024
+                        </div>
+                        <h2 class="regulation-title">Tentang Kebijakan Akuntansi Koperasi</h2>
+                        <p class="regulation-description">
+                            Mengatur standar akuntansi dan laporan keuangan koperasi
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA SECTION -->
+        <section class="cta-section">
+            <h2 class="cta-title">Bergabung & Kembangkan Bersama Kami</h2>
+            <p class="cta-subtitle">Dukung pertumbuhan ekonomi anggota melalui koperasi digital modern.</p>
+            
+            <div class="cta-buttons">
+                <a href="#" class="cta-btn join" id="ctaGabungBtn"><i class="fa-solid fa-user-plus"></i> Gabung Anggota</a>
+                <a href="https://yourblog.blogspot.com/p/layanan.html" target="_blank" class="cta-btn layanan" id="ctaLayananBtn"><i class="fa-solid fa-hand-holding-heart"></i> Lihat Layanan Kami</a>
+                <a href="login.html" class="cta-btn login" id="ctaLoginBtn"><i class="fa-solid fa-right-to-bracket"></i> Login Anggota</a>
+            </div>
+        </section>
+
+        <!-- KONTAK SECTION -->
+        <section class="kop-kontak">
+            <h2>Hubungi Kami</h2>
+            <p>📍 Jl. KH. Abdul Hamid Km. 15 Desa Ciasmara-Pamijahan, Bogor, Jawa Barat</p>
+            <p>📞 0852-1848-3129 | ✉️ koperasi@asmaratani.co.id</p>
+            <p>🕒 Senin – Sabtu (08.00 – 16.00 WIB)</p>
+            <div class="Koperasi-sosmed">
+                <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-links">
+            <a href="/" class="footer-link">Home</a>
+            <a href="https://yourblog.blogspot.com/p/about.html" target="_blank" class="footer-link">About</a>
+            <a href="https://yourblog.blogspot.com/p/contact.html" target="_blank" class="footer-link">Contact</a>
+            <a href="https://yourblog.blogspot.com/p/sitemap.html" target="_blank" class="footer-link">Sitemap</a>
+            <a href="https://yourblog.blogspot.com/p/disclaimer.html" target="_blank" class="footer-link">Disclaimer</a>
+            <a href="https://yourblog.blogspot.com/p/privacy_policy.html" target="_blank" class="footer-link">Privacy Policy</a>
+        </div>
+        <p>copyright KUD-2025 © Koperasi Unit Desa 'Asmara Tani'</p>
+    </footer>
+
+    <!-- WHATSAPP FLOATING BUTTON -->
+    <div class="whatsapp-float">
+        <div class="whatsapp-button" onclick="openWhatsApp()">
+            <div class="pulse-ring"></div>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBpJqCu9ALtIKbOyiduhtN0CCQnTGpy7ufIxRx4UG21m3eD8nfPw6QnlajymZkDG30YCRYtdyMYwD8t03qkWi9gth8JL8D9jLzehDaP6cAnx_8Pf42ZWOerNRgWnK6YzzPbENFJe2VXTFr0afYoUigrOMzoJeyjk2kGaF1NQwo7u_rkJH1CuIKlsxG3eA/s320/1000007250.png" 
+                 alt="Admin WhatsApp" class="whatsapp-img">
+            <div class="whatsapp-tooltip">Hubungi Admin</div>
+        </div>
+    </div>
+
+    <script>
+        // DOM ELEMENTS
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const overlay = document.getElementById('overlay');
+        const loginBtn = document.getElementById('loginBtn');
+        const ctaLoginBtn = document.getElementById('ctaLoginBtn');
+        const ctaGabungBtn = document.getElementById('ctaGabungBtn');
+        const ctaLayananBtn = document.getElementById('ctaLayananBtn');
+        const belanjaHeroBtn = document.getElementById('belanjaHeroBtn');
+        const layananToggle = document.getElementById('layananToggle');
+        const layananMenu = document.getElementById('layananMenu');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.slide-dot');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+        const joinNowBtns = document.querySelectorAll('.btn-join');
+        const featureItems = document.querySelectorAll('.feature-item');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const submenuLinks = document.querySelectorAll('.submenu-link');
+        const logoutBtn = document.getElementById('logoutBtn'); // TOMBOL LOGOUT BARU
+
+        // VARIABLES
+        let currentSlide = 0;
+        let slideInterval;
+
+        // WHATSAPP FUNCTION
+        function openWhatsApp() {
+            const phoneNumber = "6285218483129";
+            const message = "Halo admin, saya ingin bertanya tentang layanan koperasi.";
+            
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // TAMBAHAN EFEK INTERAKTIF UNTUK WHATSAPP BUTTON
+        document.querySelector('.whatsapp-button').addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.1) rotate(5deg)';
+        });
+
+        document.querySelector('.whatsapp-button').addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1) rotate(0)';
+        });
+
+        // FUNCTION TO CLOSE SIDEBAR
+        function closeSidebarMenu() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            hamburgerMenu.classList.remove('active');
+        }
+
+        // LOGIN FUNCTION - REDIRECT KE LOGIN.HTML
+        function handleLogin() {
+            window.location.href = 'login.html';
+        }
+
+        // LOGOUT FUNCTION - TAMBAHAN BARU
+        function handleLogout() {
+            // Tampilkan konfirmasi logout
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                // Di sini bisa ditambahkan logika logout seperti:
+                // - Menghapus token/session
+                // - Redirect ke halaman login
+                // - Dll.
+                
+                alert('Anda telah berhasil logout');
+                closeSidebarMenu();
+                
+                // Contoh redirect ke halaman login (sesuaikan dengan kebutuhan)
+                // window.location.href = 'login.html';
+            }
+        }
+
+        // BELANJA FUNCTION - AKAN DIGANTI DENGAN URL GITHUB NANTI
+        function handleBelanja() {
+            alert('Fitur belanja akan segera tersedia. Nantikan integrasi dengan GitHub!');
+        }
+
+        // JOIN NOW BUTTONS - REDIRECT TO LOGIN
+        joinNowBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                handleLogin();
+            });
+        });
+
+        // TOMBOL GABUNG ANGGOTA DI CTA - BUKA LOGIN
+        ctaGabungBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        // TOMBOL LOGIN ANGGOTA DI CTA - BUKA LOGIN
+        ctaLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        // TOMBOL LOGIN DI HEADER - BUKA LOGIN
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        // TOMBOL LOGOUT BARU - EVENT LISTENER
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+
+        // TOMBOL BELANJA SEKARANG DI HERO SECTION - BUKA BELANJA
+        belanjaHeroBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleBelanja();
+        });
+
+        // TOMBOL LAYANAN KAMI DI CTA - BUKA HALAMAN BARU
+        ctaLayananBtn.addEventListener('click', (e) => {
+            // LINK SUDAH ADA DI HREF, BIAKKAN DEFAULT BEHAVIOR
+        });
+
+        // TOGGLE SIDEBAR
+        hamburgerMenu.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            hamburgerMenu.classList.add('active');
+        });
+
+        // CLOSE SIDEBAR
+        closeSidebar.addEventListener('click', () => {
+            closeSidebarMenu();
+        });
+
+        // OVERLAY CLICK
+        overlay.addEventListener('click', () => {
+            closeSidebarMenu();
+        });
+
+        // TOGGLE DROPDOWN MENU
+        layananToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            layananMenu.classList.toggle('active');
+            layananToggle.classList.toggle('active');
+        });
+
+        // SLIDESHOW FUNCTIONS
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            currentSlide = (n + slides.length) % slides.length;
+            
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function startSlideShow() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function stopSlideShow() {
+            clearInterval(slideInterval);
+        }
+
+        // EVENT LISTENERS FOR SLIDESHOW
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            stopSlideShow();
+            startSlideShow();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            stopSlideShow();
+            startSlideShow();
+        });
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                showSlide(index);
+                stopSlideShow();
+                startSlideShow();
+            });
+        });
+
+        // PAUSE SLIDESHOW WHEN HOVERING
+        const slideshow = document.querySelector('.slideshow');
+        slideshow.addEventListener('mouseenter', stopSlideShow);
+        slideshow.addEventListener('mouseleave', startSlideShow);
+
+        // SCROLL ANIMATION FOR FEATURE ITEMS
+        function handleScrollAnimation() {
+            const heroSection = document.querySelector('.hero-section');
+            const heroPosition = heroSection.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.3;
+
+            if (heroPosition < screenPosition) {
+                // ANIMATE FEATURE ITEMS WITH DELAY
+                featureItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, index * 200);
+                });
+            }
+        }
+
+        // EVENT LISTENERS FOR SCROLL
+        window.addEventListener('scroll', () => {
+            handleScrollAnimation();
+        });
+
+        // SIDEBAR LINK CLICK HANDLER - CLOSE SIDEBAR
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                // SKIP IF IT'S THE LAYANAN KAMI DROPDOWN TOGGLE
+                if (link.id === 'layananToggle') {
+                    return;
+                }
+                
+                // SKIP IF IT'S A SUBMENU LINK (THEY WILL BE HANDLED SEPARATELY)
+                if (link.classList.contains('submenu-link')) {
+                    return;
+                }
+                
+                // SKIP IF IT'S THE LOGOUT BUTTON
+                if (link.id === 'logoutBtn') {
+                    return;
+                }
+                
+                // CLOSE SIDEBAR FOR ALL OTHER LINKS
+                closeSidebarMenu();
+            });
+        });
+
+        // SUBMENU LINK CLICK HANDLER - CLOSE SIDEBAR
+        submenuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                closeSidebarMenu();
+            });
+        });
+
+        // INITIALIZE
+        startSlideShow();
+        handleScrollAnimation(); // CHECK ON LOAD IN CASE ALREADY IN VIEW
+
+        // SCRIPT UNTUK SECTION PROFIL KOPERASI
+        document.addEventListener("DOMContentLoaded", function() {
+            const fadeSection = document.querySelector('.fade-section');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                    }
+                });
+            }, { threshold: 0.3 });
+            observer.observe(fadeSection);
+
+            // PARALLAX RINGAN
+            window.addEventListener('scroll', function() {
+                const section = document.querySelector('.koperasi-profile');
+                let offset = window.pageYOffset;
+                section.style.backgroundPositionY = offset * 0.4 + 'px';
+            });
+        });
+
+        // NEWS CAROUSEL FUNCTIONALITY
+        document.addEventListener("DOMContentLoaded", function() {
+            const newsTrack = document.getElementById('newsTrack');
+            const newsCards = document.querySelectorAll('.news-card');
+            const newsDots = document.querySelectorAll('.carousel-dot');
+            const newsPrev = document.getElementById('newsPrev');
+            const newsNext = document.getElementById('newsNext');
+            
+            let currentNewsIndex = 0;
+            let autoScrollInterval;
+            const cardWidth = 300 + 25; // CARD WIDTH + GAP
+            const totalCards = newsCards.length;
+            
+            // INITIALIZE CAROUSEL
+            function updateCarousel() {
+                newsTrack.style.transform = `translateX(-${currentNewsIndex * cardWidth}px)`;
+                
+                // UPDATE DOTS
+                newsDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentNewsIndex);
+                });
+            }
+            
+            // NEXT SLIDE
+            function nextNews() {
+                currentNewsIndex = (currentNewsIndex + 1) % totalCards;
+                updateCarousel();
+            }
+            
+            // PREVIOUS SLIDE
+            function prevNews() {
+                currentNewsIndex = (currentNewsIndex - 1 + totalCards) % totalCards;
+                updateCarousel();
+            }
+            
+            // AUTO SCROLL
+            function startAutoScroll() {
+                autoScrollInterval = setInterval(nextNews, 4000);
+            }
+            
+            function stopAutoScroll() {
+                clearInterval(autoScrollInterval);
+            }
+            
+            // EVENT LISTENERS
+            newsNext.addEventListener('click', () => {
+                nextNews();
+                stopAutoScroll();
+                startAutoScroll();
+            });
+            
+            newsPrev.addEventListener('click', () => {
+                prevNews();
+                stopAutoScroll();
+                startAutoScroll();
+            });
+            
+            // DOT NAVIGATION
+            newsDots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentNewsIndex = index;
+                    updateCarousel();
+                    stopAutoScroll();
+                    startAutoScroll();
+                });
+            });
+            
+            // TOUCH/SWIPE FUNCTIONALITY
+            let startX = 0;
+            let endX = 0;
+            
+            newsTrack.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                stopAutoScroll();
+            });
+            
+            newsTrack.addEventListener('touchmove', (e) => {
+                endX = e.touches[0].clientX;
+            });
+            
+            newsTrack.addEventListener('touchend', () => {
+                const diff = startX - endX;
+                if (Math.abs(diff) > 50) { // MINIMUM SWIPE DISTANCE
+                    if (diff > 0) {
+                        nextNews();
+                    } else {
+                        prevNews();
+                    }
+                }
+                startAutoScroll();
+            });
+            
+            // PAUSE AUTO-SCROLL ON HOVER
+            newsTrack.addEventListener('mouseenter', stopAutoScroll);
+            newsTrack.addEventListener('mouseleave', startAutoScroll);
+            
+            // INITIALIZE
+            updateCarousel();
+            startAutoScroll();
+            
+            // FADE-UP ANIMATION FOR NEWS SECTION
+            const newsFadeElements = document.querySelectorAll('.news-section .fade-section');
+            const newsObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('show');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.25 });
+            
+            newsFadeElements.forEach(el => newsObserver.observe(el));
+            
+            // PARALLAX EFFECT FOR NEWS SECTION
+            const newsSection = document.querySelector('.news-section');
+            let latestScroll = 0, ticking = false;
+            
+            function onScroll() {
+                latestScroll = window.scrollY;
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        newsSection.style.backgroundPosition = `center ${latestScroll * 0.35}px`;
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+            
+            window.addEventListener('scroll', onScroll, { passive: true });
+        });
+
+        // PERATURAN KOPERASI SCRIPT
+        document.addEventListener("DOMContentLoaded", function() {
+            // EFEK PARALLAX PADA SHAPES
+            document.addEventListener('mousemove', (e) => {
+                const shapes = document.querySelectorAll('.shape');
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+                
+                shapes.forEach((shape, index) => {
+                    const speed = (index + 1) * 0.3;
+                    const x = (mouseX * speed * 20) - 10;
+                    const y = (mouseY * speed * 20) - 10;
+                    shape.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+                });
+            });
+
+            // EFEK HOVER UNTUK CARDS
+            const cards = document.querySelectorAll('.regulation-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.borderLeftColor = '#e53e3e';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.borderLeftColor = '#38b2ac';
+                });
+            });
+
+            // EFEK INTERAKTIF PADA ACCENT DOTS
+            const accentDots = document.querySelectorAll('.accent-dot, .card-accent-dot');
+            setInterval(() => {
+                accentDots.forEach(dot => {
+                    dot.style.animation = 'pulse 2s infinite';
+                });
+            }, 4000);
+        });
+    </script>
+</body>
+</html>
