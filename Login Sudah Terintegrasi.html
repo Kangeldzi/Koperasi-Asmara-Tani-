@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Koperasi Asmara Tani</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --accent: #ff5722;
+            --light: #f5f5f5;
+            --dark: #333;
+            --gray: #757575;
+            --gray-light: #e0e0e0;
+            --danger: #f44336;
+            --warning: #ffc107;
+            --success: #4caf50;
+            --info: #2196f3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Tombol Beranda - Minimalis */
+        .back-home {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 0.85rem;
+        }
+        
+        .back-home:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Tombol Close - Minimalis */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--danger);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 0.9rem;
+        }
+        
+        .close-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Container Utama */
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        /* Container untuk Login */
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Container untuk Daftar Anggota */
+        .register-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            display: none; /* Awalnya tersembunyi */
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .login-left img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 25px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-left h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .login-left .tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        .login-right {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .login-header {
+            margin-bottom: 40px;
+        }
+        
+        .login-header h2 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .login-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .login-form {
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .required {
+            color: var(--danger);
+        }
+        
+        .form-control, .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--gray-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-btn {
+            background: var(--light);
+            color: var(--dark);
+            padding: 16px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: 1px dashed var(--gray-light);
+        }
+        
+        .file-upload-btn:hover {
+            background: var(--gray-light);
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-name {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .btn {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover:before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-light);
+        }
+        
+        .login-footer, .form-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .login-footer a, .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .login-footer a:hover, .form-footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--gray-light);
+        }
+        
+        .user-type {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .user-type.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .user-type:not(.active):hover {
+            background: var(--light);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-right, .form-container {
+            animation: fadeIn 0.8s ease;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container, .register-container {
+                flex-direction: column;
+                max-width: 450px;
+            }
+            
+            .login-left, .header {
+                padding: 30px;
+            }
+            
+            .login-right, .form-container {
+                padding: 30px;
+            }
+            
+            .back-home, .close-btn {
+                top: 10px;
+            }
+            
+            .back-home {
+                left: 10px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .close-btn {
+                right: 10px;
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-home" id="backHome">
+        <i class="fas fa-home"></i> Beranda
+    </button>
+    
+    <button class="close-btn" id="closeBtn" title="Tutup">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="main-container">
+        <!-- Container Login (Default) -->
+        <div class="login-container" id="loginContainer">
+            <div class="login-left">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg" alt="Logo Koperasi Asmara Tani">
+                <h1>Koperasi Asmara Tani</h1>
+                <div class="tagline">#koperasijenius</div>
+            </div>
+            
+            <div class="login-right">
+                <div class="login-header">
+                    <h2>Masuk ke Dashboard</h2>
+                    <p>Silakan masuk dengan akun Anda</p>
+                </div>
+                
+                <div class="user-type-selector">
+                    <div class="user-type active" data-type="admin">Admin/Pengurus</div>
+                    <div class="user-type" data-type="anggota">Anggota</div>
+                </div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Alamat Email <span class="required">*</span></label>
+                        <input type="email" id="email" class="form-control" placeholder="Masukkan alamat email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Kata Sandi <span class="required">*</span></label>
+                        <div class="password-container">
+                            <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Ingat saya</label>
+                        </div>
+                        <a href="#" class="forgot-password">Lupa kata sandi?</a>
+                    </div>
+                    
+                    <div class="error-message" id="errorMessage">
+                        Email atau kata sandi salah. Silakan coba lagi.
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Masuk
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <p id="registerText">Belum punya akun? <a href="#" id="registerLink">Hubungi Administrator</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Container Daftar Anggota (Awalnya Tersembunyi) -->
+        <div class="register-container" id="registerContainer">
+            <div class="header">
+                <h1>Daftar Sebagai Anggota</h1>
+                <p>Koperasi Asmara Tani</p>
+            </div>
+            
+            <div class="form-container">
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="posisi">Posisi <span class="required">*</span></label>
+                        <select id="posisi" class="form-select" required>
+                            <option value="">Pilih Posisi</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Pengurus">Pengurus</option>
+                            <option value="Anggota">Anggota</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap <span class="required">*</span></label>
+                        <input type="text" id="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="alamat">Alamat Lengkap <span class="required">*</span></label>
+                        <textarea id="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="jenis_kelamin">Jenis Kelamin <span class="required">*</span></label>
+                                <select id="jenis_kelamin" class="form-select" required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="agama">Agama <span class="required">*</span></label>
+                                <select id="agama" class="form-select" required>
+                                    <option value="">Pilih Agama</option>
+                                    <option value="Islam">Islam</option>
+                                    <option value="Kristen">Kristen</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Budha">Budha</option>
+                                    <option value="Konghucu">Konghucu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="status">Status <span class="required">*</span></label>
+                                <select id="status" class="form-select" required>
+                                    <option value="">Pilih Status</option>
+                                    <option value="Menikah">Menikah</option>
+                                    <option value="Belum Menikah">Belum Menikah</option>
+                                    <option value="Duda">Duda</option>
+                                    <option value="Janda">Janda</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="tanggal_daftar">Tanggal Daftar</label>
+                                <input type="text" id="tanggal_daftar" class="form-control" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="email_daftar">Alamat Email <span class="required">*</span></label>
+                                <input type="email" id="email_daftar" class="form-control" placeholder="Masukkan alamat email" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="whatsapp">No WhatsApp <span class="required">*</span></label>
+                                <input type="tel" id="whatsapp" class="form-control" placeholder="Masukkan nomor WhatsApp" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nik">No NIK KTP <span class="required">*</span></label>
+                        <input type="text" id="nik" class="form-control" placeholder="Masukkan nomor NIK KTP" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="foto">Upload Foto Anda <span class="required">*</span></label>
+                                <div class="file-upload">
+                                    <div class="file-upload-btn">
+                                        <i class="fas fa-cloud-upload-alt"></i> Pilih Foto
+                                    </div>
+                                    <input type="file" id="foto" accept="image/*" required>
+                                </div>
+                                <div class="file-name" id="foto-name">Belum ada file dipilih</div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="bukti_transfer">Upload Bukti Transfer (Opsional)</label>
+                                <div class="file-upload">
+                                    <div class="file-upload-btn">
+                                        <i class="fas fa-cloud-upload-alt"></i> Pilih File
+                                    </div>
+                                    <input type="file" id="bukti_transfer" accept="image/*,.pdf">
+                                </div>
+                                <div class="file-name" id="bukti-transfer-name">Belum ada file dipilih</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="error-message" id="errorMessageDaftar"></div>
+                    <div class="success-message" id="successMessageDaftar"></div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Daftar
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="form-footer">
+                    <p>Sudah punya akun? <a href="#" id="backToLogin">Masuk di sini</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Database simulasi untuk admin/pengurus dan anggota koperasi
+            const userDatabase = {
+                // Admin dan Pengurus - Diberikan akses ke dashboard admin
+                'admin@koperasi.com': { 
+                    password: 'admin014212', 
+                    name: 'Administrator', 
+                    role: 'Admin',
+                    email: 'admin@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                    norek: '4098-01-019526-53-3 (BRI)',
+                    access: 'dashboard'
+                },
+                'pengurus@koperasi.com': { 
+                    password: 'pengurus4212', 
+                    name: 'Ketua Pengurus', 
+                    role: 'Pengurus',
+                    email: 'pengurus@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                    norek: '1234-5678-9012-3456 (BCA)',
+                    access: 'dashboard'
+                },
+                'bendahara@koperasi.com': { 
+                    password: 'bendahara4212', 
+                    name: 'Bendahara Koperasi', 
+                    role: 'Bendahara',
+                    email: 'bendahara@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                    norek: '9876-5432-1098-7654 (Mandiri)',
+                    access: 'dashboard'
+                },
+                'sekretaris@koperasi.com': { 
+                    password: 'sekretaris4212', 
+                    name: 'Sekretaris Koperasi', 
+                    role: 'Sekretaris',
+                    email: 'sekretaris@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                    norek: '3456-7890-1234-5678 (BRI)',
+                    access: 'dashboard'
+                },
+                // Anggota - Diberikan akses ke halaman anggota
+                'anggota@koperasi.com': { 
+                    password: 'anggota4212', 
+                    name: 'Anggota Koperasi', 
+                    role: 'Anggota',
+                    email: 'anggota@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                    norek: '1111-2222-3333-4444 (BNI)',
+                    access: 'anggota'
+                },
+                'budi@koperasi.com': { 
+                    password: 'budi4212', 
+                    name: 'Budi Santoso', 
+                    role: 'Anggota',
+                    email: 'budi@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                    norek: '5555-6666-7777-8888 (BCA)',
+                    access: 'anggota'
+                }
+            };
+
+            // Element references
+            const loginContainer = document.getElementById('loginContainer');
+            const registerContainer = document.getElementById('registerContainer');
+            const backHomeBtn = document.getElementById('backHome');
+            const closeBtn = document.getElementById('closeBtn');
+            const backToLoginLink = document.getElementById('backToLogin');
+
+            // Tombol kembali ke beranda
+            backHomeBtn.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+
+            // Tombol close
+            closeBtn.addEventListener('click', function() {
+                if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
+                    window.close();
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // Fungsi untuk menampilkan formulir login
+            function showLoginForm() {
+                loginContainer.style.display = 'flex';
+                registerContainer.style.display = 'none';
+            }
+
+            // Fungsi untuk menampilkan formulir pendaftaran
+            function showRegisterForm() {
+                loginContainer.style.display = 'none';
+                registerContainer.style.display = 'block';
+            }
+
+            // Kembali ke login dari formulir pendaftaran
+            backToLoginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showLoginForm();
+            });
+
+            // Toggle password visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // User type selector
+            const userTypes = document.querySelectorAll('.user-type');
+            let currentUserType = 'admin';
+            
+            userTypes.forEach(type => {
+                type.addEventListener('click', function() {
+                    userTypes.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentUserType = this.getAttribute('data-type');
+                    updateFormForUserType(currentUserType);
+                });
+            });
+            
+            function updateFormForUserType(userType) {
+                const loginHeader = document.querySelector('.login-header h2');
+                const loginSubtitle = document.querySelector('.login-header p');
+                const registerText = document.getElementById('registerText');
+                const registerLink = document.getElementById('registerLink');
+                
+                if (userType === 'admin') {
+                    loginHeader.textContent = 'Masuk ke Dashboard';
+                    loginSubtitle.textContent = 'Silakan masuk dengan akun Admin/Pengurus';
+                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Hubungi Administrator</a>';
+                } else {
+                    loginHeader.textContent = 'Masuk sebagai Anggota';
+                    loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
+                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai anggota</a>';
+                }
+                
+                document.getElementById('registerLink').addEventListener('click', handleRegisterLink);
+            }
+            
+            // Form submission login
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember').checked;
+                
+                if (!email || !password) {
+                    showError('Harap isi semua field yang diperlukan.');
+                    return;
+                }
+                
+                if (userDatabase[email] && userDatabase[email].password === password) {
+                    const user = userDatabase[email];
+                    
+                    if (currentUserType === 'admin' && user.access !== 'dashboard') {
+                        showError('Anda tidak memiliki akses ke dashboard admin. Silakan login sebagai anggota.');
+                        return;
+                    }
+                    
+                    if (currentUserType === 'anggota' && user.access !== 'anggota') {
+                        showError('Anda tidak memiliki akses ke halaman anggota. Silakan login sebagai admin/pengurus.');
+                        return;
+                    }
+                    
+                    // Login berhasil
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    if (user.access === 'dashboard') {
+                        let adminData = JSON.parse(localStorage.getItem('adminData')) || [];
+                        const existingUserIndex = adminData.findIndex(admin => admin.email === user.email);
+                        
+                        if (existingUserIndex === -1) {
+                            adminData.push({
+                                username: user.name,
+                                email: user.email,
+                                role: user.role,
+                                norek: user.norek,
+                                foto: user.foto
+                            });
+                        } else {
+                            adminData[existingUserIndex] = {
+                                username: user.name,
+                                email: user.email,
+                                role: user.role,
+                                norek: user.norek,
+                                foto: user.foto
+                            };
+                        }
+                        
+                        localStorage.setItem('adminData', JSON.stringify(adminData));
+                    }
+                    
+                    if (remember) {
+                        localStorage.setItem('rememberedEmail', email);
+                    } else {
+                        localStorage.removeItem('rememberedEmail');
+                    }
+                    
+                    // Redirect berdasarkan tipe user
+                    if (user.access === 'dashboard') {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        window.location.href = 'anggota.html';
+                    }
+                } else {
+                    showError('Email atau kata sandi salah. Silakan coba lagi.');
+                }
+            });
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            // Cek jika ada email yang diingat
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                document.getElementById('email').value = rememberedEmail;
+                document.getElementById('remember').checked = true;
+            }
+            
+            // Fungsi untuk menangani klik link registrasi
+            function handleRegisterLink(e) {
+                e.preventDefault();
+                if (currentUserType === 'admin') {
+                    window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20admin/pengurus', '_blank');
+                } else {
+                    showRegisterForm();
+                }
+            }
+            
+            // Link untuk registrasi
+            document.getElementById('registerLink').addEventListener('click', handleRegisterLink);
+            
+            // Link lupa password
+            const forgotPassword = document.querySelector('.forgot-password');
+            forgotPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Silakan hubungi Administrator Koperasi untuk reset password.');
+            });
+
+            // ========== FORMULIR PENDAFTARAN ANGGOTA ==========
+            
+            // Update tanggal daftar secara real-time
+            function updateTanggalDaftar() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                const formattedDate = now.toLocaleDateString('id-ID', options);
+                document.getElementById('tanggal_daftar').value = formattedDate;
+            }
+            
+            // Update tanggal setiap detik
+            updateTanggalDaftar();
+            setInterval(updateTanggalDaftar, 1000);
+            
+            // Handle file upload display
+            const fotoInput = document.getElementById('foto');
+            const fotoName = document.getElementById('foto-name');
+            const buktiTransferInput = document.getElementById('bukti_transfer');
+            const buktiTransferName = document.getElementById('bukti-transfer-name');
+            
+            fotoInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    fotoName.textContent = this.files[0].name;
+                } else {
+                    fotoName.textContent = 'Belum ada file dipilih';
+                }
+            });
+            
+            buktiTransferInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    buktiTransferName.textContent = this.files[0].name;
+                } else {
+                    buktiTransferName.textContent = 'Belum ada file dipilih';
+                }
+            });
+            
+            // Form submission pendaftaran
+            const registrationForm = document.getElementById('registrationForm');
+            const errorMessageDaftar = document.getElementById('errorMessageDaftar');
+            const successMessageDaftar = document.getElementById('successMessageDaftar');
+            
+            registrationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                const formData = {
+                    posisi: document.getElementById('posisi').value,
+                    nama: document.getElementById('nama').value,
+                    alamat: document.getElementById('alamat').value,
+                    jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                    agama: document.getElementById('agama').value,
+                    status: document.getElementById('status').value,
+                    email: document.getElementById('email_daftar').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    nik: document.getElementById('nik').value,
+                    tanggal_daftar: document.getElementById('tanggal_daftar').value,
+                    foto: fotoInput.files.length > 0 ? fotoInput.files[0].name : '',
+                    bukti_transfer: buktiTransferInput.files.length > 0 ? buktiTransferInput.files[0].name : ''
+                };
+                
+                let anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+                anggotaData.push(formData);
+                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                
+                showSuccessDaftar('Pendaftaran berhasil! Anda akan diarahkan ke halaman login.');
+                
+                setTimeout(() => {
+                    showLoginForm();
+                }, 3000);
+            });
+            
+            function validateForm() {
+                const requiredFields = [
+                    'posisi', 'nama', 'alamat', 'jenis_kelamin', 
+                    'agama', 'status', 'email_daftar', 'whatsapp', 'nik', 'foto'
+                ];
+                
+                for (let field of requiredFields) {
+                    const element = document.getElementById(field);
+                    if (!element.value) {
+                        showErrorDaftar(`Field ${element.previousElementSibling.textContent} harus diisi.`);
+                        element.focus();
+                        return false;
+                    }
+                }
+                
+                const email = document.getElementById('email_daftar').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showErrorDaftar('Format email tidak valid.');
+                    document.getElementById('email_daftar').focus();
+                    return false;
+                }
+                
+                const whatsapp = document.getElementById('whatsapp').value;
+                if (whatsapp.length < 10) {
+                    showErrorDaftar('Nomor WhatsApp harus minimal 10 digit.');
+                    document.getElementById('whatsapp').focus();
+                    return false;
+                }
+                
+                const nik = document.getElementById('nik').value;
+                if (nik.length !== 16 || isNaN(nik)) {
+                    showErrorDaftar('NIK harus berupa 16 digit angka.');
+                    document.getElementById('nik').focus();
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function showErrorDaftar(message) {
+                errorMessageDaftar.textContent = message;
+                errorMessageDaftar.style.display = 'block';
+                successMessageDaftar.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+            
+            function showSuccessDaftar(message) {
+                successMessageDaftar.textContent = message;
+                successMessageDaftar.style.display = 'block';
+                errorMessageDaftar.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
