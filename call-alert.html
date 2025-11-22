@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Call Alert – Koperasi Asmara Tani</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-primary:        #0d3b2a;
+      --bg-secondary:      #1e5631;
+      --bg-tertiary:       #2a6b45;
+      --accent:            #ffd700;
+      --accent-light:      #ffeb3b;
+      --text-light:        #ffffff;
+      --card-bg:           rgba(20, 50, 40, 0.75);
+      --success:           #4caf50;
+      --warning:           #ff9800;
+      --danger:            #f44336;
+      --border-light:      rgba(255, 255, 255, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .logo i {
+      margin-right: 0.5rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(76, 175, 80, 0.2);
+      color: var(--success);
+    }
+
+    .btn {
+      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg-primary);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .broadcast-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--accent-light);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 12px;
+      background: rgba(10, 30, 20, 0.4);
+      border: 1px solid var(--border-light);
+      color: var(--text-light);
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .recipient-selection h4,
+    .reminder-settings h4,
+    .notification-history h4 {
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-light);
+    }
+
+    .recipient-selection,
+    .reminder-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .recipient-selection label,
+    .reminder-options label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .report-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+    }
+
+    th, td {
+      padding: 0.6rem 0.5rem;
+      text-align: left;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    th {
+      font-weight: 600;
+      opacity: 0.95;
+    }
+
+    /* Emergency Alert – Mobile Style */
+    .emergency-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--danger);
+      color: white;
+      padding: 1rem;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      max-width: 320px;
+      z-index: 1000;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .emergency-alert i {
+      font-size: 1.4rem;
+      margin-top: 0.2rem;
+      color: white;
+    }
+
+    .alert-content strong {
+      color: white;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .alert-content p {
+      margin-top: 0.3rem;
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+
+    .btn-sm {
+      margin-top: 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      .emergency-alert {
+        left: 20px;
+        right: 20px;
+        max-width: unset;
+        flex-direction: column;
+      }
+      body {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <i class="fas fa-bell"></i> CALL ALERT
+  </div>
+  <button class="btn btn-outline" onclick="location.href='#'">
+    <i class="fas fa-building-columns"></i> Banking
+  </button>
+</header>
+
+<div class="main-grid">
+  <!-- WhatsApp Broadcast System -->
+  <div class="card">
+    <div class="section-header">
+      <h2><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp Broadcast</h2>
+      <span class="badge badge-success">Connected</span>
+    </div>
+
+    <div class="broadcast-actions">
+      <button class="btn btn-success" id="sendWhatsAppReminder">
+        <i class="fab fa-whatsapp"></i> Kirim Reminder
+      </button>
+      <button class="btn btn-outline" id="testWhatsApp">
+        <i class="fas fa-plug"></i> Uji Koneksi
+      </button>
+    </div>
+
+    <div class="form-group">
+      <label>Template Pesan WhatsApp</label>
+      <textarea class="form-control" rows="5" id="whatsappTemplate">🚨 *KOPERASI ASMARA TANI - PEMBERITAHUAN*
+
+Kepada Yth. {nama_anggota},
+
+*PENGINGAT PEMBAYARAN:*
+📅 Jatuh Tempo: {due_date}
+💰 Total: Rp {total_amount}
+
+Rincian:
+• Angsuran Pinjaman: Rp {loan_amount}
+• Simpanan Wajib: Rp {savings_amount}
+
+Mohon segera melakukan pembayaran.
+
+Salam,
+*Koperasi Asmara Tani*
+#koperasijenius</textarea>
+    </div>
+
+    <div class="recipient-selection">
+      <h4>Pilih Penerima</h4>
+      <label><input type="checkbox" checked> Semua Anggota</label>
+      <label><input type="checkbox"> Anggota dengan Pinjaman</label>
+      <label><input type="checkbox"> Anggota dengan Simpanan</label>
+      <label><input type="checkbox"> Pengurus & Admin</label>
+    </div>
+  </div>
+
+  <!-- Notification Panel -->
+  <div>
+    <div class="card">
+      <div class="section-header">
+        <h2><i class="fas fa-bell"></i> Sistem Notifikasi Massal</h2>
+        <button class="btn btn-primary" id="sendEmergencyNotification">
+          <i class="fas fa-broadcast-tower"></i> Kirim Darurat
+        </button>
+      </div>
+
+      <div class="reminder-settings">
+        <h4>🔄 Auto Reminder</h4>
+        <div class="reminder-options">
+          <label><input type="checkbox" checked> 7 hari sebelum jatuh tempo</label>
+          <label><input type="checkbox" checked> 3 hari sebelum jatuh tempo</label>
+          <label><input type="checkbox" checked> 1 hari sebelum jatuh tempo</label>
+        </div>
+      </div>
+
+      <div class="notification-history">
+        <h4>📋 Riwayat Notifikasi</h4>
+        <table>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jenis</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>18 Nov 2025</td>
+            <td>Angsuran</td>
+            <td><span style="color:var(--success)">✓ Terkirim</span></td>
+          </tr>
+          <tr>
+            <td>15 Nov 2025</td>
+            <td>Simpanan</td>
+            <td><span style="color:var(--success)">✓ Terkirim</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Delivery Report -->
+    <div class="card">
+      <h4><i class="fas fa-chart-bar" style="color:var(--accent)"></i> Laporan Pengiriman</h4>
+      <div class="report-stats">
+        <div class="stat-item">
+          <span class="stat-number" id="sentCount">248</span>
+          <span class="stat-label">Terkirim</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="deliveredCount">231</span>
+          <span class="stat-label">Diterima</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="readCount">197</span>
+          <span class="stat-label">Dibaca</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contoh Emergency Alert (akan muncul di semua user) -->
+<div class="emergency-alert">
+  <i class="fas fa-exclamation-triangle"></i>
+  <div class="alert-content">
+    <strong>Peringatan Angsuran</strong>
+    <p>Angsuran pinjaman Anda jatuh tempo pada 15 Jan 2024</p>
+  </div>
+  <button class="btn btn-sm">Tandai sebagai telah dibaca</button>
+</div>
+
+<script>
+  // === 1. Fungsi kirim notifikasi darurat (tetap sama)
+  document.getElementById('sendEmergencyNotification').addEventListener('click', async () => {
+    const template = document.getElementById('whatsappTemplate').value;
+    const message = template
+      .replace(/{nama_anggota}/g, 'Bapak/Ibu Anggota')
+      .replace(/{due_date}/g, '15 Januari 2024')
+      .replace(/{total_amount}/g, '1.600.000')
+      .replace(/{loan_amount}/g, '1.500.000')
+      .replace(/{savings_amount}/g, '100.000');
+
+    try {
+      const res = await fetch('/api/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`✅ Berhasil! Pesan dikirim ke ${data.sent} anggota.`);
+      } else {
+        alert('❌ Gagal: ' + (data.error || 'Terjadi kesalahan'));
+      }
+    } catch (err) {
+      alert('❌ Error: ' + err.message);
+    }
+  });
+
+  document.getElementById('sendWhatsAppReminder').addEventListener('click', () => {
+    document.getElementById('sendEmergencyNotification').click();
+  });
+
+  // === 2. Fungsi baru: Sembunyikan hanya POP-UP saat diklik "Tandai sudah dibaca"
+  document.querySelector('.btn-sm').addEventListener('click', () => {
+    const popup = document.querySelector('.emergency-alert');
+    if (popup) {
+      popup.style.display = 'none'; // Hanya sembunyikan POP-UP
+    }
+  });
+</script>
+
+</body>
+</html>
