@@ -3949,47 +3949,46 @@ Salam,
             // Inisialisasi data saat halaman dimuat
             initializeData();
             
-            // Fungsi untuk Call Alert
-            // === 1. Fungsi kirim notifikasi darurat (tetap sama)
-            document.getElementById('sendEmergencyNotification').addEventListener('click', async () => {
-                const template = document.getElementById('whatsappTemplate').value;
-                const message = template
-                    .replace(/{nama_anggota}/g, 'Bapak/Ibu Anggota')
-                    .replace(/{due_date}/g, '15 Januari 2024')
-                    .replace(/{total_amount}/g, '1.600.000')
-                    .replace(/{loan_amount}/g, '1.500.000')
-                    .replace(/{savings_amount}/g, '100.000');
+            <script>
+           // === 1. Fungsi kirim notifikasi darurat (tetap sama)
+           document.getElementById('sendEmergencyNotification').addEventListener('click', async () => {
+             const template = document.getElementById('whatsappTemplate').value;
+             const message = template
+               .replace(/{nama_anggota}/g, 'Bapak/Ibu Anggota')
+               .replace(/{due_date}/g, '15 Januari 2024')
+               .replace(/{total_amount}/g, '1.600.000')
+               .replace(/{loan_amount}/g, '1.500.000')
+               .replace(/{savings_amount}/g, '100.000');
 
-                try {
-                    const res = await fetch('/api/broadcast', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message })
-                    });
+             try {
+               const res = await fetch('/api/broadcast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+             });
 
-                    const data = await res.json();
-                    if (data.success) {
-                        alert(`✅ Berhasil! Pesan dikirim ke ${data.sent} anggota.`);
-                    } else {
-                        alert('❌ Gagal: ' + (data.error || 'Terjadi kesalahan'));
-                    }
-                } catch (err) {
-                    alert('❌ Error: ' + err.message);
-                }
-            });
+             const data = await res.json();
+             if (data.success) {
+             alert(`✅ Berhasil! Pesan dikirim ke ${data.sent} anggota.`);
+             } else {
+             alert('❌ Gagal: ' + (data.error || 'Terjadi kesalahan'));
+             }
+             } catch (err) {
+            alert('❌ Error: ' + err.message);
+             }
+             });
 
-            document.getElementById('sendWhatsAppReminder').addEventListener('click', () => {
-                document.getElementById('sendEmergencyNotification').click();
-            });
+           document.getElementById('sendWhatsAppReminder').addEventListener('click', () => {
+           document.getElementById('sendEmergencyNotification').click();
+           });
 
-            // === 2. Fungsi baru: Sembunyikan hanya POP-UP saat diklik "Tandai sudah dibaca"
-            document.getElementById('closeEmergencyAlert').addEventListener('click', () => {
-                const popup = document.getElementById('emergencyAlert');
-                if (popup) {
-                    popup.style.display = 'none'; // Hanya sembunyikan POP-UP
-                }
-            });
-        });
+          // === 2. Fungsi baru: Sembunyikan hanya POP-UP saat diklik "Tandai sudah dibaca"
+          document.querySelector('.btn-sm').addEventListener('click', () => {
+          const popup = document.querySelector('.emergency-alert');
+          if (popup) {
+          popup.style.display = 'none'; // Hanya sembunyikan POP-UP
+          }
+          });
     </script>
 </body>
 </html>
