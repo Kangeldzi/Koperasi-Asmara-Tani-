@@ -3550,5 +3550,746 @@
             initializeData();
         });
     </script>
+    // =============================================
+// SISTEM PENYIMPANAN DATA EXCEL/SPREADSHEETS
+// =============================================
+
+class ExcelExportSystem {
+    constructor() {
+        this.webhookUrls = {
+            anggota: 'https://hooks.zapier.com/hooks/catch/your-webhook/anggota',
+            simpanan: 'https://hooks.zapier.com/hooks/catch/your-webhook/simpanan',
+            pinjaman: 'https://hooks.zapier.com/hooks/catch/your-webhook/pinjaman',
+            barang: 'https://hooks.zapier.com/hooks/catch/your-webhook/barang'
+        };
+        this.autoSaveInterval = null;
+        this.isAutoSaveEnabled = false;
+    }
+
+    // =============================================
+    // EKSPOR DATA KE CSV
+    // =============================================
+
+    // Ekspor data anggota ke CSV
+    exportAnggotaToCSV(anggotaData) {
+        const headers = ['ID_Anggota', 'Posisi', 'Nama', 'Alamat', 'Jenis_Kelamin', 'Agama', 'Status', 'Email', 'WhatsApp', 'NIK', 'Tanggal_Daftar', 'Status_Aktif'];
+        
+        const csvData = anggotaData.map(anggota => [
+            anggota.id,
+            anggota.posisi,
+            anggota.nama,
+            anggota.alamat,
+            anggota.jenisKelamin,
+            anggota.agama,
+            anggota.status,
+            anggota.email,
+            anggota.whatsapp,
+            anggota.nik,
+            anggota.tanggalDaftar,
+            anggota.statusAktif
+        ]);
+
+        return this.convertToCSV(headers, csvData);
+    }
+
+    // Ekspor data simpanan ke CSV
+    exportSimpananToCSV(simpananData) {
+        const headers = ['ID_Simpanan', 'ID_Anggota', 'Nama_Anggota', 'Jenis_Simpanan', 'Tanggal_Setor', 'Nominal'];
+        
+        const csvData = simpananData.map(simpanan => [
+            simpanan.id,
+            simpanan.idAnggota,
+            simpanan.nama,
+            simpanan.jenisSimpanan,
+            simpanan.tanggalSetor,
+            simpanan.nominal
+        ]);
+
+        return this.convertToCSV(headers, csvData);
+    }
+
+    // Ekspor data pinjaman ke CSV
+    exportPinjamanToCSV(pinjamanData) {
+        const headers = ['ID_Pinjaman', 'ID_Anggota', 'Nama_Anggota', 'Jumlah_Pinjaman', 'Tanggal_Pinjam', 'Jangka_Waktu', 'Bunga', 'Sisa_Hutang', 'Status'];
+        
+        const csvData = pinjamanData.map(pinjaman => [
+            pinjaman.id,
+            pinjaman.idAnggota,
+            pinjaman.namaAnggota,
+            pinjaman.jumlahPinjaman,
+            pinjaman.tanggalPinjam,
+            pinjaman.jangkaWaktu,
+            pinjaman.bunga,
+            pinjaman.sisaHutang,
+            pinjaman.status
+        ]);
+
+        return this.convertToCSV(headers, csvData);
+    }
+
+    // Ekspor data barang ke CSV
+    exportBarangToCSV(barangData) {
+        const headers = ['ID_Barang', 'Nama_Barang', 'Stok', 'Harga_Beli', 'Harga_Jual', 'Laba'];
+        
+        const csvData = barangData.map(barang => [
+            barang.id,
+            barang.namaBarang,
+            barang.stok,
+            barang.hargaBeli,
+            barang.hargaJual,
+            barang.laba
+        ]);
+
+        return this.convertToCSV(headers, csvData);
+    }
+
+    // Konversi data ke format CSV
+    convertToCSV(headers, data) {
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row => 
+                row.map(field => {
+                    // Handle field yang mengandung koma atau tanda kutip
+                    if (typeof field === 'string' && (field.includes(',') || field.includes('"') || field.includes('\n'))) {
+                        return `"${field.replace(/"/g, '""')}"`;
+                    }
+                    return field;
+                }).join(',')
+            )
+        ].join('\n');
+
+        return csvContent;
+    }
+
+    // =============================================
+    // DOWNLOAD FILE CSV
+    // =============================================
+
+    downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    }
+
+    // =============================================
+    // WEBHOOK INTEGRATION
+    // =============================================
+
+    // Kirim data ke WebHook
+    async sendToWebHook(data, type) {
+        try {
+            const webhookUrl = this.webhookUrls[type];
+            if (!webhookUrl) {
+                console.error(`WebHook URL untuk ${type} tidak ditemukan`);
+                return false;
+            }
+
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    timestamp: new Date().toISOString(),
+                    data: data
+                })
+            });
+
+            if (response.ok) {
+                console.log(`Data ${type} berhasil dikirim ke WebHook`);
+                return true;
+            } else {
+                console.error(`Gagal mengirim data ${type} ke WebHook:`, response.statusText);
+                return false;
+            }
+        } catch (error) {
+            console.error(`Error mengirim data ${type} ke WebHook:`, error);
+            return false;
+        }
+    }
+
+    // Kirim semua data ke WebHook
+    async exportAllToWebHook(anggotaData, simpananData, pinjamanData, barangData) {
+        const results = {
+            anggota: false,
+            simpanan: false,
+            pinjaman: false,
+            barang: false
+        };
+
+        try {
+            // Kirim data anggota
+            if (anggotaData.length > 0) {
+                results.anggota = await this.sendToWebHook(anggotaData, 'anggota');
+            }
+
+            // Kirim data simpanan
+            if (simpananData.length > 0) {
+                results.simpanan = await this.sendToWebHook(simpananData, 'simpanan');
+            }
+
+            // Kirim data pinjaman
+            if (pinjamanData.length > 0) {
+                results.pinjaman = await this.sendToWebHook(pinjamanData, 'pinjaman');
+            }
+
+            // Kirim data barang
+            if (barangData.length > 0) {
+                results.barang = await this.sendToWebHook(barangData, 'barang');
+            }
+
+            return results;
+        } catch (error) {
+            console.error('Error dalam exportAllToWebHook:', error);
+            return results;
+        }
+    }
+
+    // =============================================
+    // GOOGLE SHEETS INTEGRATION
+    // =============================================
+
+    // Kirim data ke Google Sheets (menggunakan Google Apps Script)
+    async sendToGoogleSheets(data, sheetName) {
+        try {
+            // Ganti dengan URL Google Apps Script Anda
+            const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+            
+            const response = await fetch(scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'appendData',
+                    sheetName: sheetName,
+                    data: data
+                })
+            });
+
+            if (response.ok) {
+                console.log(`Data berhasil dikirim ke Google Sheets: ${sheetName}`);
+                return true;
+            } else {
+                console.error(`Gagal mengirim data ke Google Sheets: ${sheetName}`);
+                return false;
+            }
+        } catch (error) {
+            console.error(`Error mengirim data ke Google Sheets:`, error);
+            return false;
+        }
+    }
+
+    // =============================================
+    // AUTO-SAVE SYSTEM
+    // =============================================
+
+    // Aktifkan auto-save
+    enableAutoSave(intervalMinutes = 5) {
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+        }
+
+        this.isAutoSaveEnabled = true;
+        this.autoSaveInterval = setInterval(() => {
+            this.autoSaveData();
+        }, intervalMinutes * 60 * 1000);
+
+        console.log(`Auto-save diaktifkan setiap ${intervalMinutes} menit`);
+    }
+
+    // Nonaktifkan auto-save
+    disableAutoSave() {
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+        this.isAutoSaveEnabled = false;
+        console.log('Auto-save dinonaktifkan');
+    }
+
+    // Fungsi auto-save
+    async autoSaveData() {
+        try {
+            const anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+            const simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
+            const pinjamanData = JSON.parse(localStorage.getItem('pinjamanData')) || [];
+            const barangData = JSON.parse(localStorage.getItem('barangData')) || [];
+
+            // Buat backup CSV
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            if (anggotaData.length > 0) {
+                const csvAnggota = this.exportAnggotaToCSV(anggotaData);
+                this.downloadCSV(csvAnggota, `backup-anggota-${timestamp}.csv`);
+            }
+
+            if (simpananData.length > 0) {
+                const csvSimpanan = this.exportSimpananToCSV(simpananData);
+                this.downloadCSV(csvSimpanan, `backup-simpanan-${timestamp}.csv`);
+            }
+
+            // Kirim ke WebHook jika ada perubahan
+            await this.exportAllToWebHook(anggotaData, simpananData, pinjamanData, barangData);
+
+            console.log('Auto-save berhasil dilakukan:', timestamp);
+        } catch (error) {
+            console.error('Error dalam auto-save:', error);
+        }
+    }
+
+    // =============================================
+    // BATCH PROCESSING
+    // =============================================
+
+    // Proses data dalam batch
+    processInBatches(data, batchSize, processFunction) {
+        const batches = [];
+        for (let i = 0; i < data.length; i += batchSize) {
+            batches.push(data.slice(i, i + batchSize));
+        }
+
+        return batches.map((batch, index) => {
+            return processFunction(batch, index);
+        });
+    }
+
+    // =============================================
+    // UTILITY FUNCTIONS
+    // =============================================
+
+    // Format tanggal untuk filename
+    formatDateForFilename(date = new Date()) {
+        return date.toISOString()
+            .replace(/[:.]/g, '-')
+            .replace('T', '_')
+            .slice(0, -5);
+    }
+
+    // Validasi data sebelum ekspor
+    validateData(data, type) {
+        const requiredFields = {
+            anggota: ['id', 'nama', 'email'],
+            simpanan: ['id', 'idAnggota', 'nominal'],
+            pinjaman: ['id', 'idAnggota', 'jumlahPinjaman'],
+            barang: ['id', 'namaBarang', 'hargaJual']
+        };
+
+        const fields = requiredFields[type];
+        if (!fields) return true;
+
+        return data.every(item => {
+            return fields.every(field => item[field] !== undefined && item[field] !== '');
+        });
+    }
+
+    // Dapatkan statistik data
+    getDataStats(anggotaData, simpananData, pinjamanData, barangData) {
+        return {
+            totalAnggota: anggotaData.length,
+            totalSimpanan: simpananData.length,
+            totalPinjaman: pinjamanData.length,
+            totalBarang: barangData.length,
+            totalRecords: anggotaData.length + simpananData.length + pinjamanData.length + barangData.length,
+            lastExport: new Date().toISOString()
+        };
+    }
+}
+
+// =============================================
+// INTEGRASI DENGAN DASHBOARD ADMIN
+// =============================================
+
+// Inisialisasi sistem ekspor
+const excelExportSystem = new ExcelExportSystem();
+
+// Fungsi untuk menambahkan UI ekspor ke dashboard
+function addExportUI() {
+    // Tambahkan tombol ekspor di sidebar atau toolbar
+    const exportHTML = `
+        <div class="export-section" style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">📊 Ekspor Data</h3>
+            
+            <div class="export-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-outline btn-sm" onclick="exportAnggotaCSV()">
+                    <i class="fas fa-file-csv"></i> Ekspor Anggota (CSV)
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="exportSimpananCSV()">
+                    <i class="fas fa-file-csv"></i> Ekspor Simpanan (CSV)
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="exportPinjamanCSV()">
+                    <i class="fas fa-file-csv"></i> Ekspor Pinjaman (CSV)
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="exportBarangCSV()">
+                    <i class="fas fa-file-csv"></i> Ekspor Barang (CSV)
+                </button>
+            </div>
+
+            <div class="webhook-section" style="border-top: 1px solid var(--gray-light); padding-top: 15px;">
+                <h4 style="margin-bottom: 10px; color: var(--secondary);">🔄 WebHook Integration</h4>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <button class="btn btn-primary btn-sm" onclick="sendToWebHook('all')">
+                        <i class="fas fa-paper-plane"></i> Kirim Semua ke WebHook
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="testWebHookConnection()">
+                        <i class="fas fa-plug"></i> Test Koneksi
+                    </button>
+                </div>
+
+                <div class="auto-save-section" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <label style="font-size: 0.9rem;">
+                        <input type="checkbox" id="autoSaveToggle" onchange="toggleAutoSave(this.checked)">
+                        Auto-save setiap 5 menit
+                    </label>
+                    <button class="btn btn-outline btn-sm" onclick="manualBackup()">
+                        <i class="fas fa-save"></i> Backup Sekarang
+                    </button>
+                </div>
+            </div>
+
+            <div class="export-stats" style="margin-top: 15px; padding: 10px; background: var(--light); border-radius: 5px; font-size: 0.8rem;">
+                <div id="exportStats">Statistik: Memuat...</div>
+            </div>
+        </div>
+    `;
+
+    // Tambahkan ke sidebar atau area konten yang sesuai
+    const sidebar = document.querySelector('.sidebar-menu');
+    if (sidebar) {
+        const li = document.createElement('li');
+        li.innerHTML = exportHTML;
+        sidebar.appendChild(li);
+    } else {
+        // Jika sidebar tidak ditemukan, tambahkan ke area konten
+        const content = document.querySelector('.content');
+        if (content) {
+            const div = document.createElement('div');
+            div.innerHTML = exportHTML;
+            content.appendChild(div);
+        }
+    }
+
+    // Update statistik
+    updateExportStats();
+}
+
+// Fungsi untuk update statistik ekspor
+function updateExportStats() {
+    try {
+        const anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+        const simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
+        const pinjamanData = JSON.parse(localStorage.getItem('pinjamanData')) || [];
+        const barangData = JSON.parse(localStorage.getItem('barangData')) || [];
+
+        const stats = excelExportSystem.getDataStats(anggotaData, simpananData, pinjamanData, barangData);
+        
+        const statsElement = document.getElementById('exportStats');
+        if (statsElement) {
+            statsElement.innerHTML = `
+                <strong>Statistik Data:</strong><br>
+                📋 Anggota: ${stats.totalAnggota} | 
+                💰 Simpanan: ${stats.totalSimpanan} | 
+                📄 Pinjaman: ${stats.totalPinjaman} | 
+                🛒 Barang: ${stats.totalBarang}<br>
+                <small>Total: ${stats.totalRecords} records</small>
+            `;
+        }
+    } catch (error) {
+        console.error('Error update statistik:', error);
+    }
+}
+
+// =============================================
+// FUNGSI EKSPOR UNTUK DIPANGGIL DARI UI
+// =============================================
+
+// Ekspor data anggota ke CSV
+function exportAnggotaCSV() {
+    try {
+        const anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+        
+        if (anggotaData.length === 0) {
+            alert('Tidak ada data anggota untuk diekspor!');
+            return;
+        }
+
+        if (!excelExportSystem.validateData(anggotaData, 'anggota')) {
+            alert('Data anggota tidak valid! Pastikan semua field wajib terisi.');
+            return;
+        }
+
+        const csvContent = excelExportSystem.exportAnggotaToCSV(anggotaData);
+        const filename = `data-anggota-${excelExportSystem.formatDateForFilename()}.csv`;
+        
+        excelExportSystem.downloadCSV(csvContent, filename);
+        showExportNotification('Data anggota berhasil diekspor!', 'success');
+        
+        // Kirim ke WebHook
+        excelExportSystem.sendToWebHook(anggotaData, 'anggota');
+        
+    } catch (error) {
+        console.error('Error ekspor anggota:', error);
+        showExportNotification('Gagal mengekspor data anggota!', 'error');
+    }
+}
+
+// Ekspor data simpanan ke CSV
+function exportSimpananCSV() {
+    try {
+        const simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
+        
+        if (simpananData.length === 0) {
+            alert('Tidak ada data simpanan untuk diekspor!');
+            return;
+        }
+
+        if (!excelExportSystem.validateData(simpananData, 'simpanan')) {
+            alert('Data simpanan tidak valid! Pastikan semua field wajib terisi.');
+            return;
+        }
+
+        const csvContent = excelExportSystem.exportSimpananToCSV(simpananData);
+        const filename = `data-simpanan-${excelExportSystem.formatDateForFilename()}.csv`;
+        
+        excelExportSystem.downloadCSV(csvContent, filename);
+        showExportNotification('Data simpanan berhasil diekspor!', 'success');
+        
+        // Kirim ke WebHook
+        excelExportSystem.sendToWebHook(simpananData, 'simpanan');
+        
+    } catch (error) {
+        console.error('Error ekspor simpanan:', error);
+        showExportNotification('Gagal mengekspor data simpanan!', 'error');
+    }
+}
+
+// Ekspor data pinjaman ke CSV
+function exportPinjamanCSV() {
+    try {
+        const pinjamanData = JSON.parse(localStorage.getItem('pinjamanData')) || [];
+        
+        if (pinjamanData.length === 0) {
+            alert('Tidak ada data pinjaman untuk diekspor!');
+            return;
+        }
+
+        if (!excelExportSystem.validateData(pinjamanData, 'pinjaman')) {
+            alert('Data pinjaman tidak valid! Pastikan semua field wajib terisi.');
+            return;
+        }
+
+        const csvContent = excelExportSystem.exportPinjamanToCSV(pinjamanData);
+        const filename = `data-pinjaman-${excelExportSystem.formatDateForFilename()}.csv`;
+        
+        excelExportSystem.downloadCSV(csvContent, filename);
+        showExportNotification('Data pinjaman berhasil diekspor!', 'success');
+        
+        // Kirim ke WebHook
+        excelExportSystem.sendToWebHook(pinjamanData, 'pinjaman');
+        
+    } catch (error) {
+        console.error('Error ekspor pinjaman:', error);
+        showExportNotification('Gagal mengekspor data pinjaman!', 'error');
+    }
+}
+
+// Ekspor data barang ke CSV
+function exportBarangCSV() {
+    try {
+        const barangData = JSON.parse(localStorage.getItem('barangData')) || [];
+        
+        if (barangData.length === 0) {
+            alert('Tidak ada data barang untuk diekspor!');
+            return;
+        }
+
+        if (!excelExportSystem.validateData(barangData, 'barang')) {
+            alert('Data barang tidak valid! Pastikan semua field wajib terisi.');
+            return;
+        }
+
+        const csvContent = excelExportSystem.exportBarangToCSV(barangData);
+        const filename = `data-barang-${excelExportSystem.formatDateForFilename()}.csv`;
+        
+        excelExportSystem.downloadCSV(csvContent, filename);
+        showExportNotification('Data barang berhasil diekspor!', 'success');
+        
+        // Kirim ke WebHook
+        excelExportSystem.sendToWebHook(barangData, 'barang');
+        
+    } catch (error) {
+        console.error('Error ekspor barang:', error);
+        showExportNotification('Gagal mengekspor data barang!', 'error');
+    }
+}
+
+// Kirim semua data ke WebHook
+async function sendToWebHook(type = 'all') {
+    try {
+        const anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+        const simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
+        const pinjamanData = JSON.parse(localStorage.getItem('pinjamanData')) || [];
+        const barangData = JSON.parse(localStorage.getItem('barangData')) || [];
+
+        let results;
+
+        if (type === 'all') {
+            results = await excelExportSystem.exportAllToWebHook(anggotaData, simpananData, pinjamanData, barangData);
+        } else {
+            results = await excelExportSystem.sendToWebHook(eval(`${type}Data`), type);
+        }
+
+        // Tampilkan hasil
+        const successCount = Object.values(results).filter(result => result).length;
+        const totalCount = Object.keys(results).length;
+
+        if (successCount === totalCount) {
+            showExportNotification(`Semua data berhasil dikirim ke WebHook! (${successCount}/${totalCount})`, 'success');
+        } else {
+            showExportNotification(`Sebagian data gagal dikirim ke WebHook! (${successCount}/${totalCount})`, 'warning');
+        }
+
+    } catch (error) {
+        console.error('Error kirim ke WebHook:', error);
+        showExportNotification('Gagal mengirim data ke WebHook!', 'error');
+    }
+}
+
+// Test koneksi WebHook
+async function testWebHookConnection() {
+    try {
+        showExportNotification('Menguji koneksi WebHook...', 'info');
+        
+        const testData = [{ test: true, timestamp: new Date().toISOString() }];
+        const result = await excelExportSystem.sendToWebHook(testData, 'anggota');
+        
+        if (result) {
+            showExportNotification('Koneksi WebHook berhasil!', 'success');
+        } else {
+            showExportNotification('Koneksi WebHook gagal!', 'error');
+        }
+    } catch (error) {
+        console.error('Error test WebHook:', error);
+        showExportNotification('Error testing koneksi WebHook!', 'error');
+    }
+}
+
+// Toggle auto-save
+function toggleAutoSave(enabled) {
+    if (enabled) {
+        excelExportSystem.enableAutoSave(5); // Auto-save setiap 5 menit
+        showExportNotification('Auto-save diaktifkan!', 'success');
+    } else {
+        excelExportSystem.disableAutoSave();
+        showExportNotification('Auto-save dinonaktifkan!', 'warning');
+    }
+}
+
+// Manual backup
+function manualBackup() {
+    excelExportSystem.autoSaveData();
+    showExportNotification('Backup manual dilakukan!', 'success');
+}
+
+// Notifikasi ekspor
+function showExportNotification(message, type = 'info') {
+    // Buat notifikasi
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease;
+    `;
+
+    // Warna berdasarkan type
+    const colors = {
+        success: '#4caf50',
+        error: '#f44336',
+        warning: '#ff9800',
+        info: '#2196f3'
+    };
+
+    notification.style.backgroundColor = colors[type] || colors.info;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    // Hapus notifikasi setelah 3 detik
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// CSS untuk animasi notifikasi
+const exportStyles = `
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.export-section {
+    transition: all 0.3s ease;
+}
+
+.export-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+`;
+
+// Tambahkan styles ke document
+const styleSheet = document.createElement('style');
+styleSheet.textContent = exportStyles;
+document.head.appendChild(styleSheet);
+
+// =============================================
+// INTEGRASI DENGAN EXISTING DASHBOARD
+// =============================================
+
+// Panggil fungsi ini saat dashboard dimuat
+document.addEventListener('DOMContentLoaded', function() {
+    // Tunggu sebentar untuk memastikan dashboard sudah terload
+    setTimeout(() => {
+        addExportUI();
+        
+        // Update statistik setiap 30 detik
+        setInterval(updateExportStats, 30000);
+        
+        console.log('Sistem ekspor data berhasil diinisialisasi!');
+    }, 1000);
+});
+
+// Ekspor fungsi untuk digunakan di file lain
+window.ExcelExportSystem = ExcelExportSystem;
+window.excelExportSystem = excelExportSystem;            
 </body>
 </html>
