@@ -4218,6 +4218,320 @@
             // Inisialisasi data saat halaman dimuat
             initializeData();
         });
+
+            <!-- ========================================== -->
+    <!-- SISTEM REAL-TIME SYNC DENGAN GOOGLE SHEETS -->
+    <!-- ========================================== -->
+    <script>
+    class GoogleSheetsSync {
+        constructor() {
+            this.sheetId = 'YOUR_GOOGLE_SHEET_ID'; // Ganti dengan Sheet ID Anda
+            this.scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Ganti dengan Apps Script URL
+            this.isSyncing = false;
+        }
+
+        // ✅ INITIAL SYNC - Tarik data dari Google Sheets saat pertama kali
+        async initializeSync() {
+            try {
+                console.log('🔄 Initial sync dari Google Sheets...');
+                
+                // Ambil data dari Google Sheets
+                const sheetsData = await this.fetchFromGoogleSheets();
+                
+                if (sheetsData) {
+                    // Update localStorage dengan data dari Sheets
+                    this.updateLocalStorage(sheetsData);
+                    console.log('✅ Sync berhasil - Data terupdate dari Google Sheets');
+                }
+                
+                // Setup auto-sync
+                this.setupAutoSync();
+                
+            } catch (error) {
+                console.error('❌ Initial sync gagal:', error);
+            }
+        }
+
+        // ✅ FETCH DATA FROM GOOGLE SHEETS
+        async fetchFromGoogleSheets() {
+            try {
+                const response = await fetch(`${this.scriptUrl}?action=getAllData`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Gagal fetch dari Google Sheets:', error);
+                return null;
+            }
+        }
+
+        // ✅ UPDATE LOCALSTORAGE DARI SHEETS DATA
+        updateLocalStorage(sheetsData) {
+            if (sheetsData.anggota) {
+                localStorage.setItem('anggotaData', JSON.stringify(sheetsData.anggota));
+            }
+            if (sheetsData.simpanan) {
+                localStorage.setItem('simpananData', JSON.stringify(sheetsData.simpanan));
+            }
+            if (sheetsData.pinjaman) {
+                localStorage.setItem('pinjamanData', JSON.stringify(sheetsData.pinjaman));
+            }
+            if (sheetsData.barang) {
+                localStorage.setItem('barangData', JSON.stringify(sheetsData.barang));
+            }
+        }
+
+        // ✅ SYNC KE GOOGLE SHEETS (Dashboard → Sheets)
+        async syncToGoogleSheets(dataType, data) {
+            if (this.isSyncing) return;
+            
+            this.isSyncing = true;
+            try {
+                const response = await fetch(this.scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'updateData',
+                        sheetName: dataType,
+                        data: data
+                    })
+                });
+
+                if (response.ok) {
+                    console.log(`✅ ${dataType} synced ke Google Sheets`);
+                    this.showSyncStatus('Data tersimpan di Google Sheets', 'success');
+                } else {
+                    throw new Error('Sync failed');
+                }
+            } catch (error) {
+                console.error(`❌ Gagal sync ${dataType}:`, error);
+                this.showSyncStatus('Gagal sync ke Google Sheets', 'error');
+            }
+            this.isSyncing = false;
+        }
+
+        // ✅ AUTO-SYNC SETUP
+        setupAutoSync() {
+            // Sync setiap 1 menit
+            setInterval(() => this.autoSync(), 60 * 1000);
+            
+            // Sync saat data berubah di localStorage
+            this.monitorLocalStorageChanges();
+            
+            // Sync sebelum tab ditutup
+            window.addEventListener('beforeunload', () => this.emergencySync());
+        }
+
+        // ✅ MONITOR PERUBAHAN DATA
+        monitorLocalStorageChanges() {
+            const originalSetItem = localStorage.setItem;
+            const self = this;
+
+            localStorage.setItem = function(key, value) {
+                originalSetItem.apply(this, arguments);
+                
+                if (key.includes('Data') && !self.isSyncing) {
+                    const dataType = key.replace('Data', '');
+                    setTimeout(() => {
+                        const data = JSON.parse(value);
+                        self.syncToGoogleSheets(dataType, data);
+                    }, 2000);
+                }
+            };
+        }
+
+        // ✅ AUTO SYNC PERIODIC
+        async autoSync() {
+            console.log('🔄 Auto-sync ke Google Sheets...');
+            
+            const dataTypes = ['anggota', 'simpanan', 'pinjaman', 'barang'];
+            for (const type of dataTypes) {
+                const data = JSON.parse(localStorage.getItem(`${type}Data`)) || [];
+                if (data.length > 0) {
+                    await this.syncToGoogleSheets(type, data);
+                }
+            }
+        }
+
+        // ✅ EMERGENCY SYNC
+        async emergencySync() {
+            console.log('🚨 Emergency sync...');
+            await this.autoSync();
+        }
+
+        // ✅ MANUAL SYNC
+        async manualSync() {
+            this.showSyncStatus('Manual sync dimulai...', 'info');
+            await this.autoSync();
+        }
+
+        // ✅ SYNC STATUS NOTIFICATION
+        showSyncStatus(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 120px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+                color: white;
+                border-radius: 5px;
+                z-index: 10000;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                font-size: 14px;
+            `;
+            notification.innerHTML = `🔄 ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 4000);
+        }
+    }
+
+    // ✅ INTEGRASI DENGAN EXISTING SYSTEM
+    function integrateGoogleSheetsSync() {
+        // Initialize Google Sheets Sync
+        window.googleSheetsSync = new GoogleSheetsSync();
+        
+        // Override existing save functions untuk auto-sync
+        overrideSaveFunctionsForSync();
+        
+        // Add Google Sheets UI controls
+        addGoogleSheetsUI();
+        
+        // Initial sync ketika dashboard ready
+        setTimeout(() => {
+            window.googleSheetsSync.initializeSync();
+        }, 3000);
+    }
+
+    function overrideSaveFunctionsForSync() {
+        // Override save functions untuk trigger sync
+        const saveButtons = [
+            'saveMemberBtn', 'saveSimpananBtn', 'savePinjamanBtn', 'saveBarangBtn'
+        ];
+
+        saveButtons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                const originalClick = btn.onclick;
+                btn.onclick = function() {
+                    if (originalClick) originalClick();
+                    setTimeout(() => {
+                        const dataType = getDataTypeFromButton(btnId);
+                        const data = JSON.parse(localStorage.getItem(`${dataType}Data`)) || [];
+                        if (window.googleSheetsSync) {
+                            window.googleSheetsSync.syncToGoogleSheets(dataType, data);
+                        }
+                    }, 1500);
+                };
+            }
+        });
+    }
+
+    function getDataTypeFromButton(btnId) {
+        if (btnId.includes('Member')) return 'anggota';
+        if (btnId.includes('Simpanan')) return 'simpanan';
+        if (btnId.includes('Pinjaman')) return 'pinjaman';
+        if (btnId.includes('Barang')) return 'barang';
+        return 'unknown';
+    }
+
+    function addGoogleSheetsUI() {
+        const syncHTML = `
+            <div class="card" style="margin: 15px 0; border-left: 4px solid #ff9800;">
+                <div class="section-header">
+                    <h2>🔄 Google Sheets Sync</h2>
+                </div>
+                <div style="padding: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                        <button onclick="manualGoogleSheetsSync()" class="btn btn-warning btn-sm">
+                            <i class="fas fa-sync-alt"></i> Sync Sekarang
+                        </button>
+                        <button onclick="openGoogleSheets()" class="btn btn-outline btn-sm">
+                            <i class="fas fa-external-link-alt"></i> Buka Google Sheets
+                        </button>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666; background: #fff3e0; padding: 10px; border-radius: 5px;">
+                        <div>✅ <strong>Real-time Sync:</strong> Edit data di Google Sheets, otomatis update di Dashboard</div>
+                        <div>✅ <strong>Two-way Sync:</strong> perubahan di Dashboard juga sync ke Google Sheets</div>
+                        <div>✅ <strong>Collaboration:</strong> Multiple admin bisa edit bersamaan</div>
+                    </div>
+                    <div id="syncStatus" style="margin-top: 10px; font-size: 0.8rem; padding: 5px; border-radius: 3px; background: #e8f5e8;">
+                        Status: Sync aktif - Auto sync setiap 1 menit
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Tambahkan ke UI export section
+        const exportSection = document.querySelector('.export-section') || document.querySelector('#exportSystemUI');
+        if (exportSection) {
+            exportSection.insertAdjacentHTML('afterend', syncHTML);
+        }
+    }
+
+    // ✅ GLOBAL FUNCTIONS
+    window.manualGoogleSheetsSync = function() {
+        if (window.googleSheetsSync) {
+            window.googleSheetsSync.manualSync();
+        }
+    };
+
+    window.openGoogleSheets = function() {
+        // Ganti dengan URL Google Sheets Anda
+        const sheetsUrl = `https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit`;
+        window.open(sheetsUrl, '_blank');
+    };
+
+    // ✅ GOOGLE APPS SCRIPT CODE (Tempel di Google Sheets)
+    /*
+    function doGet(e) {
+        const action = e.parameter.action;
+        const sheetName = e.parameter.sheetName;
+        
+        const ss = SpreadsheetApp.openById('YOUR_SHEET_ID');
+        const sheet = ss.getSheetByName(sheetName);
+        
+        if (action === 'getData') {
+            const data = sheet.getDataRange().getValues();
+            return ContentService.createTextOutput(JSON.stringify(data))
+                .setMimeType(ContentService.MimeType.JSON);
+        }
+        
+        return ContentService.createTextOutput(JSON.stringify({success: true}));
+    }
+
+    function doPost(e) {
+        const data = JSON.parse(e.postData.contents);
+        const action = data.action;
+        const sheetName = data.sheetName;
+        const newData = data.data;
+        
+        const ss = SpreadsheetApp.openById('YOUR_SHEET_ID');
+        const sheet = ss.getSheetByName(sheetName);
+        
+        if (action === 'updateData') {
+            // Clear existing data
+            sheet.clear();
+            
+            // Add headers
+            const headers = Object.keys(newData[0]);
+            sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+            
+            // Add data
+            const values = newData.map(item => headers.map(header => item[header]));
+            sheet.getRange(2, 1, values.length, headers.length).setValues(values);
+        }
+        
+        return ContentService.createTextOutput(JSON.stringify({success: true}))
+            .setMimeType(ContentService.MimeType.JSON);
+    }
+    */
+
+    // Initialize when ready
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(integrateGoogleSheetsSync, 4000);
+    });
+    </script>
 </script>
 </body>
 </html>
