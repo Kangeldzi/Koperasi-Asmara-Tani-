@@ -929,8 +929,7 @@ function sendDataToAdminDashboard(formData) {
                     updateFormForUserType(currentUserType);
                 });
             });
-            
-            function updateFormForUserType(userType) {
+                        function updateFormForUserType(userType) {
                 const loginHeader = document.querySelector('.login-header h2');
                 const loginSubtitle = document.querySelector('.login-header p');
                 const registerText = document.getElementById('registerText');
@@ -946,8 +945,20 @@ function sendDataToAdminDashboard(formData) {
                     registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai anggota</a>';
                 }
                 
-                document.getElementById('registerLink').addEventListener('click', handleRegisterLink);
-            }
+                // ✅ PERBAIKAN: Hapus event listener lama dan tambahkan yang baru
+                const newRegisterLink = document.getElementById('registerLink');
+                newRegisterLink.replaceWith(newRegisterLink.cloneNode(true));
+                document.getElementById('registerLink').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (userType === 'admin') {
+                        // Hubungi admin via WhatsApp
+                        window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20admin/pengurus', '_blank');
+                    } else {
+                        // Tampilkan formulir pendaftaran anggota
+                        showRegisterForm();
+                    }
+                });
+            } // ← Ini penutup function updateFormForUserType
             
             // Form submission login
             const loginForm = document.getElementById('loginForm');
