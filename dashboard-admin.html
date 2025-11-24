@@ -2305,6 +2305,361 @@
 
     });
     </script>
+       <!-- ========================================== -->
+    <!-- SISTEM AUTO-SAVE KE FILE EXCEL DI KOMPUTER -->
+    <!-- ========================================== -->
+    <script>
+    class ExcelAutoSave {
+        constructor() {
+            this.isEnabled = true;
+            this.lastSave = {};
+            this.setupAutoSave();
+        }
+
+        setupAutoSave() {
+            console.log('💾 Sistem Auto-Save ke Excel diaktifkan');
+            
+            // Monitor semua event save data
+            this.monitorSaveEvents();
+            
+            // Auto-save periodic
+            setInterval(() => this.periodicSave(), 3 * 60 * 1000); // 3 menit
+        }
+
+        monitorSaveEvents() {
+            // Tangkap semua tombol save di dashboard
+            this.interceptSaveButtons();
+            
+            // Monitor localStorage changes
+            this.monitorLocalStorage();
+        }
+
+        interceptSaveButtons() {
+            // Tombol simpan anggota
+            const saveMemberBtn = document.getElementById('saveMemberBtn');
+            if (saveMemberBtn) {
+                saveMemberBtn.addEventListener('click', () => {
+                    setTimeout(() => this.saveToExcel('anggota'), 2000);
+                });
+            }
+
+            // Tombol simpan simpanan
+            const saveSimpananBtn = document.getElementById('saveSimpananBtn');
+            if (saveSimpananBtn) {
+                saveSimpananBtn.addEventListener('click', () => {
+                    setTimeout(() => this.saveToExcel('simpanan'), 2000);
+                });
+            }
+
+            // Tombol simpan pinjaman
+            const savePinjamanBtn = document.getElementById('savePinjamanBtn');
+            if (savePinjamanBtn) {
+                savePinjamanBtn.addEventListener('click', () => {
+                    setTimeout(() => this.saveToExcel('pinjaman'), 2000);
+                });
+            }
+
+            // Tombol simpan barang
+            const saveBarangBtn = document.getElementById('saveBarangBtn');
+            if (saveBarangBtn) {
+                saveBarangBtn.addEventListener('click', () => {
+                    setTimeout(() => this.saveToExcel('barang'), 2000);
+                });
+            }
+
+            console.log('🔍 Memonitor tombol save...');
+        }
+
+        monitorLocalStorage() {
+            // Override localStorage setItem untuk deteksi perubahan
+            const originalSetItem = localStorage.setItem;
+            const self = this;
+
+            localStorage.setItem = function(key, value) {
+                originalSetItem.apply(this, arguments);
+                
+                if (key.includes('Data') && self.isEnabled) {
+                    const dataType = key.replace('Data', '').toLowerCase();
+                    setTimeout(() => self.saveToExcel(dataType), 1000);
+                }
+            };
+        }
+
+        saveToExcel(dataType) {
+            if (!this.isEnabled) return;
+
+            try {
+                const data = JSON.parse(localStorage.getItem(`${dataType}Data`)) || [];
+                if (data.length === 0) return;
+
+                console.log(`💾 Auto-saving ${dataType} ke Excel...`);
+
+                // Generate CSV content
+                const csvContent = this.generateCSV(data, dataType);
+                const filename = this.generateFilename(dataType);
+
+                // Download file Excel/CSV
+                this.downloadExcelFile(csvContent, filename);
+
+                // Update status
+                this.updateSaveStatus(dataType, 'success');
+
+            } catch (error) {
+                console.error(`❌ Gagal auto-save ${dataType}:`, error);
+                this.updateSaveStatus(dataType, 'error');
+            }
+        }
+
+        generateCSV(data, dataType) {
+            let headers = [];
+            let csvData = [];
+
+            switch(dataType) {
+                case 'anggota':
+                    headers = ['ID_Anggota', 'Posisi', 'Nama', 'Alamat', 'Jenis_Kelamin', 'Agama', 'Status', 'Email', 'WhatsApp', 'NIK', 'Tanggal_Daftar', 'Status_Aktif'];
+                    csvData = data.map(item => [
+                        item.id, item.posisi, item.nama, item.alamat,
+                        item.jenisKelamin, item.agama, item.status, item.email,
+                        item.whatsapp, item.nik, item.tanggalDaftar, item.statusAktif
+                    ]);
+                    break;
+
+                case 'simpanan':
+                    headers = ['ID_Simpanan', 'ID_Anggota', 'Nama_Anggota', 'Jenis_Simpanan', 'Tanggal_Setor', 'Nominal'];
+                    csvData = data.map(item => [
+                        item.id, item.idAnggota, item.nama,
+                        item.jenisSimpanan, item.tanggalSetor, item.nominal
+                    ]);
+                    break;
+
+                case 'pinjaman':
+                    headers = ['ID_Pinjaman', 'ID_Anggota', 'Nama_Anggota', 'Jumlah_Pinjaman', 'Tanggal_Pinjam', 'Jangka_Waktu', 'Bunga', 'Sisa_Hutang', 'Status'];
+                    csvData = data.map(item => [
+                        item.id, item.idAnggota, item.namaAnggota,
+                        item.jumlahPinjaman, item.tanggalPinjam, item.jangkaWaktu,
+                        item.bunga, item.sisaHutang, item.status
+                    ]);
+                    break;
+
+                case 'barang':
+                    headers = ['ID_Barang', 'Nama_Barang', 'Stok', 'Harga_Beli', 'Harga_Jual', 'Laba'];
+                    csvData = data.map(item => [
+                        item.id, item.namaBarang, item.stok,
+                        item.hargaBeli, item.hargaJual, item.laba
+                    ]);
+                    break;
+            }
+
+            // Convert to CSV
+            const csvContent = [
+                headers.join(','),
+                ...csvData.map(row => 
+                    row.map(field => {
+                        if (typeof field === 'string' && (field.includes(',') || field.includes('"') || field.includes('\n'))) {
+                            return `"${field.replace(/"/g, '""')}"`;
+                        }
+                        return field;
+                    }).join(',')
+                )
+            ].join('\n');
+
+            return csvContent;
+        }
+
+        generateFilename(dataType) {
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+            const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '-'); // HH-MM-SS
+            
+            const typeNames = {
+                'anggota': 'Data_Anggota',
+                'simpanan': 'Data_Simpanan', 
+                'pinjaman': 'Data_Pinjaman',
+                'barang': 'Data_Barang'
+            };
+
+            return `${typeNames[dataType]}_${dateStr}_${timeStr}.csv`;
+        }
+
+        downloadExcelFile(csvContent, filename) {
+            // Create blob
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create invisible download link
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.style.display = 'none';
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Cleanup
+            URL.revokeObjectURL(url);
+            
+            console.log(`📁 File tersimpan: ${filename}`);
+        }
+
+        periodicSave() {
+            if (!this.isEnabled) return;
+
+            console.log('🕒 Periodic save ke Excel...');
+            
+            const dataTypes = ['anggota', 'simpanan', 'pinjaman', 'barang'];
+            dataTypes.forEach(type => {
+                const data = JSON.parse(localStorage.getItem(`${type}Data`)) || [];
+                if (data.length > 0) {
+                    this.saveToExcel(type);
+                }
+            });
+        }
+
+        updateSaveStatus(dataType, status) {
+            this.lastSave[dataType] = {
+                time: new Date().toLocaleTimeString(),
+                status: status
+            };
+            
+            this.showNotification(`Data ${dataType} tersimpan di Excel`, status);
+        }
+
+        showNotification(message, type = 'info') {
+            // Create notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+                color: white;
+                border-radius: 5px;
+                z-index: 10000;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            notification.innerHTML = `💾 ${message}`;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 4000);
+        }
+
+        enable() {
+            this.isEnabled = true;
+            this.showNotification('Auto-save Excel diaktifkan', 'success');
+        }
+
+        disable() {
+            this.isEnabled = false;
+            this.showNotification('Auto-save Excel dinonaktifkan', 'warning');
+        }
+
+        manualSaveAll() {
+            this.showNotification('Menyimpan semua data ke Excel...', 'info');
+            this.periodicSave();
+        }
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait a bit for dashboard to initialize
+        setTimeout(() => {
+            window.excelAutoSave = new ExcelAutoSave();
+            addExcelAutoSaveControls();
+            console.log('✅ Sistem Auto-Save Excel siap!');
+        }, 3000);
+    });
+
+    function addExcelAutoSaveControls() {
+        const controlsHTML = `
+            <div style="padding: 15px; background: #e8f5e8; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4caf50;">
+                <h4 style="margin: 0 0 10px 0; color: #2e7d32;">
+                    💾 Auto-Save ke Excel
+                </h4>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <label style="display: flex; align-items: center; gap: 5px; font-weight: 600;">
+                        <input type="checkbox" id="excelAutoSaveToggle" checked>
+                        Simpan Otomatis ke Excel
+                    </label>
+                    <button onclick="manualSaveToExcel()" class="btn btn-success btn-sm">
+                        💾 Save Sekarang
+                    </button>
+                </div>
+                <div style="font-size: 0.8rem; color: #666;">
+                    <div>✅ Setiap input data otomatis tersimpan di file Excel</div>
+                    <div>✅ File tersimpan di folder Downloads komputer</div>
+                    <div>✅ Format: Data_Anggota_2024-01-15_10-30-00.csv</div>
+                </div>
+            </div>
+        `;
+
+        // Add to export section or create new section
+        const exportSection = document.querySelector('.export-section');
+        if (exportSection) {
+            exportSection.insertAdjacentHTML('beforeend', controlsHTML);
+        } else {
+            // Add to content area
+            const content = document.querySelector('.content');
+            if (content) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = controlsHTML;
+                content.insertBefore(card, content.firstChild);
+            }
+        }
+
+        // Add event listener for toggle
+        const toggle = document.getElementById('excelAutoSaveToggle');
+        if (toggle) {
+            toggle.addEventListener('change', function() {
+                if (window.excelAutoSave) {
+                    if (this.checked) {
+                        window.excelAutoSave.enable();
+                    } else {
+                        window.excelAutoSave.disable();
+                    }
+                }
+            });
+        }
+    }
+
+    // Global function for manual save
+    window.manualSaveToExcel = function() {
+        if (window.excelAutoSave) {
+            window.excelAutoSave.manualSaveAll();
+        }
+    };
+
+    // Override existing save functions to trigger auto-save
+    function integrateWithExistingSaves() {
+        // Override the existing save functions in your dashboard
+        const originalFunctions = {
+            saveMember: null,
+            saveSimpanan: null,
+            savePinjaman: null,
+            saveBarang: null
+        };
+
+        // Capture and override (this will be called after dashboard loads)
+        setTimeout(() => {
+            // This will automatically work with the button click events we already intercepted
+            console.log('🔗 Terintegrasi dengan sistem save dashboard');
+        }, 5000);
+    }
+
+    // Call integration
+    setTimeout(integrateWithExistingSaves, 4000);
+    </script> 
     
     <script>
         // Kode JavaScript Dashboard Admin yang sudah ada
