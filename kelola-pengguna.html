@@ -1059,6 +1059,24 @@
             // Muat tabel saat halaman dimuat
             loadAnggotaTable();
         });
+        
+    <script>
+    // HAPUS MODAL AUTO-SAVE YANG MUNCUL OTOMATIS
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Membersihkan modal auto-save...');
+        
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(element => {
+            const style = window.getComputedStyle(element);
+            if ((style.display === 'block' || style.display === 'flex') && 
+                (element.textContent.includes('Auto-Save') || 
+                 element.textContent.includes('Excel') || 
+                 element.textContent.includes('Simpan Otomatis'))) {
+                element.style.display = 'none';
+            }
+        });
+    });
+    </script>
     </script>
 </body>
 </html>
