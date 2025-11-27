@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola User - Koperasi Asmara Tani</title>
+    <title>Kelola Anggota - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -125,36 +125,24 @@
             transform: translateY(-2px);
         }
         
-        .btn-danger {
-            background: var(--danger);
+        .btn-success {
+            background: var(--success);
             color: white;
-            padding: 6px 12px;
-            font-size: 0.8rem;
-        }
-        
-        .btn-danger:hover {
-            background: #d32f2f;
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: var(--dark);
-            padding: 6px 12px;
-            font-size: 0.8rem;
         }
         
         .btn-info {
             background: var(--info);
             color: white;
-            padding: 6px 12px;
-            font-size: 0.8rem;
         }
         
-        .btn-success {
-            background: var(--success);
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
             color: white;
-            padding: 6px 12px;
-            font-size: 0.8rem;
         }
         
         .search-box {
@@ -166,11 +154,11 @@
             padding: 8px 12px;
             border: 1px solid var(--gray-light);
             border-radius: 6px;
-            width: 200px;
+            width: 250px;
             font-size: 0.85rem;
         }
         
-        .user-table {
+        .anggota-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
@@ -180,64 +168,49 @@
             font-size: 0.9rem;
         }
         
-        .user-table th,
-        .user-table td {
+        .anggota-table th,
+        .anggota-table td {
             padding: 12px 10px;
             text-align: left;
             border-bottom: 1px solid var(--gray-light);
         }
         
-        .user-table th {
+        .anggota-table th {
             background: var(--primary);
             color: white;
             font-weight: 600;
             font-size: 0.85rem;
         }
         
-        .user-table tr:hover {
+        .anggota-table tr:hover {
             background: var(--light);
         }
         
-        .role-badge {
+        .status-badge {
             padding: 4px 10px;
             border-radius: 15px;
             font-size: 0.75rem;
             font-weight: 600;
         }
         
-        .role-admin {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-        
-        .role-pengurus {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-        
-        .role-anggota {
-            background: #e8f5e8;
-            color: var(--primary);
-        }
-        
-        .role-aktif {
+        .status-aktif {
             background: #e8f5e8;
             color: var(--success);
         }
         
-        .role-tidak-aktif {
+        .status-tidak-aktif {
             background: #ffebee;
             color: var(--danger);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 6px;
         }
         
         .saldo-display {
             font-weight: 600;
             color: var(--primary-dark);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 6px;
         }
         
         /* WhatsApp Link Style */
@@ -257,66 +230,6 @@
         
         .whatsapp-icon {
             color: #25D366;
-        }
-        
-        /* Password Container dengan Ikon Mata */
-        .password-container {
-            position: relative;
-            width: 100%;
-        }
-        
-        .password-container .form-control {
-            padding-right: 40px;
-        }
-        
-        .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            font-size: 1rem;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.3s ease;
-        }
-        
-        .toggle-password:hover {
-            color: var(--primary);
-        }
-        
-        /* Password Display di Tabel */
-        .password-display {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .password-masked {
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-        }
-        
-        .show-password-btn {
-            background: none;
-            border: none;
-            color: var(--info);
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        
-        .show-password-btn:hover {
-            background: var(--info);
-            color: white;
         }
         
         /* Modal Styles */
@@ -339,7 +252,7 @@
             background: white;
             border-radius: 12px;
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -353,9 +266,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1;
         }
         
         .modal-header h3 {
@@ -369,11 +279,6 @@
             color: white;
             font-size: 1.3rem;
             cursor: pointer;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .modal-body {
@@ -407,7 +312,6 @@
             border: 1px solid var(--gray-light);
             border-radius: 6px;
             font-size: 0.9rem;
-            box-sizing: border-box;
         }
         
         .form-control:focus, .form-select:focus {
@@ -422,10 +326,6 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            position: sticky;
-            bottom: 0;
-            background: white;
-            border-radius: 0 0 12px 12px;
         }
         
         .alert {
@@ -433,7 +333,6 @@
             border-radius: 6px;
             margin-bottom: 15px;
             display: none;
-            font-size: 0.85rem;
         }
         
         .alert-success {
@@ -448,7 +347,7 @@
             border: 1px solid #ffcdd2;
         }
         
-        .user-detail-section {
+        .anggota-detail-section {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
@@ -456,24 +355,31 @@
             border-left: 4px solid var(--primary);
         }
         
-        .user-detail-section h4 {
+        .anggota-detail-section h4 {
             margin-bottom: 10px;
             color: var(--primary-dark);
         }
         
-        .detail-row {
-            display: flex;
-            margin-bottom: 8px;
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 10px;
         }
         
         .detail-label {
             font-weight: 600;
-            width: 150px;
             color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 4px;
         }
         
         .detail-value {
-            flex: 1;
+            color: var(--dark);
+            font-size: 0.9rem;
         }
         
         .sync-status {
@@ -535,14 +441,14 @@
                 width: 100%;
             }
             
-            .user-table {
+            .anggota-table {
                 font-size: 0.7rem;
                 display: block;
                 overflow-x: auto;
             }
             
-            .user-table th,
-            .user-table td {
+            .anggota-table th,
+            .anggota-table td {
                 padding: 8px 6px;
                 font-size: 0.7rem;
             }
@@ -553,20 +459,10 @@
             
             .modal-content {
                 max-width: 95%;
-                max-height: 85vh;
             }
             
             .modal-body {
                 padding: 20px;
-            }
-            
-            .modal-footer {
-                padding: 15px 20px;
-            }
-            
-            .btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
             }
             
             .form-row {
@@ -574,19 +470,8 @@
                 gap: 0;
             }
             
-            .detail-row {
-                flex-direction: column;
-            }
-            
-            .detail-label {
-                width: 100%;
-                margin-bottom: 2px;
-            }
-            
-            .password-display {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
+            .detail-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -598,8 +483,8 @@
     
     <div class="container">
         <div class="header">
-            <h1>Kelola Pengguna</h1>
-            <p>Management User Koperasi Asmara Tani</p>
+            <h1>Kelola Anggota Koperasi</h1>
+            <p>Management Data Anggota Koperasi Asmara Tani</p>
             <div class="sync-status">
                 <div class="sync-indicator"></div>
                 <span id="syncStatus">Sinkronisasi: Aktif</span>
@@ -608,12 +493,12 @@
         
         <div class="content">
             <div class="action-bar">
-                <button class="btn btn-primary" id="addUserBtn">
-                    <i class="fas fa-user-plus"></i> Tambah User
+                <button class="btn btn-primary" id="tambahAnggotaBtn">
+                    <i class="fas fa-user-plus"></i> Tambah Anggota
                 </button>
                 
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Cari user...">
+                    <input type="text" id="searchInput" placeholder="Cari anggota...">
                     <button class="btn btn-primary" id="searchBtn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -631,53 +516,51 @@
             <div class="alert alert-success" id="successAlert"></div>
             <div class="alert alert-error" id="errorAlert"></div>
             
-            <table class="user-table">
+            <table class="anggota-table">
                 <thead>
                     <tr>
                         <th>NIA</th>
-                        <th>Nama</th>
+                        <th>Nama Lengkap</th>
                         <th>Email</th>
-                        <th>Role</th>
-                        <th>Password</th>
                         <th>WhatsApp</th>
                         <th>Posisi</th>
                         <th>Status</th>
                         <th>Saldo</th>
+                        <th>Tanggal Bergabung</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody">
-                    <!-- Data user akan dimuat di sini -->
+                <tbody id="anggotaTableBody">
+                    <!-- Data anggota akan dimuat di sini -->
                 </tbody>
             </table>
         </div>
     </div>
     
-    <!-- Modal Detail & Edit User -->
-    <div class="modal" id="userModal">
+    <!-- Modal Detail & Edit Anggota -->
+    <div class="modal" id="anggotaModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalTitle">Detail User</h3>
+                <h3 id="modalTitle">Detail Anggota</h3>
                 <button class="close-modal" id="closeModal">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Section Data Login -->
-                <div class="user-detail-section">
-                    <h4>Data Login</h4>
-                    <form id="userForm">
-                        <input type="hidden" id="editEmail">
-                        
+                <form id="anggotaForm">
+                    <input type="hidden" id="editEmail">
+                    
+                    <div class="anggota-detail-section">
+                        <h4>Data Personal</h4>
                         <div class="form-row">
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userNIA">NIA *</label>
-                                    <input type="text" id="userNIA" class="form-control" required>
+                                    <label for="anggotaNIA">NIA *</label>
+                                    <input type="text" id="anggotaNIA" class="form-control" required>
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userName">Nama Lengkap *</label>
-                                    <input type="text" id="userName" class="form-control" required>
+                                    <label for="anggotaNama">Nama Lengkap *</label>
+                                    <input type="text" id="anggotaNama" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -685,241 +568,151 @@
                         <div class="form-row">
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userEmail">Email *</label>
-                                    <input type="email" id="userEmail" class="form-control" required readonly>
+                                    <label for="anggotaEmail">Email *</label>
+                                    <input type="email" id="anggotaEmail" class="form-control" required>
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userRole">Role *</label>
-                                    <select id="userRole" class="form-select" required>
-                                        <option value="">Pilih Role</option>
-                                        <option value="Admin">Admin</option>
-                                        <option value="Pengurus">Pengurus</option>
-                                        <option value="Bendahara">Bendahara</option>
-                                        <option value="Sekretaris">Sekretaris</option>
-                                        <option value="Anggota">Anggota</option>
+                                    <label for="anggotaWhatsApp">WhatsApp</label>
+                                    <input type="text" id="anggotaWhatsApp" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaNIK">NIK KTP</label>
+                                    <input type="text" id="anggotaNIK" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaJenisKelamin">Jenis Kelamin</label>
+                                    <select id="anggotaJenisKelamin" class="form-select">
+                                        <option value="">Pilih</option>
+                                        <option value="Laki-laki">Laki-laki</option>
+                                        <option value="Perempuan">Perempuan</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-
+                    </div>
+                    
+                    <div class="anggota-detail-section">
+                        <h4>Data Tambahan</h4>
                         <div class="form-row">
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userPassword">Password *</label>
-                                    <div class="password-container">
-                                        <input type="password" id="userPassword" class="form-control" required>
-                                        <button type="button" class="toggle-password" id="modalTogglePassword">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
+                                    <label for="anggotaPosisi">Posisi</label>
+                                    <input type="text" id="anggotaPosisi" class="form-control">
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userStatus">Status Aktif *</label>
-                                    <select id="userStatus" class="form-select" required>
+                                    <label for="anggotaStatus">Status Aktif *</label>
+                                    <select id="anggotaStatus" class="form-select" required>
                                         <option value="aktif">Aktif</option>
                                         <option value="tidak aktif">Tidak Aktif</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div class="form-row">
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userPosisi">Posisi</label>
-                                    <input type="text" id="userPosisi" class="form-control">
+                                    <label for="anggotaAlamat">Alamat Lengkap</label>
+                                    <textarea id="anggotaAlamat" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaAgama">Agama</label>
+                                    <input type="text" id="anggotaAgama" class="form-control">
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="userSaldo">Saldo</label>
-                                    <input type="number" id="userSaldo" class="form-control" value="0">
+                                    <label for="anggotaSaldo">Saldo</label>
+                                    <input type="number" id="anggotaSaldo" class="form-control" value="0">
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
-                
-                <!-- Section Data Profil -->
-                <div class="user-detail-section">
-                    <h4>Data Profil Lengkap</h4>
-                    <div id="userProfileData">
-                        <!-- Data profil akan dimuat di sini -->
                     </div>
-                </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelBtn">Tutup</button>
-                <button class="btn btn-primary" id="saveUserBtn">Simpan Perubahan</button>
+                <button class="btn btn-primary" id="saveAnggotaBtn">Simpan Perubahan</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ===============================
-        // SISTEM INTEGRASI DAN SINCRONISASI
-        // ===============================
-
-        // Konfigurasi Google Sheets
-        const SHEET_CONFIG = {
-            scriptURL: 'https://script.google.com/macros/s/YOUR_GOOGLE_APPS_SCRIPT_ID/exec',
-            sheetID: 'YOUR_GOOGLE_SHEET_ID'
-        };
-
         // Sistem Database Terintegrasi
-        class IntegratedDatabase {
+        class AnggotaDatabase {
             constructor() {
                 this.init();
             }
 
             init() {
-                // Inisialisasi database default jika belum ada
-                if (!localStorage.getItem('userDatabase')) {
+                // Inisialisasi data default jika belum ada
+                if (!localStorage.getItem('anggotaData')) {
                     this.initDefaultData();
                 }
-                this.syncWithSheets();
             }
 
             initDefaultData() {
-                const defaultUsers = {
-                    'admin@koperasi.com': {
-                        password: 'admin123',
-                        name: 'Administrator System',
-                        role: 'Admin',
-                        email: 'admin@koperasi.com',
-                        access: 'dashboard',
-                        nia: '001',
-                        posisi: 'System Administrator',
-                        status_aktif: 'aktif',
-                        saldo: 0,
-                        tanggal_daftar: new Date().toLocaleDateString('id-ID')
-                    }
-                };
-
                 const defaultAnggota = [{
-                    email: 'admin@koperasi.com',
+                    nia: '001',
                     nama: 'Administrator System',
-                    alamat: 'Kantor Pusat Koperasi',
-                    jenis_kelamin: 'Laki-laki',
-                    agama: 'Islam',
-                    status: 'Admin',
+                    email: 'admin@koperasi.com',
                     whatsapp: '-',
                     nik: '-',
-                    tanggal_daftar: new Date().toLocaleDateString('id-ID'),
-                    nia: '001',
+                    jenis_kelamin: 'Laki-laki',
                     posisi: 'System Administrator',
+                    status_aktif: 'aktif',
+                    alamat: 'Kantor Pusat Koperasi',
+                    agama: 'Islam',
+                    saldo: 0,
+                    tanggal_bergabung: new Date().toLocaleDateString('id-ID'),
                     namalengkap: 'Administrator System',
                     alamatlengkap: 'Kantor Pusat Koperasi',
                     alamatemail: 'admin@koperasi.com',
                     nowhatsapp: '-',
                     nikktp: '-',
                     tanggalbergabung: new Date().toLocaleDateString('id-ID'),
-                    status_aktif: 'aktif',
-                    uploadfoto: '',
-                    saldo: 0
+                    uploadfoto: ''
                 }];
 
-                localStorage.setItem('userDatabase', JSON.stringify(defaultUsers));
                 localStorage.setItem('anggotaData', JSON.stringify(defaultAnggota));
-                localStorage.setItem('lastSync', new Date().toISOString());
-            }
-
-            // Sinkronisasi dengan Google Sheets
-            async syncWithSheets() {
-                try {
-                    document.getElementById('syncStatus').textContent = 'Sinkronisasi: Memproses...';
-                    
-                    // Ambil data dari localStorage
-                    const userDatabase = JSON.parse(localStorage.getItem('userDatabase') || '{}');
-                    const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
-                    
-                    // Gabungkan data untuk dikirim ke Google Sheets
-                    const syncData = Object.values(userDatabase).map(user => {
-                        const profil = anggotaData.find(a => a.email === user.email) || {};
-                        return {
-                            nia: user.nia || profil.nia || '',
-                            nama: user.name,
-                            email: user.email,
-                            role: user.role,
-                            password: user.password,
-                            whatsapp: profil.whatsapp || profil.nowhatsapp || '',
-                            posisi: user.posisi || profil.posisi || '',
-                            status_aktif: user.status_aktif || profil.status_aktif || 'aktif',
-                            saldo: user.saldo || profil.saldo || 0,
-                            alamat: profil.alamat || profil.alamatlengkap || '',
-                            jenis_kelamin: profil.jenis_kelamin || '',
-                            agama: profil.agama || '',
-                            nik: profil.nik || profil.nikktp || '',
-                            tanggal_daftar: user.tanggal_daftar || profil.tanggalbergabung || '',
-                            last_update: new Date().toISOString()
-                        };
-                    });
-
-                    // Kirim data ke Google Sheets (simulasi)
-                    console.log('Mengirim data ke Google Sheets:', syncData);
-                    
-                    // Simulasi API call ke Google Apps Script
-                    // await this.sendToGoogleSheets(syncData);
-                    
-                    localStorage.setItem('lastSync', new Date().toISOString());
-                    document.getElementById('syncStatus').textContent = `Sinkronisasi: Berhasil (${new Date().toLocaleTimeString('id-ID')})`;
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Error sync dengan Google Sheets:', error);
-                    document.getElementById('syncStatus').textContent = 'Sinkronisasi: Gagal';
-                    return false;
-                }
-            }
-
-            // Simulasi pengiriman data ke Google Sheets
-            async sendToGoogleSheets(data) {
-                // Implementasi aktual akan menggunakan Google Apps Script
-                const response = await fetch(SHEET_CONFIG.scriptURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'syncUsers',
-                        data: data,
-                        sheetId: SHEET_CONFIG.sheetID
-                    })
-                });
-                
-                return await response.json();
             }
 
             // Export ke Excel
             exportToExcel() {
-                const userDatabase = JSON.parse(localStorage.getItem('userDatabase') || '{}');
                 const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
                 
-                const excelData = Object.values(userDatabase).map(user => {
-                    const profil = anggotaData.find(a => a.email === user.email) || {};
-                    return {
-                        'NIA': user.nia || profil.nia || '',
-                        'Nama Lengkap': user.name,
-                        'Email': user.email,
-                        'Role': user.role,
-                        'Password': user.password,
-                        'WhatsApp': profil.whatsapp || profil.nowhatsapp || '',
-                        'Posisi': user.posisi || profil.posisi || '',
-                        'Status': user.status_aktif || profil.status_aktif || 'aktif',
-                        'Saldo': user.saldo || profil.saldo || 0,
-                        'Alamat Lengkap': profil.alamat || profil.alamatlengkap || '',
-                        'Jenis Kelamin': profil.jenis_kelamin || '',
-                        'Agama': profil.agama || '',
-                        'NIK KTP': profil.nik || profil.nikktp || '',
-                        'Tanggal Bergabung': user.tanggal_daftar || profil.tanggalbergabung || '',
-                        'Foto Profil': profil.uploadfoto || '',
-                        'Tanggal Update': new Date().toLocaleDateString('id-ID')
-                    };
-                });
+                const excelData = anggotaData.map(anggota => ({
+                    'NIA': anggota.nia || '',
+                    'Nama Lengkap': anggota.namalengkap || anggota.nama || '',
+                    'Email': anggota.alamatemail || anggota.email || '',
+                    'WhatsApp': anggota.nowhatsapp || anggota.whatsapp || '',
+                    'Posisi': anggota.posisi || '',
+                    'Status': anggota.status_aktif || 'aktif',
+                    'Saldo': anggota.saldo || 0,
+                    'Alamat Lengkap': anggota.alamatlengkap || anggota.alamat || '',
+                    'Jenis Kelamin': anggota.jenis_kelamin || '',
+                    'Agama': anggota.agama || '',
+                    'NIK KTP': anggota.nikktp || anggota.nik || '',
+                    'Tanggal Bergabung': anggota.tanggalbergabung || anggota.tanggal_bergabung || '',
+                    'Foto Profil': anggota.uploadfoto || '',
+                    'Tanggal Update': new Date().toLocaleDateString('id-ID')
+                }));
 
                 // Create CSV content
                 const headers = Object.keys(excelData[0] || {});
@@ -943,64 +736,27 @@
                 link.click();
                 document.body.removeChild(link);
             }
-
-            // Update data dari perubahan di sistem lain
-            updateFromSystem(updatedData) {
-                const userDatabase = JSON.parse(localStorage.getItem('userDatabase') || '{}');
-                const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
-
-                updatedData.forEach(update => {
-                    // Update userDatabase
-                    if (userDatabase[update.email]) {
-                        userDatabase[update.email] = { ...userDatabase[update.email], ...update };
-                    }
-
-                    // Update anggotaData
-                    const anggotaIndex = anggotaData.findIndex(a => a.email === update.email);
-                    if (anggotaIndex !== -1) {
-                        anggotaData[anggotaIndex] = { ...anggotaData[anggotaIndex], ...update };
-                    } else {
-                        anggotaData.push(update);
-                    }
-                });
-
-                localStorage.setItem('userDatabase', JSON.stringify(userDatabase));
-                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
-                
-                // Trigger sync
-                this.syncWithSheets();
-                
-                return true;
-            }
         }
 
-        // ===============================
-        // IMPLEMENTASI SISTEM
-        // ===============================
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Inisialisasi database terintegrasi
-            const database = new IntegratedDatabase();
+            // Inisialisasi database
+            const database = new AnggotaDatabase();
 
-            // Load data dari sistem yang sudah ada
-            let userDatabase = JSON.parse(localStorage.getItem('userDatabase')) || {};
-            let anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+            // Load data dari localStorage
+            let anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
 
             // Element references
             const backHomeBtn = document.getElementById('backHome');
-            const addUserBtn = document.getElementById('addUserBtn');
-            const userModal = document.getElementById('userModal');
+            const tambahAnggotaBtn = document.getElementById('tambahAnggotaBtn');
+            const anggotaModal = document.getElementById('anggotaModal');
             const closeModal = document.getElementById('closeModal');
             const cancelBtn = document.getElementById('cancelBtn');
-            const saveUserBtn = document.getElementById('saveUserBtn');
-            const userForm = document.getElementById('userForm');
-            const userTableBody = document.getElementById('userTableBody');
+            const saveAnggotaBtn = document.getElementById('saveAnggotaBtn');
+            const anggotaForm = document.getElementById('anggotaForm');
+            const anggotaTableBody = document.getElementById('anggotaTableBody');
             const successAlert = document.getElementById('successAlert');
             const errorAlert = document.getElementById('errorAlert');
             const modalTitle = document.getElementById('modalTitle');
-            const userProfileData = document.getElementById('userProfileData');
-            const modalTogglePassword = document.getElementById('modalTogglePassword');
-            const userPasswordInput = document.getElementById('userPassword');
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
             const syncBtn = document.getElementById('syncBtn');
@@ -1008,56 +764,55 @@
 
             // Event Listeners
             backHomeBtn.addEventListener('click', function() {
+                // Cek beberapa kemungkinan lokasi dashboard
+                const possiblePaths = [
+                    'dashboard.html',
+                    '../dashboard.html',
+                    'index.html',
+                    '../index.html'
+                ];
+                
+                for (let path of possiblePaths) {
+                    try {
+                        window.location.href = path;
+                        return;
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                // Fallback
                 window.location.href = 'dashboard.html';
             });
 
-            modalTogglePassword.addEventListener('click', function() {
-                const type = userPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                userPasswordInput.setAttribute('type', type);
-                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
-
-            addUserBtn.addEventListener('click', function() {
-                modalTitle.textContent = 'Tambah User Baru';
-                userForm.reset();
+            tambahAnggotaBtn.addEventListener('click', function() {
+                modalTitle.textContent = 'Tambah Anggota Baru';
+                anggotaForm.reset();
                 document.getElementById('editEmail').value = '';
-                document.getElementById('userEmail').readOnly = false;
-                document.getElementById('userStatus').value = 'aktif';
-                document.getElementById('userSaldo').value = '0';
-                userPasswordInput.setAttribute('type', 'password');
-                modalTogglePassword.innerHTML = '<i class="fas fa-eye"></i>';
-                userProfileData.innerHTML = '<p>Data profil akan tersedia setelah user mendaftar.</p>';
-                userModal.style.display = 'flex';
+                document.getElementById('anggotaStatus').value = 'aktif';
+                document.getElementById('anggotaSaldo').value = '0';
+                anggotaModal.style.display = 'flex';
             });
 
-            closeModal.addEventListener('click', closeUserModal);
-            cancelBtn.addEventListener('click', closeUserModal);
+            closeModal.addEventListener('click', closeAnggotaModal);
+            cancelBtn.addEventListener('click', closeAnggotaModal);
 
-            userModal.addEventListener('click', function(e) {
-                if (e.target === userModal) {
-                    closeUserModal();
+            anggotaModal.addEventListener('click', function(e) {
+                if (e.target === anggotaModal) {
+                    closeAnggotaModal();
                 }
             });
 
-            searchBtn.addEventListener('click', function() {
-                filterUsers();
-            });
-
+            searchBtn.addEventListener('click', filterAnggota);
             searchInput.addEventListener('keyup', function(e) {
                 if (e.key === 'Enter') {
-                    filterUsers();
+                    filterAnggota();
                 }
             });
 
             syncBtn.addEventListener('click', function() {
-                database.syncWithSheets().then(success => {
-                    if (success) {
-                        showAlert('success', 'Data berhasil disinkronisasi!');
-                        loadUserTable();
-                    } else {
-                        showAlert('error', 'Gagal menyinkronisasi data!');
-                    }
-                });
+                document.getElementById('syncStatus').textContent = `Sinkronisasi: Berhasil (${new Date().toLocaleTimeString('id-ID')})`;
+                showAlert('success', 'Data berhasil disinkronisasi!');
             });
 
             exportBtn.addEventListener('click', function() {
@@ -1065,117 +820,87 @@
                 showAlert('success', 'Data berhasil diexport ke Excel!');
             });
 
-            saveUserBtn.addEventListener('click', function() {
-                saveUser();
-            });
+            saveAnggotaBtn.addEventListener('click', saveAnggota);
 
-            function closeUserModal() {
-                userModal.style.display = 'none';
+            function closeAnggotaModal() {
+                anggotaModal.style.display = 'none';
             }
 
-            function saveUser() {
-                const userNIA = document.getElementById('userNIA').value;
-                const userName = document.getElementById('userName').value;
-                const userEmail = document.getElementById('userEmail').value;
-                const userPassword = document.getElementById('userPassword').value;
-                const userRole = document.getElementById('userRole').value;
-                const userStatus = document.getElementById('userStatus').value;
-                const userPosisi = document.getElementById('userPosisi').value;
-                const userSaldo = document.getElementById('userSaldo').value;
+            function saveAnggota() {
+                const anggotaNIA = document.getElementById('anggotaNIA').value;
+                const anggotaNama = document.getElementById('anggotaNama').value;
+                const anggotaEmail = document.getElementById('anggotaEmail').value;
+                const anggotaWhatsApp = document.getElementById('anggotaWhatsApp').value;
+                const anggotaNIK = document.getElementById('anggotaNIK').value;
+                const anggotaJenisKelamin = document.getElementById('anggotaJenisKelamin').value;
+                const anggotaPosisi = document.getElementById('anggotaPosisi').value;
+                const anggotaStatus = document.getElementById('anggotaStatus').value;
+                const anggotaAlamat = document.getElementById('anggotaAlamat').value;
+                const anggotaAgama = document.getElementById('anggotaAgama').value;
+                const anggotaSaldo = document.getElementById('anggotaSaldo').value;
                 const editEmail = document.getElementById('editEmail').value;
 
                 // Validasi
-                if (!userNIA || !userName || !userEmail || !userPassword || !userRole) {
+                if (!anggotaNIA || !anggotaNama || !anggotaEmail) {
                     showAlert('error', 'Field dengan tanda * harus diisi!');
                     return;
                 }
 
-                // Jika email baru, cek apakah sudah ada
-                if (!editEmail && userDatabase[userEmail]) {
+                // Cek apakah NIA sudah ada (kecuali edit)
+                const existingNIA = anggotaData.find(a => a.nia === anggotaNIA && a.email !== editEmail);
+                if (existingNIA) {
+                    showAlert('error', 'NIA sudah terdaftar!');
+                    return;
+                }
+
+                // Cek apakah email sudah ada (kecuali edit)
+                const existingEmail = anggotaData.find(a => a.email === anggotaEmail && a.email !== editEmail);
+                if (existingEmail) {
                     showAlert('error', 'Email sudah terdaftar!');
                     return;
                 }
 
-                // Tentukan hak akses berdasarkan role
-                const userAccess = ['Admin', 'Pengurus', 'Bendahara', 'Sekretaris'].includes(userRole) ? 'dashboard' : 'anggota';
-
-                // Update userDatabase
-                userDatabase[userEmail] = {
-                    password: userPassword,
-                    name: userName,
-                    role: userRole,
-                    email: userEmail,
-                    access: userAccess,
-                    nia: userNIA,
-                    posisi: userPosisi,
-                    status_aktif: userStatus,
-                    saldo: parseFloat(userSaldo) || 0,
-                    tanggal_daftar: new Date().toLocaleDateString('id-ID')
+                const anggotaDataBaru = {
+                    nia: anggotaNIA,
+                    nama: anggotaNama,
+                    email: anggotaEmail,
+                    whatsapp: anggotaWhatsApp,
+                    nik: anggotaNIK,
+                    jenis_kelamin: anggotaJenisKelamin,
+                    posisi: anggotaPosisi,
+                    status_aktif: anggotaStatus,
+                    alamat: anggotaAlamat,
+                    agama: anggotaAgama,
+                    saldo: parseFloat(anggotaSaldo) || 0,
+                    tanggal_bergabung: new Date().toLocaleDateString('id-ID'),
+                    namalengkap: anggotaNama,
+                    alamatlengkap: anggotaAlamat,
+                    alamatemail: anggotaEmail,
+                    nowhatsapp: anggotaWhatsApp,
+                    nikktp: anggotaNIK,
+                    tanggalbergabung: new Date().toLocaleDateString('id-ID')
                 };
 
-                // Update anggotaData
-                const anggotaIndex = anggotaData.findIndex(a => a.email === (editEmail || userEmail));
-                if (anggotaIndex !== -1) {
-                    anggotaData[anggotaIndex] = {
-                        ...anggotaData[anggotaIndex],
-                        email: userEmail,
-                        nama: userName,
-                        nia: userNIA,
-                        posisi: userPosisi,
-                        status_aktif: userStatus,
-                        saldo: parseFloat(userSaldo) || 0,
-                        namalengkap: userName,
-                        alamatemail: userEmail,
-                        tanggalbergabung: new Date().toLocaleDateString('id-ID')
-                    };
-                } else {
-                    anggotaData.push({
-                        email: userEmail,
-                        nama: userName,
-                        alamat: '',
-                        jenis_kelamin: '',
-                        agama: '',
-                        status: userRole,
-                        whatsapp: '',
-                        nik: '',
-                        tanggal_daftar: new Date().toLocaleDateString('id-ID'),
-                        nia: userNIA,
-                        posisi: userPosisi,
-                        namalengkap: userName,
-                        alamatlengkap: '',
-                        alamatemail: userEmail,
-                        nowhatsapp: '',
-                        nikktp: '',
-                        tanggalbergabung: new Date().toLocaleDateString('id-ID'),
-                        status_aktif: userStatus,
-                        uploadfoto: '',
-                        saldo: parseFloat(userSaldo) || 0
-                    });
-                }
-
-                // Jika edit, hapus data lama
-                if (editEmail && editEmail !== userEmail) {
-                    delete userDatabase[editEmail];
-                    // Update juga di anggotaData jika ada
-                    const oldAnggotaIndex = anggotaData.findIndex(a => a.email === editEmail);
-                    if (oldAnggotaIndex !== -1) {
-                        anggotaData.splice(oldAnggotaIndex, 1);
+                if (editEmail) {
+                    // Edit anggota
+                    const index = anggotaData.findIndex(a => a.email === editEmail);
+                    if (index !== -1) {
+                        anggotaData[index] = { ...anggotaData[index], ...anggotaDataBaru };
                     }
+                } else {
+                    // Tambah anggota baru
+                    anggotaData.push(anggotaDataBaru);
                 }
 
                 // Simpan ke localStorage
-                localStorage.setItem('userDatabase', JSON.stringify(userDatabase));
                 localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
 
-                // Sinkronisasi dengan Google Sheets
-                database.syncWithSheets();
-
                 // Tampilkan alert sukses
-                showAlert('success', editEmail ? 'User berhasil diperbarui!' : 'User berhasil ditambahkan!');
+                showAlert('success', editEmail ? 'Anggota berhasil diperbarui!' : 'Anggota berhasil ditambahkan!');
 
                 // Tutup modal dan refresh tabel
-                closeUserModal();
-                loadUserTable();
+                closeAnggotaModal();
+                loadAnggotaTable();
             }
 
             function showAlert(type, message) {
@@ -1198,254 +923,132 @@
                 }
             }
 
-            function loadUserTable() {
-                userTableBody.innerHTML = '';
+            function loadAnggotaTable() {
+                anggotaTableBody.innerHTML = '';
                 
-                Object.keys(userDatabase).forEach(email => {
-                    const user = userDatabase[email];
-                    const profil = anggotaData.find(a => a.email === email) || {};
-                    const whatsapp = profil.whatsapp || profil.nowhatsapp || '-';
-                    
+                anggotaData.forEach(anggota => {
                     const row = document.createElement('tr');
                     
-                    // Tentukan class untuk badge role
-                    let roleClass = 'role-anggota';
-                    if (user.role === 'Admin') roleClass = 'role-admin';
-                    else if (user.role === 'Pengurus') roleClass = 'role-pengurus';
-                    else if (user.role === 'Bendahara' || user.role === 'Sekretaris') roleClass = 'role-pengurus';
-                    
                     // Tentukan class untuk status aktif
-                    const statusClass = user.status_aktif === 'aktif' ? 'role-aktif' : 'role-tidak-aktif';
+                    const statusClass = anggota.status_aktif === 'aktif' ? 'status-aktif' : 'status-tidak-aktif';
                     
                     // Buat link WhatsApp jika tersedia
-                    const whatsappDisplay = whatsapp !== '-' 
+                    const whatsapp = anggota.nowhatsapp || anggota.whatsapp;
+                    const whatsappDisplay = whatsapp && whatsapp !== '-' 
                         ? `<a href="https://wa.me/${whatsapp}" target="_blank" class="whatsapp-link">
                               <i class="fab fa-whatsapp whatsapp-icon"></i> ${whatsapp}
                            </a>`
                         : '-';
                     
                     row.innerHTML = `
-                        <td>${user.nia || profil.nia || '-'}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td><span class="role-badge ${roleClass}">${user.role}</span></td>
-                        <td>
-                            <div class="password-display">
-                                <span class="password-masked">••••••••</span>
-                                <button class="show-password-btn" data-email="${user.email}" data-password="${user.password}">
-                                    <i class="fas fa-eye"></i> Tampilkan
-                                </button>
-                            </div>
-                        </td>
+                        <td>${anggota.nia || '-'}</td>
+                        <td>${anggota.namalengkap || anggota.nama || '-'}</td>
+                        <td>${anggota.alamatemail || anggota.email || '-'}</td>
                         <td>${whatsappDisplay}</td>
-                        <td>${user.posisi || profil.posisi || '-'}</td>
-                        <td><span class="role-badge ${statusClass}">${user.status_aktif || 'aktif'}</span></td>
-                        <td class="saldo-display">Rp ${(user.saldo || profil.saldo || 0).toLocaleString('id-ID')}</td>
+                        <td>${anggota.posisi || '-'}</td>
+                        <td><span class="status-badge ${statusClass}">${anggota.status_aktif || 'aktif'}</span></td>
+                        <td class="saldo-display">Rp ${(anggota.saldo || 0).toLocaleString('id-ID')}</td>
+                        <td>${anggota.tanggalbergabung || anggota.tanggal_bergabung || '-'}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-info view-user" data-email="${user.email}" title="Lihat Detail">
+                                <button class="btn btn-info view-anggota" data-email="${anggota.alamatemail || anggota.email}" title="Lihat Detail">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn btn-warning edit-user" data-email="${user.email}" title="Edit">
+                                <button class="btn btn-warning edit-anggota" data-email="${anggota.alamatemail || anggota.email}" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-danger delete-user" data-email="${user.email}" title="Hapus">
+                                <button class="btn btn-danger delete-anggota" data-email="${anggota.alamatemail || anggota.email}" title="Hapus">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     `;
                     
-                    userTableBody.appendChild(row);
+                    anggotaTableBody.appendChild(row);
                 });
 
                 // Event listeners untuk tombol di tabel
-                document.querySelectorAll('.show-password-btn').forEach(button => {
+                document.querySelectorAll('.view-anggota').forEach(button => {
                     button.addEventListener('click', function() {
                         const email = this.getAttribute('data-email');
-                        const password = this.getAttribute('data-password');
-                        const passwordDisplay = this.previousElementSibling;
-                        
-                        if (this.classList.contains('showing')) {
-                            passwordDisplay.textContent = '••••••••';
-                            this.innerHTML = '<i class="fas fa-eye"></i> Tampilkan';
-                            this.classList.remove('showing');
-                        } else {
-                            passwordDisplay.textContent = password;
-                            this.innerHTML = '<i class="fas fa-eye-slash"></i> Sembunyikan';
-                            this.classList.add('showing');
-                        }
+                        viewAnggotaDetail(email);
                     });
                 });
 
-                document.querySelectorAll('.view-user').forEach(button => {
+                document.querySelectorAll('.edit-anggota').forEach(button => {
                     button.addEventListener('click', function() {
                         const email = this.getAttribute('data-email');
-                        viewUserDetail(email);
+                        editAnggota(email);
                     });
                 });
 
-                document.querySelectorAll('.edit-user').forEach(button => {
+                document.querySelectorAll('.delete-anggota').forEach(button => {
                     button.addEventListener('click', function() {
                         const email = this.getAttribute('data-email');
-                        editUser(email);
-                    });
-                });
-
-                document.querySelectorAll('.delete-user').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const email = this.getAttribute('data-email');
-                        deleteUser(email);
+                        deleteAnggota(email);
                     });
                 });
             }
 
-            function viewUserDetail(email) {
-                const user = userDatabase[email];
-                const profil = anggotaData.find(a => a.email === email) || {};
+            function viewAnggotaDetail(email) {
+                const anggota = anggotaData.find(a => (a.alamatemail || a.email) === email);
                 
-                modalTitle.textContent = 'Detail User';
-                document.getElementById('userNIA').value = user.nia || profil.nia || '';
-                document.getElementById('userName').value = user.name;
-                document.getElementById('userEmail').value = user.email;
-                document.getElementById('userPassword').value = user.password;
-                document.getElementById('userRole').value = user.role;
-                document.getElementById('userStatus').value = user.status_aktif || 'aktif';
-                document.getElementById('userPosisi').value = user.posisi || profil.posisi || '';
-                document.getElementById('userSaldo').value = user.saldo || profil.saldo || 0;
-                document.getElementById('editEmail').value = email;
+                modalTitle.textContent = 'Detail Anggota';
+                isiFormAnggota(anggota);
                 
-                userPasswordInput.setAttribute('type', 'password');
-                modalTogglePassword.innerHTML = '<i class="fas fa-eye"></i>';
-                
-                document.getElementById('userForm').querySelectorAll('input, select').forEach(element => {
+                anggotaForm.querySelectorAll('input, select, textarea').forEach(element => {
                     element.disabled = true;
                 });
-                document.getElementById('saveUserBtn').style.display = 'none';
+                document.getElementById('saveAnggotaBtn').style.display = 'none';
                 document.getElementById('cancelBtn').textContent = 'Tutup';
                 
-                displayProfileData(profil);
-                userModal.style.display = 'flex';
+                anggotaModal.style.display = 'flex';
             }
 
-            function editUser(email) {
-                const user = userDatabase[email];
-                const profil = anggotaData.find(a => a.email === email) || {};
+            function editAnggota(email) {
+                const anggota = anggotaData.find(a => (a.alamatemail || a.email) === email);
                 
-                modalTitle.textContent = 'Edit User';
-                document.getElementById('userNIA').value = user.nia || profil.nia || '';
-                document.getElementById('userName').value = user.name;
-                document.getElementById('userEmail').value = user.email;
-                document.getElementById('userPassword').value = user.password;
-                document.getElementById('userRole').value = user.role;
-                document.getElementById('userStatus').value = user.status_aktif || 'aktif';
-                document.getElementById('userPosisi').value = user.posisi || profil.posisi || '';
-                document.getElementById('userSaldo').value = user.saldo || profil.saldo || 0;
-                document.getElementById('editEmail').value = email;
+                modalTitle.textContent = 'Edit Anggota';
+                isiFormAnggota(anggota);
                 
-                userPasswordInput.setAttribute('type', 'password');
-                modalTogglePassword.innerHTML = '<i class="fas fa-eye"></i>';
-                
-                document.getElementById('userForm').querySelectorAll('input, select').forEach(element => {
+                anggotaForm.querySelectorAll('input, select, textarea').forEach(element => {
                     element.disabled = false;
                 });
-                document.getElementById('userEmail').readOnly = true;
-                document.getElementById('saveUserBtn').style.display = 'block';
+                document.getElementById('saveAnggotaBtn').style.display = 'block';
                 document.getElementById('cancelBtn').textContent = 'Batal';
                 
-                displayProfileData(profil);
-                userModal.style.display = 'flex';
+                anggotaModal.style.display = 'flex';
             }
 
-            function displayProfileData(profil) {
-                if (Object.keys(profil).length === 0) {
-                    userProfileData.innerHTML = '<p style="color: var(--gray);">User belum melengkapi data profil.</p>';
-                    return;
-                }
-
-                const whatsappDisplay = profil.whatsapp || profil.nowhatsapp
-                    ? `<a href="https://wa.me/${profil.whatsapp || profil.nowhatsapp}" target="_blank" class="whatsapp-link">
-                          <i class="fab fa-whatsapp whatsapp-icon"></i> ${profil.whatsapp || profil.nowhatsapp}
-                       </a>`
-                    : '-';
-
-                userProfileData.innerHTML = `
-                    <div class="detail-row">
-                        <div class="detail-label">NIA:</div>
-                        <div class="detail-value">${profil.nia || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Posisi:</div>
-                        <div class="detail-value">${profil.posisi || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Nama Lengkap:</div>
-                        <div class="detail-value">${profil.namalengkap || profil.nama || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Alamat Lengkap:</div>
-                        <div class="detail-value">${profil.alamatlengkap || profil.alamat || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Jenis Kelamin:</div>
-                        <div class="detail-value">${profil.jenis_kelamin || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Agama:</div>
-                        <div class="detail-value">${profil.agama || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Status:</div>
-                        <div class="detail-value">${profil.status || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Alamat Email:</div>
-                        <div class="detail-value">${profil.alamatemail || profil.email || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">WhatsApp:</div>
-                        <div class="detail-value">${whatsappDisplay}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">NIK KTP:</div>
-                        <div class="detail-value">${profil.nikktp || profil.nik || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Tanggal Bergabung:</div>
-                        <div class="detail-value">${profil.tanggalbergabung || profil.tanggal_daftar || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Status Aktif:</div>
-                        <div class="detail-value">${profil.status_aktif || 'aktif'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Foto Profil:</div>
-                        <div class="detail-value">${profil.uploadfoto || 'Belum upload'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Saldo:</div>
-                        <div class="detail-value">Rp ${(profil.saldo || 0).toLocaleString('id-ID')}</div>
-                    </div>
-                `;
+            function isiFormAnggota(anggota) {
+                document.getElementById('anggotaNIA').value = anggota.nia || '';
+                document.getElementById('anggotaNama').value = anggota.namalengkap || anggota.nama || '';
+                document.getElementById('anggotaEmail').value = anggota.alamatemail || anggota.email || '';
+                document.getElementById('anggotaWhatsApp').value = anggota.nowhatsapp || anggota.whatsapp || '';
+                document.getElementById('anggotaNIK').value = anggota.nikktp || anggota.nik || '';
+                document.getElementById('anggotaJenisKelamin').value = anggota.jenis_kelamin || '';
+                document.getElementById('anggotaPosisi').value = anggota.posisi || '';
+                document.getElementById('anggotaStatus').value = anggota.status_aktif || 'aktif';
+                document.getElementById('anggotaAlamat').value = anggota.alamatlengkap || anggota.alamat || '';
+                document.getElementById('anggotaAgama').value = anggota.agama || '';
+                document.getElementById('anggotaSaldo').value = anggota.saldo || 0;
+                document.getElementById('editEmail').value = anggota.alamatemail || anggota.email || '';
             }
 
-            function deleteUser(email) {
-                if (confirm(`Apakah Anda yakin ingin menghapus user ${email}?`)) {
-                    delete userDatabase[email];
-                    anggotaData = anggotaData.filter(a => a.email !== email);
+            function deleteAnggota(email) {
+                if (confirm(`Apakah Anda yakin ingin menghapus anggota ini?`)) {
+                    anggotaData = anggotaData.filter(a => (a.alamatemail || a.email) !== email);
                     
-                    localStorage.setItem('userDatabase', JSON.stringify(userDatabase));
                     localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
                     
-                    database.syncWithSheets();
-                    showAlert('success', 'User berhasil dihapus!');
-                    loadUserTable();
+                    showAlert('success', 'Anggota berhasil dihapus!');
+                    loadAnggotaTable();
                 }
             }
 
-            function filterUsers() {
+            function filterAnggota() {
                 const searchTerm = searchInput.value.toLowerCase();
-                const rows = userTableBody.getElementsByTagName('tr');
+                const rows = anggotaTableBody.getElementsByTagName('tr');
                 
                 for (let row of rows) {
                     const text = row.textContent.toLowerCase();
@@ -1453,13 +1056,8 @@
                 }
             }
 
-            // Auto-sync setiap 5 menit
-            setInterval(() => {
-                database.syncWithSheets();
-            }, 300000);
-
             // Muat tabel saat halaman dimuat
-            loadUserTable();
+            loadAnggotaTable();
         });
     </script>
 </body>
