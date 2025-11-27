@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola User - Koperasi Asmara Tani</title>
+    <title>Kelola Pengguna - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -1008,7 +1008,53 @@
 
             // Event Listeners
             backHomeBtn.addEventListener('click', function() {
-                window.location.href = 'dashboard.html';
+                // Cek beberapa kemungkinan lokasi dashboard
+                const possiblePaths = [
+                    'dashboard.html',
+                    '../dashboard.html',
+                    'index.html',
+                    '../index.html',
+                    '/dashboard.html',
+                    '/index.html'
+                ];
+                
+                let found = false;
+                for (let path of possiblePaths) {
+                    try {
+                        window.location.href = path;
+                        found = true;
+                        break;
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                if (!found) {
+                    // Fallback: buat dashboard sederhana
+                    const dashboardHTML = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Dashboard</title>
+                            <style>
+                                body { font-family: Arial; padding: 20px; }
+                                .menu { margin: 20px 0; }
+                                .menu a { display: block; padding: 10px; background: #2e7d32; color: white; margin: 5px 0; text-decoration: none; }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Dashboard Koperasi</h1>
+                            <div class="menu">
+                                <a href="kelola-pengguna.html">Kelola Pengguna</a>
+                                <a href="kelola-anggota.html">Kelola Anggota</a>
+                                <a href="kartu-digital.html">Kartu Digital</a>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                    const newWindow = window.open('', '_self');
+                    newWindow.document.write(dashboardHTML);
+                }
             });
 
             modalTogglePassword.addEventListener('click', function() {
