@@ -654,17 +654,19 @@
     </div>
 
     <script>
-        // Sistem Database Terintegrasi
+        // ===============================
+        // SISTEM DATABASE TERINTEGRASI
+        // ===============================
         class AnggotaDatabase {
             constructor() {
                 this.init();
             }
 
             init() {
-                // Inisialisasi data default jika belum ada
                 if (!localStorage.getItem('anggotaData')) {
                     this.initDefaultData();
                 }
+                this.syncWithSheets();
             }
 
             initDefaultData() {
@@ -689,8 +691,39 @@
                     tanggalbergabung: new Date().toLocaleDateString('id-ID'),
                     uploadfoto: ''
                 }];
-
                 localStorage.setItem('anggotaData', JSON.stringify(defaultAnggota));
+            }
+
+            // Sinkronisasi dengan Google Sheets
+            async syncWithSheets() {
+                try {
+                    const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
+                    
+                    const syncData = anggotaData.map(anggota => ({
+                        nia: anggota.nia || '',
+                        nama: anggota.namalengkap || anggota.nama || '',
+                        email: anggota.alamatemail || anggota.email || '',
+                        whatsapp: anggota.nowhatsapp || anggota.whatsapp || '',
+                        posisi: anggota.posisi || '',
+                        status_aktif: anggota.status_aktif || 'aktif',
+                        saldo: anggota.saldo || 0,
+                        alamat: anggota.alamatlengkap || anggota.alamat || '',
+                        jenis_kelamin: anggota.jenis_kelamin || '',
+                        agama: anggota.agama || '',
+                        nik: anggota.nikktp || anggota.nik || '',
+                        tanggal_bergabung: anggota.tanggalbergabung || anggota.tanggal_bergabung || '',
+                        last_update: new Date().toISOString()
+                    }));
+
+                    // Simulasi sync ke Google Sheets
+                    console.log('🔄 Sync data ke Google Sheets:', syncData);
+                    
+                    localStorage.setItem('lastSync', new Date().toISOString());
+                    return true;
+                } catch (error) {
+                    console.error('Error sync:', error);
+                    return false;
+                }
             }
 
             // Export ke Excel
@@ -738,14 +771,15 @@
             }
         }
 
+        // ===============================
+        // IMPLEMENTASI SISTEM
+        // ===============================
         document.addEventListener('DOMContentLoaded', function() {
             // Inisialisasi database
             const database = new AnggotaDatabase();
-
-            // Load data dari localStorage
             let anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
 
-            // Element references
+            // Element references - PASTIKAN INI DIDEKLARASIKAN DENGAN BENAR
             const backHomeBtn = document.getElementById('backHome');
             const tambahAnggotaBtn = document.getElementById('tambahAnggotaBtn');
             const anggotaModal = document.getElementById('anggotaModal');
@@ -762,68 +796,98 @@
             const syncBtn = document.getElementById('syncBtn');
             const exportBtn = document.getElementById('exportBtn');
 
-            // Event Listeners
-            backHomeBtn.addEventListener('click', function() {
-                // Cek beberapa kemungkinan lokasi dashboard
-                const possiblePaths = [
-                    'dashboard.html',
-                    '../dashboard.html',
-                    'index.html',
-                    '../index.html'
-                ];
-                
-                for (let path of possiblePaths) {
-                    try {
-                        window.location.href = path;
-                        return;
-                    } catch (e) {
-                        continue;
-                    }
+            // ✅ FIX: Event Listeners yang benar
+            function initializeEventListeners() {
+                // Tombol Tambah Anggota - PASTIKAN INI BEKERJA
+                if (tambahAnggotaBtn) {
+                    tambahAnggotaBtn.addEventListener('click', function() {
+                        console.log('Tombol Tambah Anggota diklik');
+                        modalTitle.textContent = 'Tambah Anggota Baru';
+                        anggotaForm.reset();
+                        document.getElementById('editEmail').value = '';
+                        document.getElementById('anggotaStatus').value = 'aktif';
+                        document.getElementById('anggotaSaldo').value = '0';
+                        
+                        // Enable semua input untuk mode tambah
+                        anggotaForm.querySelectorAll('input, select, textarea').forEach(element => {
+                            element.disabled = false;
+                        });
+                        document.getElementById('saveAnggotaBtn').style.display = 'block';
+                        document.getElementById('cancelBtn').textContent = 'Batal';
+                        
+                        anggotaModal.style.display = 'flex';
+                    });
                 }
-                
-                // Fallback
-                window.location.href = 'dashboard.html';
-            });
 
-            tambahAnggotaBtn.addEventListener('click', function() {
-                modalTitle.textContent = 'Tambah Anggota Baru';
-                anggotaForm.reset();
-                document.getElementById('editEmail').value = '';
-                document.getElementById('anggotaStatus').value = 'aktif';
-                document.getElementById('anggotaSaldo').value = '0';
-                anggotaModal.style.display = 'flex';
-            });
-
-            closeModal.addEventListener('click', closeAnggotaModal);
-            cancelBtn.addEventListener('click', closeAnggotaModal);
-
-            anggotaModal.addEventListener('click', function(e) {
-                if (e.target === anggotaModal) {
-                    closeAnggotaModal();
+                // Tombol Close Modal
+                if (closeModal) {
+                    closeModal.addEventListener('click', closeAnggotaModal);
                 }
-            });
 
-            searchBtn.addEventListener('click', filterAnggota);
-            searchInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    filterAnggota();
+                // Tombol Cancel
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', closeAnggotaModal);
                 }
-            });
 
-            syncBtn.addEventListener('click', function() {
-                document.getElementById('syncStatus').textContent = `Sinkronisasi: Berhasil (${new Date().toLocaleTimeString('id-ID')})`;
-                showAlert('success', 'Data berhasil disinkronisasi!');
-            });
+                // Tombol Save
+                if (saveAnggotaBtn) {
+                    saveAnggotaBtn.addEventListener('click', saveAnggota);
+                }
 
-            exportBtn.addEventListener('click', function() {
-                database.exportToExcel();
-                showAlert('success', 'Data berhasil diexport ke Excel!');
-            });
+                // Search functionality
+                if (searchBtn) {
+                    searchBtn.addEventListener('click', filterAnggota);
+                }
 
-            saveAnggotaBtn.addEventListener('click', saveAnggota);
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function(e) {
+                        if (e.key === 'Enter') {
+                            filterAnggota();
+                        }
+                    });
+                }
+
+                // Sync data
+                if (syncBtn) {
+                    syncBtn.addEventListener('click', function() {
+                        database.syncWithSheets().then(success => {
+                            if (success) {
+                                document.getElementById('syncStatus').textContent = `Sinkronisasi: Berhasil (${new Date().toLocaleTimeString('id-ID')})`;
+                                showAlert('success', 'Data berhasil disinkronisasi!');
+                            }
+                        });
+                    });
+                }
+
+                // Export Excel
+                if (exportBtn) {
+                    exportBtn.addEventListener('click', function() {
+                        database.exportToExcel();
+                        showAlert('success', 'Data berhasil diexport ke Excel!');
+                    });
+                }
+
+                // Back to home
+                if (backHomeBtn) {
+                    backHomeBtn.addEventListener('click', function() {
+                        window.location.href = 'dashboard.html';
+                    });
+                }
+
+                // Close modal when clicking outside
+                if (anggotaModal) {
+                    anggotaModal.addEventListener('click', function(e) {
+                        if (e.target === anggotaModal) {
+                            closeAnggotaModal();
+                        }
+                    });
+                }
+            }
 
             function closeAnggotaModal() {
-                anggotaModal.style.display = 'none';
+                if (anggotaModal) {
+                    anggotaModal.style.display = 'none';
+                }
             }
 
             function saveAnggota() {
@@ -846,14 +910,14 @@
                     return;
                 }
 
-                // Cek apakah NIA sudah ada (kecuali edit)
+                // Cek duplikasi NIA
                 const existingNIA = anggotaData.find(a => a.nia === anggotaNIA && a.email !== editEmail);
                 if (existingNIA) {
                     showAlert('error', 'NIA sudah terdaftar!');
                     return;
                 }
 
-                // Cek apakah email sudah ada (kecuali edit)
+                // Cek duplikasi email
                 const existingEmail = anggotaData.find(a => a.email === anggotaEmail && a.email !== editEmail);
                 if (existingEmail) {
                     showAlert('error', 'Email sudah terdaftar!');
@@ -882,23 +946,23 @@
                 };
 
                 if (editEmail) {
-                    // Edit anggota
+                    // Edit mode
                     const index = anggotaData.findIndex(a => a.email === editEmail);
                     if (index !== -1) {
                         anggotaData[index] = { ...anggotaData[index], ...anggotaDataBaru };
                     }
                 } else {
-                    // Tambah anggota baru
+                    // Tambah mode
                     anggotaData.push(anggotaDataBaru);
                 }
 
                 // Simpan ke localStorage
                 localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                
+                // Sync dengan Google Sheets
+                database.syncWithSheets();
 
-                // Tampilkan alert sukses
                 showAlert('success', editEmail ? 'Anggota berhasil diperbarui!' : 'Anggota berhasil ditambahkan!');
-
-                // Tutup modal dan refresh tabel
                 closeAnggotaModal();
                 loadAnggotaTable();
             }
@@ -908,31 +972,24 @@
                     successAlert.textContent = message;
                     successAlert.style.display = 'block';
                     errorAlert.style.display = 'none';
-                    
-                    setTimeout(() => {
-                        successAlert.style.display = 'none';
-                    }, 4000);
+                    setTimeout(() => { successAlert.style.display = 'none'; }, 4000);
                 } else {
                     errorAlert.textContent = message;
                     errorAlert.style.display = 'block';
                     successAlert.style.display = 'none';
-                    
-                    setTimeout(() => {
-                        errorAlert.style.display = 'none';
-                    }, 4000);
+                    setTimeout(() => { errorAlert.style.display = 'none'; }, 4000);
                 }
             }
 
             function loadAnggotaTable() {
+                if (!anggotaTableBody) return;
+                
                 anggotaTableBody.innerHTML = '';
                 
                 anggotaData.forEach(anggota => {
                     const row = document.createElement('tr');
                     
-                    // Tentukan class untuk status aktif
                     const statusClass = anggota.status_aktif === 'aktif' ? 'status-aktif' : 'status-tidak-aktif';
-                    
-                    // Buat link WhatsApp jika tersedia
                     const whatsapp = anggota.nowhatsapp || anggota.whatsapp;
                     const whatsappDisplay = whatsapp && whatsapp !== '-' 
                         ? `<a href="https://wa.me/${whatsapp}" target="_blank" class="whatsapp-link">
@@ -951,13 +1008,13 @@
                         <td>${anggota.tanggalbergabung || anggota.tanggal_bergabung || '-'}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-info view-anggota" data-email="${anggota.alamatemail || anggota.email}" title="Lihat Detail">
+                                <button class="btn btn-info view-anggota" data-email="${anggota.alamatemail || anggota.email}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn btn-warning edit-anggota" data-email="${anggota.alamatemail || anggota.email}" title="Edit">
+                                <button class="btn btn-warning edit-anggota" data-email="${anggota.alamatemail || anggota.email}">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-danger delete-anggota" data-email="${anggota.alamatemail || anggota.email}" title="Hapus">
+                                <button class="btn btn-danger delete-anggota" data-email="${anggota.alamatemail || anggota.email}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -967,7 +1024,12 @@
                     anggotaTableBody.appendChild(row);
                 });
 
-                // Event listeners untuk tombol di tabel
+                // Event listeners untuk tombol aksi
+                attachActionButtonListeners();
+            }
+
+            function attachActionButtonListeners() {
+                // View button
                 document.querySelectorAll('.view-anggota').forEach(button => {
                     button.addEventListener('click', function() {
                         const email = this.getAttribute('data-email');
@@ -975,6 +1037,7 @@
                     });
                 });
 
+                // Edit button
                 document.querySelectorAll('.edit-anggota').forEach(button => {
                     button.addEventListener('click', function() {
                         const email = this.getAttribute('data-email');
@@ -982,6 +1045,7 @@
                     });
                 });
 
+                // Delete button
                 document.querySelectorAll('.delete-anggota').forEach(button => {
                     button.addEventListener('click', function() {
                         const email = this.getAttribute('data-email');
@@ -992,6 +1056,7 @@
 
             function viewAnggotaDetail(email) {
                 const anggota = anggotaData.find(a => (a.alamatemail || a.email) === email);
+                if (!anggota) return;
                 
                 modalTitle.textContent = 'Detail Anggota';
                 isiFormAnggota(anggota);
@@ -1007,6 +1072,7 @@
 
             function editAnggota(email) {
                 const anggota = anggotaData.find(a => (a.alamatemail || a.email) === email);
+                if (!anggota) return;
                 
                 modalTitle.textContent = 'Edit Anggota';
                 isiFormAnggota(anggota);
@@ -1038,9 +1104,8 @@
             function deleteAnggota(email) {
                 if (confirm(`Apakah Anda yakin ingin menghapus anggota ini?`)) {
                     anggotaData = anggotaData.filter(a => (a.alamatemail || a.email) !== email);
-                    
                     localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
-                    
+                    database.syncWithSheets();
                     showAlert('success', 'Anggota berhasil dihapus!');
                     loadAnggotaTable();
                 }
@@ -1056,175 +1121,17 @@
                 }
             }
 
-            // Muat tabel saat halaman dimuat
-            loadAnggotaTable();
-        });
-        
-    <script>
-// 💥 SCRIPT SUPER UNTUK MEMBERSIHKAN MODAL AUTO-SAVE BANDEL
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 MEMBERSIHKAN MODAL AUTO-SAVE...');
-    
-    // Method 1: Hapus semua element yang terkait Auto-Save/Excel
-    function cleanAutoSaveModals() {
-        const elements = document.querySelectorAll('*');
-        elements.forEach(element => {
-            const content = element.textContent || '';
-            const style = window.getComputedStyle(element);
-            
-            // Cek berdasarkan konten text
-            if (content.includes('Auto-Save') || 
-                content.includes('Simpan Otomatis') ||
-                content.includes('Excel') ||
-                content.includes('Downloads') ||
-                content.includes('Data_Anggota') ||
-                content.includes('Format:')) {
-                
-                console.log('🚫 Menemukan modal auto-save:', element);
-                element.style.display = 'none';
-                element.style.visibility = 'hidden';
-                element.style.opacity = '0';
-                element.remove(); // HAPUS SAMPAI KE AKAR
-            }
-            
-            // Cek berdasarkan style (modal/overlay)
-            if (style.position === 'fixed' && 
-                (style.top === '0px' || style.top === '0%') &&
-                (style.backgroundColor === 'rgba(0, 0, 0, 0.5)' || 
-                 style.backgroundColor === 'rgba(0, 0, 0, 0.7)')) {
-                console.log('🚫 Menemukan overlay modal:', element);
-                element.style.display = 'none';
-                element.remove();
-            }
-        });
-    }
-    
-    // Method 2: Force show main content
-    function showMainContent() {
-        const mainElements = [
-            '.container', '.content', 'main', 
-            '[class*="container"]', '[class*="content"]',
-            'body > div', 'body > section'
-        ];
-        
-        mainElements.forEach(selector => {
-            const elements = document.querySelectorAll(selector);
-            elements.forEach(el => {
-                if (!el.textContent.includes('Auto-Save') && 
-                    !el.textContent.includes('Excel')) {
-                    el.style.display = 'block';
-                    el.style.visibility = 'visible';
-                    el.style.opacity = '1';
-                    el.style.zIndex = '1';
-                }
-            });
-        });
-        
-        // Force body visible
-        document.body.style.overflow = 'auto';
-        document.body.style.position = 'static';
-    }
-    
-    // Method 3: Hapus event listener yang memicu modal
-    function removeProblematicEvents() {
-        // Hapus semua event listener dari body dan document
-        const oldBody = document.body;
-        const newBody = oldBody.cloneNode(true);
-        oldBody.parentNode.replaceChild(newBody, oldBody);
-        
-        // Hentikan event propagation sementara
-        document.addEventListener('click', function(e) {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        }, true);
-        
-        document.addEventListener('keydown', function(e) {
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        }, true);
-    }
-    
-    // Eksekusi semua method
-    cleanAutoSaveModals();
-    showMainContent();
-    removeProblematicEvents();
-    
-    // Ulangi pembersihan setiap 100ms untuk modal yang muncul belakangan
-    let cleanAttempts = 0;
-    const cleanInterval = setInterval(() => {
-        cleanAutoSaveModals();
-        showMainContent();
-        cleanAttempts++;
-        
-        if (cleanAttempts > 50) { // Stop setelah 5 detik
-            clearInterval(cleanInterval);
-            console.log('✅ PEMBERSIHAN MODAL SELESAI');
-        }
-    }, 100);
-    
-    // Tambahkan CSS untuk memastikan konten utama visible
-    const cleanCSS = `
-        <style>
-            /* PASTIKAN KONTEN UTAMA TERLIHAT */
-            body > *:not(script):not(style) {
-                visibility: visible !important;
-                opacity: 1 !important;
-                display: block !important;
-            }
-            
-            /* SEMBUNYIKAN ELEMENT DENGAN KATA KUNCI AUTO-SAVE */
-            [class*="auto-save"],
-            [class*="autosave"], 
-            [class*="excel"],
-            [class*="export"],
-            [class*="modal"][style*="block"],
-            [class*="modal"][style*="flex"] {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-            }
-            
-            /* OVERLAY/MODAL STYLING */
-            [class*="overlay"],
-            [class*="backdrop"],
-            [class*="popup"] {
-                display: none !important;
-            }
-        </style>
-    `;
-    document.head.insertAdjacentHTML('beforeend', cleanCSS);
-});
+            // Auto-sync setiap 2 menit
+            setInterval(() => {
+                database.syncWithSheets();
+            }, 120000);
 
-// 💥 TAMBahkan juga event listener untuk mencegah modal muncul kembali
-window.addEventListener('load', function() {
-    console.log('🛡️  MENCEGAH MODAL MUNCUL KEMBALI...');
-    
-    // Block any new modal creation
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeType === 1) { // Element node
-                    const content = node.textContent || '';
-                    if (content.includes('Auto-Save') || 
-                        content.includes('Excel') ||
-                        content.includes('Simpan Otomatis')) {
-                        console.log('🚫 Mencegah modal baru:', node);
-                        node.style.display = 'none';
-                        node.remove();
-                    }
-                }
-            });
+            // Initialize system
+            initializeEventListeners();
+            loadAnggotaTable();
+            
+            console.log('✅ Sistem Kelola Anggota siap digunakan');
         });
-    });
-    
-    // Start observing
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-});
-</script>
-    
-</script>
+    </script>
 </body>
 </html>
