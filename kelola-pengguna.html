@@ -477,7 +477,9 @@
     </style>
 </head>
 <body>
-    <button class="back-kelola-pengguna.html" onclick="location.href='kelola-pengguna.html'"><i class="fas fa-home"></i> Beranda
+    <!-- ✅ PERUBAHAN: Tombol "Beranda" diubah menjadi "Kembali" -->
+    <button class="back-home" id="backHome">
+        <i class="fas fa-arrow-left"></i> Kembali
     </button>
     
     <div class="container">
@@ -797,6 +799,56 @@
 
             // ✅ FIX: Event Listeners yang benar
             function initializeEventListeners() {
+                // ==========================================
+                // ✅ PERBAIKAN: TOMBOL KEMBALI KE DASHBOARD ADMIN
+                // ==========================================
+                if (backHomeBtn) {
+                    backHomeBtn.addEventListener('click', function() {
+                        console.log('Tombol Kembali diklik - Menuju Dashboard Admin');
+                        
+                        // Coba beberapa kemungkinan path dashboard admin
+                        const possiblePaths = [
+                            'dashboard-admin.html',
+                            '../dashboard-admin.html',
+                            '/dashboard-admin.html',
+                            'dashboard.html',
+                            '../dashboard.html',
+                            '/dashboard.html',
+                            'index.html'
+                        ];
+                        
+                        // Coba setiap path sampai yang berhasil
+                        let found = false;
+                        for (let path of possiblePaths) {
+                            try {
+                                // Cek jika file ada dengan fetch
+                                fetch(path, { method: 'HEAD' })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            console.log(`✅ Dashboard Admin ditemukan di: ${path}`);
+                                            window.location.href = path;
+                                            found = true;
+                                            return;
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.log(`❌ ${path} tidak ditemukan, mencoba path lain...`);
+                                    });
+                            } catch (e) {
+                                continue;
+                            }
+                        }
+                        
+                        // Fallback: Redirect langsung ke dashboard-admin.html setelah delay
+                        setTimeout(() => {
+                            if (!found) {
+                                console.log('🔄 Menggunakan fallback ke dashboard-admin.html');
+                                window.location.href = 'dashboard-admin.html';
+                            }
+                        }, 100);
+                    });
+                }
+
                 // Tombol Tambah Anggota - PASTIKAN INI BEKERJA
                 if (tambahAnggotaBtn) {
                     tambahAnggotaBtn.addEventListener('click', function() {
@@ -863,13 +915,6 @@
                     exportBtn.addEventListener('click', function() {
                         database.exportToExcel();
                         showAlert('success', 'Data berhasil diexport ke Excel!');
-                    });
-                }
-
-                // Back to home
-                if (backHomeBtn) {
-                    backHomeBtn.addEventListener('click', function() {
-                        window.location.href = 'dashboard.html';
                     });
                 }
 
