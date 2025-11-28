@@ -232,6 +232,38 @@
             color: #25D366;
         }
         
+        /* Password Container dengan Ikon Mata */
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .password-container .form-control {
+            padding-right: 40px;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+        
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+        
         /* Modal Styles */
         .modal {
             display: none;
@@ -477,9 +509,9 @@
     </style>
 </head>
 <body>
-    <!-- ✅ PERUBAHAN: Tombol "Beranda" diubah menjadi "Kembali" -->
+    <!-- ✅ TOMBOL KEMBALI KE DASHBOARD ADMIN -->
     <button class="back-home" id="backHome">
-        <i class="fas fa-arrow-left"></i> Kembali
+        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
     </button>
     
     <div class="container">
@@ -575,19 +607,33 @@
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
+                                    <label for="anggotaPassword">Password *</label>
+                                    <div class="password-container">
+                                        <input type="password" id="anggotaPassword" class="form-control" required>
+                                        <button type="button" class="toggle-password" id="modalTogglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
                                     <label for="anggotaWhatsApp">WhatsApp</label>
                                     <input type="text" id="anggotaWhatsApp" class="form-control">
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-row">
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaNIK">NIK KTP</label>
                                     <input type="text" id="anggotaNIK" class="form-control">
                                 </div>
                             </div>
+                        </div>
+                        
+                        <div class="form-row">
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaJenisKelamin">Jenis Kelamin</label>
@@ -596,6 +642,12 @@
                                         <option value="Laki-laki">Laki-laki</option>
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaKeterangan">Keterangan</label>
+                                    <input type="text" id="anggotaKeterangan" class="form-control" placeholder="Keterangan tambahan...">
                                 </div>
                             </div>
                         </div>
@@ -675,9 +727,11 @@
                     nia: '001',
                     nama: 'Administrator System',
                     email: 'admin@koperasi.com',
+                    password: 'admin123',
                     whatsapp: '-',
                     nik: '-',
                     jenis_kelamin: 'Laki-laki',
+                    keterangan: 'Administrator utama sistem',
                     posisi: 'System Administrator',
                     status_aktif: 'aktif',
                     alamat: 'Kantor Pusat Koperasi',
@@ -704,7 +758,9 @@
                         nia: anggota.nia || '',
                         nama: anggota.namalengkap || anggota.nama || '',
                         email: anggota.alamatemail || anggota.email || '',
+                        password: anggota.password || '',
                         whatsapp: anggota.nowhatsapp || anggota.whatsapp || '',
+                        keterangan: anggota.keterangan || '',
                         posisi: anggota.posisi || '',
                         status_aktif: anggota.status_aktif || 'aktif',
                         saldo: anggota.saldo || 0,
@@ -735,7 +791,9 @@
                     'NIA': anggota.nia || '',
                     'Nama Lengkap': anggota.namalengkap || anggota.nama || '',
                     'Email': anggota.alamatemail || anggota.email || '',
+                    'Password': anggota.password || '',
                     'WhatsApp': anggota.nowhatsapp || anggota.whatsapp || '',
+                    'Keterangan': anggota.keterangan || '',
                     'Posisi': anggota.posisi || '',
                     'Status': anggota.status_aktif || 'aktif',
                     'Saldo': anggota.saldo || 0,
@@ -780,7 +838,7 @@
             const database = new AnggotaDatabase();
             let anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
 
-            // Element references - PASTIKAN INI DIDEKLARASIKAN DENGAN BENAR
+            // Element references
             const backHomeBtn = document.getElementById('backHome');
             const tambahAnggotaBtn = document.getElementById('tambahAnggotaBtn');
             const anggotaModal = document.getElementById('anggotaModal');
@@ -796,60 +854,81 @@
             const searchBtn = document.getElementById('searchBtn');
             const syncBtn = document.getElementById('syncBtn');
             const exportBtn = document.getElementById('exportBtn');
+            const modalTogglePassword = document.getElementById('modalTogglePassword');
+            const anggotaPasswordInput = document.getElementById('anggotaPassword');
 
-            // ✅ FIX: Event Listeners yang benar
-            function initializeEventListeners() {
-                // ==========================================
-                // ✅ PERBAIKAN: TOMBOL KEMBALI KE DASHBOARD ADMIN
-                // ==========================================
+            // ✅ TOMBOL KEMBALI KE DASHBOARD ADMIN
+            function setupBackHomeButton() {
                 if (backHomeBtn) {
                     backHomeBtn.addEventListener('click', function() {
                         console.log('Tombol Kembali diklik - Menuju Dashboard Admin');
                         
-                        // Coba beberapa kemungkinan path dashboard admin
-                        const possiblePaths = [
-                            'dashboard-admin.html',
+                        // Priority order untuk mencari dashboard
+                        const dashboardPaths = [
+                            'dashboard-admin.html',    // Target utama
                             '../dashboard-admin.html',
                             '/dashboard-admin.html',
-                            'dashboard.html',
-                            '../dashboard.html',
+                            'dashboard.html',          // Fallback
+                            '../dashboard.html', 
                             '/dashboard.html',
-                            'index.html'
+                            'index.html'               // Fallback terakhir
                         ];
-                        
-                        // Coba setiap path sampai yang berhasil
-                        let found = false;
-                        for (let path of possiblePaths) {
-                            try {
-                                // Cek jika file ada dengan fetch
-                                fetch(path, { method: 'HEAD' })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            console.log(`✅ Dashboard Admin ditemukan di: ${path}`);
-                                            window.location.href = path;
-                                            found = true;
-                                            return;
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.log(`❌ ${path} tidak ditemukan, mencoba path lain...`);
-                                    });
-                            } catch (e) {
-                                continue;
+
+                        let redirectExecuted = false;
+
+                        // Coba setiap path secara berurutan
+                        dashboardPaths.forEach(path => {
+                            if (!redirectExecuted) {
+                                try {
+                                    // Cek jika file ada
+                                    fetch(path, { method: 'HEAD' })
+                                        .then(response => {
+                                            if (response.ok && !redirectExecuted) {
+                                                console.log(`✅ Dashboard ditemukan di: ${path}`);
+                                                redirectExecuted = true;
+                                                window.location.href = path;
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.log(`❌ ${path} tidak ditemukan`);
+                                        });
+                                } catch (e) {
+                                    console.log(`❌ Error akses ${path}`);
+                                }
                             }
-                        }
-                        
-                        // Fallback: Redirect langsung ke dashboard-admin.html setelah delay
+                        });
+
+                        // Fallback setelah 500ms jika tidak ada yang berhasil
                         setTimeout(() => {
-                            if (!found) {
+                            if (!redirectExecuted) {
                                 console.log('🔄 Menggunakan fallback ke dashboard-admin.html');
                                 window.location.href = 'dashboard-admin.html';
                             }
-                        }, 100);
+                        }, 500);
                     });
                 }
+            }
 
-                // Tombol Tambah Anggota - PASTIKAN INI BEKERJA
+            // ✅ TOGGLE PASSWORD VISIBILITY
+            function setupPasswordToggle() {
+                if (modalTogglePassword && anggotaPasswordInput) {
+                    modalTogglePassword.addEventListener('click', function() {
+                        const type = anggotaPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        anggotaPasswordInput.setAttribute('type', type);
+                        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                    });
+                }
+            }
+
+            // ✅ FIX: Event Listeners yang benar
+            function initializeEventListeners() {
+                // Setup tombol kembali
+                setupBackHomeButton();
+                
+                // Setup toggle password
+                setupPasswordToggle();
+
+                // Tombol Tambah Anggota
                 if (tambahAnggotaBtn) {
                     tambahAnggotaBtn.addEventListener('click', function() {
                         console.log('Tombol Tambah Anggota diklik');
@@ -858,6 +937,10 @@
                         document.getElementById('editEmail').value = '';
                         document.getElementById('anggotaStatus').value = 'aktif';
                         document.getElementById('anggotaSaldo').value = '0';
+                        
+                        // Reset password field dan ikon mata
+                        anggotaPasswordInput.setAttribute('type', 'password');
+                        modalTogglePassword.innerHTML = '<i class="fas fa-eye"></i>';
                         
                         // Enable semua input untuk mode tambah
                         anggotaForm.querySelectorAll('input, select, textarea').forEach(element => {
@@ -938,9 +1021,11 @@
                 const anggotaNIA = document.getElementById('anggotaNIA').value;
                 const anggotaNama = document.getElementById('anggotaNama').value;
                 const anggotaEmail = document.getElementById('anggotaEmail').value;
+                const anggotaPassword = document.getElementById('anggotaPassword').value;
                 const anggotaWhatsApp = document.getElementById('anggotaWhatsApp').value;
                 const anggotaNIK = document.getElementById('anggotaNIK').value;
                 const anggotaJenisKelamin = document.getElementById('anggotaJenisKelamin').value;
+                const anggotaKeterangan = document.getElementById('anggotaKeterangan').value;
                 const anggotaPosisi = document.getElementById('anggotaPosisi').value;
                 const anggotaStatus = document.getElementById('anggotaStatus').value;
                 const anggotaAlamat = document.getElementById('anggotaAlamat').value;
@@ -949,7 +1034,7 @@
                 const editEmail = document.getElementById('editEmail').value;
 
                 // Validasi
-                if (!anggotaNIA || !anggotaNama || !anggotaEmail) {
+                if (!anggotaNIA || !anggotaNama || !anggotaEmail || !anggotaPassword) {
                     showAlert('error', 'Field dengan tanda * harus diisi!');
                     return;
                 }
@@ -972,9 +1057,11 @@
                     nia: anggotaNIA,
                     nama: anggotaNama,
                     email: anggotaEmail,
+                    password: anggotaPassword,
                     whatsapp: anggotaWhatsApp,
                     nik: anggotaNIK,
                     jenis_kelamin: anggotaJenisKelamin,
+                    keterangan: anggotaKeterangan,
                     posisi: anggotaPosisi,
                     status_aktif: anggotaStatus,
                     alamat: anggotaAlamat,
@@ -1134,15 +1221,21 @@
                 document.getElementById('anggotaNIA').value = anggota.nia || '';
                 document.getElementById('anggotaNama').value = anggota.namalengkap || anggota.nama || '';
                 document.getElementById('anggotaEmail').value = anggota.alamatemail || anggota.email || '';
+                document.getElementById('anggotaPassword').value = anggota.password || '';
                 document.getElementById('anggotaWhatsApp').value = anggota.nowhatsapp || anggota.whatsapp || '';
                 document.getElementById('anggotaNIK').value = anggota.nikktp || anggota.nik || '';
                 document.getElementById('anggotaJenisKelamin').value = anggota.jenis_kelamin || '';
+                document.getElementById('anggotaKeterangan').value = anggota.keterangan || '';
                 document.getElementById('anggotaPosisi').value = anggota.posisi || '';
                 document.getElementById('anggotaStatus').value = anggota.status_aktif || 'aktif';
                 document.getElementById('anggotaAlamat').value = anggota.alamatlengkap || anggota.alamat || '';
                 document.getElementById('anggotaAgama').value = anggota.agama || '';
                 document.getElementById('anggotaSaldo').value = anggota.saldo || 0;
                 document.getElementById('editEmail').value = anggota.alamatemail || anggota.email || '';
+                
+                // Reset password visibility saat form diisi
+                anggotaPasswordInput.setAttribute('type', 'password');
+                modalTogglePassword.innerHTML = '<i class="fas fa-eye"></i>';
             }
 
             function deleteAnggota(email) {
