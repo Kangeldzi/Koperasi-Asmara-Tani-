@@ -176,7 +176,7 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Position Cards - LEBIH TERANG & LEBIH LEBAR UNTUK KETUA, SEKRE, BENDAHARA */
+        /* Position Cards - LEBIH LEBAR UNTUK KETUA, SEKRE, BENDAHARA */
         .panitia-position {
             background: linear-gradient(145deg, rgba(40, 100, 60, 0.95), rgba(20, 60, 35, 0.95));
             border-radius: 12px;
@@ -237,7 +237,7 @@
             transform: translateX(100%);
         }
 
-        /* Level Specific Styles - LEBIH TERANG */
+        /* Level Specific Styles - LEBIH LEBAR */
         .panitia-level-1 .panitia-position {
             background: linear-gradient(145deg, rgba(50, 205, 50, 0.98), rgba(34, 139, 34, 0.98));
             width: 220px;
@@ -246,13 +246,13 @@
 
         .panitia-level-2 .panitia-position {
             background: linear-gradient(145deg, rgba(60, 220, 60, 0.98), rgba(50, 205, 50, 0.98));
-            width: 200px; /* DITAMBAH 10px DARI 190px */
+            width: 210px; /* DITAMBAH 20px DARI 190px (AWAL) */
             animation: pulseGreen 3s infinite 0.5s;
         }
 
         .panitia-level-3 .panitia-position {
             background: linear-gradient(145deg, rgba(100, 255, 100, 0.98), rgba(60, 220, 60, 0.98));
-            width: 190px; /* DITAMBAH 10px DARI 180px */
+            width: 200px; /* DITAMBAH 20px DARI 180px (AWAL) */
             animation: pulseGreen 3s infinite 1s;
         }
 
@@ -262,7 +262,7 @@
             animation: pulseGreen 3s infinite 1.5s;
         }
 
-        /* Profile Images - Smaller */
+        /* Profile Images */
         .panitia-position img {
             width: 70px;
             height: 70px;
@@ -287,7 +287,7 @@
                 0 0 35px rgba(50, 205, 50, 0.5);
         }
 
-        /* Text Styling - Smaller */
+        /* Text Styling */
         .panitia-position h3 {
             margin: 10px 0 4px;
             font-size: 1rem;
@@ -317,93 +317,93 @@
         /* GARIS KOMANDO - DIPERJELAS & DIPERTEBAL */
         .connector-vertical {
             height: 25px;
-            width: 3px; /* DIPERTEBAL dari 2px */
+            width: 4px; /* DIPERTEBAL dari 2px */
             background: linear-gradient(to bottom, #90EE90, #32CD32, #90EE90);
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite;
         }
 
         /* Garis dari Ketua ke Sekretaris & Bendahara - DIPERJELAS */
         .connector-ketua-sekben {
             position: absolute;
-            width: 3px; /* DIPERTEBAL dari 2px */
-            height: 35px; /* DIPANJANGKAN dari 30px */
+            width: 4px; /* DIPERTEBAL dari 2px */
+            height: 40px; /* DIPANJANGKAN dari 30px */
             background: linear-gradient(to bottom, #90EE90, #32CD32, #90EE90);
             left: 50%;
             transform: translateX(-50%);
             z-index: 1;
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite 0.2s;
         }
 
         /* Garis Horizontal Sekretaris-Bendahara - DIPERJELAS */
         .connector-horizontal-sekben {
             position: absolute;
-            height: 3px; /* DIPERTEBAL dari 2px */
+            height: 4px; /* DIPERTEBAL dari 2px */
             width: 70%;
             background: linear-gradient(to right, #90EE90, #32CD32, #90EE90);
-            top: -15px;
+            top: -20px;
             left: 15%;
             z-index: 1;
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite 0.4s;
         }
 
         /* Garis dari Sekretaris/Bendahara ke Divisi - DIPERJELAS */
         .connector-sekben-divisi {
             position: absolute;
-            width: 3px; /* DIPERTEBAL dari 2px */
-            height: 35px; /* DIPANJANGKAN dari 30px */
+            width: 4px; /* DIPERTEBAL dari 2px */
+            height: 40px; /* DIPANJANGKAN dari 30px */
             background: linear-gradient(to bottom, #90EE90, #32CD32, #90EE90);
             left: 50%;
             transform: translateX(-50%);
             z-index: 1;
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite 0.6s;
         }
 
         /* Garis Horizontal antara Divisi - DIPERJELAS */
         .connector-horizontal-divisi {
             position: absolute;
-            height: 3px; /* DIPERTEBAL dari 2px */
+            height: 4px; /* DIPERTEBAL dari 2px */
             width: 85%;
             background: linear-gradient(to right, #90EE90, #32CD32, #90EE90);
-            top: -15px;
+            top: -20px;
             left: 7.5%;
             z-index: 1;
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite 0.8s;
         }
 
         /* GARIS DIAGONAL DARI KETUA KE SEKRE & BENDAHARA - DIPERJELAS & DITAMPILKAN */
         .connector-diagonal-left {
             position: absolute;
-            width: 110px; /* DIPANJANGKAN dari 100px */
-            height: 3px; /* DIPERTEBAL dari 2px */
+            width: 120px; /* DIPANJANGKAN dari 100px */
+            height: 4px; /* DIPERTEBAL dari 2px */
             background: linear-gradient(to right, #32CD32, #90EE90);
             transform: rotate(-30deg);
             transform-origin: left center;
-            top: 60px;
+            top: 70px;
             left: 50%;
             z-index: 1;
-            box-shadow: 0 0 12px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite 1s;
         }
 
         .connector-diagonal-right {
             position: absolute;
-            width: 110px; /* DIPANJANGKAN dari 100px */
-            height: 3px; /* DIPERTEBAL dari 2px */
+            width: 120px; /* DIPANJANGKAN dari 100px */
+            height: 4px; /* DIPERTEBAL dari 2px */
             background: linear-gradient(to left, #32CD32, #90EE90);
             transform: rotate(30deg);
             transform-origin: right center;
-            top: 60px;
+            top: 70px;
             right: 50%;
             z-index: 1;
-            box-shadow: 0 0 12px rgba(144, 238, 144, 0.7);
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.8);
             animation: connectorPulse 1.5s infinite 1.2s;
         }
 
@@ -425,12 +425,12 @@
             margin: 20px 0;
         }
 
-        /* Tambah margin khusus untuk Divisi Usaha (kiri) dan Divisi Kemitraan (kanan) */
-        .structure-item.divisi-kiri {
+        /* MARGIN KHUSUS UNTUK DIVISI USAHA (KIRI) DAN KEMITRAAN (KANAN) */
+        .divisi-margin-left {
             margin-left: 15px !important;
         }
         
-        .structure-item.divisi-kanan {
+        .divisi-margin-right {
             margin-right: 15px !important;
         }
 
@@ -439,7 +439,7 @@
             position: relative;
         }
 
-        /* Badge Icons - Smaller */
+        /* Badge Icons */
         .position-badge {
             position: absolute;
             top: -8px;
@@ -518,8 +518,8 @@
         }
 
         @keyframes connectorPulse {
-            0%, 100% { opacity: 0.8; box-shadow: 0 0 15px rgba(144, 238, 144, 0.7); }
-            50% { opacity: 1; box-shadow: 0 0 25px rgba(144, 238, 144, 1); }
+            0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(144, 238, 144, 0.8); }
+            50% { opacity: 1; box-shadow: 0 0 30px rgba(144, 238, 144, 1); }
         }
 
         @keyframes fadeInUp {
@@ -557,7 +557,7 @@
             }
             
             .panitia-position {
-                width: 150px; /* Sedikit lebih kecil untuk mobile */
+                width: 150px;
                 margin: 8px;
                 padding: 12px 8px;
             }
@@ -567,11 +567,11 @@
             }
             
             .panitia-level-2 .panitia-position {
-                width: 170px; /* Disesuaikan untuk mobile */
+                width: 180px; /* Responsif untuk mobile */
             }
             
             .panitia-level-3 .panitia-position {
-                width: 160px; /* Disesuaikan untuk mobile */
+                width: 170px; /* Responsif untuk mobile */
             }
             
             .panitia-level-4 .panitia-position {
@@ -598,7 +598,8 @@
             /* Adjust connectors for mobile */
             .connector-diagonal-left,
             .connector-diagonal-right {
-                width: 80px; /* Lebih pendek di mobile */
+                width: 90px;
+                top: 60px;
             }
             
             .connector-horizontal-sekben {
@@ -611,12 +612,12 @@
                 left: 5%;
             }
             
-            /* TAMBAH MARGIN KHUSUS UNTUK DIVISI DI MOBILE */
-            .structure-item.divisi-kiri {
+            /* MARGIN UNTUK DIVISI DI MOBILE */
+            .divisi-margin-left {
                 margin-left: 10px !important;
             }
             
-            .structure-item.divisi-kanan {
+            .divisi-margin-right {
                 margin-right: 10px !important;
             }
             
@@ -645,11 +646,11 @@
             }
             
             .panitia-level-2 .panitia-position {
-                width: 150px;
+                width: 160px;
             }
             
             .panitia-level-3 .panitia-position {
-                width: 140px;
+                width: 150px;
             }
             
             .panitia-level-4 .panitia-position {
@@ -667,12 +668,12 @@
                 font-size: 0.8rem;
             }
             
-            /* TAMBAH MARGIN LEBIH BESAR DI SCREEN SANGAT KECIL */
-            .structure-item.divisi-kiri {
+            /* MARGIN LEBIH BESAR UNTUK DIVISI DI SCREEN SANGAT KECIL */
+            .divisi-margin-left {
                 margin-left: 8px !important;
             }
             
-            .structure-item.divisi-kanan {
+            .divisi-margin-right {
                 margin-right: 8px !important;
             }
             
@@ -680,10 +681,10 @@
                 margin: 0 8px;
             }
             
-            /* Garis diagonal disembunyikan di screen sangat kecil */
+            /* Garis diagonal tetap tampil */
             .connector-diagonal-left,
             .connector-diagonal-right {
-                width: 60px;
+                width: 70px;
                 top: 50px;
             }
             
@@ -704,11 +705,11 @@
             }
             
             .panitia-level-2 .panitia-position {
-                width: 130px;
+                width: 140px;
             }
             
             .panitia-level-3 .panitia-position {
-                width: 120px;
+                width: 130px;
             }
             
             .panitia-level-4 .panitia-position {
@@ -716,11 +717,11 @@
             }
             
             /* MARGIN KHUSUS UNTUK SCREEN SANGAT KECIL */
-            .structure-item.divisi-kiri {
+            .divisi-margin-left {
                 margin-left: 5px !important;
             }
             
-            .structure-item.divisi-kanan {
+            .divisi-margin-right {
                 margin-right: 5px !important;
             }
             
@@ -730,46 +731,79 @@
             
             .connector-diagonal-left,
             .connector-diagonal-right {
-                display: block; /* Tetap ditampilkan tapi lebih kecil */
-                width: 50px;
+                width: 60px;
+                top: 45px;
             }
         }
 
-        /* Modal Styles - Smaller */
+        /* Modal Styles - CEPAT TUTUP */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.15s linear !important; /* SANGAT CEPAT */
+        }
+
         .modal-content {
-            background: linear-gradient(145deg, rgba(40, 100, 60, 0.98), rgba(20, 60, 35, 0.98)) !important;
-            padding: 20px !important;
-            border-radius: 15px !important;
-            border: 2px solid rgba(144, 238, 144, 0.5) !important;
-            box-shadow: 0 0 50px rgba(50, 205, 50, 0.5) !important;
-            max-width: 320px !important;
-            width: 90% !important;
-            margin: 0 auto !important;
+            background: linear-gradient(145deg, rgba(40, 100, 60, 0.98), rgba(20, 60, 35, 0.98));
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(144, 238, 144, 0.5);
+            box-shadow: 0 0 50px rgba(50, 205, 50, 0.5);
+            max-width: 320px;
+            width: 90%;
+            margin: 0 auto;
+            transform: scale(1);
+            transition: transform 0.15s linear !important; /* SANGAT CEPAT */
         }
 
         .modal-content h3 {
-            color: #C8FFC8 !important;
-            margin-bottom: 15px !important;
-            font-size: 1.1rem !important;
-            text-shadow: 0 0 10px rgba(144, 238, 144, 0.5) !important;
+            color: #C8FFC8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px rgba(144, 238, 144, 0.5);
         }
 
         .modal-content p {
-            font-size: 0.9rem !important;
-            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.95);
         }
 
         .modal-button {
-            background: linear-gradient(to right, #32CD32, #90EE90) !important;
-            border: none !important;
-            padding: 8px 16px !important;
-            color: #0d2e1a !important;
-            border-radius: 5px !important;
-            cursor: pointer !important;
-            font-size: 0.9rem !important;
-            margin-top: 15px !important;
-            font-weight: 600 !important;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+            background: linear-gradient(to right, #32CD32, #90EE90);
+            border: none;
+            padding: 8px 16px;
+            color: #0d2e1a;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.15s linear !important; /* SANGAT CEPAT */
+        }
+
+        .modal-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Class untuk modal hidden */
+        .modal-hidden {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+        
+        .modal-hidden .modal-content {
+            transform: scale(0.9) !important;
         }
     </style>
 </head>
@@ -817,16 +851,16 @@
                 </div>
             </div>
             
-            <!-- Garis Vertikal dari Ketua - DIPERJELAS -->
+            <!-- Garis Vertikal dari Ketua - SANGAT JELAS -->
             <div class="connector-ketua-sekben"></div>
             
             <!-- Level 3 - Sekretaris & Bendahara -->
-            <div class="structure-row" style="position: relative; min-height: 130px;">
-                <!-- Garis Diagonal Kiri dari Ketua ke Sekretaris - DIPERJELAS & DITAMPILKAN -->
+            <div class="structure-row" style="position: relative; min-height: 140px;">
+                <!-- Garis Diagonal Kiri dari Ketua ke Sekretaris - SANGAT JELAS -->
                 <div class="connector-diagonal-left"></div>
-                <!-- Garis Diagonal Kanan dari Ketua ke Bendahara - DIPERJELAS & DITAMPILKAN -->
+                <!-- Garis Diagonal Kanan dari Ketua ke Bendahara - SANGAT JELAS -->
                 <div class="connector-diagonal-right"></div>
-                <!-- Garis Horizontal - DIPERJELAS -->
+                <!-- Garis Horizontal - SANGAT JELAS -->
                 <div class="connector-horizontal-sekben"></div>
                 
                 <div class="structure-item">
@@ -846,7 +880,7 @@
                 <div class="structure-item">
                     <div class="panitia-position panitia-level-3">
                         <div class="position-badge">3</div>
-                        <img alt="Foto Bendahara" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJt1QaS35N_CaYliDtUJ_k8YqLWgpViQJ3D0KYkPikuXSJt_4sg-nqqrKWtyliA3nMvLaoIM8QDrvLGZvQMGVSOSFMBDeWs1nXYJGaVPj5y_-nSWhopif6ANFMkRDCUK8wu7sWnnWCht0acc_BNc-l0mCkPtYc4U2K_3liVBp4ubOsOdmLRVkCoUsL/s320/1000455867.jpg" />
+                        <img alt="Foto Bendahara" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJpdvvT7lmKqMMPbKA0N5HTDYn_4PVB_EybztKYFBiIO4WUGsNoGoDVyDqmEffaZMZLkbAVJUzMyN-KzroWVH1d1kPHw5eqsm2h7XkxybyNUCFsJAUmAE97-aLDSFuzPei7PbUyMCVa7gjlL8ozyO0e63R-G5xiyg1cpldTcTQ8AA3FzxJtG6BOrsk/s320/1000518947.jpg" />
                         <h3>BENDAHARA</h3>
                         <p>Desi Yulianita</p>
                         <p class="position-desc">Keuangan & Anggaran</p>
@@ -854,16 +888,16 @@
                 </div>
             </div>
             
-            <!-- Garis Vertikal dari Sekretaris/Bendahara ke Divisi - DIPERJELAS -->
+            <!-- Garis Vertikal dari Sekretaris/Bendahara ke Divisi - SANGAT JELAS -->
             <div class="connector-sekben-divisi"></div>
             
             <!-- Level 4 - Divisi -->
             <div class="structure-row" style="position: relative; min-height: 100px;">
-                <!-- Garis Horizontal antara Divisi - DIPERJELAS -->
+                <!-- Garis Horizontal antara Divisi - SANGAT JELAS -->
                 <div class="connector-horizontal-divisi"></div>
                 
-                <!-- Divisi Usaha - TAMBAH MARGIN KIRI -->
-                <div class="structure-item divisi-kiri">
+                <!-- Divisi Usaha - DENGAN MARGIN KIRI -->
+                <div class="structure-item divisi-margin-left">
                     <div class="panitia-position panitia-level-4">
                         <div class="position-badge"><i class="fas fa-chart-line"></i></div>
                         <img alt="Icon Usaha" src="https://cdn-icons-png.flaticon.com/512/3135/3135756.png" />
@@ -884,8 +918,8 @@
                     </div>
                 </div>
                 
-                <!-- Divisi Kemitraan - TAMBAH MARGIN KANAN -->
-                <div class="structure-item divisi-kanan">
+                <!-- Divisi Kemitraan - DENGAN MARGIN KANAN -->
+                <div class="structure-item divisi-margin-right">
                     <div class="panitia-position panitia-level-4">
                         <div class="position-badge"><i class="fas fa-handshake"></i></div>
                         <img alt="Icon Kemitraan" src="https://cdn-icons-png.flaticon.com/512/3135/3135773.png" />
@@ -915,6 +949,10 @@
 
         // Hover Effect dengan Ripple
         const positions = document.querySelectorAll('.panitia-position');
+        
+        // Global modal reference untuk kontrol cepat
+        let currentModal = null;
+        
         positions.forEach(position => {
             position.addEventListener('mouseenter', function() {
                 this.style.animation = 'none';
@@ -945,31 +983,28 @@
                 
                 // Remove ripple after animation
                 setTimeout(() => {
-                    ripple.remove();
+                    if (ripple.parentNode) {
+                        ripple.remove();
+                    }
                 }, 500);
             });
             
-            // Click effect - Modal
+            // Click effect - Modal dengan penutupan CEPAT
             position.addEventListener('click', function() {
                 const title = this.querySelector('h3').textContent;
                 const name = this.querySelector('p').textContent;
                 const desc = this.querySelector('.position-desc') ? this.querySelector('.position-desc').textContent : '';
                 
-                // Create modal
+                // Hapus modal sebelumnya jika ada
+                if (currentModal) {
+                    document.body.removeChild(currentModal);
+                    currentModal = null;
+                }
+                
+                // Create modal dengan animasi SANGAT CEPAT
                 const modal = document.createElement('div');
-                modal.style.position = 'fixed';
-                modal.style.top = '0';
-                modal.style.left = '0';
-                modal.style.width = '100%';
-                modal.style.height = '100%';
-                modal.style.background = 'rgba(0,0,0,0.9)';
-                modal.style.display = 'flex';
-                modal.style.alignItems = 'center';
-                modal.style.justifyContent = 'center';
-                modal.style.zIndex = '1000';
+                modal.className = 'modal-overlay';
                 modal.style.opacity = '0';
-                modal.style.transition = 'opacity 0.3s';
-                modal.style.padding = '10px';
                 
                 modal.innerHTML = `
                     <div class="modal-content">
@@ -983,37 +1018,48 @@
                 `;
                 
                 document.body.appendChild(modal);
+                currentModal = modal;
                 
-                // Fade in
+                // Tampilkan modal dengan SANGAT CEPAT
                 setTimeout(() => {
                     modal.style.opacity = '1';
                 }, 10);
                 
-                // Close modal
-                const closeModal = () => {
+                // Fungsi penutupan CEPAT SEKALI
+                const closeModalFast = () => {
                     modal.style.opacity = '0';
+                    modal.classList.add('modal-hidden');
+                    
+                    // Hapus modal dengan SANGAT CEPAT
                     setTimeout(() => {
-                        modal.remove();
-                    }, 300);
+                        if (modal.parentNode) {
+                            document.body.removeChild(modal);
+                            currentModal = null;
+                        }
+                    }, 50); // HANYA 50ms - SANGAT CEPAT
                 };
                 
-                modal.querySelector('.modal-button').addEventListener('click', closeModal);
+                // Event listener untuk tombol Tutup
+                const closeButton = modal.querySelector('.modal-button');
+                closeButton.addEventListener('click', closeModalFast);
+                
+                // Event listener untuk klik di luar modal
                 modal.addEventListener('click', (e) => {
-                    if (e.target === modal) closeModal();
+                    if (e.target === modal) closeModalFast();
                 });
                 
-                // Close on ESC key
+                // Event listener untuk ESC key
                 const closeOnEsc = (e) => {
-                    if (e.key === 'Escape') closeModal();
+                    if (e.key === 'Escape') closeModalFast();
                 };
                 document.addEventListener('keydown', closeOnEsc);
                 
-                // Remove event listener after modal closes
-                modal.addEventListener('transitionend', () => {
-                    if (modal.style.opacity === '0') {
+                // Hapus event listener setelah modal tertutup
+                modal.addEventListener('transitionend', (e) => {
+                    if (e.propertyName === 'opacity' && modal.style.opacity === '0') {
                         document.removeEventListener('keydown', closeOnEsc);
                     }
-                });
+                }, { once: true });
             });
         });
 
@@ -1037,15 +1083,29 @@
             observer.observe(card);
         });
 
-        // Animate connectors - DIPERJELAS & DITAMPILKAN SEMUA
+        // Animate connectors - SANGAT JELAS
         const connectors = document.querySelectorAll('.connector-vertical, .connector-ketua-sekben, .connector-horizontal-sekben, .connector-sekben-divisi, .connector-horizontal-divisi, .connector-diagonal-left, .connector-diagonal-right');
         
         connectors.forEach(connector => {
             connector.style.opacity = '0';
             setTimeout(() => {
-                connector.style.transition = 'opacity 0.8s ease';
+                connector.style.transition = 'opacity 0.5s ease';
                 connector.style.opacity = '1';
-            }, 300);
+            }, 200);
+        });
+
+        // Tambah event untuk menutup modal jika ada klik di body (untuk keamanan)
+        document.addEventListener('click', (e) => {
+            if (currentModal && !currentModal.contains(e.target) && 
+                !Array.from(positions).some(pos => pos.contains(e.target))) {
+                currentModal.style.opacity = '0';
+                setTimeout(() => {
+                    if (currentModal && currentModal.parentNode) {
+                        document.body.removeChild(currentModal);
+                        currentModal = null;
+                    }
+                }, 50);
+            }
         });
     </script>
 </body>
