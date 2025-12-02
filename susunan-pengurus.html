@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Susunan Pengurus Koperasi KUD ASMARA TANI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #0d2e1a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 10px;
+        }
+
+        /* Background Elements */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .layer-1 {
+            background: radial-gradient(circle at 20% 50%, rgba(34, 139, 34, 0.15) 0%, transparent 50%),
+                       radial-gradient(circle at 80% 20%, rgba(50, 205, 50, 0.1) 0%, transparent 50%);
+            animation: float 25s infinite linear;
+        }
+
+        .layer-2 {
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(34, 139, 34, 0.05) 10px, rgba(34, 139, 34, 0.05) 20px);
+            animation: moveGrid 40s infinite linear;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        .shape-1 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            top: 10%;
+            left: 5%;
+            animation: floatShape1 20s infinite ease-in-out;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #2E8B57, #3CB371);
+            bottom: 15%;
+            right: 10%;
+            animation: floatShape2 25s infinite ease-in-out;
+        }
+
+        .shape-3 {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #006400, #008000);
+            top: 60%;
+            left: 80%;
+            animation: floatShape3 30s infinite ease-in-out;
+        }
+
+        /* Main Container */
+        .panitia-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Styling - LEBIH TERANG & JELAS */
+        .panitia-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 15px;
+            background: linear-gradient(135deg, rgba(0, 128, 0, 0.95), rgba(50, 205, 50, 0.95));
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            border: 2px solid rgba(144, 238, 144, 0.4);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(50, 205, 50, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: headerGlow 4s infinite alternate;
+        }
+
+        .panitia-header::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #32CD32, #90EE90, #00FF00, #98FB98);
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0.7;
+            border-radius: 17px;
+        }
+
+        .panitia-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #FFFFFF, #C8FFC8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
+            animation: textGlow 2s infinite alternate;
+        }
+
+        .panitia-header h2 {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            color: #C8FFC8;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(144, 238, 144, 0.5);
+        }
+
+        /* Org Chart Container */
+        .panitia-org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 15px 0;
+        }
+
+        /* Level Styling */
+        .panitia-level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            width: 100%;
+            position: relative;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(13, 46, 26, 0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Position Cards - LEBIH TERANG & LEBIH LEBAR UNTUK KETUA, SEKRE, BENDAHARA */
+        .panitia-position {
+            background: linear-gradient(145deg, rgba(40, 100, 60, 0.95), rgba(20, 60, 35, 0.95));
+            border-radius: 12px;
+            padding: 15px 10px;
+            margin: 10px;
+            text-align: center;
+            width: 170px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid transparent;
+            box-shadow: 
+                0 6px 15px rgba(0, 0, 0, 0.3),
+                0 0 25px rgba(50, 205, 50, 0.15);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .panitia-position::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #32CD32, #90EE90, #32CD32);
+            opacity: 0.8;
+            transition: all 0.4s;
+        }
+
+        .panitia-position::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .panitia-position:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(50, 205, 50, 0.4),
+                0 0 80px rgba(50, 205, 50, 0.2);
+            border-color: rgba(144, 238, 144, 0.5);
+        }
+
+        .panitia-position:hover::before {
+            height: 3px;
+            opacity: 1;
+        }
+
+        .panitia-position:hover::after {
+            transform: translateX(100%);
+        }
+
+        /* Level Specific Styles - LEBIH TERANG */
+        .panitia-level-1 .panitia-position {
+            background: linear-gradient(145deg, rgba(50, 205, 50, 0.98), rgba(34, 139, 34, 0.98));
+            width: 220px;
+            animation: pulseGreen 3s infinite;
+        }
+
+        .panitia-level-2 .panitia-position {
+            background: linear-gradient(145deg, rgba(60, 220, 60, 0.98), rgba(50, 205, 50, 0.98));
+            width: 200px; /* DITAMBAH 10px DARI 190px */
+            animation: pulseGreen 3s infinite 0.5s;
+        }
+
+        .panitia-level-3 .panitia-position {
+            background: linear-gradient(145deg, rgba(100, 255, 100, 0.98), rgba(60, 220, 60, 0.98));
+            width: 190px; /* DITAMBAH 10px DARI 180px */
+            animation: pulseGreen 3s infinite 1s;
+        }
+
+        .panitia-level-4 .panitia-position {
+            background: linear-gradient(145deg, rgba(144, 255, 144, 0.98), rgba(100, 255, 100, 0.98));
+            width: 170px;
+            animation: pulseGreen 3s infinite 1.5s;
+        }
+
+        /* Profile Images - Smaller */
+        .panitia-position img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #0d2e1a, #1a472a);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(50, 205, 50, 0.25);
+            transition: all 0.4s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .panitia-position:hover img {
+            transform: scale(1.08) rotate(3deg);
+            border-color: rgba(144, 238, 144, 0.8);
+            box-shadow: 
+                0 6px 25px rgba(0, 0, 0, 0.5),
+                0 0 35px rgba(50, 205, 50, 0.5);
+        }
+
+        /* Text Styling - Smaller */
+        .panitia-position h3 {
+            margin: 10px 0 4px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .panitia-position p {
+            margin: 3px 0;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+            z-index: 2;
+        }
+
+        .position-desc {
+            font-size: 0.7rem !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin-top: 5px !important;
+        }
+
+        /* GARIS KOMANDO - DIPERJELAS & DIPERTEBAL */
+        .connector-vertical {
+            height: 25px;
+            width: 3px; /* DIPERTEBAL dari 2px */
+            background: linear-gradient(to bottom, #90EE90, #32CD32, #90EE90);
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite;
+        }
+
+        /* Garis dari Ketua ke Sekretaris & Bendahara - DIPERJELAS */
+        .connector-ketua-sekben {
+            position: absolute;
+            width: 3px; /* DIPERTEBAL dari 2px */
+            height: 35px; /* DIPANJANGKAN dari 30px */
+            background: linear-gradient(to bottom, #90EE90, #32CD32, #90EE90);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite 0.2s;
+        }
+
+        /* Garis Horizontal Sekretaris-Bendahara - DIPERJELAS */
+        .connector-horizontal-sekben {
+            position: absolute;
+            height: 3px; /* DIPERTEBAL dari 2px */
+            width: 70%;
+            background: linear-gradient(to right, #90EE90, #32CD32, #90EE90);
+            top: -15px;
+            left: 15%;
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite 0.4s;
+        }
+
+        /* Garis dari Sekretaris/Bendahara ke Divisi - DIPERJELAS */
+        .connector-sekben-divisi {
+            position: absolute;
+            width: 3px; /* DIPERTEBAL dari 2px */
+            height: 35px; /* DIPANJANGKAN dari 30px */
+            background: linear-gradient(to bottom, #90EE90, #32CD32, #90EE90);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite 0.6s;
+        }
+
+        /* Garis Horizontal antara Divisi - DIPERJELAS */
+        .connector-horizontal-divisi {
+            position: absolute;
+            height: 3px; /* DIPERTEBAL dari 2px */
+            width: 85%;
+            background: linear-gradient(to right, #90EE90, #32CD32, #90EE90);
+            top: -15px;
+            left: 7.5%;
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite 0.8s;
+        }
+
+        /* GARIS DIAGONAL DARI KETUA KE SEKRE & BENDAHARA - DIPERJELAS & DITAMPILKAN */
+        .connector-diagonal-left {
+            position: absolute;
+            width: 110px; /* DIPANJANGKAN dari 100px */
+            height: 3px; /* DIPERTEBAL dari 2px */
+            background: linear-gradient(to right, #32CD32, #90EE90);
+            transform: rotate(-30deg);
+            transform-origin: left center;
+            top: 60px;
+            left: 50%;
+            z-index: 1;
+            box-shadow: 0 0 12px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite 1s;
+        }
+
+        .connector-diagonal-right {
+            position: absolute;
+            width: 110px; /* DIPANJANGKAN dari 100px */
+            height: 3px; /* DIPERTEBAL dari 2px */
+            background: linear-gradient(to left, #32CD32, #90EE90);
+            transform: rotate(30deg);
+            transform-origin: right center;
+            top: 60px;
+            right: 50%;
+            z-index: 1;
+            box-shadow: 0 0 12px rgba(144, 238, 144, 0.7);
+            animation: connectorPulse 1.5s infinite 1.2s;
+        }
+
+        /* Container khusus untuk struktur yang diminta */
+        .org-structure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .structure-row {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        /* Tambah margin khusus untuk Divisi Usaha (kiri) dan Divisi Kemitraan (kanan) */
+        .structure-item.divisi-kiri {
+            margin-left: 15px !important;
+        }
+        
+        .structure-item.divisi-kanan {
+            margin-right: 15px !important;
+        }
+
+        .structure-item {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        /* Badge Icons - Smaller */
+        .position-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #32CD32, #008000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+            z-index: 3;
+            transition: all 0.3s;
+        }
+
+        .panitia-position:hover .position-badge {
+            transform: scale(1.15) rotate(360deg);
+            box-shadow: 0 0 20px rgba(144, 238, 144, 0.8);
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(15px, 15px); }
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(80px, 80px); }
+        }
+
+        @keyframes floatShape1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, 20px) rotate(90deg); }
+            50% { transform: translate(0, 40px) rotate(180deg); }
+            75% { transform: translate(-30px, 20px) rotate(270deg); }
+        }
+
+        @keyframes floatShape2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-25px, 15px) rotate(120deg); }
+            66% { transform: translate(25px, -15px) rotate(240deg); }
+        }
+
+        @keyframes floatShape3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, -20px) scale(1.08); }
+        }
+
+        @keyframes headerGlow {
+            0% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 50px rgba(50, 205, 50, 0.3); }
+            100% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 70px rgba(50, 205, 50, 0.5); }
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 15px rgba(144, 238, 144, 0.8); }
+            100% { text-shadow: 0 0 25px rgba(144, 238, 144, 1), 0 0 40px rgba(200, 255, 200, 0.6); }
+        }
+
+        @keyframes pulseGreen {
+            0%, 100% { box-shadow: 0 6px 15px rgba(50, 205, 50, 0.3); }
+            50% { box-shadow: 0 6px 25px rgba(50, 205, 50, 0.5), 0 0 50px rgba(50, 205, 50, 0.4); }
+        }
+
+        @keyframes connectorPulse {
+            0%, 100% { opacity: 0.8; box-shadow: 0 0 15px rgba(144, 238, 144, 0.7); }
+            50% { opacity: 1; box-shadow: 0 0 25px rgba(144, 238, 144, 1); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design - Mobile First */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .panitia-container {
+                padding: 10px;
+            }
+            
+            .panitia-header {
+                padding: 20px 10px;
+                margin-bottom: 20px;
+            }
+            
+            .panitia-header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .panitia-header h2 {
+                font-size: 1rem;
+            }
+            
+            .panitia-position {
+                width: 150px; /* Sedikit lebih kecil untuk mobile */
+                margin: 8px;
+                padding: 12px 8px;
+            }
+            
+            .panitia-level-1 .panitia-position {
+                width: 180px;
+            }
+            
+            .panitia-level-2 .panitia-position {
+                width: 170px; /* Disesuaikan untuk mobile */
+            }
+            
+            .panitia-level-3 .panitia-position {
+                width: 160px; /* Disesuaikan untuk mobile */
+            }
+            
+            .panitia-level-4 .panitia-position {
+                width: 140px;
+            }
+            
+            .panitia-position img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .panitia-position h3 {
+                font-size: 0.9rem;
+            }
+            
+            .panitia-position p {
+                font-size: 0.75rem;
+            }
+            
+            .position-desc {
+                font-size: 0.65rem !important;
+            }
+            
+            /* Adjust connectors for mobile */
+            .connector-diagonal-left,
+            .connector-diagonal-right {
+                width: 80px; /* Lebih pendek di mobile */
+            }
+            
+            .connector-horizontal-sekben {
+                width: 80%;
+                left: 10%;
+            }
+            
+            .connector-horizontal-divisi {
+                width: 90%;
+                left: 5%;
+            }
+            
+            /* TAMBAH MARGIN KHUSUS UNTUK DIVISI DI MOBILE */
+            .structure-item.divisi-kiri {
+                margin-left: 10px !important;
+            }
+            
+            .structure-item.divisi-kanan {
+                margin-right: 10px !important;
+            }
+            
+            .structure-item {
+                margin: 0 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .panitia-header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .panitia-header h2 {
+                font-size: 0.9rem;
+            }
+            
+            .panitia-position {
+                width: 130px;
+                margin: 6px;
+                padding: 10px 6px;
+            }
+            
+            .panitia-level-1 .panitia-position {
+                width: 160px;
+            }
+            
+            .panitia-level-2 .panitia-position {
+                width: 150px;
+            }
+            
+            .panitia-level-3 .panitia-position {
+                width: 140px;
+            }
+            
+            .panitia-level-4 .panitia-position {
+                width: 120px;
+            }
+            
+            .panitia-position img {
+                width: 55px;
+                height: 55px;
+            }
+            
+            .position-badge {
+                width: 24px;
+                height: 24px;
+                font-size: 0.8rem;
+            }
+            
+            /* TAMBAH MARGIN LEBIH BESAR DI SCREEN SANGAT KECIL */
+            .structure-item.divisi-kiri {
+                margin-left: 8px !important;
+            }
+            
+            .structure-item.divisi-kanan {
+                margin-right: 8px !important;
+            }
+            
+            .structure-item {
+                margin: 0 8px;
+            }
+            
+            /* Garis diagonal disembunyikan di screen sangat kecil */
+            .connector-diagonal-left,
+            .connector-diagonal-right {
+                width: 60px;
+                top: 50px;
+            }
+            
+            .connector-horizontal-sekben,
+            .connector-horizontal-divisi {
+                width: 95%;
+                left: 2.5%;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .panitia-position {
+                width: 110px;
+            }
+            
+            .panitia-level-1 .panitia-position {
+                width: 140px;
+            }
+            
+            .panitia-level-2 .panitia-position {
+                width: 130px;
+            }
+            
+            .panitia-level-3 .panitia-position {
+                width: 120px;
+            }
+            
+            .panitia-level-4 .panitia-position {
+                width: 110px;
+            }
+            
+            /* MARGIN KHUSUS UNTUK SCREEN SANGAT KECIL */
+            .structure-item.divisi-kiri {
+                margin-left: 5px !important;
+            }
+            
+            .structure-item.divisi-kanan {
+                margin-right: 5px !important;
+            }
+            
+            .structure-item {
+                margin: 0 5px;
+            }
+            
+            .connector-diagonal-left,
+            .connector-diagonal-right {
+                display: block; /* Tetap ditampilkan tapi lebih kecil */
+                width: 50px;
+            }
+        }
+
+        /* Modal Styles - Smaller */
+        .modal-content {
+            background: linear-gradient(145deg, rgba(40, 100, 60, 0.98), rgba(20, 60, 35, 0.98)) !important;
+            padding: 20px !important;
+            border-radius: 15px !important;
+            border: 2px solid rgba(144, 238, 144, 0.5) !important;
+            box-shadow: 0 0 50px rgba(50, 205, 50, 0.5) !important;
+            max-width: 320px !important;
+            width: 90% !important;
+            margin: 0 auto !important;
+        }
+
+        .modal-content h3 {
+            color: #C8FFC8 !important;
+            margin-bottom: 15px !important;
+            font-size: 1.1rem !important;
+            text-shadow: 0 0 10px rgba(144, 238, 144, 0.5) !important;
+        }
+
+        .modal-content p {
+            font-size: 0.9rem !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        .modal-button {
+            background: linear-gradient(to right, #32CD32, #90EE90) !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            color: #0d2e1a !important;
+            border-radius: 5px !important;
+            cursor: pointer !important;
+            font-size: 0.9rem !important;
+            margin-top: 15px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Parallax Background -->
+    <div class="parallax-bg">
+        <div class="parallax-layer layer-1"></div>
+        <div class="parallax-layer layer-2"></div>
+        <div class="floating-shapes shape-1"></div>
+        <div class="floating-shapes shape-2"></div>
+        <div class="floating-shapes shape-3"></div>
+    </div>
+
+    <div class="panitia-container">
+        <div class="panitia-header">
+            <h1>SUSUNAN KEPENGURUSAN KOPERASI</h1>
+            <h2>KUD ASMARA TANI PERIODE 2025-2029</h2>
+        </div>
+        
+        <!-- Level 1 - Pengawas -->
+        <div class="panitia-level panitia-level-1">
+            <div class="panitia-position">
+                <div class="position-badge"><i class="fas fa-eye"></i></div>
+                <img alt="Icon Pengawas" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" />
+                <h3>PENGAWAS</h3>
+                <p>3 ORANG ANGGOTA PENGAWAS</p>
+                <p class="position-desc">Mengawasi operasional</p>
+            </div>
+        </div>
+        
+        <div class="connector-vertical"></div>
+        
+        <!-- STRUKTUR ORGANISASI UTAMA -->
+        <div class="org-structure">
+            <!-- Level 2 - Ketua -->
+            <div class="structure-row">
+                <div class="structure-item">
+                    <div class="panitia-position panitia-level-2">
+                        <div class="position-badge">1</div>
+                        <img alt="Foto Ketua" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnTsALz3jmxsU1JPuz9xfyIVI6mIfxBYp-SftLAtA-sIgJ_T3MFJ14mTb7GPP5m0u5VqAVNmjVT7gNq7s1UJE9dyAEPE4eby55DxEJ-Oej7wrVIlvSiV77pIcEY6D469NgMA936lAfryX2W2T0p3WK27INWw9FNH3KNykXZv062DlsemhPdBcoESJM/s320/1000175640.jpg" />
+                        <h3>KETUA</h3>
+                        <p>Eldi Sugianto, S.Kom</p>
+                        <p class="position-desc">Pemimpin Utama</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Garis Vertikal dari Ketua - DIPERJELAS -->
+            <div class="connector-ketua-sekben"></div>
+            
+            <!-- Level 3 - Sekretaris & Bendahara -->
+            <div class="structure-row" style="position: relative; min-height: 130px;">
+                <!-- Garis Diagonal Kiri dari Ketua ke Sekretaris - DIPERJELAS & DITAMPILKAN -->
+                <div class="connector-diagonal-left"></div>
+                <!-- Garis Diagonal Kanan dari Ketua ke Bendahara - DIPERJELAS & DITAMPILKAN -->
+                <div class="connector-diagonal-right"></div>
+                <!-- Garis Horizontal - DIPERJELAS -->
+                <div class="connector-horizontal-sekben"></div>
+                
+                <div class="structure-item">
+                    <div class="panitia-position panitia-level-3">
+                        <div class="position-badge">2</div>
+                        <img alt="Foto Sekretaris" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiLO4H4YEjozbPnDCt0hdWlSh8IMS4UzLAtgdU4urm06q974ecWuFeLJQM_zW9zNm7jpP1Qb0Gb3RZuSKRG241fivh86VBLC6q-_pntlfRdB5EYO0d5QMS-RcIzcqzW_1FOWeCTpLPsJ8FUcNfvDU1JXDNQaf5AU2_WKfnhiL0c99ad_-fud1ZMspBY/s320/1000516111.jpg" />
+                        <h3>SEKRETARIS</h3>
+                        <p>M. Taufik Yusuf, S.E</p>
+                        <p class="position-desc">Administrasi & Dokumentasi</p>
+                    </div>
+                </div>
+                
+                <div class="structure-item" style="margin: 0 30px;">
+                    <!-- Vertical line placeholder -->
+                </div>
+                
+                <div class="structure-item">
+                    <div class="panitia-position panitia-level-3">
+                        <div class="position-badge">3</div>
+                        <img alt="Foto Bendahara" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiJt1QaS35N_CaYliDtUJ_k8YqLWgpViQJ3D0KYkPikuXSJt_4sg-nqqrKWtyliA3nMvLaoIM8QDrvLGZvQMGVSOSFMBDeWs1nXYJGaVPj5y_-nSWhopif6ANFMkRDCUK8wu7sWnnWCht0acc_BNc-l0mCkPtYc4U2K_3liVBp4ubOsOdmLRVkCoUsL/s320/1000455867.jpg" />
+                        <h3>BENDAHARA</h3>
+                        <p>Desi Yulianita</p>
+                        <p class="position-desc">Keuangan & Anggaran</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Garis Vertikal dari Sekretaris/Bendahara ke Divisi - DIPERJELAS -->
+            <div class="connector-sekben-divisi"></div>
+            
+            <!-- Level 4 - Divisi -->
+            <div class="structure-row" style="position: relative; min-height: 100px;">
+                <!-- Garis Horizontal antara Divisi - DIPERJELAS -->
+                <div class="connector-horizontal-divisi"></div>
+                
+                <!-- Divisi Usaha - TAMBAH MARGIN KIRI -->
+                <div class="structure-item divisi-kiri">
+                    <div class="panitia-position panitia-level-4">
+                        <div class="position-badge"><i class="fas fa-chart-line"></i></div>
+                        <img alt="Icon Usaha" src="https://cdn-icons-png.flaticon.com/512/3135/3135756.png" />
+                        <h3>DIVISI USAHA</h3>
+                        <p>Tim Pengembangan</p>
+                        <p class="position-desc">Pengembangan Bisnis</p>
+                    </div>
+                </div>
+                
+                <!-- Divisi Anggota - Tengah -->
+                <div class="structure-item">
+                    <div class="panitia-position panitia-level-4">
+                        <div class="position-badge"><i class="fas fa-users"></i></div>
+                        <img alt="Icon Anggota" src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" />
+                        <h3>DIVISI ANGGOTA</h3>
+                        <p>Tim Pelayanan</p>
+                        <p class="position-desc">Pelayanan Anggota</p>
+                    </div>
+                </div>
+                
+                <!-- Divisi Kemitraan - TAMBAH MARGIN KANAN -->
+                <div class="structure-item divisi-kanan">
+                    <div class="panitia-position panitia-level-4">
+                        <div class="position-badge"><i class="fas fa-handshake"></i></div>
+                        <img alt="Icon Kemitraan" src="https://cdn-icons-png.flaticon.com/512/3135/3135773.png" />
+                        <h3>DIVISI KEMITRAAN</h3>
+                        <p>Tim Kerjasama</p>
+                        <p class="position-desc">Jaringan & Kerjasama</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p><i class="fas fa-info-circle"></i> KUD ASMARA TANI - Membangun Ekonomi Bersama | Periode 2025-2029</p>
+            <p style="margin-top: 8px; font-size: 0.7rem; opacity: 0.7;">Klik kartu untuk detail • Arahkan kursor untuk efek hover</p>
+        </div>
+    </div>
+
+    <script>
+        // Parallax Effect
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth - e.pageX * 2) / 150;
+            const y = (window.innerHeight - e.pageY * 2) / 150;
+            
+            document.querySelector('.layer-1').style.transform = `translate(${x}px, ${y}px)`;
+            document.querySelector('.layer-2').style.transform = `translate(${x * 1.5}px, ${y * 1.5}px)`;
+        });
+
+        // Hover Effect dengan Ripple
+        const positions = document.querySelectorAll('.panitia-position');
+        positions.forEach(position => {
+            position.addEventListener('mouseenter', function() {
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 10);
+                
+                // Create ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'radial-gradient(circle, rgba(144, 238, 144, 0.25) 0%, transparent 70%)';
+                ripple.style.width = '0';
+                ripple.style.height = '0';
+                ripple.style.top = '50%';
+                ripple.style.left = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.zIndex = '1';
+                this.appendChild(ripple);
+                
+                // Animate ripple
+                setTimeout(() => {
+                    ripple.style.width = '150px';
+                    ripple.style.height = '150px';
+                    ripple.style.opacity = '0';
+                    ripple.style.transition = 'all 0.4s ease-out';
+                }, 10);
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 500);
+            });
+            
+            // Click effect - Modal
+            position.addEventListener('click', function() {
+                const title = this.querySelector('h3').textContent;
+                const name = this.querySelector('p').textContent;
+                const desc = this.querySelector('.position-desc') ? this.querySelector('.position-desc').textContent : '';
+                
+                // Create modal
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.background = 'rgba(0,0,0,0.9)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '1000';
+                modal.style.opacity = '0';
+                modal.style.transition = 'opacity 0.3s';
+                modal.style.padding = '10px';
+                
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3>${title}</h3>
+                        <p style="font-size: 1rem; margin-bottom: 8px;"><strong>${name}</strong></p>
+                        <p style="margin-bottom: 15px; opacity: 0.9;">${desc}</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px;">KUD ASMARA TANI</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8;">Periode 2025-2029</p>
+                        <button class="modal-button">Tutup</button>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Fade in
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+                
+                // Close modal
+                const closeModal = () => {
+                    modal.style.opacity = '0';
+                    setTimeout(() => {
+                        modal.remove();
+                    }, 300);
+                };
+                
+                modal.querySelector('.modal-button').addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
+                
+                // Close on ESC key
+                const closeOnEsc = (e) => {
+                    if (e.key === 'Escape') closeModal();
+                };
+                document.addEventListener('keydown', closeOnEsc);
+                
+                // Remove event listener after modal closes
+                modal.addEventListener('transitionend', () => {
+                    if (modal.style.opacity === '0') {
+                        document.removeEventListener('keydown', closeOnEsc);
+                    }
+                });
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -30px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = `fadeInUp 0.5s ease-out forwards`;
+                }
+            });
+        }, observerOptions);
+
+        // Observe all position cards
+        document.querySelectorAll('.panitia-position').forEach(card => {
+            card.style.opacity = '0';
+            observer.observe(card);
+        });
+
+        // Animate connectors - DIPERJELAS & DITAMPILKAN SEMUA
+        const connectors = document.querySelectorAll('.connector-vertical, .connector-ketua-sekben, .connector-horizontal-sekben, .connector-sekben-divisi, .connector-horizontal-divisi, .connector-diagonal-left, .connector-diagonal-right');
+        
+        connectors.forEach(connector => {
+            connector.style.opacity = '0';
+            setTimeout(() => {
+                connector.style.transition = 'opacity 0.8s ease';
+                connector.style.opacity = '1';
+            }, 300);
+        });
+    </script>
+</body>
+</html>
