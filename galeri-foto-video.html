@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Foto & Video Koperasi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+    <style>
+        :root {
+            --primary: #1a6d5d;
+            --secondary: #2a9d8f;
+            --accent: #e9c46a;
+            --accent-light: #f4e3b1;
+            --dark: #264653;
+            --light: #f8f9fa;
+            --gradient-primary: linear-gradient(135deg, #2a9d8f, #1a6d5d);
+            --gradient-secondary: linear-gradient(135deg, #e9c46a, #f4a261);
+            --gradient-header: linear-gradient(135deg, #1a6d5d, #264653);
+            --gradient-hero: linear-gradient(135deg, #2a9d8f, #1a6d5d, #264653);
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --glow: 0 0 25px rgba(233, 196, 106, 0.4);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f1a1f;
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Header & Navigasi - DIKECILKAN */
+        header {
+            background: var(--gradient-header);
+            padding: 0.8rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(233, 196, 106, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.6rem; /* DIKECILKAN dari 2.2rem */
+            font-weight: 700;
+            background: linear-gradient(to right, var(--light), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.8px;
+        }
+
+        .logo i {
+            color: var(--accent);
+            font-size: 2rem; /* DIKECILKAN dari 2.8rem */
+            filter: drop-shadow(0 0 8px rgba(233, 196, 106, 0.5));
+        }
+
+        .tagline {
+            font-size: 1rem; /* DIKECILKAN dari 1.3rem */
+            color: var(--accent-light);
+            font-weight: 600;
+            background: rgba(38, 70, 83, 0.7);
+            padding: 4px 15px;
+            border-radius: 30px;
+            border: 1px solid rgba(233, 196, 106, 0.3);
+        }
+
+        /* Hero Section - WARNA DIRUBAH */
+        .hero {
+            padding: 140px 5% 80px; /* DIKECILKAN dari 180px 5% 100px */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--gradient-hero);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            margin-bottom: 60px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem; /* DIKECILKAN dari 4rem */
+            margin-bottom: 1rem;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, var(--light), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1.2px;
+        }
+
+        .hero p {
+            font-size: 1.2rem; /* DIKECILKAN dari 1.4rem */
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+            color: var(--accent-light);
+        }
+
+        /* 3D Carousel */
+        .carousel-section {
+            padding: 0 5% 80px; /* DIKECILKAN dari 0 5% 100px */
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem; /* DIKECILKAN dari 2.5rem */
+            margin-bottom: 2.5rem;
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px; /* DIKECILKAN dari 100px */
+            height: 4px;
+            background: var(--gradient-secondary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .swiper {
+            width: 100%;
+            height: 450px; /* DIKECILKAN dari 500px */
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), var(--glow);
+        }
+
+        .swiper-slide {
+            position: relative;
+            background: var(--dark);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .swiper-slide:hover img {
+            transform: scale(1.05);
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(38, 70, 83, 0.95), transparent);
+            padding: 25px;
+            color: white;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .swiper-slide:hover .carousel-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .carousel-title {
+            font-size: 1.6rem; /* DIKECILKAN dari 1.8rem */
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .carousel-desc {
+            font-size: 0.95rem; /* DIKECILKAN dari 1rem */
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            color: var(--accent);
+            background: rgba(38, 70, 83, 0.8);
+            width: 50px; /* DIKECILKAN dari 60px */
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 1.3rem; /* DIKECILKAN dari 1.5rem */
+        }
+
+        /* Section Foto & Video Terpisah */
+        .media-section {
+            padding: 60px 5%; /* DIKECILKAN dari 80px 5% */
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .media-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px; /* DIKECILKAN dari 50px */
+            margin-top: 40px; /* DIKECILKAN dari 50px */
+        }
+
+        @media (max-width: 992px) {
+            .media-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .media-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px; /* DIKECILKAN dari 30px */
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .media-box:hover {
+            transform: translateY(-8px); /* DIKECILKAN dari -10px */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), var(--glow);
+            border-color: var(--accent);
+        }
+
+        .media-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px; /* DIKECILKAN dari 30px */
+            padding-bottom: 12px; /* DIKECILKAN dari 15px */
+            border-bottom: 2px solid rgba(233, 196, 106, 0.3);
+        }
+
+        .media-title {
+            font-size: 1.8rem; /* DIKECILKAN dari 2rem */
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px; /* DIKECILKAN dari 15px */
+        }
+
+        .media-title i {
+            font-size: 2rem; /* DIKECILKAN dari 2.2rem */
+        }
+
+        .badge {
+            background: var(--gradient-secondary);
+            color: var(--dark);
+            padding: 4px 12px; /* DIKECILKAN dari 5px 15px */
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem; /* DIKECILKAN dari 0.9rem */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* DESKRIPSI SINGKAT DITAMBAHKAN */
+        .media-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px; /* DIKECILKAN dari 25px */
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+        }
+
+        .read-more {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--accent);
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: rgba(233, 196, 106, 0.1);
+            border-radius: 20px;
+            transition: var(--transition);
+            border: 1px solid rgba(233, 196, 106, 0.2);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .read-more:hover {
+            background: rgba(233, 196, 106, 0.2);
+            transform: translateX(5px);
+        }
+
+        .read-more i {
+            margin-left: 5px;
+            transition: var(--transition);
+        }
+
+        .read-more:hover i {
+            margin-left: 10px;
+        }
+
+        .see-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem; /* DIKECILKAN dari 1.1rem */
+            padding: 8px 18px; /* DIKECILKAN dari 10px 20px */
+            background: rgba(233, 196, 106, 0.1);
+            border-radius: 30px;
+            transition: var(--transition);
+            border: 1px solid rgba(233, 196, 106, 0.3);
+        }
+
+        .see-more:hover {
+            background: rgba(233, 196, 106, 0.2);
+            gap: 12px; /* DIKECILKAN dari 15px */
+            padding-right: 22px; /* DIKECILKAN dari 25px */
+        }
+
+        /* Grid Foto & Video */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* DIKECILKAN dari 280px */
+            gap: 20px; /* DIKECILKAN dari 25px */
+            margin-top: 25px; /* DIKECILKAN dari 30px */
+        }
+
+        .media-item {
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            height: 220px; /* DIKECILKAN dari 250px */
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .media-item:hover {
+            transform: translateY(-8px) scale(1.02); /* DIKECILKAN dari -10px */
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3), var(--glow);
+            border-color: var(--accent);
+        }
+
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .media-item:hover img, .media-item:hover video {
+            transform: scale(1.05);
+        }
+
+        .item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(38, 70, 83, 0.95), transparent);
+            padding: 15px; /* DIKECILKAN dari 20px */
+            transform: translateY(20px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .media-item:hover .item-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1.1rem; /* DIKECILKAN dari 1.2rem */
+            margin-bottom: 5px;
+        }
+
+        .item-category {
+            font-size: 0.85rem; /* DIKECILKAN dari 0.9rem */
+            color: var(--accent);
+            background: rgba(38, 70, 83, 0.7);
+            padding: 2px 8px; /* DIKECILKAN dari 3px 10px */
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 8px; /* DIKECILKAN dari 10px */
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px; /* DIKECILKAN dari 10px */
+            margin-top: 8px; /* DIKECILKAN dari 10px */
+        }
+
+        .action-btn {
+            width: 32px; /* DIKECILKAN dari 36px */
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: scale(1.1);
+        }
+
+        /* Modal untuk gambar/video besar */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px; /* DIKECILKAN dari 20px */
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .modal-content img, .modal-content video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .modal-actions {
+            position: absolute;
+            top: 15px; /* DIKECILKAN dari 20px */
+            right: 15px; /* DIKECILKAN dari 20px */
+            display: flex;
+            gap: 8px; /* DIKECILKAN dari 10px */
+            z-index: 10;
+        }
+
+        .modal-btn {
+            width: 45px; /* DIKECILKAN dari 50px */
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(38, 70, 83, 0.9);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem; /* DIKECILKAN dari 1.2rem */
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: scale(1.1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px; /* DIKECILKAN dari 20px */
+            right: 75px; /* DIKECILKAN dari 90px */
+            color: white;
+            font-size: 35px; /* DIKECILKAN dari 40px */
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            color: var(--accent);
+            transform: rotate(90deg);
+        }
+
+        .modal-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(38, 70, 83, 0.95), transparent);
+            padding: 20px; /* DIKECILKAN dari 25px */
+            color: white;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px; /* DIKECILKAN dari 10px */
+            margin-top: 40px; /* DIKECILKAN dari 50px */
+            padding: 15px 0; /* DIKECILKAN dari 20px 0 */
+        }
+
+        .page-btn {
+            width: 40px; /* DIKECILKAN dari 45px */
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .page-btn:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: scale(1.1);
+        }
+
+        .page-btn.active {
+            background: var(--gradient-secondary);
+            color: var(--dark);
+            box-shadow: var(--glow);
+        }
+
+        .page-dots {
+            color: rgba(255, 255, 255, 0.5);
+            padding: 0 8px; /* DIKECILKAN dari 10px */
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gradient-header);
+            padding: 50px 5% 25px; /* DIKECILKAN dari 60px 5% 30px */
+            border-top: 2px solid rgba(233, 196, 106, 0.2);
+            margin-top: 40px; /* DIKECILKAN dari 50px */
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 35px; /* DIKECILKAN dari 40px */
+            margin-bottom: 35px; /* DIKECILKAN dari 40px */
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.4rem; /* DIKECILKAN dari 1.5rem */
+            margin-bottom: 15px; /* DIKECILKAN dari 20px */
+            color: var(--accent);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 12px; /* DIKECILKAN dari 15px */
+            margin-top: 15px; /* DIKECILKAN dari 20px */
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px; /* DIKECILKAN dari 45px */
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--light);
+            font-size: 1.1rem; /* DIKECILKAN dari 1.2rem */
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 25px; /* DIKECILKAN dari 30px */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem; /* DIKECILKAN dari 0.9rem */
+        }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem; /* DIKECILKAN dari 2.8rem */
+            }
+            
+            .logo {
+                font-size: 1.4rem; /* DIKECILKAN dari 1.8rem */
+            }
+            
+            .tagline {
+                font-size: 0.9rem; /* DIKECILKAN dari 1rem */
+            }
+            
+            .swiper {
+                height: 300px; /* DIKECILKAN dari 350px */
+            }
+            
+            .media-title {
+                font-size: 1.4rem; /* DIKECILKAN dari 1.6rem */
+            }
+            
+            .section-title {
+                font-size: 1.8rem; /* DIKECILKAN dari 2rem */
+            }
+            
+            .media-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+        }
+
+        /* Animasi parallax */
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="%23e9c46a" opacity="0.1"/><circle cx="50" cy="50" r="20" fill="%232a9d8f" opacity="0.1"/></svg>');
+            background-size: cover;
+        }
+
+        /* Efek animasi masuk */
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigasi -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-camera-retro"></i>
+                <span>GALERI FOTO & VIDEO</span>
+            </div>
+            <div class="tagline">#KoperasiJenius</div>
+        </div>
+        <div class="parallax-bg"></div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Galeri Digital Koperasi</h1>
+        <p>Menyimpan setiap momen berharga perjalanan koperasi menuju kemandirian dan kesejahteraan bersama.</p>
+    </section>
+
+    <!-- 3D Carousel -->
+    <section class="carousel-section">
+        <h2 class="section-title">Sorotan Kegiatan</h2>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Rapat Anggota">
+                    <div class="carousel-overlay">
+                        <div class="carousel-title">Rapat Tahunan Anggota 2023</div>
+                        <div class="carousel-desc">Pertemuan tahunan anggota koperasi untuk membahas perkembangan dan rencana ke depan.</div>
+                        <button class="see-more">Lihat Detail <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Pelatihan">
+                    <div class="carousel-overlay">
+                        <div class="carousel-title">Pelatihan Kewirausahaan</div>
+                        <div class="carousel-desc">Program pelatihan untuk meningkatkan kompetensi anggota dalam berwirausaha.</div>
+                        <button class="see-more">Lihat Detail <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Presentasi">
+                    <div class="carousel-overlay">
+                        <div class="carousel-title">Presentasi Kinerja Triwulan</div>
+                        <div class="carousel-desc">Penyampaian hasil kinerja koperasi selama triwulan terakhir kepada anggota.</div>
+                        <button class="see-more">Lihat Detail <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Kegiatan Anggota">
+                    <div class="carousel-overlay">
+                        <div class="carousel-title">Kegiatan Sosial Anggota</div>
+                        <div class="carousel-desc">Aksi sosial anggota koperasi dalam rangka meningkatkan kepedulian terhadap masyarakat.</div>
+                        <button class="see-more">Lihat Detail <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <!-- Section Foto -->
+    <section class="media-section">
+        <div class="media-container">
+            <div class="media-box fade-in">
+                <div class="media-header">
+                    <h3 class="media-title"><i class="fas fa-images"></i> Galeri Foto</h3>
+                    <span class="badge">48 Foto</span>
+                </div>
+                <p class="media-description">
+                    Koleksi foto dokumentasi kegiatan koperasi, mulai dari rapat anggota, pelatihan, hingga acara sosial. 
+                    Setiap foto menceritakan perjalanan koperasi menuju kemandirian dan kesejahteraan bersama.
+                </p>
+                
+                <!-- TAMBAHAN: Deskripsi singkat dengan link Baca selengkapnya -->
+                <a href="https://koperasijenius.id/artikel/galeri-foto-detail" target="_blank" class="read-more">
+                    Baca selengkapnya tentang Galeri Foto <i class="fas fa-external-link-alt"></i>
+                </a>
+                
+                <a href="#" class="see-more">Lihat Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                
+                <div class="media-grid">
+                    <div class="media-item" data-category="event">
+                        <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Gedung Koperasi">
+                        <div class="item-overlay">
+                            <div class="item-title">Kantor Pusat Koperasi</div>
+                            <div class="item-category">Infrastruktur</div>
+                            <div class="item-actions">
+                                <button class="action-btn download-btn" data-url="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <!-- TAMBAHAN: Link ke artikel detail -->
+                                <button class="action-btn article-btn" onclick="window.open('https://koperasijenius.id/artikel/kantor-pusat-koperasi', '_blank')">
+                                    <i class="fas fa-newspaper"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="media-item" data-category="achievement">
+                        <img src="https://images.unsplash.com/photo-1551836026-d5c2c5af78e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w-800&q=80" alt="Penghargaan">
+                        <div class="item-overlay">
+                            <div class="item-title">Penghargaan Koperasi Terbaik</div>
+                            <div class="item-category">Prestasi</div>
+                            <div class="item-actions">
+                                <button class="action-btn download-btn" data-url="https://images.unsplash.com/photo-1551836026-d5c2c5af78e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w-800&q=80">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <!-- TAMBAHAN: Link ke artikel detail -->
+                                <button class="action-btn article-btn" onclick="window.open('https://koperasijenius.id/artikel/penghargaan-koperasi-terbaik', '_blank')">
+                                    <i class="fas fa-newspaper"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="media-item" data-category="member">
+                        <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Anggota">
+                        <div class="item-overlay">
+                            <div class="item-title">Kegiatan Rutin Anggota</div>
+                            <div class="item-category">Anggota</div>
+                            <div class="item-actions">
+                                <button class="action-btn download-btn" data-url="https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <!-- TAMBAHAN: Link ke artikel detail -->
+                                <button class="action-btn article-btn" onclick="window.open('https://koperasijenius.id/artikel/kegiatan-rutin-anggota', '_blank')">
+                                    <i class="fas fa-newspaper"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section Video -->
+            <div class="media-box fade-in">
+                <div class="media-header">
+                    <h3 class="media-title"><i class="fas fa-video"></i> Galeri Video</h3>
+                    <span class="badge">24 Video</span>
+                </div>
+                <p class="media-description">
+                    Dokumentasi video berbagai kegiatan koperasi yang menampilkan dinamika, semangat gotong royong, 
+                    dan perkembangan koperasi dari waktu ke waktu. Tersedia dalam kualitas HD.
+                </p>
+                
+                <!-- TAMBAHAN: Deskripsi singkat dengan link Baca selengkapnya -->
+                <a href="https://koperasijenius.id/artikel/galeri-video-detail" target="_blank" class="read-more">
+                    Baca selengkapnya tentang Galeri Video <i class="fas fa-external-link-alt"></i>
+                </a>
+                
+                <a href="#" class="see-more">Lihat Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                
+                <div class="media-grid">
+                    <div class="media-item" data-category="event">
+                        <video muted loop>
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-woman-typing-on-laptop-3982-large.mp4" type="video/mp4">
+                        </video>
+                        <div class="item-overlay">
+                            <div class="item-title">Pelatihan Digital</div>
+                            <div class="item-category">Edukasi</div>
+                            <div class="item-actions">
+                                <button class="action-btn download-btn" data-url="https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-woman-typing-on-laptop-3982-large.mp4">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <!-- TAMBAHAN: Link ke artikel detail -->
+                                <button class="action-btn article-btn" onclick="window.open('https://koperasijenius.id/artikel/pelatihan-digital-koperasi', '_blank')">
+                                    <i class="fas fa-newspaper"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="item-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="media-item" data-category="achievement">
+                        <video muted loop>
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-talking-on-a-video-call-3980-large.mp4" type="video/mp4">
+                        </video>
+                        <div class="item-overlay">
+                            <div class="item-title">Konsultasi Keuangan</div>
+                            <div class="item-category">Layanan</div>
+                            <div class="item-actions">
+                                <button class="action-btn download-btn" data-url="https://assets.mixkit.co/videos/preview/mixkit-woman-talking-on-a-video-call-3980-large.mp4">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <!-- TAMBAHAN: Link ke artikel detail -->
+                                <button class="action-btn article-btn" onclick="window.open('https://koperasijenius.id/artikel/konsultasi-keuangan-anggota', '_blank')">
+                                    <i class="fas fa-newspaper"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="item-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="media-item" data-category="member">
+                        <video muted loop>
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-people-in-a-meeting-4462-large.mp4" type="video/mp4">
+                        </video>
+                        <div class="item-overlay">
+                            <div class="item-title">Diskusi Anggota</div>
+                            <div class="item-category">Musyawarah</div>
+                            <div class="item-actions">
+                                <button class="action-btn download-btn" data-url="https://assets.mixkit.co/videos/preview/mixkit-people-in-a-meeting-4462-large.mp4">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <!-- TAMBAHAN: Link ke artikel detail -->
+                                <button class="action-btn article-btn" onclick="window.open('https://koperasijenius.id/artikel/diskusi-anggota-koperasi', '_blank')">
+                                    <i class="fas fa-newspaper"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="item-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <span class="page-dots">...</span>
+        <button class="page-btn">8</button>
+        <button class="page-btn">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Modal untuk gambar/video besar -->
+    <div class="modal" id="mediaModal">
+        <span class="close-modal">&times;</span>
+        <div class="modal-actions">
+            <button class="modal-btn" id="downloadModalBtn">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="modal-btn" id="fullscreenModalBtn">
+                <i class="fas fa-expand"></i>
+            </button>
+            <!-- TAMBAHAN: Tombol artikel di modal -->
+            <button class="modal-btn" id="articleModalBtn">
+                <i class="fas fa-newspaper"></i>
+            </button>
+        </div>
+        <div class="modal-content">
+            <!-- Konten akan dimuat dinamis -->
+        </div>
+        <div class="modal-info">
+            <h3 id="modalTitle">Judul Media</h3>
+            <p id="modalCategory">Kategori</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Galeri Koperasi Jenius</h3>
+                <p>Mendokumentasikan setiap langkah perjalanan koperasi menuju kemandirian dan kesejahteraan anggota melalui media visual.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Kontak Kami</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Jl. KH. Abdul Hamid Km. 15 Desa Ciasmara-Pamijahan, Bogor, Jawa Barat</p>
+                <p><i class="fas fa-phone"></i> 0852-1848-3129</p>
+                <p><i class="fas fa-envelope"></i> koperasi@asmaratani.co.id</p>
+                <p><i class="fas fa-clock"></i> Senin – Sabtu (08.00 – 16.00 WIB)</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Tautan Cepat</h3>
+                <p><a href="https://koperasijenius.id/artikel/galeri-foto-detail" target="_blank" style="color: #e9c46a; text-decoration: none;">Artikel Galeri Foto</a></p>
+                <p><a href="https://koperasijenius.id/artikel/galeri-video-detail" target="_blank" style="color: #e9c46a; text-decoration: none;">Artikel Galeri Video</a></p>
+                <p><a href="#" style="color: #e9c46a; text-decoration: none;">Kegiatan Terbaru</a></p>
+                <p><a href="#" style="color: #e9c46a; text-decoration: none;">Download Media</a></p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 Koperasi Jenius. Semua hak dilindungi. | #KoperasiJenius - Gotong Royong Digital</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        // Inisialisasi Swiper Carousel 3D
+        const swiper = new Swiper('.mySwiper', {
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            coverflowEffect: {
+                rotate: 20,
+                stretch: 0,
+                depth: 200,
+                modifier: 1,
+                slideShadows: true,
+            },
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+        
+        // Modal untuk gambar/video besar
+        const modal = document.getElementById('mediaModal');
+        const modalContent = document.querySelector('.modal-content');
+        const closeModal = document.querySelector('.close-modal');
+        const downloadModalBtn = document.getElementById('downloadModalBtn');
+        const fullscreenModalBtn = document.getElementById('fullscreenModalBtn');
+        const articleModalBtn = document.getElementById('articleModalBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCategory = document.getElementById('modalCategory');
+        
+        let currentMediaUrl = '';
+        let currentMediaTitle = '';
+        let currentMediaCategory = '';
+        let currentArticleUrl = '';
+        
+        // Fungsi untuk mendapatkan URL artikel berdasarkan kategori dan judul
+        function getArticleUrl(category, title) {
+            const articleMap = {
+                'Infrastruktur': 'https://koperasijenius.id/artikel/kantor-pusat-koperasi',
+                'Prestasi': 'https://koperasijenius.id/artikel/penghargaan-koperasi-terbaik',
+                'Anggota': 'https://koperasijenius.id/artikel/kegiatan-rutin-anggota',
+                'Edukasi': 'https://koperasijenius.id/artikel/pelatihan-digital-koperasi',
+                'Layanan': 'https://koperasijenius.id/artikel/konsultasi-keuangan-anggota',
+                'Musyawarah': 'https://koperasijenius.id/artikel/diskusi-anggota-koperasi'
+            };
+            
+            return articleMap[category] || 'https://koperasijenius.id/artikel/galeri-umum';
+        }
+        
+        // Event listener untuk item media
+        document.querySelectorAll('.media-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const img = item.querySelector('img');
+                const video = item.querySelector('video');
+                const title = item.querySelector('.item-title')?.textContent || 'Media Koperasi';
+                const category = item.querySelector('.item-category')?.textContent || 'Umum';
+                
+                if (img) {
+                    currentMediaUrl = img.src;
+                    modalContent.innerHTML = `<img src="${img.src}" alt="${img.alt}">`;
+                } else if (video) {
+                    currentMediaUrl = video.querySelector('source').src;
+                    const videoClone = video.cloneNode(true);
+                    videoClone.controls = true;
+                    videoClone.muted = false;
+                    videoClone.autoplay = true;
+                    modalContent.innerHTML = '';
+                    modalContent.appendChild(videoClone);
+                }
+                
+                currentMediaTitle = title;
+                currentMediaCategory = category;
+                currentArticleUrl = getArticleUrl(category, title);
+                
+                modalTitle.textContent = title;
+                modalCategory.textContent = category;
+                
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        // Event listener untuk tombol aksi di item
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const url = btn.getAttribute('data-url');
+                downloadMedia(url);
+            });
+        });
+        
+        document.querySelectorAll('.fullscreen-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const item = btn.closest('.media-item');
+                item.click();
+            });
+        });
+        
+        // Event listener untuk tombol artikel di item
+        document.querySelectorAll('.article-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const item = btn.closest('.media-item');
+                const category = item.querySelector('.item-category')?.textContent || 'Umum';
+                const title = item.querySelector('.item-title')?.textContent || 'Media Koperasi';
+                const articleUrl = getArticleUrl(category, title);
+                window.open(articleUrl, '_blank');
+            });
+        });
+        
+        // Fungsi download media
+        function downloadMedia(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'koperasi_jenius_' + Date.now();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Tampilkan notifikasi
+            showNotification('Media sedang didownload...');
+        }
+        
+        // Fungsi notifikasi
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: var(--gradient-secondary);
+                color: var(--dark);
+                padding: 12px 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+                z-index: 3000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Event listener untuk tombol di modal
+        downloadModalBtn.addEventListener('click', () => {
+            if (currentMediaUrl) {
+                downloadMedia(currentMediaUrl);
+            }
+        });
+        
+        fullscreenModalBtn.addEventListener('click', () => {
+            const elem = modalContent;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        });
+        
+        articleModalBtn.addEventListener('click', () => {
+            if (currentArticleUrl) {
+                window.open(currentArticleUrl, '_blank');
+            }
+        });
+        
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Hentikan video yang sedang diputar
+            const videoInModal = modalContent.querySelector('video');
+            if (videoInModal) {
+                videoInModal.pause();
+            }
+        });
+        
+        // Tutup modal saat klik di luar konten
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                // Hentikan video yang sedang diputar
+                const videoInModal = modalContent.querySelector('video');
+                if (videoInModal) {
+                    videoInModal.pause();
+                }
+            }
+        });
+        
+        // Pagination
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Simulasi loading
+                showNotification('Memuat halaman ' + this.textContent + '...');
+            });
+        });
+        
+        // Efek parallax pada hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxBg = document.querySelector('.parallax-bg');
+            if (parallaxBg) {
+                parallaxBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+            
+            // Efek fade in pada item saat scroll
+            const items = document.querySelectorAll('.fade-in');
+            items.forEach(item => {
+                const itemTop = item.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (itemTop < windowHeight - 100) {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        // Inisialisasi video agar diputar saat hover
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            video.addEventListener('mouseenter', () => {
+                video.play();
+            });
+            
+            video.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0;
+            });
+        });
+        
+        // Inisialisasi CSS untuk notifikasi
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Inisialisasi fade in untuk item yang terlihat saat load
+        document.addEventListener('DOMContentLoaded', () => {
+            const items = document.querySelectorAll('.fade-in');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
