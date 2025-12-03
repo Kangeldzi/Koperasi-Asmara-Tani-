@@ -3,554 +3,289 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tentang Koperasi KUD Asmara Tani</title>
+<title>Pinjaman - KUD Asmara Tani</title>
 
-<!-- fontawesome untuk ikon -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<!-- ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-    /* ---------- KONSISTEN DENGAN SCRIPT ASLI (TIDAK MENGUBAH ISI) ---------- */
     body {
-        font-family: "Poppins", sans-serif;
         margin: 0;
-        padding: 0;
-        background: #f7f9fc;
+        font-family: 'Poppins', sans-serif;
+        background: #f4f7f5;
         color: #333;
-        -webkit-font-smoothing:antialiased;
     }
 
-    /* BACK BUTTON - ditambahkan, tidak mengubah isi halaman */
-    .back-home {
-        position: fixed;
-        top: 18px;
-        left: 18px;
-        padding: 10px 16px;
-        background: #1b5e20;
+    /* HEADER GRADIENT — SAMA EXACT SEPERTI GAMBAR */
+    .header {
+        background: linear-gradient(135deg, #0a8b3a, #1ca64c);
         color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        z-index: 9999;
-        box-shadow: 0 8px 22px rgba(27,94,32,0.14);
-        transition: transform .15s ease, background .12s;
-    }
-    .back-home:hover { transform: translateY(-3px); background: #2e7d32; }
-
-    /* HEADER (preserved) */
-    .hero {
-        background: linear-gradient(120deg, #1b5e20, #4caf50);
-        color: white;
-        padding: 70px 20px;
+        padding: 40px 20px 70px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    .hero h1 {
-        font-size: 40px;
-        margin-bottom: 10px;
-        font-weight: 700;
-        text-shadow: 0 6px 18px rgba(0,0,0,0.18);
-    }
-    .hero p {
-        font-size: 18px;
-        max-width: 720px;
-        margin: 0 auto;
-        opacity: .9;
-        line-height: 1.6;
     }
 
-    /* CONTAINER (preserved) */
-    .container {
-        width: 92%;
-        max-width: 1100px;
-        margin: 40px auto;
-        line-height: 1.7;
+    /* TOMBOL KEMBALI */
+    .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 60, 20, 0.35); 
+        padding: 12px 18px;
+        border-radius: 14px;
+        color: white;
+        font-size: 16px;
+        backdrop-filter: blur(3px);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .back-btn:hover {
+        background: rgba(0, 60, 20, 0.55);
     }
 
-    /* CARD (preserved + subtle enhancement but structure same) */
+    /* CARD PUTIH — SAMA EXACT */
     .card {
         background: white;
-        padding: 28px;
-        margin-bottom: 30px;
-        border-radius: 14px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        width: 88%;
+        margin: -50px auto 30px;
+        border-radius: 22px;
+        padding: 25px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
     }
-    .card h2 {
-        margin-top: 0;
-        font-size: 26px;
-        color: #1b5e20;
+
+    .section-title {
+        font-size: 24px;
+        color: #0d7a36;
         font-weight: 700;
+        margin-bottom: 10px;
     }
 
-    /* LIST (preserved) */
-    ul {
-        padding-left: 18px;
-    }
-    ul li {
-        margin-bottom: 6px;
-    }
+    /* ————— SISTEM KOMENTAR ————— */
 
-    /* FOOTER (preserved) */
-    footer {
-        background: #1b5e20;
-        color: white;
-        text-align: center;
-        padding: 20px;
-        margin-top: 40px;
-        font-size: 14px;
-        letter-spacing: .5px;
-        box-shadow: 0 -8px 40px rgba(27,94,32,0.12);
-    }
-
-    /* RESPONSIVE (preserved) */
-    @media (max-width: 600px) {
-        .hero h1 { font-size: 32px; }
-        .card { padding: 20px; }
-    }
-
-    /* ========================
-       KOMENTAR (DITAMBAHKAN TANPA MENGUBAH ISI)
-       ======================== */
     .comment-section {
-      margin-top: 30px;
-      background: white;
-      border-radius: 12px;
-      padding: 18px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
-      border: 1px solid rgba(27,94,32,0.04);
+        margin-top: 35px;
     }
 
     .comment-title {
-      font-size: 20px;
-      font-weight:700;
-      color: #1b5e20;
-      margin-bottom: 12px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #0d7a36;
+        margin-bottom: 15px;
     }
 
-    .comment-form {
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      margin-bottom: 12px;
-    }
-    .comment-avatar {
-      width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #e8f5e9;
-      flex: 0 0 56px;
-    }
-    .comment-inputs { flex:1; }
-
-    .input-name, .input-email {
-      width:100%; padding:10px; border-radius:8px; border:1px solid #e6f4ea; margin-bottom:8px;
-    }
-    .textarea-comment {
-      width:100%; min-height:90px; padding:12px; border-radius:10px; border:1px solid #e6f4ea; resize:vertical; font-size:15px;
+    .comment-box, .reply-box {
+        margin-top: 10px;
+        background: #fff;
+        border-radius: 14px;
+        padding: 12px;
+        border: 1px solid #eee;
     }
 
-    .comment-controls {
-      display:flex; justify-content:space-between; align-items:center; margin-top:10px;
+    textarea {
+        width: 100%;
+        border: none;
+        outline: none;
+        resize: none;
+        font-size: 15px;
+        padding: 10px;
     }
-    .emoji-picker { display:flex; gap:8px; align-items:center; }
-    .emoji-picker button {
-      background:transparent;border:none;font-size:20px;cursor:pointer;
-    }
-
-    .btn-primary {
-      background: linear-gradient(90deg,#1b5e20,#43a047); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer;
-      box-shadow: 0 8px 30px rgba(67,160,71,0.12);
-      transition: transform .12s, box-shadow .12s;
-    }
-    .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(67,160,71,0.18); }
-
-    /* comment item */
-    .comment-item {
-      background: #f1f8f3; border-radius:10px; padding:12px 14px; margin-top:12px; border-left:6px solid #1b5e20;
-      display:flex; gap:12px; align-items:flex-start;
-    }
-    .comment-item .meta { flex:1; }
-    .comment-name { font-weight:700; color:#1b5e20; }
-    .comment-text { margin-top:6px; color:#333; line-height:1.6; }
 
     .comment-actions {
-      display:flex; gap:8px; margin-top:8px; align-items:center;
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
     }
-    .small-btn {
-      padding:6px 9px; border-radius:8px; border:none; cursor:pointer; background:#fff; box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+
+    .btn {
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
     }
-    .small-btn:hover { transform: translateY(-3px); }
 
-    .reactions { display:flex; gap:8px; margin-top:8px; font-size:18px; }
-    .reaction { cursor:pointer; transition: transform .08s; }
-    .reaction:hover { transform: scale(1.22); }
+    .btn-reply { background: #e6f0ff; color: #0066ff; }
+    .btn-delete { background: #ffe6e6; color: #cc0000; }
+    .btn-send { background: #1ca64c; color: white; }
 
-    .reply-box { margin-top:10px; margin-left:68px; } /* nested reply area */
+    .btn:hover { opacity: .85; }
+
+    /* Reactions */
+    .reactions span {
+        cursor: pointer;
+        font-size: 22px;
+        margin-right: 6px;
+    }
+
+    /* Emoji Picker */
+    .emoji-picker span {
+        font-size: 22px;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+
+    /* List Komentar */
+    .comment-item {
+        background: #fff;
+        border-radius: 14px;
+        padding: 15px;
+        margin-top: 15px;
+        border: 1px solid #eee;
+    }
+
+    .comment-author {
+        font-weight: bold;
+        color: #0d7a36;
+    }
+
+    .reply-thread {
+        margin-left: 25px;
+        margin-top: 10px;
+        border-left: 3px solid #1ca64c;
+        padding-left: 15px;
+    }
 </style>
 </head>
+
 <body>
 
-<!-- TOMBOL KEMBALI -->
-<button class="back-home" onclick="window.location.href='pinjaman.html'">
-  <i class="fas fa-arrow-left"></i> Kembali ke Beranda 
-</button>
-
 <!-- HEADER -->
-<section class="hero">
-    <h1>Layanan Pinjaman Anggota KUD Asmara Tani</h1>
-    <p>
-        Solusi keuangan terpercaya untuk meningkatkan kesejahteraan anggota.
-    </p>
-</section>
+<div class="header">
+    <a href="#" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+    </a>
 
-<!-- CONTENT -->
-<div class="container">
-
-    <!-- PROFIL -->
-    <div class="card">
-        <h2>📌 KEUTAMAAN </h2>
-        <p>
-            <b>📌 Keutamaan Pinjaman Koperasi</b> 
-            Program pinjaman di KUD Asmara Tani dirancang khusus untuk memberikan kemudahan akses modal kepada seluruh
-            anggota. Layanan ini mengutamakan prinsip kebersamaan, keadilan, dan kebermanfaatan sehingga setiap anggota
-            dapat memperoleh dukungan finansial yang aman, cepat, dan berkelanjutan. terus berkembang dari masa ke masa.
-        </p>
-        
-    <!-- DIGITALISASI -->
-    <div class="card">
-        <h2>💡 Manfaat Pinjaman</h2>
-       <ul>
-            <li>✔ Membantu anggota mengembangkan usaha produktif.</li>
-            <li>✔ Memberikan dukungan finansial untuk kebutuhan mendesak.</li>
-            <li>✔ Suku bunga lebih rendah dibanding lembaga lainnya.</li>
-            <li>✔ Proses pengajuan cepat dan mudah.</li>
-            <li>✔ Tenor fleksibel sesuai kemampuan anggota.</li>
-        </ul>
-
-    <!-- VISI MISI -->
-    <div class="card">
-        <h2>🏆 Keunggulan Pinjaman KUD Asmara Tani</h2>
-
-        <ul>
-            <li>✔ Tanpa jaminan untuk pinjaman tertentu.</li>
-            <li>✔ Pengembalian dapat dicicil sesuai kesepakatan.</li>
-            <li>✔ Sistem yang aman, transparan, dan mengikuti prinsip koperasi.</li>
-            <li>✔ Dana kembali berputar sehingga membantu sesama anggota.</li>
-            <li>✔ Mendukung pertumbuhan ekonomi lokal dan pemberdayaan masyarakat.</li>
-        </ul>
-    </div>
-
-    <!-- PENGURUS -->
-    <div class="card">
-        <h2>⚙ Jenis–Jenis Pinjaman</h2>
-
-        <ul>
-            <li>• Pinjaman Usaha Mikro</li>
-            <li>• Pinjaman Kebutuhan Konsumtif</li>
-            <li>• Pinjaman Musiman Pertanian</li>
-            <li>• Pinjaman Pendidikan</li>
-            <li>• Pinjaman Darurat</li>
-        </ul>
-
-
-        <blockquote style="background:#e8f5e9;padding:15px;border-left:6px solid #1b5e20;font-style:italic;border-radius:8px;">
-            "Oleh Kita, Dari Kita dan Untuk Kita"
-        </blockquote>
-        </div>
-
-    <!-- BAGIAN BARU KEUTAMAAN, MANFAAT & KEUNGGULAN (Sama persis) -->
-    <div class="card">
-        <h2>✨ Kenapa Harus Mengajukan Pinjaman di KUD Asmara Tani?i</h2>
-
-        <p>
-            Karena koperasi memberikan layanan terbaik yang mengutamakan kesejahteraan anggota, bukan keuntungan semata.
-            Setiap rupiah yang berputar kembali menjadi manfaat untuk seluruh anggota lainnya.
-        </p>
-
-        <h3 style="color:#1b5e20;margin-top:20px;">1. Keutamaan</h3>
-        <ul>
-            <li>Mendapat hak suara dalam rapat anggota tahunan (RAT).</li>
-            <li>Memiliki kesempatan berpartisipasi dalam pengembangan koperasi.</li>
-            <li>Mendapat perlindungan dan dukungan dari sesama anggota.</li>
-            <li>Mendapat keuntungan SHU (Sisa Hasil Usaha) tiap akhir tahun.</li>
-            <li>Menjadi bagian dari lembaga resmi yang diawasi dan berbadan hukum.</li>
-        </ul>
-
-        <h3 style="color:#1b5e20;margin-top:20px;">2. Manfaat</h3>
-        <ul>
-            <li>Akses mudah terhadap layanan simpan-pinjam berbunga rendah.</li>
-            <li>Mendapat kemudahan transaksi melalui aplikasi digital koperasi.</li>
-            <li>Mendapat prioritas dalam berbagai program bantuan dan usaha produktif.</li>
-            <li>Tabungan digital aman, transparan, dan dapat dicek kapan saja.</li>
-            <li>Mendapat perlindungan dan jaminan melalui sistem koperasi yang profesional.</li>
-        </ul>
-
-        <h3 style="color:#1b5e20;margin-top:20px;">3. Keunggulan</h3>
-        <ul>
-            <li>Sistem digital modern dan dapat diakses dari HP.</li>
-            <li>Transaksi cepat, aman, dan real-time.</li>
-            <li>Dikelola oleh pengurus yang amanah, transparan dan profesional.</li>
-            <li>Unit usaha koperasi beragam, memberi banyak peluang usaha anggota.</li>
-            <li>Koperasi telah beroperasi sejak 1972, pengalaman panjang dan terpercaya.</li>
-        </ul>
-
-        <p style="margin-top:15px;">
-            Dengan bergabung menjadi anggota, Anda turut serta membangun kesejahteraan bersama 
-            sekaligus memperoleh banyak keuntungan yang tidak ditawarkan lembaga lain.
-        </p>
-    </div>
-
-    <!-- =========================
-         BAGIAN KOMENTAR (DITAMBAHKAN)
-         ========================= -->
-    <div class="comment-section card" id="commentSection">
-      <div class="comment-title">Komentar & Diskusi</div>
-
-      <!-- Form komentar -->
-      <div class="comment-form">
-        <img id="userAvatar" class="comment-avatar" src="https://ui-avatars.com/api/?name=Anon&background=1b5e20&color=fff&size=128" alt="avatar">
-        <div class="comment-inputs">
-          <input id="nameInput" class="input-name" placeholder="Nama (contoh: Kang L)"/>
-          <input id="emailInput" class="input-email" placeholder="Email (opsional)"/>
-          <textarea id="textInput" class="textarea-comment" placeholder="Tulis komentar..."></textarea>
-
-          <div class="comment-controls">
-            <div class="emoji-picker">
-              <button onclick="insertEmoji('😀')" title="😀">😀</button>
-              <button onclick="insertEmoji('😁')" title="😁">😁</button>
-              <button onclick="insertEmoji('😅')" title="😅">😅</button>
-              <button onclick="insertEmoji('👍')" title="👍">👍</button>
-            </div>
-            <div>
-              <button class="btn-primary" onclick="submitComment()">Kirim</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Daftar komentar -->
-      <div id="commentList" class="comments-list" aria-live="polite" style="margin-top:12px;"></div>
-    </div>
-
+    <h1>Tentang Pinjaman KUD Asmara Tani</h1>
+    <p>Kemudahan layanan pembiayaan untuk meningkatkan kesejahteraan anggota.</p>
 </div>
 
-<footer>
-    © 1972 - Sekarang | KUD Asmara Tani — Koperasi Modern Berbasis Digital
-</footer>
+<!-- CONTENT -->
+<div class="card">
+    <h2 class="section-title">Informasi Pinjaman</h2>
+
+    <p>KUD Asmara Tani menyediakan berbagai fasilitas pinjaman untuk membantu anggota memenuhi kebutuhan usaha, keluarga, maupun pengembangan ekonomi produktif.</p>
+
+    <h3>Keutamaan Pinjaman</h3>
+    <ul>
+        <li>Proses cepat dan mudah.</li>
+        <li>Bunga rendah dan transparan.</li>
+        <li>Pertimbangan berdasarkan asas kekeluargaan.</li>
+    </ul>
+
+    <h3>Keuntungan Mengambil Pinjaman</h3>
+    <ul>
+        <li>Cicilan ringan sesuai kemampuan anggota.</li>
+        <li>Dapat digunakan untuk modal usaha, renovasi rumah, pendidikan, dan kebutuhan lainnya.</li>
+        <li>Pelayanan ramah dan profesional.</li>
+    </ul>
+
+    <h3>Manfaat Pinjaman</h3>
+    <ul>
+        <li>Meningkatkan daya beli dan ekonomi keluarga.</li>
+        <li>Mendukung perkembangan usaha kecil dan menengah.</li>
+        <li>Memberikan rasa aman bagi anggota saat membutuhkan dana mendadak.</li>
+    </ul>
+
+    <h3>Keunggulan Koperasi</h3>
+    <ul>
+        <li>Sistem bunga adil.</li>
+        <li>Legalitas resmi dan aman.</li>
+        <li>Dikelola oleh pengurus berpengalaman.</li>
+    </ul>
+
+    <!-- ————— SISTEM KOMENTAR ————— -->
+
+    <div class="comment-section">
+        <h2 class="comment-title">Komentar</h2>
+
+        <!-- List Komentar -->
+        <div id="comment-list"></div>
+
+        <!-- Input Komentar -->
+        <div class="comment-box">
+            <textarea id="comment-input" placeholder="Tulis komentar..."></textarea>
+
+            <div class="emoji-picker">
+                😁 👍 👏 🙏 💯 😂 😮 😢 😡
+            </div>
+
+            <div class="reactions">
+                ❤️ 😆 😮 😢 😡
+            </div>
+
+            <button class="btn btn-send" onclick="sendComment()">Kirim</button>
+        </div>
+    </div>
+</div>
 
 <script>
-/* ============================
-  KOMENTAR: Simple threaded comments (localStorage)
-  - Memenuhi permintaan: Balas, Hapus, Kirim, Emoji picker, Reactions
-  - Tidak mengubah konten artikel.
-  - Data disimpan lokal via localStorage (opsional nanti bisa diganti Firebase/Sheets)
-============================ */
+let comments = [];
 
-const storageKey = "kud_asmara_comments_v1";
+/* ————— KIRIM KOMENTAR ————— */
+function sendComment() {
+    const input = document.getElementById("comment-input");
+    if (input.value.trim() === "") return;
 
-// load existing
-let comments = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    comments.push({
+        id: Date.now(),
+        text: input.value,
+        replies: []
+    });
 
-// helper id
-function uid() { return 'c_' + Math.random().toString(36).slice(2,9); }
-
-// render semua komentar (rekursif)
-function renderComments() {
-  const listEl = document.getElementById("commentList");
-  listEl.innerHTML = "";
-  comments.sort((a,b) => (a.ts || 0) - (b.ts || 0));
-  comments.forEach(c => {
-    if (!c.parentId) listEl.appendChild(createCommentNode(c));
-  });
+    input.value = "";
+    renderComments();
 }
 
-// create node
-function createCommentNode(c) {
-  const item = document.createElement('div');
-  item.className = 'comment-item';
-  item.dataset.id = c.id;
+/* ————— BALAS KOMENTAR ————— */
+function replyTo(id) {
+    const replyText = prompt("Tulis balasan:");
+    if (!replyText) return;
 
-  const avatar = document.createElement('img');
-  avatar.className = 'comment-avatar';
-  avatar.src = c.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name||'Anon')}&background=1b5e20&color=fff&size=128`;
-  avatar.alt = c.name || 'Anon';
+    const c = comments.find(x => x.id === id);
+    c.replies.push(replyText);
 
-  const meta = document.createElement('div');
-  meta.className = 'meta';
-
-  const nameEl = document.createElement('div');
-  nameEl.className = 'comment-name';
-  nameEl.textContent = c.name || 'Pengguna';
-
-  const timeEl = document.createElement('div');
-  timeEl.className = 'comment-time muted';
-  timeEl.style.fontSize = '12px';
-  timeEl.textContent = new Date(c.ts).toLocaleString();
-
-  const textEl = document.createElement('div');
-  textEl.className = 'comment-text';
-  textEl.innerHTML = escapeHtml(c.text);
-
-  // reactions
-  const reactionsEl = document.createElement('div');
-  reactionsEl.className = 'reactions';
-  const types = [
-    {k:'love', e:'❤️'}, {k:'haha', e:'😆'}, {k:'wow', e:'😮'}, {k:'sad', e:'😢'}, {k:'angry', e:'😡'}
-  ];
-  types.forEach(t => {
-    const btn = document.createElement('button');
-    btn.className = 'reaction';
-    const count = (c.reactions && c.reactions[t.k]) ? c.reactions[t.k] : 0;
-    btn.innerHTML = `${t.e} <span style="font-size:13px;margin-left:6px">${count}</span>`;
-    btn.onclick = () => { addReaction(c.id, t.k); };
-    reactionsEl.appendChild(btn);
-  });
-
-  // actions
-  const actions = document.createElement('div');
-  actions.className = 'comment-actions';
-
-  const replyBtn = document.createElement('button');
-  replyBtn.className = 'small-btn';
-  replyBtn.textContent = 'Balas 💬';
-  replyBtn.onclick = () => toggleReplyBox(c.id, item);
-
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'small-btn';
-  deleteBtn.textContent = 'Hapus 🗑️';
-  deleteBtn.onclick = () => { if(confirm('Hapus komentar ini?')) deleteComment(c.id); };
-
-  actions.appendChild(replyBtn);
-  actions.appendChild(deleteBtn);
-
-  meta.appendChild(nameEl);
-  meta.appendChild(timeEl);
-  meta.appendChild(textEl);
-  meta.appendChild(reactionsEl);
-  meta.appendChild(actions);
-
-  item.appendChild(avatar);
-  item.appendChild(meta);
-
-  // replies container
-  const repliesContainer = document.createElement('div');
-  repliesContainer.className = 'reply-box';
-  // render direct replies
-  const childReplies = comments.filter(x => x.parentId === c.id).sort((a,b)=> (a.ts||0)-(b.ts||0));
-  childReplies.forEach(r => repliesContainer.appendChild(createCommentNode(r)));
-
-  item.appendChild(repliesContainer);
-  return item;
+    renderComments();
 }
 
-function escapeHtml(s) {
-  if(!s) return '';
-  return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-}
-
-// add reaction
-function addReaction(id, type) {
-  const idx = comments.findIndex(c => c.id === id);
-  if (idx === -1) return;
-  comments[idx].reactions = comments[idx].reactions || {love:0,haha:0,wow:0,sad:0,angry:0};
-  comments[idx].reactions[type] = (comments[idx].reactions[type]||0) + 1;
-  saveComments();
-  renderComments();
-}
-
-// delete comment + its children
+/* ————— HAPUS KOMENTAR ————— */
 function deleteComment(id) {
-  function removeRec(idToRemove) {
-    comments = comments.filter(c => c.id !== idToRemove);
-    const children = comments.filter(c => c.parentId === idToRemove);
-    children.forEach(ch => removeRec(ch.id));
-  }
-  removeRec(id);
-  saveComments();
-  renderComments();
+    comments = comments.filter(c => c.id !== id);
+    renderComments();
 }
 
-// toggle reply box under a given comment element
-function toggleReplyBox(parentId, parentEl) {
-  // if box exists, remove it
-  const existing = parentEl.querySelector('.reply-form');
-  if (existing) { existing.remove(); return; }
+/* ————— RENDER KOMENTAR ————— */
+function renderComments() {
+    const list = document.getElementById("comment-list");
+    list.innerHTML = "";
 
-  const box = document.createElement('div');
-  box.className = 'reply-form';
-  box.style.marginTop = '8px';
-  box.innerHTML = `
-    <textarea class="textarea-comment" placeholder="Tulis balasan..."></textarea>
-    <div style="margin-top:8px;">
-      <button class="btn-primary send-reply">Kirim Balasan</button>
-      <button class="small-btn cancel-reply" style="margin-left:8px;">Batal</button>
-    </div>
-  `;
-  const textarea = box.querySelector('textarea');
-  box.querySelector('.cancel-reply').onclick = () => box.remove();
-  box.querySelector('.send-reply').onclick = () => {
-    const val = textarea.value.trim();
-    if (!val) return alert('Tulis balasan terlebih dahulu.');
-    const name = (document.getElementById('nameInput').value || 'Pengguna').trim();
-    addComment({ name, text: val, parentId });
-    box.remove();
-  };
-  parentEl.appendChild(box);
+    comments.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "comment-item";
+        div.innerHTML = `
+            <div class="comment-author">Pengguna</div>
+            <p>${c.text}</p>
+
+            <div class="comment-actions">
+                <button class="btn btn-reply" onclick="replyTo(${c.id})">Balas</button>
+                <button class="btn btn-delete" onclick="deleteComment(${c.id})">Hapus</button>
+            </div>
+        `;
+
+        if (c.replies.length > 0) {
+            const replyDiv = document.createElement("div");
+            replyDiv.className = "reply-thread";
+
+            c.replies.forEach(r => {
+                replyDiv.innerHTML += `<p>↳ ${r}</p>`;
+            });
+
+            div.appendChild(replyDiv);
+        }
+
+        list.appendChild(div);
+    });
 }
-
-// submit top-level comment
-function submitComment() {
-  const name = (document.getElementById('nameInput').value || 'Pengguna').trim();
-  const email = (document.getElementById('emailInput').value || '').trim();
-  const text = (document.getElementById('textInput').value || '').trim();
-  if (!text) return alert('Tulis komentar dahulu.');
-  addComment({ name, text, email, parentId: null });
-  // clear text only (keep name/email)
-  document.getElementById('textInput').value = '';
-}
-
-// add a comment object
-function addComment({ name, text, email, parentId=null }) {
-  const c = {
-    id: uid(),
-    name: name || 'Pengguna',
-    email: email || '',
-    text: text,
-    ts: Date.now(),
-    parentId: parentId || null,
-    reactions: { love:0, haha:0, wow:0, sad:0, angry:0 },
-    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name||'Anon')}&background=1b5e20&color=fff&size=128`
-  };
-  comments.push(c);
-  saveComments();
-  renderComments();
-}
-
-// save to localStorage
-function saveComments() {
-  localStorage.setItem(storageKey, JSON.stringify(comments));
-}
-
-// emoji picker insertion
-function insertEmoji(e) {
-  const ta = document.getElementById('textInput');
-  ta.value = ta.value + e;
-  ta.focus();
-}
-
-// live avatar preview for form
-document.getElementById('nameInput').addEventListener('input', () => {
-  const n = document.getElementById('nameInput').value || 'Anon';
-  document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(n)}&background=1b5e20&color=fff&size=128`;
-});
-
-document.getElementById('emailInput').addEventListener('input', () => {
-  // keep using ui-avatars; optional gravatar could be added later
-});
-
-// initial render
-renderComments();
-
 </script>
 
 </body>
