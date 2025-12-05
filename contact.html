@@ -1,193 +1,1015 @@
-<!-- ====== FONT AWESOME ====== -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUD Asmara Tani - Kontak Futuristik</title>
+    
+    <!-- ====== FONT AWESOME ====== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           VARIABEL & RESET
+        ============================================ */
+        :root {
+            --neon-green: #00ff9d;
+            --cyber-green: #00ff88;
+            --hologram-green: #00ffaa;
+            --dark-bg: #0a0a14;
+            --card-bg: rgba(18, 25, 32, 0.85);
+            --glass-border: rgba(0, 255, 157, 0.2);
+            --text-glow: rgba(0, 255, 157, 0.7);
+            --shadow-glow: 0 0 15px rgba(0, 255, 157, 0.5);
+            --facebook-blue: #1877F2;
+            --instagram-pink: #E4405F;
+            --tiktok-black: #000000;
+            --youtube-red: #FF0000;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 157, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 20%);
+            position: relative;
+        }
+        
+        /* Background particle effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+            animation: floatParticle 15s infinite linear;
+        }
+        
+        @keyframes floatParticle {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+        
+        /* Scanline overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 255, 157, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        /* ============================================
+           FLOATING BACK BUTTON - FUTURISTIC
+        ============================================ */
+        .icon-back-tooltip {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(18, 25, 32, 0.9);
+            color: var(--neon-green);
+            border: 2px solid var(--glass-border);
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                var(--shadow-glow),
+                inset 0 0 20px rgba(0, 255, 157, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+        
+        .icon-back-tooltip:hover {
+            transform: scale(1.15) rotateY(15deg);
+            box-shadow: 
+                0 0 25px var(--neon-green),
+                inset 0 0 30px rgba(0, 255, 157, 0.2);
+            border-color: var(--neon-green);
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+        
+        /* Holographic ring effect */
+        .icon-back-tooltip::before {
+            content: "";
+            position: absolute;
+            width: 130%;
+            height: 130%;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--neon-green);
+            border-right-color: var(--cyber-green);
+            animation: spinHologram 3s linear infinite;
+            z-index: -1;
+            filter: blur(1px);
+        }
+        
+        @keyframes spinHologram {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        /* Tooltip Futuristic */
+        .tooltip-zoom-bottom {
+            position: fixed;
+            top: 100px;
+            left: 25px;
+            background: rgba(18, 25, 32, 0.9);
+            color: var(--neon-green);
+            padding: 12px 18px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(-20px) scale(0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 14px;
+            gap: 8px;
+            box-shadow: var(--shadow-glow);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            z-index: 9998;
+            max-width: 220px;
+            white-space: nowrap;
+        }
+        
+        .icon-back-tooltip:hover + .tooltip-zoom-bottom {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            animation: glitchText 0.3s ease;
+        }
+        
+        @keyframes glitchText {
+            0% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(-2px) scale(1.02); }
+            50% { transform: translateX(2px) scale(0.98); }
+            75% { transform: translateX(-1px) scale(1.01); }
+            100% { transform: translateX(0) scale(1); }
+        }
+        
+        /* ============================================
+           HEADER TITLE - NEON EFFECT
+        ============================================ */
+        .header-container {
+            text-align: center;
+            margin-top: 120px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .neon-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: transparent;
+            background: linear-gradient(90deg, #00ff9d, #00ff88, #00ffaa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .neon-title::after {
+            content: "KUD ASMARA TANI";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff9d, #00ff88, #00ffaa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            z-index: -1;
+            filter: blur(15px);
+            opacity: 0.7;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a0f0d0;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        
+        /* ============================================
+           GLASSMORPHISM INFO CARDS
+        ============================================ */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto 50px;
+            padding: 0 25px;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .info-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 157, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .info-card:hover::before {
+            left: 100%;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                0 0 25px rgba(0, 255, 157, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-color: var(--neon-green);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--neon-green);
+            margin-bottom: 20px;
+            display: inline-block;
+            text-shadow: 0 0 10px var(--text-glow);
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .card-content {
+            color: #c0e6d8;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        /* ============================================
+           MAP CONTAINER - FUTURISTIC
+        ============================================ */
+        .map-section {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 0 25px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .map-title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .map-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--neon-green);
+            display: inline-block;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .map-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+        }
+        
+        .map-wrapper {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-wrapper::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ff9d, #00ff88, #00ffaa, #00ff9d);
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .map-wrapper:hover::before {
+            opacity: 0.3;
+            animation: rotateGradient 3s linear infinite;
+        }
+        
+        @keyframes rotateGradient {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .embed-map-frame {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+            filter: grayscale(30%) contrast(110%);
+        }
+        
+        .embed-map-frame:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
+            filter: grayscale(0%) contrast(120%);
+        }
+        
+        /* ============================================
+           CYBER BUTTON - FUTURISTIC
+        ============================================ */
+        .cyber-button-container {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .cyber-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 35px;
+            background: rgba(18, 25, 32, 0.9);
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid var(--neon-green);
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 157, 0.3),
+                inset 0 0 20px rgba(0, 255, 157, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cyber-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 157, 0.3), transparent);
+            transition: left 0.7s ease;
+            z-index: -1;
+        }
+        
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 0 30px rgba(0, 255, 157, 0.5),
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 0 30px rgba(0, 255, 157, 0.2);
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-green);
+            border-color: #fff;
+        }
+        
+        .cyber-button:active {
+            transform: translateY(0);
+        }
+        
+        .button-icon {
+            margin-right: 12px;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .cyber-button:hover .button-icon {
+            transform: translateX(5px);
+        }
+        
+        /* ============================================
+           SOCIAL MEDIA - NEON (DENGAN LINK)
+        ============================================ */
+        .social-section {
+            max-width: 800px;
+            margin: 0 auto 80px;
+            padding: 0 25px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .social-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--neon-green);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .social-link {
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        .social-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px 15px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .social-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(0, 255, 157, 0.2);
+        }
+        
+        /* Efek warna border sesuai platform saat hover */
+        .social-link:nth-child(1):hover .social-card {
+            border-color: var(--facebook-blue);
+            box-shadow: 0 0 20px rgba(24, 119, 242, 0.4);
+        }
+        
+        .social-link:nth-child(2):hover .social-card {
+            border-color: var(--instagram-pink);
+            box-shadow: 0 0 20px rgba(228, 64, 95, 0.4);
+        }
+        
+        .social-link:nth-child(3):hover .social-card {
+            border-color: var(--tiktok-black);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .social-link:nth-child(4):hover .social-card {
+            border-color: var(--youtube-red);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+        }
+        
+        .social-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Warna ikon sesuai platform */
+        .social-link:nth-child(1) .social-icon { 
+            color: var(--facebook-blue); 
+            text-shadow: 0 0 10px rgba(24, 119, 242, 0.5);
+        }
+        
+        .social-link:nth-child(2) .social-icon { 
+            color: var(--instagram-pink); 
+            text-shadow: 0 0 10px rgba(228, 64, 95, 0.5);
+        }
+        
+        .social-link:nth-child(3) .social-icon { 
+            color: var(--tiktok-black); 
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .social-link:nth-child(4) .social-icon { 
+            color: var(--youtube-red); 
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        .social-card:hover .social-icon {
+            transform: scale(1.2) rotate(5deg);
+            filter: brightness(1.2);
+        }
+        
+        .social-name {
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        /* Warna teks saat hover sesuai platform */
+        .social-link:nth-child(1):hover .social-name { color: var(--facebook-blue); }
+        .social-link:nth-child(2):hover .social-name { color: var(--instagram-pink); }
+        .social-link:nth-child(3):hover .social-name { color: var(--tiktok-black); }
+        .social-link:nth-child(4):hover .social-name { color: var(--youtube-red); }
+        
+        /* Badge notifikasi untuk link baru */
+        .social-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--neon-green);
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover .social-badge {
+            opacity: 1;
+            transform: scale(1);
+            animation: pulseBadge 1.5s infinite;
+        }
+        
+        @keyframes pulseBadge {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 157, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0); }
+        }
+        
+        /* ============================================
+           FOOTER - FUTURISTIC
+        ============================================ */
+        .footer {
+            text-align: center;
+            padding: 30px 25px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(0, 255, 157, 0.1);
+            position: relative;
+            z-index: 2;
+            color: #a0f0d0;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon-green);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        /* ============================================
+           RESPONSIVE DESIGN
+        ============================================ */
+        @media (max-width: 768px) {
+            .neon-title {
+                font-size: 2.2rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .embed-map-frame {
+                height: 300px;
+            }
+            
+            .icon-back-tooltip {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+                top: 20px;
+                left: 20px;
+            }
+            
+            .tooltip-zoom-bottom {
+                top: 85px;
+                left: 20px;
+            }
+            
+            .cyber-button {
+                padding: 15px 25px;
+                font-size: 1rem;
+            }
+            
+            .social-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .neon-title {
+                font-size: 1.8rem;
+            }
+            
+            .header-container {
+                margin-top: 100px;
+            }
+            
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
 
-<style>
-/* ============================================
-   FLOATING BACK BUTTON + TOOLTIP
-============================================ */
-.icon-back-tooltip {
-    position: fixed;
-    top: 18px;
-    left: 15px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2e7d32, #4caf50);
-    color: white;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 5px 18px rgba(46, 125, 50, 0.55);
-    transition: .25s ease;
-    z-index: 9999;
-}
-
-.icon-back-tooltip:hover {
-    transform: scale(1.15);
-    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.75);
-}
-
-/* Pulse Effect */
-.icon-back-tooltip::after {
-    content: "";
-    position: absolute;
-    width: 130%;
-    height: 130%;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    animation: pulseGreen 2s infinite;
-    z-index: -1;
-}
-
-@keyframes pulseGreen {
-    0% { opacity: 0.55; transform: scale(0.8); }
-    100% { opacity: 0; transform: scale(1.5); }
-}
-
-/* Tooltip */
-.tooltip-zoom-bottom {
-    position: fixed;
-    top: 75px;
-    left: 15px;
-    background: linear-gradient(135deg, #43a047, #2e7d32, #1b5e20);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    opacity: 0;
-    transform: scale(0.7);
-    transform-origin: top left;
-    transition: .25s ease;
-    font-size: 13px;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    white-space: nowrap;
-    z-index: 9998;
-}
-
-.icon-back-tooltip:hover + .tooltip-zoom-bottom {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* ============================================
-   ALAMAT (tanpa container)
-============================================ */
-.alamat-wrapper {
-    text-align: center;
-    font-family: 'Poppins', sans-serif;
-    margin-top: 100px;
-    margin-bottom: 25px;
-}
-
-.alamat-wrapper h2 {
-    color: #2e7d32;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.alamat-wrapper p {
-    margin: 2px 0;
-    font-size: 14px;
-}
-
-/* ============================================
-   CENTER WRAPPER UNTUK MAP + BUTTON
-============================================ */
-.map-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 25px;
-}
-
-/* MAP FRAME */
-.embed-map-frame {
-    width: 100%;
-    max-width: 500px;
-    height: 300px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    transition: 0.3s ease;
-}
-
-.embed-map-frame:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-}
-
-/* ============================================
-   BUTTON LOKASI KUD
-============================================ */
-.maps-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 10px 20px;
-    margin: 20px auto;
-    background: linear-gradient(135deg, #34A853, #2e7d32, #1b5e20);
-    color: white;
-    font-family: 'Poppins';
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    text-decoration: none;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    transition: 0.3s ease;
-}
-
-.maps-button:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
-}
-
-.maps-icon {
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
-    background-size: contain;
-}
-</style>
-
-<!-- =================== FLOATING BACK BUTTON =================== -->
-<button class="icon-back-tooltip" onclick="window.location.href='index.html'">
-    <i class="fas fa-arrow-left"></i>
-</button>
-
-<div class="tooltip-zoom-bottom">
-    <i class="fas fa-info-circle"></i> Kembali Ke Beranda
-</div>
-
-<!-- =================== ALAMAT TANPA CARD =================== -->
-<div class="alamat-wrapper">
-    <h2>Alamat KUD Asmara Tani</h2>
-    <p>📍 Jl. KH. Abdul Hamid Km. 15 Desa Ciasmara, Pamijahan – Bogor</p>
-    <p>📞 0852-1848-3129</p>
-    <p>✉️ koperasi@pamijahan.co.id</p>
-</div>
-
-<!-- =================== GOOGLE MAPS + BUTTON CENTER =================== -->
-<div class="map-wrapper">
-
-    <!-- Tombol Lokasi Center -->
-    <a href="https://maps.app.goo.gl/YRd2mGV1E92Jmx1B7" target="_blank" class="maps-button">
-        <div class="maps-icon"></div>
-        Lokasi KUD Asmara Tani
-    </a>
-
-    <!-- Google Maps Center -->
-    <iframe class="embed-map-frame" frameborder="0" scrolling="no"
-        src="https://maps.google.com/maps?width=600&height=250&hl=en&q=Kantor%20Desa%20Ciasmara%20Kecamatan%20Pamijahan&t=k&z=14&ie=UTF8&iwloc=B&output=embed">
-    </iframe>
-
-</div>
+<body>
+    <!-- Background particles -->
+    <div class="particles" id="particles"></div>
+    <div class="scanlines"></div>
+    
+    <!-- =================== FLOATING BACK BUTTON =================== -->
+    <button class="icon-back-tooltip" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    
+    <div class="tooltip-zoom-bottom">
+        <i class="fas fa-info-circle"></i> Kembali Ke Beranda
+    </div>
+    
+    <!-- =================== HEADER =================== -->
+    <div class="header-container">
+        <h1 class="neon-title">KUD ASMARA TANI</h1>
+        <p class="subtitle">Kontak & Lokasi - Connected to the Future</p>
+    </div>
+    
+    <!-- =================== INFO CARDS =================== -->
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="card-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3 class="card-title">Lokasi</h3>
+            <p class="card-content">
+                📍 Jl. KH. Abdul Hamid Km. 15<br>
+                Desa Ciasmara, Pamijahan – Bogor<br>
+                Jawa Barat, Indonesia
+            </p>
+        </div>
+        
+        <div class="info-card">
+            <div class="card-icon">
+                <i class="fas fa-phone-alt"></i>
+            </div>
+            <h3 class="card-title">Kontak</h3>
+            <p class="card-content">
+                📞 0852-1848-3129<br>
+                ✉️ koperasi@pamijahan.co.id<br>
+                🌐 www.asmara-tani.co.id
+            </p>
+        </div>
+        
+        <div class="info-card">
+            <div class="card-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="card-title">Jam Operasional</h3>
+            <p class="card-content">
+                🕒 Senin – Sabtu<br>
+                08.00 – 16.00 WIB<br>
+                Minggu & Hari Libur: Tutup
+            </p>
+        </div>
+    </div>
+    
+    <!-- =================== MAP SECTION =================== -->
+    <div class="map-section">
+        <div class="map-title-container">
+            <h2 class="map-title">LOKASI KAMI</h2>
+        </div>
+        
+        <div class="map-wrapper">
+            <iframe class="embed-map-frame" frameborder="0" scrolling="no"
+                src="https://maps.google.com/maps?width=600&height=250&hl=en&q=Kantor%20Desa%20Ciasmara%20Kecamatan%20Pamijahan&t=k&z=14&ie=UTF8&iwloc=B&output=embed">
+            </iframe>
+        </div>
+        
+        <div class="cyber-button-container">
+            <a href="https://maps.app.goo.gl/YRd2mGV1E92Jmx1B7" target="_blank" class="cyber-button">
+                <i class="fas fa-map-marked-alt button-icon"></i>
+                BUKA DI GOOGLE MAPS
+            </a>
+        </div>
+    </div>
+    
+    <!-- =================== SOCIAL MEDIA (DENGAN LINK) =================== -->
+    <div class="social-section">
+        <h2 class="social-title">TERHUBUNG DENGAN KAMI</h2>
+        
+        <div class="social-grid">
+            <!-- Facebook -->
+            <a href="https://facebook.com/kud.asmara.tani" target="_blank" class="social-link">
+                <div class="social-card">
+                    <span class="social-badge">NEW</span>
+                    <i class="fab fa-facebook social-icon"></i>
+                    <span class="social-name">Facebook</span>
+                </div>
+            </a>
+            
+            <!-- Instagram -->
+            <a href="https://instagram.com/kud_asmara_tani" target="_blank" class="social-link">
+                <div class="social-card">
+                    <span class="social-badge">HOT</span>
+                    <i class="fab fa-instagram social-icon"></i>
+                    <span class="social-name">Instagram</span>
+                </div>
+            </a>
+            
+            <!-- TikTok -->
+            <a href="https://tiktok.com/@kud.asmara.tani" target="_blank" class="social-link">
+                <div class="social-card">
+                    <span class="social-badge">TREND</span>
+                    <i class="fab fa-tiktok social-icon"></i>
+                    <span class="social-name">TikTok</span>
+                </div>
+            </a>
+            
+            <!-- YouTube -->
+            <a href="https://youtube.com/c/KUDAsmaraTani" target="_blank" class="social-link">
+                <div class="social-card">
+                    <span class="social-badge">VIDEO</span>
+                    <i class="fab fa-youtube social-icon"></i>
+                    <span class="social-name">YouTube</span>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Catatan link media sosial -->
+        <p style="margin-top: 20px; font-size: 0.9rem; color: #a0f0d0; opacity: 0.8;">
+            * Klik pada ikon media sosial untuk mengunjungi halaman resmi kami
+        </p>
+    </div>
+    
+    <!-- =================== FOOTER =================== -->
+    <div class="footer">
+        <div class="footer-logo">KUD ASMARA TANI</div>
+        <p>© 2026 Koperasi Unit Desa Asmara Tani. All Rights Reserved.</p>
+        <p>Innovating Agriculture for a Better Future</p>
+        <p style="margin-top: 10px; font-size: 0.8rem; color: #88ccaa;">
+            Follow us: 
+            <a href="https://facebook.com/kud.asmara.tani" target="_blank" style="color: var(--facebook-blue); text-decoration: none; margin: 0 5px;">Facebook</a> | 
+            <a href="https://instagram.com/kud_asmara_tani" target="_blank" style="color: var(--instagram-pink); text-decoration: none; margin: 0 5px;">Instagram</a> | 
+            <a href="https://tiktok.com/@kud.asmara.tani" target="_blank" style="color: var(--tiktok-black); text-decoration: none; margin: 0 5px;">TikTok</a> | 
+            <a href="https://youtube.com/c/KUDAsmaraTani" target="_blank" style="color: var(--youtube-red); text-decoration: none; margin: 0 5px;">YouTube</a>
+        </p>
+    </div>
+    
+    <script>
+        // Create background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                // Random animation duration
+                const duration = Math.random() * 10 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Add glitch effect to title on hover
+        function addGlitchEffect() {
+            const title = document.querySelector('.neon-title');
+            
+            title.addEventListener('mouseenter', function() {
+                this.style.animation = 'glitchText 0.3s ease';
+                
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 300);
+            });
+        }
+        
+        // Add ripple effect to cards on click
+        function addRippleEffect() {
+            const cards = document.querySelectorAll('.info-card, .social-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const ripple = document.createElement('div');
+                    ripple.classList.add('ripple');
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(0, 255, 157, 0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: ${y}px;
+                        left: ${x}px;
+                        pointer-events: none;
+                        z-index: 0;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // Add ripple animation style
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Add typing effect to subtitle
+        function typeWriterEffect() {
+            const subtitle = document.querySelector('.subtitle');
+            const text = subtitle.textContent;
+            subtitle.textContent = '';
+            
+            let i = 0;
+            const typing = setInterval(() => {
+                if (i < text.length) {
+                    subtitle.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typing);
+                }
+            }, 50);
+        }
+        
+        // Add click counter for social media (analytics sederhana)
+        function setupSocialAnalytics() {
+            const socialLinks = document.querySelectorAll('.social-link');
+            
+            socialLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const platform = this.querySelector('.social-name').textContent;
+                    console.log(`Social media clicked: ${platform}`);
+                    
+                    // Di sini bisa ditambahkan kode untuk tracking analytics
+                    // Contoh: Google Analytics, Facebook Pixel, dll.
+                    
+                    // Notifikasi visual
+                    const card = this.querySelector('.social-card');
+                    const originalBackground = card.style.background;
+                    
+                    card.style.background = 'rgba(0, 255, 157, 0.2)';
+                    setTimeout(() => {
+                        card.style.background = originalBackground;
+                    }, 300);
+                });
+            });
+        }
+        
+        // Initialize all effects when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            addGlitchEffect();
+            addRippleEffect();
+            setupSocialAnalytics();
+            
+            // Start typing effect after a short delay
+            setTimeout(typeWriterEffect, 500);
+            
+            // Add parallax effect to particles on mouse move
+            document.addEventListener('mousemove', function(e) {
+                const particles = document.querySelectorAll('.particle');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                particles.forEach(particle => {
+                    particle.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
