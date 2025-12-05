@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Portal Berita Futuristik</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* THEME FUTURISTIK DENGAN GRADASI KOPERASI */
+        :root {
+            --bg: linear-gradient(135deg, #0c0f16 0%, #1a2238 100%);
+            --card-bg: linear-gradient(145deg, rgba(23, 27, 35, 0.9) 0%, rgba(30, 40, 62, 0.9) 100%);
+            --primary: linear-gradient(90deg, #00eaff, #00b8ff);
+            --accent: linear-gradient(90deg, #ff4fbe, #ff6b9d);
+            --text: #e6e6e6;
+            --text-secondary: #b0b0b0;
+            --success: #2ecc71;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --card-radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: "Poppins", sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Efek latar belakang futuristik */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 234, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 79, 190, 0.06) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* WRAPPER */
+        #mini-news-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* HEADER STYLING */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .header::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 4px;
+            background: var(--primary);
+            margin: 0 auto;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
+        }
+
+        /* CAROUSEL SECTION */
+        .carousel-section {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .section-title i {
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.8rem;
+        }
+
+        .section-title h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #e6e6e6, #b0b0b0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        #carousel {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            border-radius: var(--card-radius);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(0, 234, 255, 0.2),
+                0 0 60px rgba(255, 79, 190, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #carousel-inner {
+            display: flex;
+            height: 100%;
+            transition: var(--transition);
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .carousel-slide:hover img {
+            transform: scale(1.05);
+        }
+
+        .carousel-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(12, 15, 22, 0.9));
+            border-radius: 0 0 var(--card-radius) var(--card-radius);
+        }
+
+        .carousel-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .carousel-content p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .carousel-btn {
+            background: rgba(23, 27, 35, 0.8);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+        }
+
+        .carousel-btn:hover {
+            background: rgba(0, 234, 255, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .indicator.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 234, 255, 0.8);
+        }
+
+        /* SWITCH BUTTONS */
+        .switcher-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--card-radius);
+            box-shadow: 0 8px 25px var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .switcher {
+            display: flex;
+            gap: 15px;
+        }
+
+        .switcher button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(30, 40, 62, 0.8);
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(0, 234, 255, 0.1);
+        }
+
+        .switcher button:hover {
+            background: rgba(0, 234, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.2);
+        }
+
+        .switcher button.active {
+            background: var(--primary);
+            color: #0c0f16;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.4);
+        }
+
+        .news-count {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            background: rgba(30, 40, 62, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 234, 255, 0.1);
+        }
+
+        .news-count span {
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        /* GRID – KOTAK KOTAK MINI */
+        .mini-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* KARTU MINI - STYLE FOLDER FUTURISTIK */
+        .mini-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            height: 320px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s forwards;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mini-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 234, 255, 0.03) 50%, transparent 70%);
+            z-index: 1;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .mini-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(0, 234, 255, 0.2),
+                0 0 50px rgba(255, 79, 190, 0.1);
+        }
+
+        .mini-card:hover::before {
+            opacity: 1;
+        }
+
+        /* GAMBAR THUMBNAIL */
+        .image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mini-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.9);
+            transition: var(--transition);
+        }
+
+        .mini-card:hover img {
+            filter: brightness(1);
+            transform: scale(1.05);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(12, 15, 22, 0.8) 100%);
+            z-index: 2;
+        }
+
+        /* TEKS MINI */
+        .mini-info {
+            padding: 20px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .tag-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--primary);
+            color: #0c0f16;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .read-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mini-title {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            font-weight: 600;
+            height: 60px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .date-author {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 12px;
+        }
+
+        .date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ANIMASI FADE IN */
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LIST MODE */
+        .list-mode .mini-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .list-mode .mini-card {
+            height: 180px;
+            display: flex;
+        }
+
+        .list-mode .image-container {
+            width: 250px;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .list-mode .mini-info {
+            flex-grow: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .list-mode .mini-title {
+            height: auto;
+            -webkit-line-clamp: 2;
+            font-size: 1.2rem;
+        }
+
+        /* PAGINATION */
+        .pagination-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        #load-more {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #0c0f16;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+            border: 1px solid rgba(0, 234, 255, 0.3);
+        }
+
+        #load-more:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 234, 255, 0.5);
+        }
+
+        #load-more:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* CUSTOM NEWS FORM */
+        .custom-news-form {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--card-radius);
+            margin-top: 50px;
+            box-shadow: 0 10px 25px var(--shadow);
+            border: 1px solid rgba(0, 234, 255, 0.1);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(30, 40, 62, 0.8);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: "Poppins", sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(0, 234, 255, 0.6);
+            box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: #0c0f16;
+        }
+
+        .btn-reset {
+            background: rgba(255, 79, 190, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(255, 79, 190, 0.3);
+        }
+
+        .btn-add:hover, .btn-reset:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .mini-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .mini-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+            }
+            
+            .switcher-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .list-mode .mini-card {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .list-mode .image-container {
+                width: 100%;
+                height: 200px;
+            }
+            
+            #carousel {
+                height: 300px;
+            }
+            
+            .carousel-content h3 {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .switcher {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .switcher button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            #carousel {
+                height: 250px;
+            }
+            
+            .carousel-content {
+                padding: 20px;
+            }
+            
+            .carousel-content h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="mini-news-grid">
+        <!-- HEADER -->
+        <div class="header">
+            <h1><i class="fas fa-newspaper"></i> Mini Portal Berita</h1>
+            <p>Temukan berita terkini dengan tampilan futuristik yang menarik. Navigasikan antara mode grid dan list untuk pengalaman membaca yang lebih baik.</p>
+        </div>
+
+        <!-- CAROUSEL BERITA UTAMA -->
+        <div class="carousel-section">
+            <div class="section-title">
+                <i class="fas fa-star"></i>
+                <h2>Berita Utama</h2>
+            </div>
+            <div id="carousel">
+                <div id="carousel-inner"></div>
+                <div class="carousel-nav">
+                    <button class="carousel-btn" id="prev-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn" id="next-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="carousel-indicators" id="carousel-indicators"></div>
+            </div>
+        </div>
+
+        <!-- SWITCH MODE DAN JUMLAH BERITA -->
+        <div class="switcher-container">
+            <div class="switcher">
+                <button onclick="setMode('grid')" class="active" id="grid-btn">
+                    <i class="fas fa-th-large"></i> Grid Mode
+                </button>
+                <button onclick="setMode('list')" id="list-btn">
+                    <i class="fas fa-list"></i> List Mode
+                </button>
+            </div>
+            <div class="news-count">
+                Total Berita: <span id="total-news">0</span>
+            </div>
+        </div>
+
+        <!-- GRID BERITA -->
+        <div class="mini-grid" id="news-container"></div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-container">
+            <button id="load-more">
+                <i class="fas fa-plus-circle"></i> Muat Berita Lagi
+            </button>
+        </div>
+
+        <!-- FORM UNTUK MENAMBAH BERITA MANUAL -->
+        <div class="custom-news-form">
+            <div class="form-title">
+                <i class="fas fa-plus-circle"></i> Tambah Berita Manual
+            </div>
+            <div class="form-group">
+                <label for="news-title">Judul Berita</label>
+                <input type="text" id="news-title" placeholder="Masukkan judul berita...">
+            </div>
+            <div class="form-group">
+                <label for="news-image">URL Gambar</label>
+                <input type="text" id="news-image" placeholder="Masukkan URL gambar...">
+            </div>
+            <div class="form-group">
+                <label for="news-link">URL Berita</label>
+                <input type="text" id="news-link" placeholder="Masukkan URL berita...">
+            </div>
+            <div class="form-buttons">
+                <button class="form-btn btn-add" onclick="addCustomNews()">
+                    <i class="fas fa-plus"></i> Tambah Berita
+                </button>
+                <button class="form-btn btn-reset" onclick="resetForm()">
+                    <i class="fas fa-redo"></i> Reset Form
+                </button>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>© 2023 Mini Portal Berita Futuristik | Tema Koperasi Modern</p>
+            <p>Dibuat dengan <i class="fas fa-heart" style="color:#ff4fbe;"></i> untuk pengalaman membaca yang lebih baik</p>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi
+        let feedURL = "https://YOURBLOG.blogspot.com/feeds/posts/default?alt=json&max-results=150";
+        let startIndex = 0;
+        let perLoad = 8;
+        let posts = [];
+        let customPosts = [];
+        let carouselIndex = 0;
+        let carouselInterval;
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCarousel();
+            loadPosts();
+            setupEventListeners();
+            
+            // Tambah beberapa berita contoh jika feed tidak tersedia
+            if (feedURL.includes("YOURBLOG")) {
+                addSamplePosts();
+            }
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('prev-btn').addEventListener('click', prevCarousel);
+            document.getElementById('next-btn').addEventListener('click', nextCarousel);
+            document.getElementById('load-more').addEventListener('click', loadMore);
+            
+            // Enter key untuk form
+            document.getElementById('news-title').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addCustomNews();
+            });
+        }
+
+        // SWITCH MODE
+        function setMode(mode) {
+            let wrap = document.getElementById("mini-news-grid");
+            let gridBtn = document.getElementById("grid-btn");
+            let listBtn = document.getElementById("list-btn");
+            
+            if (mode === "list") {
+                wrap.classList.add("list-mode");
+                gridBtn.classList.remove("active");
+                listBtn.classList.add("active");
+            } else {
+                wrap.classList.remove("list-mode");
+                gridBtn.classList.add("active");
+                listBtn.classList.remove("active");
+            }
+        }
+
+        // LOAD POSTS DARI FEED
+        function loadPosts() {
+            if (!feedURL.includes("YOURBLOG")) {
+                fetch(feedURL)
+                    .then(res => res.json())
+                    .then(data => {
+                        posts = data.feed.entry;
+                        updateNewsCount();
+                        loadMore();
+                    })
+                    .catch(err => {
+                        console.error("Error loading feed:", err);
+                        addSamplePosts();
+                    });
+            }
+        }
+
+        // LOAD MORE (Pagination Button)
+        function loadMore() {
+            let container = document.getElementById("news-container");
+            let combinedPosts = [...customPosts, ...posts];
+            let end = Math.min(startIndex + perLoad, combinedPosts.length);
+            
+            if (startIndex >= combinedPosts.length) {
+                document.getElementById("load-more").disabled = true;
+                document.getElementById("load-more").innerHTML = '<i class="fas fa-check-circle"></i> Semua Berita Ditampilkan';
+                return;
+            }
+            
+            for (let i = startIndex; i < end; i++) {
+                let p = combinedPosts[i];
+                
+                // Untuk post dari feed
+                if (p.$t) {
+                    let title = p.title.$t;
+                    let link = p.link.find(l => l.rel === "alternate").href;
+                    let date = new Date(p.published.$t).toLocaleDateString("id-ID", {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    // Thumbnail Auto
+                    let thumb = "https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80";
+                    if (p.media$thumbnail) {
+                        thumb = p.media$thumbnail.url.replace("s72-c", "s400");
+                    }
+                    
+                    // Label
+                    let tag = p.category ? p.category[0].term : "Berita";
+                    
+                    createNewsCard(container, title, thumb, link, tag, date, "Admin");
+                } 
+                // Untuk custom posts
+                else {
+                    createNewsCard(container, p.title, p.image, p.link, p.tag || "Kustom", p.date, p.author || "Anda");
+                }
+            }
+            
+            startIndex = end;
+            updateNewsCount();
+        }
+
+        // BUAT KARTU BERITA
+        function createNewsCard(container, title, image, link, tag, date, author) {
+            // Generate waktu baca acak
+            const readTime = Math.floor(Math.random() * 5) + 3;
+            
+            container.innerHTML += `
+                <div class="mini-card" onclick="window.open('${link}', '_blank')">
+                    <div class="image-container">
+                        <img src="${image}" alt="${title}" onerror="this.src='https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
+                        <div class="image-overlay"></div>
+                    </div>
+                    <div class="mini-info">
+                        <div class="tag-container">
+                            <div class="tag">${tag}</div>
+                            <div class="read-time"><i class="far fa-clock"></i> ${readTime} min</div>
+                        </div>
+                        <div class="mini-title">${title}</div>
+                        <div class="date-author">
+                            <div class="date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                            <div class="author"><i class="far fa-user"></i> ${author}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // LOAD CAROUSEL
+        function loadCarousel() {
+            if (!feedURL.includes("YOURBLOG")) {
+                fetch(feedURL)
+                    .then(r => r.json())
+                    .then(d => {
+                        let carouselPosts = d.feed.entry.slice(0, 5);
+                        setupCarousel(carouselPosts);
+                    })
+                    .catch(err => {
+                        console.error("Error loading carousel:", err);
+                        setupCarouselWithSample();
+                    });
+            } else {
+                setupCarouselWithSample();
+            }
+        }
+
+        // SETUP CAROUSEL DENGAN SAMPLE
+        function setupCarouselWithSample() {
+            const samplePosts = [
+                {
+                    title: "Inovasi Teknologi di Dunia Koperasi Modern",
+                    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                    link: "#",
+                    content: "Teknologi terkini mengubah cara koperasi beroperasi, meningkatkan efisiensi dan pelayanan kepada anggota."
+                },
+                {
+                    title: "Strategi Pengembangan Koperasi di Era Digital",
+                    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                    link: "#",
+                    content: "Pelajari strategi efektif untuk mengembangkan koperasi di tengah transformasi digital yang pesat."
+                },
+                {
+                    title: "Koperasi Ramah Lingkungan: Tren Masa Depan",
+                    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                    link: "#",
+                    content: "Banyak koperasi kini mengadopsi praktik ramah lingkungan sebagai bagian dari tanggung jawab sosial."
+                }
+            ];
+            
+            setupCarousel(samplePosts);
+        }
+
+        // SETUP CAROUSEL
+        function setupCarousel(carouselPosts) {
+            let carouselInner = document.getElementById("carousel-inner");
+            let indicators = document.getElementById("carousel-indicators");
+            carouselInner.innerHTML = '';
+            indicators.innerHTML = '';
+            
+            carouselPosts.forEach((p, index) => {
+                let title, image, link, content;
+                
+                if (p.title && p.title.$t) {
+                    // Post dari feed
+                    title = p.title.$t;
+                    link = p.link.find(l => l.rel === "alternate").href;
+                    image = p.media$thumbnail ? p.media$thumbnail.url.replace("s72-c","s800") : 
+                            "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+                    content = p.content ? p.content.$t.substring(0, 120) + "..." : "Baca selengkapnya untuk informasi lebih detail.";
+                } else {
+                    // Post sample
+                    title = p.title;
+                    link = p.link;
+                    image = p.image;
+                    content = p.content;
+                }
+                
+                carouselInner.innerHTML += `
+                    <div class="carousel-slide" onclick="window.open('${link}', '_blank')">
+                        <img src="${image}" alt="${title}">
+                        <div class="carousel-content">
+                            <h3>${title}</h3>
+                            <p>${content}</p>
+                        </div>
+                    </div>
+                `;
+                
+                indicators.innerHTML += `<div class="indicator ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`;
+            });
+            
+            // Setup indicator events
+            document.querySelectorAll('.indicator').forEach(indicator => {
+                indicator.addEventListener('click', function() {
+                    carouselIndex = parseInt(this.getAttribute('data-index'));
+                    updateCarousel();
+                });
+            });
+            
+            // Start carousel auto rotation
+            startCarouselAutoRotate();
+        }
+
+        // CAROUSEL FUNCTIONS
+        function prevCarousel() {
+            let slides = document.querySelectorAll('.carousel-slide');
+            carouselIndex = (carouselIndex - 1 + slides.length) % slides.length;
+            updateCarousel();
+            resetCarouselAutoRotate();
+        }
+
+        function nextCarousel() {
+            let slides = document.querySelectorAll('.carousel-slide');
+            carouselIndex = (carouselIndex + 1) % slides.length;
+            updateCarousel();
+            resetCarouselAutoRotate();
+        }
+
+        function updateCarousel() {
+            let carouselInner = document.getElementById("carousel-inner");
+            let indicators = document.querySelectorAll('.indicator');
+            
+            carouselInner.style.transform = `translateX(-${carouselIndex * 100}%)`;
+            
+            indicators.forEach((indicator, index) => {
+                if (index === carouselIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+
+        function startCarouselAutoRotate() {
+            if (carouselInterval) clearInterval(carouselInterval);
+            carouselInterval = setInterval(nextCarousel, 5000);
+        }
+
+        function resetCarouselAutoRotate() {
+            if (carouselInterval) clearInterval(carouselInterval);
+            startCarouselAutoRotate();
+        }
+
+        // TAMBAH BERITA MANUAL
+        function addCustomNews() {
+            const title = document.getElementById('news-title').value;
+            const image = document.getElementById('news-image').value;
+            const link = document.getElementById('news-link').value;
+            
+            if (!title || !image || !link) {
+                alert('Harap isi semua field!');
+                return;
+            }
+            
+            const customPost = {
+                title: title,
+                image: image,
+                link: link,
+                tag: "Kustom",
+                date: new Date().toLocaleDateString("id-ID", {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }),
+                author: "Anda"
+            };
+            
+            customPosts.unshift(customPost); // Tambah di awal array
+            startIndex = 0; // Reset pagination
+            
+            // Clear container and reload
+            document.getElementById('news-container').innerHTML = '';
+            loadMore();
+            
+            // Reset form
+            resetForm();
+            
+            alert('Berita berhasil ditambahkan!');
+        }
+
+        // RESET FORM
+        function resetForm() {
+            document.getElementById('news-title').value = '';
+            document.getElementById('news-image').value = '';
+            document.getElementById('news-link').value = '';
+        }
+
+        // UPDATE NEWS COUNT
+        function updateNewsCount() {
+            const totalPosts = posts.length + customPosts.length;
+            document.getElementById('total-news').textContent = totalPosts;
+        }
+
+        // ADD SAMPLE POSTS
+        function addSamplePosts() {
+            const samplePosts = [
+                {
+                    title: {
+                        $t: "Koperasi Digital: Transformasi di Era Modern"
+                    },
+                    link: [
+                        {rel: "alternate", href: "#"}
+                    ],
+                    published: {
+                        $t: new Date().toISOString()
+                    },
+                    media$thumbnail: {
+                        url: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                    },
+                    category: [
+                        {term: "Teknologi"}
+                    ]
+                },
+                {
+                    title: {
+                        $t: "Strategi Pemasaran Koperasi di Media Sosial"
+                    },
+                    link: [
+                        {rel: "alternate", href: "#"}
+                    ],
+                    published: {
+                        $t: new Date(Date.now() - 86400000).toISOString()
+                    },
+                    media$thumbnail: {
+                        url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w-400&q=80"
+                    },
+                    category: [
+                        {term: "Pemasaran"}
+                    ]
+                },
+                {
+                    title: {
+                        $t: "Pengelolaan Keuangan Koperasi yang Efektif"
+                    },
+                    link: [
+                        {rel: "alternate", href: "#"}
+                    ],
+                    published: {
+                        $t: new Date(Date.now() - 172800000).toISOString()
+                    },
+                    media$thumbnail: {
+                        url: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                    },
+                    category: [
+                        {term: "Keuangan"}
+                    ]
+                },
+                {
+                    title: {
+                        $t: "Pelatihan Kewirausahaan untuk Anggota Koperasi"
+                    },
+                    link: [
+                        {rel: "alternate", href: "#"}
+                    ],
+                    published: {
+                        $t: new Date(Date.now() - 259200000).toISOString()
+                    },
+                    media$thumbnail: {
+                        url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+                    },
+                    category: [
+                        {term: "Pelatihan"}
+                    ]
+                }
+            ];
+            
+            posts = samplePosts;
+            updateNewsCount();
+            loadMore();
+        }
+    </script>
+</body>
+</html>
