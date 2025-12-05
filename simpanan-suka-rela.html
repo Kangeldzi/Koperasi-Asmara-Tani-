@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tentang Kami - KUD Asmara Tani</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.1.5/emoji-picker.min.css">
+
+<style>
+    /* ---------- ORIGINAL BASE (keamanan konsistensi) ---------- */
+    body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f7f9fc;
+        color: #333;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+
+    /* ---------- TOMBOL KEMBALI ---------- */
+    .back-home {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        background: rgba(27, 94, 32, 0.9);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-family: "Poppins", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(27, 94, 32, 0.3);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .back-home:hover {
+        background: rgba(27, 94, 32, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(27, 94, 32, 0.4);
+    }
+    
+    .back-home i {
+        font-size: 16px;
+    }
+    
+    @media (max-width: 768px) {
+        .back-home {
+            top: 15px;
+            left: 15px;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+        background: linear-gradient(120deg, #1b5e20 0%, #3e8e3b 40%, #4caf50 100%);
+        color: white;
+        padding: 70px 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero::before,
+    .hero::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.12;
+        filter: blur(30px);
+        transform: translateZ(0);
+        pointer-events: none;
+    }
+    .hero::before {
+        width: 400px;
+        height: 400px;
+        left: -80px;
+        top: -120px;
+        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.22), transparent 40%);
+        mix-blend-mode: overlay;
+    }
+    .hero::after {
+        width: 300px;
+        height: 300px;
+        right: -60px;
+        bottom: -100px;
+        background: radial-gradient(circle at 70% 70%, rgba(0,0,0,0.08), transparent 40%);
+    }
+    .hero h1 {
+        font-size: 40px;
+        margin-bottom: 10px;
+        font-weight: 700;
+        text-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        transform: translateY(0);
+        animation: floatIn 700ms cubic-bezier(.2,.9,.3,1);
+    }
+    .hero p {
+        font-size: 18px;
+        max-width: 720px;
+        margin: 0 auto;
+        opacity: .95;
+        line-height: 1.6;
+        transform: translateY(0);
+        animation: fadeInUp 900ms cubic-bezier(.2,.9,.3,1) 120ms both;
+    }
+    .hero h1::after {
+        content: "";
+        display: block;
+        width: 80px;
+        height: 4px;
+        margin: 18px auto 0;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+        box-shadow: 0 6px 20px rgba(76,175,80,0.18), 0 0 18px rgba(76,175,80,0.08) inset;
+        animation: pulse 2.4s infinite;
+    }
+    .hero .parallax-layer {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(140deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+        pointer-events: none;
+        transition: transform 0.2s linear;
+    }
+
+    /* ---------- CONTAINER ---------- */
+    .container {
+        width: 92%;
+        max-width: 1100px;
+        margin: 40px auto;
+        line-height: 1.7;
+        transform: translateY(0);
+    }
+
+    /* ---------- CARD ---------- */
+    .card {
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+        padding: 28px;
+        margin-bottom: 30px;
+        border-radius: 14px;
+        box-shadow:
+          0 6px 22px rgba(16, 24, 40, 0.06),
+          0 2px 6px rgba(16, 24, 40, 0.04);
+        position: relative;
+        border: 1px solid rgba(27,94,32,0.04);
+        transform-origin: center;
+        transition: transform 280ms cubic-bezier(.2,.9,.3,1), box-shadow 280ms;
+        will-change: transform;
+        animation: cardPop .6s ease both;
+    }
+    .card:hover {
+        transform: translateY(-8px) rotateX(0.6deg);
+        box-shadow:
+          0 18px 50px rgba(27,94,32,0.09),
+          0 6px 18px rgba(16,24,40,0.06);
+        border-color: rgba(27,94,32,0.12);
+    }
+    .card h2 {
+        margin-top: 0;
+        font-size: 26px;
+        color: #1b5e20;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+    }
+    .card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        border-top-left-radius: 14px;
+        border-bottom-left-radius: 14px;
+        background: linear-gradient(180deg, rgba(27,94,32,0.95), rgba(76,175,80,0.85));
+        box-shadow: 0 6px 20px rgba(76,175,80,0.05);
+    }
+
+    ul {
+        padding-left: 18px;
+    }
+    ul li {
+        margin-bottom: 6px;
+        position: relative;
+        padding-left: 8px;
+    }
+    ul li::marker {
+        color: #1b5e20;
+        font-weight: 700;
+    }
+
+    footer {
+        background: #1b5e20;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        margin-top: 40px;
+        font-size: 14px;
+        letter-spacing: .5px;
+        box-shadow: 0 -8px 40px rgba(27,94,32,0.12);
+    }
+
+    @media (max-width: 600px) {
+        .hero h1 { font-size: 32px; }
+        .card { padding: 20px; }
+    }
+
+    @keyframes floatIn {
+        from { transform: translateY(8px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeInUp {
+        from { transform: translateY(8px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes pulse {
+        0% { transform: scaleX(0.98); opacity: .95; }
+        50% { transform: scaleX(1.02); opacity: 1; }
+        100% { transform: scaleX(0.98); opacity: .95; }
+    }
+    @keyframes cardPop {
+        from { transform: translateY(12px) scale(.995); opacity: 0; }
+        to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .muted { color: rgba(0,0,0,0.6); }
+    .lead { font-size: 16px; line-height:1.7; }
+
+    /* ---------- SISTEM KOMENTAR STYLES ---------- */
+    .comment-section {
+        margin-top: 40px;
+    }
+    
+    .comment-form-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #4caf50;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+    
+    .textarea-container {
+        position: relative;
+    }
+    
+    .emoji-toggle {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #666;
+        transition: color 0.3s;
+    }
+    
+    .emoji-toggle:hover {
+        color: #4caf50;
+    }
+    
+    .emoji-picker-container {
+        position: absolute;
+        bottom: 50px;
+        right: 0;
+        z-index: 100;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        display: none;
+    }
+    
+    .emoji-picker-container.show {
+        display: block;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background: #1b5e20;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #15521a;
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+    
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+    
+    .btn-danger {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background: #d32f2f;
+    }
+    
+    .btn-small {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    /* Comment List Styles */
+    .comment-list {
+        margin-top: 30px;
+    }
+    
+    .comment-item {
+        background: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+        border-left: 3px solid #4caf50;
+        transition: transform 0.3s;
+    }
+    
+    .comment-item:hover {
+        transform: translateY(-2px);
+    }
+    
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .comment-author {
+        font-weight: 600;
+        color: #1b5e20;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .comment-author i {
+        color: #4caf50;
+    }
+    
+    .comment-date {
+        font-size: 12px;
+        color: #888;
+    }
+    
+    .comment-content {
+        margin-bottom: 15px;
+        line-height: 1.5;
+        font-size: 15px;
+    }
+    
+    .comment-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+    
+    .reply-form {
+        margin-top: 15px;
+        padding-left: 20px;
+        border-left: 2px dashed #ddd;
+        display: none;
+    }
+    
+    .reply-form.show {
+        display: block;
+    }
+    
+    /* Reactions Styles */
+    .reactions-container {
+        margin-top: 10px;
+    }
+    
+    .reactions-toggle {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .reactions-panel {
+        background: white;
+        border-radius: 20px;
+        padding: 5px 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        display: inline-flex;
+        gap: 8px;
+        margin-top: 5px;
+        display: none;
+    }
+    
+    .reactions-panel.show {
+        display: inline-flex;
+    }
+    
+    .reaction-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .reaction-btn:hover {
+        transform: scale(1.3);
+    }
+    
+    .reaction-count {
+        margin-left: 5px;
+        font-size: 12px;
+        color: #666;
+    }
+    
+    /* Replies Styles */
+    .replies-container {
+        margin-left: 30px;
+        margin-top: 15px;
+        padding-left: 20px;
+        border-left: 2px solid #eee;
+    }
+    
+    .reply-item {
+        background: #f9f9f9;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-left: 2px solid #a5d6a7;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #888;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        color: #ccc;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-actions {
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+        
+        .replies-container {
+            margin-left: 15px;
+        }
+        
+        .comment-actions {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+</head>
+<body>
+
+<!-- TOMBOL KEMBALI KE DASHBOARD -->
+<button class="back-home" onclick="window.location.href='index.html'">
+    <i class="fas fa-arrow-left"></i> Kembali ke Beranda 
+</button>
+
+<!-- HEADER -->
+<section class="hero" id="hero">
+    <div class="parallax-layer" aria-hidden="true"></div>
+    <h1>SIMPANAN SUKA RELA</h1>
+    <p>
+        Simpanan yang diberikan secara sukarela oleh anggota untuk memperkuat koperasi.
+    </p>
+</section>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <!-- PROFIL -->
+    <div class="card">
+        <h2>🤔 Apa Itu Simpanan Suka Rela❓</h2>
+        <p>
+            <b>Simpanan Suka Rela adalah simpanan yang diberikan oleh anggota KUD Asmara Tani secara bebas,
+            tanpa paksaan, dan dengan jumlah sesuai kemampuan masing-masing anggota.
+            Simpanan ini menjadi salah satu modal penguatan koperasi sekaligus tabungan fleksibel bagi anggota.
+        </p>
+    </div>
+
+    <!-- DIGITALISASI -->
+    <div class="card">
+        <h2>📌 KEUTAMAAN</h2>
+        <b>📝 Keutamaan Simpanan Suka Rela<b/>
+        <ul>
+            <li>Menunjukkan bentuk kecintaan dan komitmen anggota terhadap koperasi.</li>
+            <li>Menambah kestabilan modal operasional tanpa membebani anggota.</li>
+            <li>Dapat ditarik kapan saja sesuai ketentuan koperasi.</li>
+            <li>Menjadi sarana investasi pribadi yang aman dan menguntungkan.</li>
+        </ul>
+    </div>
+
+    <!-- VISI MISI -->
+    <div class="card">
+        <h2>💰 Keuntungan Simpanan Suka Rela</h2>
+
+         <ul>
+            <li>Berpotensi mendapatkan imbal hasil sesuai kebijakan koperasi.</li>
+            <li>Menjadi tabungan cadangan untuk kebutuhan darurat anggota.</li>
+            <li>Proses penyetoran sangat fleksibel dan tidak terikat jumlah.</li>
+            <li>Mendukung peningkatan SHU koperasi setiap tahun.</li>
+        </ul>
+    </div>
+
+    <!-- PENGURUS -->
+    <div class="card">
+        <h2>👍🏼 Manfaat Simpanan Suka Rela</h2>
+
+       <ul>
+            <li>Dana dapat digunakan untuk pembiayaan usaha produktif koperasi.</li>
+            <li>Meningkatkan kapasitas pelayanan keuangan bagi seluruh anggota.</li>
+            <li>Memperkuat stabilitas keuangan koperasi dalam jangka panjang.</li>
+            <li>Memberikan rasa aman bagi anggota karena dana dikelola profesional.</li>
+        </ul>
+
+        <p>
+            Dengan tetap berpegang pada prinsip dasar koperasi:
+        </p>
+
+        <blockquote style="background:#e8f5e9;padding:15px;border-left:6px solid #1b5e20;font-style:italic;border-radius:8px;">
+            "Oleh Kita, Dari Kita dan Untuk Kita"
+        </blockquote>
+
+        <p>
+            Semboyan inilah yang terus dijaga hingga saat ini, sebagai komitmen 
+            dalam menjaga kepercayaan, kejujuran, integritas dan moralitas seluruh anggota, 
+            khususnya para pengurus dan pengawas yang menjalankan amanah.
+        </p>
+    </div>
+
+    <!-- KEUTAMAAN, MANFAAT, KEUNGGULAN -->
+    <div class="card">
+        <h2>🏆 Keunggulan Simpanan Suka Rela di KUD Asmara Tani</h2>
+
+        <ul>
+            <li>Bisa disetor kapan saja, tanpa batas minimum.</li>
+            <li>Sistem pencatatan digital mempermudah pengecekan saldo.</li>
+            <li>Pengelolaan transparan dan diawasi oleh Pengawas serta Pengurus.</li>
+            <li>Dana tetap aman dan dapat ditarik sesuai prosedur yang berlaku.</li>
+        </ul>
+    </div>
+<div class="card">
+        <h2>📝 Kesimpulan</h2>
+<p>
+            Simpanan Suka Rela merupakan bentuk dukungan nyata anggota terhadap kemajuan koperasi,
+            dengan manfaat langsung berupa tabungan fleksibel, peningkatan SHU, dan kontribusi
+            terhadap penguatan modal koperasi. Semakin besar partisipasi anggota, semakin cepat
+            koperasi berkembang menuju sistem digital modern dan profesional.
+        </p>
+</div>
+    <!-- SISTEM KOMENTAR LENGKAP -->
+    <div class="comment-section" id="comment-section">
+        <div class="card">
+            <h2><i class="fas fa-comments"></i> Komentar & Ulasan</h2>
+            <p>Bagikan pendapat dan pengalaman Anda tentang KUD Asmara Tani.</p>
+            
+            <!-- Form Komentar Utama -->
+            <div class="comment-form-container">
+                <form id="main-comment-form">
+                    <div class="form-group">
+                        <input type="text" id="comment-name" class="form-input" placeholder="Nama Anda" required>
+                    </div>
+                    
+                    <div class="form-group textarea-container">
+                        <textarea id="comment-text" class="form-input" rows="3" placeholder="Tulis komentar Anda di sini... (Gunakan emoji untuk ekspresi 😊)" required></textarea>
+                        <button type="button" class="emoji-toggle" id="emoji-toggle-main">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <div class="emoji-picker-container" id="emoji-picker-main"></div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="add-emoji-btn">
+                            <i class="far fa-smile"></i> Tambah Emoji
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Kirim Komentar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Daftar Komentar -->
+            <div class="comment-list" id="comments-list">
+                <!-- Komentar akan dimuat di sini -->
+                <div class="empty-state" id="empty-comments">
+                    <i class="far fa-comment-dots"></i>
+                    <h3>Belum ada komentar</h3>
+                    <p>Jadilah yang pertama berkomentar tentang KUD Asmara Tani!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    © 1972 - Sekarang | KUD Asmara Tani — Koperasi Modern Berbasis Digital
+</footer>
+
+<!-- Emoji Picker Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.1.5/emoji-picker.min.js"></script>
+
+<script>
+// ---------- Tombol Kembali ----------
+// Tambahkan fungsi untuk tombol kembali
+function goToDashboard() {
+    // Anda bisa mengganti '#' dengan URL dashboard yang sesuai
+    window.location.href = '#';
+    
+    // Alternatif: jika menggunakan single page application
+    // history.back(); // Kembali ke halaman sebelumnya
+}
+
+// Tambahkan event listener untuk tombol
+document.querySelector('.back-home').addEventListener('click', goToDashboard);
+
+// Tambahkan juga keyboard shortcut (Alt + ArrowLeft)
+document.addEventListener('keydown', (e) => {
+    if (e.altKey && e.key === 'ArrowLeft') {
+        goToDashboard();
+    }
+});
+
+// ---------- Parallax Hero ----------
+(function(){
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+    const layer = hero.querySelector('.parallax-layer');
+    let lastScroll = 0, ticking = false;
+
+    function onScroll() {
+        lastScroll = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                const move = Math.min(60, lastScroll * 0.12);
+                layer.style.transform = `translateY(${move}px)`;
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    let supportsHover = window.matchMedia("(hover: hover)").matches;
+    if (supportsHover) {
+        hero.addEventListener('mousemove', (e) => {
+            const bounds = hero.getBoundingClientRect();
+            const cx = bounds.left + bounds.width / 2;
+            const cy = bounds.top + bounds.height / 2;
+            const dx = (e.clientX - cx) / bounds.width;
+            const dy = (e.clientY - cy) / bounds.height;
+            const rX = dy * 4;
+            const rY = dx * -4;
+            hero.style.transform = `perspective(800px) rotateX(${rX}deg) rotateY(${rY}deg)`;
+        });
+        hero.addEventListener('mouseleave', () => {
+            hero.style.transform = '';
+        });
+    }
+})();
+
+// ---------- Sistem Komentar Lengkap ----------
+class CommentSystem {
+    constructor() {
+        this.comments = JSON.parse(localStorage.getItem('comments-asmara-tani')) || [];
+        this.emojiPicker = null;
+        this.currentReplyingTo = null;
+        this.init();
+    }
+
+    init() {
+        this.renderComments();
+        this.setupEventListeners();
+        this.initEmojiPicker();
+    }
+
+    initEmojiPicker() {
+        // Emoji picker sederhana
+        const emojis = ['😊', '😂', '❤️', '😍', '👍', '👏', '🎉', '🙏', '😎', '🤔', '😮', '😢', '😡', '💯', '🔥'];
+        const pickerMain = document.getElementById('emoji-picker-main');
+        
+        if (pickerMain) {
+            emojis.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.textContent = emoji;
+                btn.className = 'reaction-btn';
+                btn.style.fontSize = '20px';
+                btn.style.padding = '5px';
+                btn.addEventListener('click', () => {
+                    this.insertEmoji(emoji, 'comment-text');
+                    pickerMain.classList.remove('show');
+                });
+                pickerMain.appendChild(btn);
+            });
+        }
+    }
+
+    setupEventListeners() {
+        // Form komentar utama
+        const mainForm = document.getElementById('main-comment-form');
+        if (mainForm) {
+            mainForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.addComment();
+            });
+        }
+
+        // Toggle emoji picker
+        const emojiToggle = document.getElementById('emoji-toggle-main');
+        if (emojiToggle) {
+            emojiToggle.addEventListener('click', () => {
+                const picker = document.getElementById('emoji-picker-main');
+                picker.classList.toggle('show');
+            });
+        }
+
+        // Tambah emoji button
+        const addEmojiBtn = document.getElementById('add-emoji-btn');
+        if (addEmojiBtn) {
+            addEmojiBtn.addEventListener('click', () => {
+                this.showQuickEmojiPanel('comment-text');
+            });
+        }
+
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.emoji-picker-container') && !e.target.closest('.emoji-toggle')) {
+                document.querySelectorAll('.emoji-picker-container').forEach(picker => {
+                    picker.classList.remove('show');
+                });
+            }
+        });
+    }
+
+    insertEmoji(emoji, textareaId) {
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+        
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const newText = text.substring(0, start) + emoji + text.substring(end);
+        
+        textarea.value = newText;
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+    }
+
+    showQuickEmojiPanel(textareaId) {
+        const quickEmojis = ['😊', '👍', '❤️', '🎉', '👏', '💯'];
+        const panel = document.createElement('div');
+        panel.className = 'reactions-panel show';
+        panel.style.position = 'absolute';
+        
+        quickEmojis.forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.textContent = emoji;
+            btn.className = 'reaction-btn';
+            btn.addEventListener('click', () => {
+                this.insertEmoji(emoji, textareaId);
+                panel.remove();
+            });
+            panel.appendChild(btn);
+        });
+        
+        const textarea = document.getElementById(textareaId);
+        if (textarea) {
+            textarea.parentNode.appendChild(panel);
+            
+            // Remove panel after 3 seconds
+            setTimeout(() => {
+                if (panel.parentNode) panel.remove();
+            }, 3000);
+        }
+    }
+
+    addComment(parentId = null) {
+        const nameInput = document.getElementById('comment-name');
+        const textInput = document.getElementById('comment-text');
+        
+        if (!nameInput || !textInput) return;
+        
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+        
+        if (!name || !text) {
+            alert('Silakan isi nama dan komentar Anda!');
+            return;
+        }
+        
+        const comment = {
+            id: Date.now().toString(),
+            parentId: parentId,
+            author: name,
+            content: text,
+            date: new Date().toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            timestamp: Date.now(),
+            reactions: {
+                '❤️': 0,
+                '😂': 0,
+                '😮': 0,
+                '😢': 0,
+                '😡': 0
+            },
+            userReactions: {},
+            replies: []
+        };
+        
+        if (parentId) {
+            // Ini adalah balasan
+            const parentComment = this.findComment(parentId, this.comments);
+            if (parentComment) {
+                parentComment.replies.push(comment);
+            }
+        } else {
+            // Ini adalah komentar utama
+            this.comments.push(comment);
+        }
+        
+        this.saveComments();
+        this.renderComments();
+        
+        // Reset form
+        if (!parentId) {
+            textInput.value = '';
+            if (this.currentReplyingTo) {
+                this.currentReplyingTo = null;
+            }
+        } else {
+            // Reset form balasan
+            const replyForm = document.querySelector(`.reply-form[data-parent="${parentId}"]`);
+            if (replyForm) {
+                const replyTextarea = replyForm.querySelector('textarea');
+                if (replyTextarea) replyTextarea.value = '';
+                replyForm.classList.remove('show');
+            }
+        }
+    }
+
+    findComment(id, comments) {
+        for (const comment of comments) {
+            if (comment.id === id) return comment;
+            if (comment.replies && comment.replies.length > 0) {
+                const found = this.findComment(id, comment.replies);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    addReaction(commentId, emoji) {
+        const comment = this.findComment(commentId, this.comments);
+        if (!comment) return;
+        
+        // Simulasi user ID sederhana (dalam aplikasi nyata, gunakan authentication)
+        const userId = 'user_' + (localStorage.getItem('user_id') || Math.random().toString(36).substr(2, 9));
+        
+        if (!comment.userReactions) comment.userReactions = {};
+        
+        // Jika user sudah memberikan reaction ini sebelumnya, hapus
+        if (comment.userReactions[userId] === emoji) {
+            comment.reactions[emoji] = Math.max(0, comment.reactions[emoji] - 1);
+            delete comment.userReactions[userId];
+        } else {
+            // Jika user sudah memberikan reaction lain, kurangi reaction sebelumnya
+            if (comment.userReactions[userId]) {
+                const prevEmoji = comment.userReactions[userId];
+                comment.reactions[prevEmoji] = Math.max(0, comment.reactions[prevEmoji] - 1);
+            }
+            
+            // Tambahkan reaction baru
+            comment.reactions[emoji] = (comment.reactions[emoji] || 0) + 1;
+            comment.userReactions[userId] = emoji;
+        }
+        
+        this.saveComments();
+        this.renderComments();
+    }
+
+    deleteComment(commentId) {
+        if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) return;
+        
+        // Fungsi rekursif untuk menghapus komentar
+        const deleteRecursive = (comments) => {
+            for (let i = comments.length - 1; i >= 0; i--) {
+                if (comments[i].id === commentId) {
+                    comments.splice(i, 1);
+                    return true;
+                }
+                if (comments[i].replies && comments[i].replies.length > 0) {
+                    if (deleteRecursive(comments[i].replies)) return true;
+                }
+            }
+            return false;
+        };
+        
+        if (deleteRecursive(this.comments)) {
+            this.saveComments();
+            this.renderComments();
+        }
+    }
+
+    saveComments() {
+        localStorage.setItem('comments-asmara-tani', JSON.stringify(this.comments));
+    }
+
+    renderComments() {
+        const commentsList = document.getElementById('comments-list');
+        const emptyState = document.getElementById('empty-comments');
+        
+        if (!commentsList) return;
+        
+        if (this.comments.length === 0) {
+            commentsList.innerHTML = '';
+            if (emptyState) {
+                commentsList.appendChild(emptyState);
+            }
+            return;
+        }
+        
+        commentsList.innerHTML = '';
+        
+        // Urutkan komentar berdasarkan tanggal (terbaru pertama)
+        const sortedComments = [...this.comments].sort((a, b) => b.timestamp - a.timestamp);
+        
+        sortedComments.forEach(comment => {
+            commentsList.appendChild(this.createCommentElement(comment));
+        });
+    }
+
+    createCommentElement(comment) {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.dataset.id = comment.id;
+        
+        // Header komentar
+        const header = document.createElement('div');
+        header.className = 'comment-header';
+        
+        const author = document.createElement('div');
+        author.className = 'comment-author';
+        author.innerHTML = `<i class="fas fa-user-circle"></i> ${comment.author}`;
+        
+        const date = document.createElement('div');
+        date.className = 'comment-date';
+        date.textContent = comment.date;
+        
+        header.appendChild(author);
+        header.appendChild(date);
+        
+        // Konten komentar
+        const content = document.createElement('div');
+        content.className = 'comment-content';
+        content.textContent = comment.content;
+        
+        // Reactions
+        const reactionsContainer = document.createElement('div');
+        reactionsContainer.className = 'reactions-container';
+        
+        const reactionsToggle = document.createElement('button');
+        reactionsToggle.className = 'reactions-toggle';
+        reactionsToggle.innerHTML = `<i class="far fa-smile"></i> Reactions`;
+        reactionsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const panel = reactionsToggle.nextElementSibling;
+            panel.classList.toggle('show');
+        });
+        
+        const reactionsPanel = document.createElement('div');
+        reactionsPanel.className = 'reactions-panel';
+        
+        const reactionEmojis = ['❤️', '😂', '😮', '😢', '😡'];
+        reactionEmojis.forEach(emoji => {
+            const reactionBtn = document.createElement('button');
+            reactionBtn.className = 'reaction-btn';
+            reactionBtn.textContent = emoji;
+            reactionBtn.title = this.getReactionLabel(emoji);
+            
+            const count = comment.reactions[emoji] || 0;
+            if (count > 0) {
+                reactionBtn.innerHTML += `<span class="reaction-count">${count}</span>`;
+            }
+            
+            reactionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.addReaction(comment.id, emoji);
+            });
+            
+            reactionsPanel.appendChild(reactionBtn);
+        });
+        
+        reactionsContainer.appendChild(reactionsToggle);
+        reactionsContainer.appendChild(reactionsPanel);
+        
+        // Aksi komentar
+        const actions = document.createElement('div');
+        actions.className = 'comment-actions';
+        
+        const replyBtn = document.createElement('button');
+        replyBtn.className = 'btn btn-secondary btn-small';
+        replyBtn.innerHTML = `<i class="fas fa-reply"></i> Balas`;
+        replyBtn.addEventListener('click', () => {
+            this.toggleReplyForm(comment.id);
+        });
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger btn-small';
+        deleteBtn.innerHTML = `<i class="fas fa-trash"></i> Hapus`;
+        deleteBtn.addEventListener('click', () => {
+            this.deleteComment(comment.id);
+        });
+        
+        actions.appendChild(replyBtn);
+        actions.appendChild(deleteBtn);
+        
+        // Form balasan
+        const replyForm = document.createElement('div');
+        replyForm.className = 'reply-form';
+        replyForm.dataset.parent = comment.id;
+        
+        const replyInput = document.createElement('textarea');
+        replyInput.className = 'form-input';
+        replyInput.rows = 2;
+        replyInput.placeholder = `Balas ${comment.author}...`;
+        replyInput.id = `reply-text-${comment.id}`;
+        
+        const replyActions = document.createElement('div');
+        replyActions.className = 'form-actions';
+        replyActions.style.marginTop = '10px';
+        
+        const replyEmojiBtn = document.createElement('button');
+        replyEmojiBtn.type = 'button';
+        replyEmojiBtn.className = 'btn btn-secondary btn-small';
+        replyEmojiBtn.innerHTML = `<i class="far fa-smile"></i> Emoji`;
+        replyEmojiBtn.addEventListener('click', () => {
+            this.showQuickEmojiPanel(`reply-text-${comment.id}`);
+        });
+        
+        const submitReplyBtn = document.createElement('button');
+        submitReplyBtn.type = 'button';
+        submitReplyBtn.className = 'btn btn-primary btn-small';
+        submitReplyBtn.textContent = 'Kirim Balasan';
+        submitReplyBtn.addEventListener('click', () => {
+            const text = replyInput.value.trim();
+            if (text) {
+                // Simpan teks sementara
+                const tempText = replyInput.value;
+                replyInput.value = 'Mengirim...';
+                submitReplyBtn.disabled = true;
+                
+                setTimeout(() => {
+                    this.addComment(comment.id);
+                }, 300);
+            }
+        });
+        
+        const cancelReplyBtn = document.createElement('button');
+        cancelReplyBtn.type = 'button';
+        cancelReplyBtn.className = 'btn btn-secondary btn-small';
+        cancelReplyBtn.textContent = 'Batal';
+        cancelReplyBtn.addEventListener('click', () => {
+            replyForm.classList.remove('show');
+        });
+        
+        replyActions.appendChild(replyEmojiBtn);
+        replyActions.appendChild(cancelReplyBtn);
+        replyActions.appendChild(submitReplyBtn);
+        
+        replyForm.appendChild(replyInput);
+        replyForm.appendChild(replyActions);
+        
+        // Replies container
+        const repliesContainer = document.createElement('div');
+        repliesContainer.className = 'replies-container';
+        
+        if (comment.replies && comment.replies.length > 0) {
+            // Urutkan balasan berdasarkan tanggal
+            const sortedReplies = [...comment.replies].sort((a, b) => a.timestamp - b.timestamp);
+            sortedReplies.forEach(reply => {
+                repliesContainer.appendChild(this.createReplyElement(reply));
+            });
+        }
+        
+        // Gabungkan semua elemen
+        div.appendChild(header);
+        div.appendChild(content);
+        div.appendChild(reactionsContainer);
+        div.appendChild(actions);
+        div.appendChild(replyForm);
+        div.appendChild(repliesContainer);
+        
+        return div;
+    }
+
+    createReplyElement(reply) {
+        const div = document.createElement('div');
+        div.className = 'reply-item';
+        div.dataset.id = reply.id;
+        
+        const header = document.createElement('div');
+        header.className = 'comment-header';
+        header.style.marginBottom = '5px';
+        
+        const author = document.createElement('div');
+        author.className = 'comment-author';
+        author.innerHTML = `<i class="fas fa-reply"></i> ${reply.author}`;
+        
+        const date = document.createElement('div');
+        date.className = 'comment-date';
+        date.textContent = reply.date;
+        
+        header.appendChild(author);
+        header.appendChild(date);
+        
+        const content = document.createElement('div');
+        content.className = 'comment-content';
+        content.style.fontSize = '14px';
+        content.textContent = reply.content;
+        
+        const actions = document.createElement('div');
+        actions.className = 'comment-actions';
+        actions.style.marginTop = '8px';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger btn-small';
+        deleteBtn.innerHTML = `<i class="fas fa-trash"></i> Hapus`;
+        deleteBtn.addEventListener('click', () => {
+            this.deleteComment(reply.id);
+        });
+        
+        actions.appendChild(deleteBtn);
+        
+        div.appendChild(header);
+        div.appendChild(content);
+        div.appendChild(actions);
+        
+        return div;
+    }
+
+    toggleReplyForm(commentId) {
+        const replyForm = document.querySelector(`.reply-form[data-parent="${commentId}"]`);
+        if (replyForm) {
+            // Tutup semua form balasan lainnya
+            document.querySelectorAll('.reply-form.show').forEach(form => {
+                if (form !== replyForm) form.classList.remove('show');
+            });
+            
+            replyForm.classList.toggle('show');
+            
+            if (replyForm.classList.contains('show')) {
+                const textarea = replyForm.querySelector('textarea');
+                if (textarea) {
+                    textarea.focus();
+                }
+            }
+        }
+    }
+
+    getReactionLabel(emoji) {
+        const labels = {
+            '❤️': 'Suka',
+            '😂': 'Tertawa',
+            '😮': 'Terkejut',
+            '😢': 'Sedih',
+            '😡': 'Marah'
+        };
+        return labels[emoji] || emoji;
+    }
+}
+
+// Inisialisasi sistem komentar
+document.addEventListener('DOMContentLoaded', () => {
+    window.commentSystem = new CommentSystem();
+    
+    // Simpan user ID sederhana
+    if (!localStorage.getItem('user_id')) {
+        localStorage.setItem('user_id', Math.random().toString(36).substr(2, 9));
+    }
+    
+    // Tambahkan animasi pada tombol kembali saat scroll
+    const backButton = document.querySelector('.back-home');
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 100) {
+            backButton.style.opacity = '0.9';
+            backButton.style.transform = 'translateY(0)';
+        } else {
+            backButton.style.opacity = '1';
+        }
+        
+        // Sembunyikan tombol saat scroll ke bawah, muncul saat scroll ke atas
+        if (currentScroll > lastScroll && currentScroll > 300) {
+            backButton.style.transform = 'translateY(-70px)';
+        } else {
+            backButton.style.transform = 'translateY(0)';
+        }
+        
+        lastScroll = currentScroll;
+    });
+});
+</script>
+</body>
+</html>
