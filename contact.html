@@ -1,10 +1,10 @@
-<!-- ====== FONT AWESOME UNTUK IKON ====== -->
+<!-- ====== FONT AWESOME ====== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================
-   FLOATING BACK BUTTON + TOOLTIP GREEN
+   FLOATING BACK BUTTON + TOOLTIP
 ============================================ */
 .icon-back-tooltip {
     position: fixed;
@@ -31,6 +31,7 @@
     box-shadow: 0 8px 25px rgba(46, 125, 50, 0.75);
 }
 
+/* Pulse Effect */
 .icon-back-tooltip::after {
     content: "";
     position: absolute;
@@ -39,6 +40,7 @@
     border-radius: 50%;
     background: rgba(255,255,255,0.3);
     animation: pulseGreen 2s infinite;
+    z-index: -1;
 }
 
 @keyframes pulseGreen {
@@ -46,7 +48,7 @@
     100% { opacity: 0; transform: scale(1.5); }
 }
 
-/* Tooltip bawah tombol */
+/* Tooltip */
 .tooltip-zoom-bottom {
     position: fixed;
     top: 75px;
@@ -68,159 +70,124 @@
     z-index: 9998;
 }
 
-.tooltip-zoom-bottom i {
-    font-size: 12px;
-}
-
 .icon-back-tooltip:hover + .tooltip-zoom-bottom {
     opacity: 1;
     transform: scale(1);
 }
 
 /* ============================================
-   KONTAK CARD
+   ALAMAT (tanpa container)
 ============================================ */
-.kop-kontak {
-  font-family: 'Poppins', sans-serif;
-  text-align: center;
-  background: #fff;
-  color: #333;
-  padding: 40px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-  max-width: 420px;
-  margin: 90px auto 30px auto;
-  animation: fadeInUp 0.6s ease;
+.alamat-wrapper {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 100px;
+    margin-bottom: 25px;
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to { opacity: 1; transform: translateY(0); }
+.alamat-wrapper h2 {
+    color: #2e7d32;
+    font-weight: 700;
+    margin-bottom: 5px;
 }
 
-.kop-kontak h2 {
-  color: #2e7d32;
-  font-weight: 700;
-}
-
-.Koperasi-sosmed a {
-  color: #2e7d32;
-  font-weight: 600;
-  transition: .3s;
-}
-
-.Koperasi-sosmed a:hover {
-  color: #1b5e20;
-  text-shadow: 0 0 6px rgba(46,125,50,0.4);
+.alamat-wrapper p {
+    margin: 2px 0;
+    font-size: 14px;
 }
 
 /* ============================================
-   GOOGLE MAPS RESPONSIVE
+   CENTER WRAPPER UNTUK MAP + BUTTON
 ============================================ */
-.embed-map-responsive { 
-  margin-top: 20px;
-  margin-bottom: 25px;
+.map-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+}
+
+/* MAP FRAME */
+.embed-map-frame {
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: 0.3s ease;
+}
+
+.embed-map-frame:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
 }
 
 /* ============================================
-   TOMBOL LOKASI KUD (UPGRADED)
+   BUTTON LOKASI KUD
 ============================================ */
 .maps-button {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     padding: 10px 20px;
-    margin: 25px auto 40px auto;
+    margin: 20px auto;
     background: linear-gradient(135deg, #34A853, #2e7d32, #1b5e20);
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins';
     font-size: 15px;
     font-weight: 600;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     text-decoration: none;
     box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    overflow: hidden;
     transition: 0.3s ease;
 }
 
 .maps-button:hover {
-    transform: translateY(-4px) scale(1.04);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-}
-
-.maps-button:active {
-    transform: scale(0.97);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
 }
 
 .maps-icon {
     margin-right: 10px;
     width: 20px;
     height: 20px;
-    transition: .3s ease;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
     background-size: contain;
-}
-
-.maps-button:hover .maps-icon {
-    transform: scale(1.15) rotate(8deg);
-}
-
-.pulse-effect {
-    position: absolute;
-    width: 180%;
-    height: 180%;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    opacity: 0;
-    transform: scale(0);
-    animation: pulse 2s infinite;
-    z-index: -1;
-}
-
-@keyframes pulse {
-    0% { transform: scale(0.8); opacity: 0.6; }
-    100% { transform: scale(1.4); opacity: 0; }
 }
 </style>
 
 <!-- =================== FLOATING BACK BUTTON =================== -->
-<button class="icon-back-tooltip" onclick=""window.location.href='index.html'">
+<button class="icon-back-tooltip" onclick="window.location.href='index.html'">
     <i class="fas fa-arrow-left"></i>
 </button>
+
 <div class="tooltip-zoom-bottom">
-    <i class="fas fa-info-circle"></i> Kembali Ke Beranda 
+    <i class="fas fa-info-circle"></i> Kembali Ke Beranda
 </div>
 
-<!-- =================== HUBUNGI KAMI CARD =================== -->
-<section class="kop-kontak">
-  <h2>Hubungi Kami</h2>
-  <p>📍 Jl. KH. Abdul Hamid Km. 15 Desa Ciasmara-Pamijahan, Bogor</p>
-  <p>📞 0852-1848-3129 | ✉️ koperasi@pamijahan.co.id</p>
-  <p>🕒 Senin – Sabtu (08.00 – 16.00 WIB)</p>
-  <div class="Koperasi-sosmed">
-    <a href="#">Facebook</a> |
-    <a href="#">Instagram</a> |
-    <a href="#">Tiktok</a> |
-    <a href="#">YouTube</a>
-  </div>
+<!-- =================== ALAMAT TANPA CARD =================== -->
+<div class="alamat-wrapper">
+    <h2>Alamat KUD Asmara Tani</h2>
+    <p>📍 Jl. KH. Abdul Hamid Km. 15 Desa Ciasmara, Pamijahan – Bogor</p>
+    <p>📞 0852-1848-3129</p>
+    <p>✉️ koperasi@pamijahan.co.id</p>
+</div>
 
-  <!-- GOOGLE MAPS -->
-  <div class="embed-map-responsive">
-    <div class="embed-map-container">
-      <iframe class="embed-map-frame" frameborder="0" scrolling="no"
+<!-- =================== GOOGLE MAPS + BUTTON CENTER =================== -->
+<div class="map-wrapper">
+
+    <!-- Tombol Lokasi Center -->
+    <a href="https://maps.app.goo.gl/YRd2mGV1E92Jmx1B7" target="_blank" class="maps-button">
+        <div class="maps-icon"></div>
+        Lokasi KUD Asmara Tani
+    </a>
+
+    <!-- Google Maps Center -->
+    <iframe class="embed-map-frame" frameborder="0" scrolling="no"
         src="https://maps.google.com/maps?width=600&height=250&hl=en&q=Kantor%20Desa%20Ciasmara%20Kecamatan%20Pamijahan&t=k&z=14&ie=UTF8&iwloc=B&output=embed">
-      </iframe>
-    </div>
-  </div>
+    </iframe>
 
-  <!-- BUTTON LOKASI -->
-  <a href="https://maps.app.goo.gl/YRd2mGV1E92Jmx1B7" target="_blank" class="maps-button">
-      <div class="pulse-effect"></div>
-      <div class="maps-icon"></div>
-      Lokasi KUD Asmara Tani
-  </a>
-
-</section>
+</div>
