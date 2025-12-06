@@ -3,22 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Portal Berita Futuristik</title>
+    <title>Koperasi News Portal</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Emoji Picker CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.css">
     <style>
-        /* THEME FUTURISTIK DENGAN GRADASI KOPERASI */
+        /* THEME FUTURISTIK DENGAN GRADASI KOPERASI LEMBUT */
         :root {
-            --bg: linear-gradient(135deg, #0c0f16 0%, #1a2238 100%);
-            --card-bg: linear-gradient(145deg, rgba(23, 27, 35, 0.9) 0%, rgba(30, 40, 62, 0.9) 100%);
-            --primary: linear-gradient(90deg, #00eaff, #00b8ff);
-            --accent: linear-gradient(90deg, #ff4fbe, #ff6b9d);
-            --text: #e6e6e6;
-            --text-secondary: #b0b0b0;
-            --success: #2ecc71;
-            --shadow: rgba(0, 0, 0, 0.3);
+            --primary-gradient: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
+            --secondary-gradient: linear-gradient(135deg, #E9C46A 0%, #F4A261 100%);
+            --accent-gradient: linear-gradient(135deg, #E76F51 0%, #D65C40 100%);
+            --bg-gradient: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+            --card-gradient: linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
+            --text-primary: #264653;
+            --text-secondary: #457B9D;
+            --text-light: #6C757D;
+            --border-color: #E0E0E0;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.12);
+            --success: #2A9D8F;
+            --warning: #E9C46A;
+            --danger: #E76F51;
             --card-radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -28,16 +36,15 @@
         }
 
         body {
-            background: var(--bg);
+            background: var(--bg-gradient);
             font-family: "Poppins", sans-serif;
-            color: var(--text);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Efek latar belakang futuristik */
+        /* Efek latar belakang gradasi lembut */
         body::before {
             content: '';
             position: fixed;
@@ -46,1137 +53,2392 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(0, 234, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255, 79, 190, 0.06) 0%, transparent 40%);
+                radial-gradient(circle at 10% 20%, rgba(42, 157, 143, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(233, 196, 106, 0.05) 0%, transparent 20%);
             z-index: -1;
             pointer-events: none;
         }
 
-        /* WRAPPER */
-        #mini-news-grid {
+        /* TOMBOL KEMBALI KE BERANDA */
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
+        }
+
+        .back-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 157, 143, 0.4);
+        }
+
+        /* CONTAINER UTAMA */
+        #news-portal {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-        }
-
-        /* HEADER STYLING */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2.8rem;
-            background: var(--primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 10px;
-            text-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 30px;
-            line-height: 1.6;
-        }
-
-        .header::after {
-            content: '';
-            display: block;
-            width: 120px;
-            height: 4px;
-            background: var(--primary);
-            margin: 0 auto;
-            border-radius: 2px;
-            box-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
-        }
-
-        /* CAROUSEL SECTION */
-        .carousel-section {
-            margin-bottom: 50px;
-            position: relative;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 12px;
-        }
-
-        .section-title i {
-            background: var(--primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-size: 1.8rem;
-        }
-
-        .section-title h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            background: linear-gradient(90deg, #e6e6e6, #b0b0b0);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        #carousel {
             width: 100%;
-            height: 400px;
-            overflow: hidden;
-            position: relative;
+        }
+
+        /* HEADER */
+        .portal-header {
+            background: var(--primary-gradient);
             border-radius: var(--card-radius);
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.5),
-                0 0 40px rgba(0, 234, 255, 0.2),
-                0 0 60px rgba(255, 79, 190, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        #carousel-inner {
-            display: flex;
-            height: 100%;
-            transition: var(--transition);
-        }
-
-        .carousel-slide {
-            min-width: 100%;
-            height: 100%;
+            padding: 40px 30px;
+            margin: 20px 0 30px 0;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            color: white;
             position: relative;
             overflow: hidden;
-        }
-
-        .carousel-slide img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.8s ease;
         }
 
-        .carousel-slide:hover img {
-            transform: scale(1.05);
-        }
-
-        .carousel-content {
+        .portal-header::before {
+            content: '';
             position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 30px;
-            background: linear-gradient(transparent, rgba(12, 15, 22, 0.9));
-            border-radius: 0 0 var(--card-radius) var(--card-radius);
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="white" opacity="0.1"/></svg>');
+            pointer-events: none;
         }
 
-        .carousel-content h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            background: var(--primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 700;
-        }
-
-        .carousel-content p {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .carousel-nav {
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
-            transform: translateY(-50%);
-            z-index: 10;
-        }
-
-        .carousel-btn {
-            background: rgba(23, 27, 35, 0.8);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: var(--transition);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(0, 234, 255, 0.2);
-        }
-
-        .carousel-btn:hover {
-            background: rgba(0, 234, 255, 0.2);
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(0, 234, 255, 0.4);
-        }
-
-        .carousel-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .indicator.active {
-            background: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 234, 255, 0.8);
-        }
-
-        /* SWITCH BUTTONS */
-        .switcher-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--card-radius);
-            box-shadow: 0 8px 25px var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .switcher {
-            display: flex;
-            gap: 15px;
-        }
-
-        .switcher button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(30, 40, 62, 0.8);
-            color: var(--text);
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid rgba(0, 234, 255, 0.1);
-        }
-
-        .switcher button:hover {
-            background: rgba(0, 234, 255, 0.15);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.2);
-        }
-
-        .switcher button.active {
-            background: var(--primary);
-            color: #0c0f16;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.4);
-        }
-
-        .news-count {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            background: rgba(30, 40, 62, 0.8);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 234, 255, 0.1);
-        }
-
-        .news-count span {
-            background: var(--primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 700;
-        }
-
-        /* GRID – KOTAK KOTAK MINI */
-        .mini-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        /* KARTU MINI - STYLE FOLDER FUTURISTIK */
-        .mini-card {
-            background: var(--card-bg);
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            height: 320px;
+        .header-content {
             position: relative;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            transition: var(--transition);
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s forwards;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .mini-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent 30%, rgba(0, 234, 255, 0.03) 50%, transparent 70%);
-            z-index: 1;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .mini-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 
-                0 15px 30px rgba(0, 0, 0, 0.4),
-                0 0 30px rgba(0, 234, 255, 0.2),
-                0 0 50px rgba(255, 79, 190, 0.1);
-        }
-
-        .mini-card:hover::before {
-            opacity: 1;
-        }
-
-        /* GAMBAR THUMBNAIL */
-        .image-container {
-            width: 100%;
-            height: 180px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .mini-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.9);
-            transition: var(--transition);
-        }
-
-        .mini-card:hover img {
-            filter: brightness(1);
-            transform: scale(1.05);
-        }
-
-        .image-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, transparent 50%, rgba(12, 15, 22, 0.8) 100%);
             z-index: 2;
+            text-align: center;
+            width: 100%;
         }
 
-        /* TEKS MINI */
-        .mini-info {
-            padding: 20px;
-            position: relative;
-            z-index: 3;
+        .header-content h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            word-wrap: break-word;
         }
 
-        .tag-container {
+        .header-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            word-wrap: break-word;
+        }
+
+        .header-stats {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            width: 100%;
         }
 
-        .tag {
-            font-size: 0.8rem;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: var(--primary);
-            color: #0c0f16;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .read-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .mini-title {
-            font-size: 1.1rem;
-            line-height: 1.4;
-            margin-bottom: 15px;
-            font-weight: 600;
-            height: 60px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-
-        .date-author {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 12px;
-        }
-
-        .date {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .author {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* ANIMASI FADE IN */
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* LIST MODE */
-        .list-mode .mini-grid {
-            grid-template-columns: 1fr !important;
-        }
-
-        .list-mode .mini-card {
-            height: 180px;
-            display: flex;
-        }
-
-        .list-mode .image-container {
-            width: 250px;
-            height: 100%;
+        .stat-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 24px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             flex-shrink: 0;
         }
 
-        .list-mode .mini-info {
-            flex-grow: 1;
-            padding: 25px;
+        /* DROPDOWN KATEGORI */
+        .filter-bar {
+            background: var(--card-gradient);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            border: 1px solid var(--border-color);
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
         }
 
-        .list-mode .mini-title {
-            height: auto;
-            -webkit-line-clamp: 2;
-            font-size: 1.2rem;
+        .filter-left {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
         }
 
-        /* PAGINATION */
-        .pagination-container {
-            text-align: center;
-            margin: 40px 0;
+        .dropdown-container {
+            position: relative;
+            min-width: 200px;
         }
 
-        #load-more {
-            padding: 16px 32px;
-            border: none;
+        .dropdown-btn {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid var(--border-color);
             border-radius: 12px;
-            background: var(--primary);
-            color: #0c0f16;
             cursor: pointer;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .dropdown-btn:hover {
+            border-color: var(--success);
+        }
+
+        .dropdown-btn.active {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 5px;
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 0 auto;
-            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
-            border: 1px solid rgba(0, 234, 255, 0.3);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        #load-more:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 234, 255, 0.5);
+        .dropdown-item:last-child {
+            border-bottom: none;
         }
 
-        #load-more:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .dropdown-item:hover {
+            background: rgba(42, 157, 143, 0.05);
         }
 
-        /* CUSTOM NEWS FORM */
-        .custom-news-form {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: var(--card-radius);
-            margin-top: 50px;
-            box-shadow: 0 10px 25px var(--shadow);
-            border: 1px solid rgba(0, 234, 255, 0.1);
+        .dropdown-item.active {
+            background: var(--primary-gradient);
+            color: white;
         }
 
-        .form-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            background: var(--primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .form-group input {
+        .search-box input {
             width: 100%;
-            padding: 14px;
-            background: rgba(30, 40, 62, 0.8);
-            border: 1px solid rgba(0, 234, 255, 0.2);
-            border-radius: 10px;
-            color: var(--text);
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             font-family: "Poppins", sans-serif;
             transition: var(--transition);
         }
 
-        .form-group input:focus {
+        .search-box input:focus {
             outline: none;
-            border-color: rgba(0, 234, 255, 0.6);
-            box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
         }
 
-        .form-buttons {
-            display: flex;
-            gap: 15px;
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
         }
 
-        .form-btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
+        /* GRID BERITA */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        /* KARTU BERITA PROFESIONAL */
+        .news-card {
+            background: var(--card-gradient);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 25px var(--shadow-light);
             transition: var(--transition);
+            position: relative;
+            border: 1px solid var(--border-color);
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px var(--shadow-medium);
+        }
+
+        .card-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .news-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .card-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .card-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .card-content p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .card-date {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .read-more {
+            color: var(--success);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .read-more:hover {
+            gap: 10px;
+        }
+
+        /* MODAL ARTIKEL DETAIL - FULL SCREEN */
+        .article-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 0;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-gradient);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            margin-right: 20px;
+            flex-grow: 1;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .close-modal::before,
+        .close-modal::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: white;
+            border-radius: 1px;
+        }
+
+        .close-modal::before {
+            transform: rotate(45deg);
+        }
+
+        .close-modal::after {
+            transform: rotate(-45deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .article-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .article-category {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .article-date {
+            color: var(--text-light);
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .btn-add {
-            background: var(--primary);
-            color: #0c0f16;
+        .article-content {
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+            width: 100%;
         }
 
-        .btn-reset {
-            background: rgba(255, 79, 190, 0.1);
-            color: var(--text);
-            border: 1px solid rgba(255, 79, 190, 0.3);
+        .article-content p {
+            margin-bottom: 25px;
+            word-wrap: break-word;
         }
 
-        .btn-add:hover, .btn-reset:hover {
+        .article-content h3 {
+            color: var(--text-primary);
+            margin: 30px 0 15px 0;
+            font-size: 1.5rem;
+            word-wrap: break-word;
+        }
+
+        /* SISTEM REACTIONS DI MODAL */
+        .article-reactions {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #F8F9FA;
+            border-radius: 12px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .reaction-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .reaction-btn {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+
+        .reaction-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--success);
         }
 
-        /* FOOTER */
-        .footer {
-            text-align: center;
+        .reaction-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .reaction-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        /* SISTEM KOMENTAR STYLE SOSIAL MEDIA */
+        .comments-section {
             margin-top: 50px;
             padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .comments-section h3 {
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+        }
+
+        /* Input Komentar Style Instagram/Facebook */
+        .comment-input-area {
+            margin-bottom: 30px;
+        }
+
+        .comment-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .comment-input-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 50px;
+            padding: 12px 50px 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            font-family: "Poppins", sans-serif;
+            resize: none;
+            transition: var(--transition);
+            background: #F8F9FA;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--success);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
+        }
+
+        .comment-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .comment-input-actions {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .emoji-toggle, .send-comment {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emoji-toggle {
+            font-size: 1.4rem;
+            color: var(--text-light);
+        }
+
+        .emoji-toggle:hover {
+            color: var(--success);
+            transform: scale(1.1);
+        }
+
+        .send-comment {
+            color: var(--success);
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        .send-comment:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .send-comment.active {
+            opacity: 1;
+            color: var(--success);
+        }
+
+        .emoji-picker-container {
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            width: 350px;
+        }
+
+        .emoji-picker-container.show {
+            display: block;
+        }
+
+        /* Daftar Komentar Style Social Media */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 0;
+            border-radius: 0;
+            border: none;
+            background: transparent;
+            position: relative;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+            background: #F8F9FA;
+            padding: 12px 15px;
+            border-radius: 18px;
+            position: relative;
+            max-width: calc(100% - 48px);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .comment-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .comment-text {
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .reply-btn, .delete-btn, .like-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .reply-btn:hover {
+            color: var(--success);
+            background: rgba(42, 157, 143, 0.1);
+        }
+
+        .delete-btn:hover {
+            color: var(--danger);
+            background: rgba(231, 111, 81, 0.1);
+        }
+
+        .like-btn:hover {
+            color: #E4405F;
+            background: rgba(228, 64, 95, 0.1);
+        }
+
+        .like-btn.liked {
+            color: #E4405F;
+            font-weight: 600;
+        }
+
+        /* Balasan Komentar */
+        .replies-container {
+            margin-left: 48px;
+            margin-top: 15px;
+            padding-left: 20px;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .reply-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .reply-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--secondary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .reply-content {
+            flex: 1;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+        }
+
+        .reply-form {
+            margin-left: 48px;
+            margin-top: 15px;
+        }
+
+        .reply-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .reply-input {
+            flex: 1;
+            min-height: 40px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-family: "Poppins", sans-serif;
+            resize: none;
+            background: #F8F9FA;
             font-size: 0.9rem;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1100px) {
-            .mini-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        .reply-input:focus {
+            outline: none;
+            border-color: var(--success);
+            background: white;
+        }
+
+        .reply-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            padding-left: 52px;
+        }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .page-btn {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .page-btn:hover {
+            border-color: var(--success);
+            color: var(--success);
+            transform: translateY(-2px);
+        }
+
+        .page-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-btn.disabled:hover {
+            transform: none;
+            border-color: var(--border-color);
+            color: inherit;
+        }
+
+        /* FOOTER */
+        .portal-footer {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px 30px;
+            border-radius: var(--card-radius);
+            margin-top: 50px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .footer-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            word-wrap: break-word;
+        }
+
+        .copyright {
+            margin-top: 30px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1200px) {
+            .news-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+            
+            .modal-body {
+                padding: 25px;
+            }
+            
+            #news-portal {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .header-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .filter-left {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .dropdown-container, .search-box {
+                width: 100%;
+            }
+            
+            .news-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 25px;
+            }
+            
+            .article-image {
+                height: 400px;
+            }
+            
+            .replies-container {
+                margin-left: 40px;
+            }
+            
+            .emoji-picker-container {
+                width: 300px;
+                right: -50px;
             }
         }
 
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.2rem;
+            .back-home {
+                top: 10px;
+                left: 10px;
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
             
-            .mini-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+            .portal-header {
+                padding: 30px 20px;
+                margin-top: 60px;
             }
             
-            .switcher-container {
-                flex-direction: column;
+            .header-content h1 {
+                font-size: 2rem;
+                padding: 0 10px;
+            }
+            
+            .header-stats {
+                gap: 15px;
+                padding: 0 10px;
+            }
+            
+            .stat-item {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr;
                 gap: 20px;
             }
             
-            .list-mode .mini-card {
+            .modal-header {
+                padding: 15px 20px;
                 flex-direction: column;
-                height: auto;
+                gap: 15px;
+                align-items: flex-start;
             }
             
-            .list-mode .image-container {
-                width: 100%;
-                height: 200px;
+            .modal-header h2 {
+                font-size: 1.5rem;
             }
             
-            #carousel {
+            .close-modal {
+                width: 36px;
+                height: 36px;
+                position: absolute;
+                top: 15px;
+                right: 15px;
+            }
+            
+            .close-modal::before,
+            .close-modal::after {
+                width: 18px;
+                height: 2px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .article-image {
                 height: 300px;
             }
             
-            .carousel-content h3 {
-                font-size: 1.4rem;
+            .article-meta {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .article-reactions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .reaction-options {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .reaction-btn {
+                padding: 8px 16px;
+                font-size: 1rem;
+            }
+            
+            .comments-list {
+                max-height: 500px;
+            }
+            
+            .comment-content {
+                max-width: calc(100% - 48px);
+            }
+            
+            .emoji-picker-container {
+                width: 280px;
+                right: -80px;
             }
         }
 
         @media (max-width: 480px) {
-            .header h1 {
+            #news-portal {
+                padding: 15px;
+            }
+            
+            .header-content h1 {
                 font-size: 1.8rem;
             }
             
-            .switcher {
-                flex-direction: column;
+            .header-content p {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+            
+            .filter-bar {
+                padding: 15px;
+            }
+            
+            .dropdown-btn, .search-box input {
+                padding: 10px 15px 10px 40px;
+            }
+            
+            .search-box i {
+                left: 15px;
+            }
+            
+            .page-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            
+            .reaction-options {
+                justify-content: space-between;
                 width: 100%;
             }
             
-            .switcher button {
-                width: 100%;
+            .reaction-btn {
+                flex: 1;
                 justify-content: center;
+                min-width: 70px;
             }
             
-            #carousel {
-                height: 250px;
+            .comment-input-wrapper {
+                gap: 8px;
             }
             
-            .carousel-content {
-                padding: 20px;
+            .user-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
             }
             
-            .carousel-content h3 {
+            .comment-input {
+                font-size: 0.9rem;
+                padding: 10px 45px 10px 12px;
+            }
+            
+            .comment-content {
+                padding: 10px 12px;
+            }
+            
+            .comment-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            
+            .replies-container {
+                margin-left: 36px;
+                padding-left: 15px;
+            }
+            
+            .reply-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .emoji-picker-container {
+                width: 250px;
+                right: -100px;
+                bottom: 60px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header-content h1 {
+                font-size: 1.6rem;
+            }
+            
+            .stat-item {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .news-card {
+                height: 400px;
+            }
+            
+            .card-image {
+                height: 180px;
+            }
+            
+            .card-content h3 {
                 font-size: 1.2rem;
             }
+            
+            .card-content p {
+                font-size: 0.9rem;
+            }
+            
+            .emoji-picker-container {
+                width: 220px;
+                right: -120px;
+            }
+        }
+
+        /* SCROLLBAR STYLING */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--success);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1D6F7D;
+        }
+
+        /* LOADING ANIMATION */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-light);
+            width: 100%;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--success);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ANIMASI UNTUK INTERAKSI */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .new-comment {
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pulse-animation {
+            animation: pulse 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div id="mini-news-grid">
+    <!-- TOMBOL KEMBALI KE BERANDA -->
+    <button class="back-home" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+    </button>
+
+    <div id="news-portal">
         <!-- HEADER -->
-        <div class="header">
-            <h1><i class="fas fa-newspaper"></i> Mini Portal Berita</h1>
-            <p>Temukan berita terkini dengan tampilan futuristik yang menarik. Navigasikan antara mode grid dan list untuk pengalaman membaca yang lebih baik.</p>
-        </div>
-
-        <!-- CAROUSEL BERITA UTAMA -->
-        <div class="carousel-section">
-            <div class="section-title">
-                <i class="fas fa-star"></i>
-                <h2>Berita Utama</h2>
-            </div>
-            <div id="carousel">
-                <div id="carousel-inner"></div>
-                <div class="carousel-nav">
-                    <button class="carousel-btn" id="prev-btn">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="carousel-btn" id="next-btn">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+        <header class="portal-header">
+            <div class="header-content">
+                <h1><i class="fas fa-newspaper"></i> Berita & Kegiatan Terbaru Koperasi</h1>
+                <p>Koperasi terpercaya dengan informasi terkini seputar ekonomi, keuangan, dan perkembangan koperasi</p>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-newspaper"></i> <span id="total-articles">0</span> Artikel
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-comments"></i> <span id="total-comments">0</span> Komentar
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-eye"></i> <span id="total-views">0</span> Dilihat
+                    </div>
                 </div>
-                <div class="carousel-indicators" id="carousel-indicators"></div>
             </div>
-        </div>
+        </header>
 
-        <!-- SWITCH MODE DAN JUMLAH BERITA -->
-        <div class="switcher-container">
-            <div class="switcher">
-                <button onclick="setMode('grid')" class="active" id="grid-btn">
-                    <i class="fas fa-th-large"></i> Grid Mode
-                </button>
-                <button onclick="setMode('list')" id="list-btn">
-                    <i class="fas fa-list"></i> List Mode
-                </button>
-            </div>
-            <div class="news-count">
-                Total Berita: <span id="total-news">0</span>
+        <!-- FILTER BAR DENGAN DROPDOWN -->
+        <div class="filter-bar">
+            <div class="filter-left">
+                <div class="dropdown-container">
+                    <button class="dropdown-btn" id="category-dropdown">
+                        <span id="selected-category">
+                            <i class="fas fa-filter"></i> Pilih Kategori
+                        </span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content" id="category-list">
+                        <div class="dropdown-item active" data-category="all">
+                            <i class="fas fa-globe"></i> Semua Kategori
+                        </div>
+                        <div class="dropdown-item" data-category="rat">
+                            <i class="fas fa-chart-line"></i> RAT
+                        </div>
+                        <div class="dropdown-item" data-category="keuangan">
+                            <i class="fas fa-money-bill-wave"></i> Keuangan
+                        </div>
+                        <div class="dropdown-item" data-category="bisnis">
+                            <i class="fas fa-microchip"></i> Bisnis
+                        </div>
+                        <div class="dropdown-item" data-category="pendidikan">
+                            <i class="fas fa-graduation-cap"></i> Pendidikan
+                        </div>
+                        <div class="dropdown-item" data-category="kegiatan">
+                            <i class="fas fa-gavel"></i> Kegiatan
+                        </div>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Cari artikel...">
+                </div>
             </div>
         </div>
 
         <!-- GRID BERITA -->
-        <div class="mini-grid" id="news-container"></div>
-
-        <!-- PAGINATION -->
-        <div class="pagination-container">
-            <button id="load-more">
-                <i class="fas fa-plus-circle"></i> Muat Berita Lagi
-            </button>
+        <div class="news-grid" id="news-container">
+            <!-- Berita akan dimuat di sini -->
         </div>
 
-        <!-- FORM UNTUK MENAMBAH BERITA MANUAL -->
-        <div class="custom-news-form">
-            <div class="form-title">
-                <i class="fas fa-plus-circle"></i> Tambah Berita Manual
-            </div>
-            <div class="form-group">
-                <label for="news-title">Judul Berita</label>
-                <input type="text" id="news-title" placeholder="Masukkan judul berita...">
-            </div>
-            <div class="form-group">
-                <label for="news-image">URL Gambar</label>
-                <input type="text" id="news-image" placeholder="Masukkan URL gambar...">
-            </div>
-            <div class="form-group">
-                <label for="news-link">URL Berita</label>
-                <input type="text" id="news-link" placeholder="Masukkan URL berita...">
-            </div>
-            <div class="form-buttons">
-                <button class="form-btn btn-add" onclick="addCustomNews()">
-                    <i class="fas fa-plus"></i> Tambah Berita
-                </button>
-                <button class="form-btn btn-reset" onclick="resetForm()">
-                    <i class="fas fa-redo"></i> Reset Form
-                </button>
+        <!-- LOADING INDICATOR -->
+        <div class="loading" id="loading-indicator">Memuat artikel...</div>
+
+        <!-- PAGINATION -->
+        <div class="pagination" id="pagination-container">
+            <!-- Pagination akan dibuat secara dinamis -->
+        </div>
+
+        <!-- MODAL ARTIKEL DETAIL -->
+        <div class="article-modal" id="article-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title"></h2>
+                    <button class="close-modal" onclick="closeModal()">
+                        <!-- X icon dibuat dengan CSS pseudo elements -->
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body-content">
+                    <!-- Konten artikel akan dimuat di sini -->
+                </div>
             </div>
         </div>
 
         <!-- FOOTER -->
-        <div class="footer">
-            <p>© 2023 Mini Portal Berita Futuristik | Tema Koperasi Modern</p>
-            <p>Dibuat dengan <i class="fas fa-heart" style="color:#ff4fbe;"></i> untuk pengalaman membaca yang lebih baik</p>
-        </div>
+        <footer class="portal-footer">
+            <div class="footer-content">
+                <div class="footer-logo">Koperasi News</div>
+                <p>Berita resmi yang menyajikan informasi terkini seputar perkembangan koperasi "Asmara Tani"</p>
+                <div class="copyright">
+                    © 2026 Informasi Koperasi. Hak Cipta Dilindungi.
+                </div>
+            </div>
+        </footer>
     </div>
 
+    <!-- Emoji Picker Script -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.js"></script>
+    
     <script>
         // Konfigurasi
-        let feedURL = "https://YOURBLOG.blogspot.com/feeds/posts/default?alt=json&max-results=150";
-        let startIndex = 0;
-        let perLoad = 8;
-        let posts = [];
-        let customPosts = [];
-        let carouselIndex = 0;
-        let carouselInterval;
+        const ARTICLES_PER_PAGE = 9;
+        let currentPage = 1;
+        let currentCategory = 'all';
+        let currentSearch = '';
+        let articles = [];
+        let filteredArticles = [];
+        let currentReplyTo = null;
+        let currentReplyAuthor = null;
+        let currentArticleId = null;
+        
+        // Data reaksi default
+        const defaultReactions = {
+            'like': 0,
+            'laugh': 0,
+            'wow': 0,
+            'sad': 0,
+            'angry': 0
+        };
 
         // Inisialisasi
         document.addEventListener('DOMContentLoaded', function() {
-            loadCarousel();
-            loadPosts();
+            // Load artikel dari localStorage
+            loadArticlesFromStorage();
+            
+            // Setup event listeners
             setupEventListeners();
             
-            // Tambah beberapa berita contoh jika feed tidak tersedia
-            if (feedURL.includes("YOURBLOG")) {
-                addSamplePosts();
-            }
+            // Setup dropdown kategori
+            setupCategoryDropdown();
+            
+            // Update statistik
+            updateStats();
+            
+            // Sembunyikan loading indicator
+            setTimeout(() => {
+                document.getElementById('loading-indicator').style.display = 'none';
+            }, 1000);
         });
 
         // Setup event listeners
         function setupEventListeners() {
-            document.getElementById('prev-btn').addEventListener('click', prevCarousel);
-            document.getElementById('next-btn').addEventListener('click', nextCarousel);
-            document.getElementById('load-more').addEventListener('click', loadMore);
+            // Search input
+            document.getElementById('search-input').addEventListener('input', function(e) {
+                currentSearch = e.target.value.toLowerCase();
+                filterAndDisplayArticles();
+            });
             
-            // Enter key untuk form
-            document.getElementById('news-title').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') addCustomNews();
+            // Close modal dengan ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            // Close modal dengan klik di luar
+            document.getElementById('article-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
             });
         }
 
-        // SWITCH MODE
-        function setMode(mode) {
-            let wrap = document.getElementById("mini-news-grid");
-            let gridBtn = document.getElementById("grid-btn");
-            let listBtn = document.getElementById("list-btn");
+        // Setup dropdown kategori
+        function setupCategoryDropdown() {
+            const dropdownBtn = document.getElementById('category-dropdown');
+            const dropdownContent = document.getElementById('category-list');
+            const dropdownItems = dropdownContent.querySelectorAll('.dropdown-item');
             
-            if (mode === "list") {
-                wrap.classList.add("list-mode");
-                gridBtn.classList.remove("active");
-                listBtn.classList.add("active");
+            // Toggle dropdown
+            dropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+                dropdownBtn.classList.toggle('active');
+                
+                // Rotate icon
+                const icon = this.querySelector('.fa-chevron-down');
+                icon.style.transform = dropdownContent.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0)';
+            });
+            
+            // Pilih kategori
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    
+                    // Update selected item
+                    dropdownItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update button text
+                    const icon = this.querySelector('i').cloneNode(true);
+                    const text = this.textContent.trim();
+                    document.getElementById('selected-category').innerHTML = '';
+                    document.getElementById('selected-category').appendChild(icon);
+                    document.getElementById('selected-category').appendChild(document.createTextNode(' ' + text));
+                    
+                    // Filter artikel
+                    filterCategory(category);
+                    
+                    // Tutup dropdown
+                    dropdownContent.classList.remove('show');
+                    dropdownBtn.classList.remove('active');
+                    const chevronIcon = dropdownBtn.querySelector('.fa-chevron-down');
+                    chevronIcon.style.transform = 'rotate(0)';
+                });
+            });
+            
+            // Tutup dropdown ketika klik di luar
+            document.addEventListener('click', function(e) {
+                if (!dropdownBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+                    dropdownContent.classList.remove('show');
+                    dropdownBtn.classList.remove('active');
+                    const icon = dropdownBtn.querySelector('.fa-chevron-down');
+                    icon.style.transform = 'rotate(0)';
+                }
+            });
+        }
+
+        // Load artikel dari localStorage
+        function loadArticlesFromStorage() {
+            const storedArticles = localStorage.getItem('koperasi_news_articles');
+            
+            if (storedArticles) {
+                articles = JSON.parse(storedArticles);
             } else {
-                wrap.classList.remove("list-mode");
-                gridBtn.classList.add("active");
-                listBtn.classList.remove("active");
+                // Load artikel sample jika tidak ada data
+                loadSampleArticles();
+                saveArticlesToStorage();
             }
-        }
-
-        // LOAD POSTS DARI FEED
-        function loadPosts() {
-            if (!feedURL.includes("YOURBLOG")) {
-                fetch(feedURL)
-                    .then(res => res.json())
-                    .then(data => {
-                        posts = data.feed.entry;
-                        updateNewsCount();
-                        loadMore();
-                    })
-                    .catch(err => {
-                        console.error("Error loading feed:", err);
-                        addSamplePosts();
-                    });
-            }
-        }
-
-        // LOAD MORE (Pagination Button)
-        function loadMore() {
-            let container = document.getElementById("news-container");
-            let combinedPosts = [...customPosts, ...posts];
-            let end = Math.min(startIndex + perLoad, combinedPosts.length);
             
-            if (startIndex >= combinedPosts.length) {
-                document.getElementById("load-more").disabled = true;
-                document.getElementById("load-more").innerHTML = '<i class="fas fa-check-circle"></i> Semua Berita Ditampilkan';
+            // Load reaksi dari localStorage
+            loadReactionsFromStorage();
+            
+            // Load komentar dari localStorage
+            loadCommentsFromStorage();
+            
+            // Tampilkan artikel
+            filterAndDisplayArticles();
+        }
+
+        // Load artikel sample
+        function loadSampleArticles() {
+            articles = [
+                {
+                    id: 1,
+                    title: "Transformasi Digital Koperasi di Era 4.0",
+                    category: "teknologi",
+                    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    content: `<p>Transformasi digital telah menjadi kebutuhan mendesak bagi koperasi di Indonesia. Dengan mengadopsi teknologi terkini, koperasi dapat meningkatkan efisiensi operasional, memperluas jangkauan layanan, dan memberikan nilai lebih kepada anggotanya.</p>
+                             <h3>Manfaat Transformasi Digital</h3>
+                             <p>Implementasi sistem digital dalam koperasi tidak hanya sebatas pada proses administrasi, tetapi juga mencakup pengembangan platform digital untuk pelayanan anggota, sistem pembayaran digital, hingga analisis data untuk pengambilan keputusan strategis.</p>
+                             <h3>Hasil yang Dicapai</h3>
+                             <p>Beberapa koperasi terkemuka telah berhasil menerapkan transformasi digital dengan hasil yang signifikan. Mereka mencatat peningkatan kinerja hingga 40% dalam hal efisiensi operasional dan kepuasan anggota.</p>`,
+                    date: "2024-03-15",
+                    author: "Admin Koperasi",
+                    views: 0,
+                    reactions: { ...defaultReactions },
+                    comments: [
+                        {
+                            id: 101,
+                            author: "Pengunjung",
+                            text: "Artikel yang sangat informatif! 👍",
+                            timestamp: "2024-03-15T10:30:00Z",
+                            likes: 0,
+                            liked: false,
+                            replies: [
+                                {
+                                    id: 102,
+                                    author: "Member Aktif",
+                                    text: "Setuju! Teknologi memang penting untuk koperasi. 😊",
+                                    timestamp: "2024-03-15T11:15:00Z",
+                                    likes: 0,
+                                    liked: false
+                                }
+                            ]
+                        },
+                        {
+                            id: 103,
+                            author: "Pembaca Setia",
+                            text: "Kapan ada pelatihan digital untuk koperasi? 🤔",
+                            timestamp: "2024-03-15T12:45:00Z",
+                            likes: 0,
+                            liked: true
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Strategi Pengembangan Keuangan Koperasi Berkelanjutan",
+                    category: "keuangan",
+                    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    content: `<p>Pengembangan keuangan yang berkelanjutan menjadi kunci keberhasilan koperasi dalam jangka panjang. Strategi yang tepat dapat memastikan pertumbuhan yang stabil dan manfaat yang optimal bagi seluruh anggota.</p>
+                             <h3>Strategi Efektif</h3>
+                             <p>Beberapa strategi yang efektif meliputi diversifikasi produk keuangan, penguatan modal internal, kerjasama dengan lembaga keuangan formal, dan penerapan prinsip kehati-hatian dalam pengelolaan dana.</p>
+                             <h3>Ketahanan Ekonomi</h3>
+                             <p>Koperasi yang menerapkan strategi keuangan berkelanjutan menunjukkan ketahanan yang lebih baik dalam menghadapi fluktuasi ekonomi dan mampu memberikan kontribusi signifikan bagi perekonomian lokal.</p>`,
+                    date: "2024-03-14",
+                    author: "Tim Keuangan",
+                    views: 0,
+                    reactions: { ...defaultReactions },
+                    comments: [
+                        {
+                            id: 201,
+                            author: "Anggota Koperasi",
+                            text: "Sangat membantu untuk pengembangan koperasi kami! 💪",
+                            timestamp: "2024-03-14T09:20:00Z",
+                            likes: 0,
+                            liked: false
+                        }
+                    ]
+                }
+            ];
+        }
+
+        // Save artikel ke localStorage
+        function saveArticlesToStorage() {
+            localStorage.setItem('koperasi_news_articles', JSON.stringify(articles));
+        }
+
+        // Load reaksi dari localStorage
+        function loadReactionsFromStorage() {
+            articles.forEach(article => {
+                const storedReactions = localStorage.getItem(`article_${article.id}_reactions`);
+                if (storedReactions) {
+                    article.reactions = JSON.parse(storedReactions);
+                } else {
+                    article.reactions = { ...defaultReactions };
+                    localStorage.setItem(`article_${article.id}_reactions`, JSON.stringify(article.reactions));
+                }
+            });
+        }
+
+        // Load komentar dari localStorage
+        function loadCommentsFromStorage() {
+            articles.forEach(article => {
+                const storedComments = localStorage.getItem(`article_${article.id}_comments`);
+                if (storedComments) {
+                    article.comments = JSON.parse(storedComments);
+                } else {
+                    // Jika tidak ada komentar di localStorage, gunakan komentar dari sample
+                    if (!article.comments) {
+                        article.comments = [];
+                    }
+                    localStorage.setItem(`article_${article.id}_comments`, JSON.stringify(article.comments));
+                }
+            });
+        }
+
+        // Filter dan tampilkan artikel
+        function filterAndDisplayArticles() {
+            // Filter berdasarkan kategori dan pencarian
+            filteredArticles = articles.filter(article => {
+                const matchesCategory = currentCategory === 'all' || article.category === currentCategory;
+                const matchesSearch = currentSearch === '' || 
+                                     article.title.toLowerCase().includes(currentSearch) ||
+                                     (article.content && article.content.toLowerCase().includes(currentSearch));
+                return matchesCategory && matchesSearch;
+            });
+            
+            // Update total artikel
+            document.getElementById('total-articles').textContent = articles.length;
+            
+            // Reset ke halaman pertama
+            currentPage = 1;
+            
+            // Tampilkan artikel
+            displayArticles();
+            displayPagination();
+            
+            // Sembunyikan loading indicator
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
+
+        // Tampilkan artikel
+        function displayArticles() {
+            const container = document.getElementById('news-container');
+            const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+            const endIndex = startIndex + ARTICLES_PER_PAGE;
+            const currentArticles = filteredArticles.slice(startIndex, endIndex);
+            
+            container.innerHTML = '';
+            
+            if (currentArticles.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-light);">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <h3>Tidak ada artikel yang ditemukan</h3>
+                        <p>Coba gunakan kata kunci lain atau pilih kategori berbeda</p>
+                    </div>
+                `;
                 return;
             }
             
-            for (let i = startIndex; i < end; i++) {
-                let p = combinedPosts[i];
+            currentArticles.forEach(article => {
+                const date = new Date(article.date);
+                const formattedDate = date.toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
                 
-                // Untuk post dari feed
-                if (p.$t) {
-                    let title = p.title.$t;
-                    let link = p.link.find(l => l.rel === "alternate").href;
-                    let date = new Date(p.published.$t).toLocaleDateString("id-ID", {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    
-                    // Thumbnail Auto
-                    let thumb = "https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80";
-                    if (p.media$thumbnail) {
-                        thumb = p.media$thumbnail.url.replace("s72-c", "s400");
-                    }
-                    
-                    // Label
-                    let tag = p.category ? p.category[0].term : "Berita";
-                    
-                    createNewsCard(container, title, thumb, link, tag, date, "Admin");
-                } 
-                // Untuk custom posts
-                else {
-                    createNewsCard(container, p.title, p.image, p.link, p.tag || "Kustom", p.date, p.author || "Anda");
+                const shortContent = article.content ? 
+                    article.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 
+                    "Artikel ini tidak memiliki konten preview.";
+                
+                container.innerHTML += `
+                    <div class="news-card" onclick="openArticle(${article.id})">
+                        <div class="category-badge">${getCategoryName(article.category)}</div>
+                        <div class="card-image">
+                            <img src="${article.image}" alt="${article.title}" onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        </div>
+                        <div class="card-content">
+                            <h3>${article.title}</h3>
+                            <p>${shortContent}</p>
+                            <div class="card-meta">
+                                <div class="card-date">
+                                    <i class="far fa-calendar-alt"></i> ${formattedDate}
+                                </div>
+                                <div class="read-more">
+                                    Baca Selengkapnya <i class="fas fa-arrow-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Tampilkan pagination
+        function displayPagination() {
+            const container = document.getElementById('pagination-container');
+            const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Tombol sebelumnya
+            paginationHTML += `
+                <button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                        onclick="${currentPage > 1 ? `changePage(${currentPage - 1})` : ''}">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            
+            // Halaman
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    paginationHTML += `
+                        <button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                                onclick="changePage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += `<span class="page-dots">...</span>`;
                 }
             }
             
-            startIndex = end;
-            updateNewsCount();
+            // Tombol berikutnya
+            paginationHTML += `
+                <button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                        onclick="${currentPage < totalPages ? `changePage(${currentPage + 1})` : ''}">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            container.innerHTML = paginationHTML;
         }
 
-        // BUAT KARTU BERITA
-        function createNewsCard(container, title, image, link, tag, date, author) {
-            // Generate waktu baca acak
-            const readTime = Math.floor(Math.random() * 5) + 3;
+        // Ganti halaman
+        function changePage(page) {
+            currentPage = page;
+            displayArticles();
+            displayPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Filter kategori
+        function filterCategory(category) {
+            currentCategory = category;
+            filterAndDisplayArticles();
+        }
+
+        // Buka artikel
+        function openArticle(articleId) {
+            const article = articles.find(a => a.id === articleId);
+            if (!article) return;
             
-            container.innerHTML += `
-                <div class="mini-card" onclick="window.open('${link}', '_blank')">
-                    <div class="image-container">
-                        <img src="${image}" alt="${title}" onerror="this.src='https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
-                        <div class="image-overlay"></div>
+            currentArticleId = articleId;
+            
+            // Update views
+            article.views = (article.views || 0) + 1;
+            saveArticlesToStorage();
+            updateStats();
+            
+            // Format tanggal
+            const date = new Date(article.date);
+            const formattedDate = date.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Tampilkan modal
+            document.getElementById('modal-title').textContent = article.title;
+            
+            // Buat konten modal lengkap
+            const modalBody = document.getElementById('modal-body-content');
+            modalBody.innerHTML = createArticleContent(article, formattedDate);
+            
+            // Tampilkan modal
+            document.getElementById('article-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Setup event listeners untuk konten modal
+            setupModalEventListeners();
+        }
+
+        // Buat konten artikel lengkap
+        function createArticleContent(article, formattedDate) {
+            const reactions = article.reactions || { ...defaultReactions };
+            const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
+            
+            return `
+                <img src="${article.image}" class="article-image" alt="${article.title}" 
+                     onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                
+                <div class="article-meta">
+                    <div class="article-category">${getCategoryName(article.category)}</div>
+                    <div class="article-date">
+                        <i class="far fa-calendar-alt"></i> ${formattedDate}
                     </div>
-                    <div class="mini-info">
-                        <div class="tag-container">
-                            <div class="tag">${tag}</div>
-                            <div class="read-time"><i class="far fa-clock"></i> ${readTime} min</div>
+                </div>
+                
+                <div class="article-content">
+                    ${article.content || '<p>Artikel ini tidak memiliki konten.</p>'}
+                </div>
+                
+                <!-- REACTIONS -->
+                <div class="article-reactions">
+                    <div class="reaction-options">
+                        <button class="reaction-btn" data-reaction="like" onclick="handleReaction('like')">
+                            <span class="reaction-emoji">❤️</span>
+                            <span class="reaction-count" id="like-count">${reactions.like}</span>
+                        </button>
+                        <button class="reaction-btn" data-reaction="laugh" onclick="handleReaction('laugh')">
+                            <span class="reaction-emoji">😆</span>
+                            <span class="reaction-count" id="laugh-count">${reactions.laugh}</span>
+                        </button>
+                        <button class="reaction-btn" data-reaction="wow" onclick="handleReaction('wow')">
+                            <span class="reaction-emoji">😮</span>
+                            <span class="reaction-count" id="wow-count">${reactions.wow}</span>
+                        </button>
+                        <button class="reaction-btn" data-reaction="sad" onclick="handleReaction('sad')">
+                            <span class="reaction-emoji">😢</span>
+                            <span class="reaction-count" id="sad-count">${reactions.sad}</span>
+                        </button>
+                        <button class="reaction-btn" data-reaction="angry" onclick="handleReaction('angry')">
+                            <span class="reaction-emoji">😡</span>
+                            <span class="reaction-count" id="angry-count">${reactions.angry}</span>
+                        </button>
+                    </div>
+                    <div class="reaction-count">
+                        <i class="fas fa-users"></i>
+                        <span id="total-reactions">${totalReactions}</span> Reactions
+                    </div>
+                </div>
+                
+                <!-- KOMENTAR -->
+                <div class="comments-section">
+                    <h3><i class="fas fa-comments"></i> Komentar (<span id="comments-count">${article.comments ? article.comments.length : 0}</span>)</h3>
+                    
+                    <!-- INPUT KOMENTAR -->
+                    <div class="comment-input-area">
+                        <div class="comment-input-wrapper">
+                            <div class="user-avatar" id="current-user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="comment-input-container">
+                                <textarea class="comment-input" id="comment-input" 
+                                          placeholder="Tulis komentar Anda..." 
+                                          rows="1"></textarea>
+                                <div class="comment-input-actions">
+                                    <button class="emoji-toggle" onclick="toggleEmojiPicker()">
+                                        <i class="far fa-smile"></i>
+                                    </button>
+                                    <button class="send-comment" onclick="submitComment()">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div class="emoji-picker-container" id="emoji-picker">
+                                    <emoji-picker></emoji-picker>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mini-title">${title}</div>
-                        <div class="date-author">
-                            <div class="date"><i class="far fa-calendar-alt"></i> ${date}</div>
-                            <div class="author"><i class="far fa-user"></i> ${author}</div>
+                        <div class="reply-actions" id="reply-actions" style="display: none;">
+                            <button class="cancel-reply-btn" onclick="cancelReply()">
+                                <i class="fas fa-times"></i> Batal balas
+                            </button>
                         </div>
+                    </div>
+                    
+                    <!-- DAFTAR KOMENTAR -->
+                    <div class="comments-list" id="comments-list">
+                        ${article.comments && article.comments.length > 0 ? 
+                            displayComments(article.comments) : 
+                            '<div style="text-align: center; padding: 30px; color: var(--text-light);">Belum ada komentar. Jadilah yang pertama berkomentar!</div>'
+                        }
                     </div>
                 </div>
             `;
         }
 
-        // LOAD CAROUSEL
-        function loadCarousel() {
-            if (!feedURL.includes("YOURBLOG")) {
-                fetch(feedURL)
-                    .then(r => r.json())
-                    .then(d => {
-                        let carouselPosts = d.feed.entry.slice(0, 5);
-                        setupCarousel(carouselPosts);
-                    })
-                    .catch(err => {
-                        console.error("Error loading carousel:", err);
-                        setupCarouselWithSample();
-                    });
-            } else {
-                setupCarouselWithSample();
+        // Setup event listeners untuk modal
+        function setupModalEventListeners() {
+            // Setup emoji picker
+            setupEmojiPicker();
+            
+            // Setup auto-resize untuk textarea komentar
+            const commentInput = document.getElementById('comment-input');
+            if (commentInput) {
+                commentInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                    
+                    const sendBtn = document.querySelector('.send-comment');
+                    if (this.value.trim().length > 0) {
+                        sendBtn.classList.add('active');
+                    } else {
+                        sendBtn.classList.remove('active');
+                    }
+                });
+                
+                // Ctrl+Enter untuk submit
+                commentInput.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        submitComment();
+                    }
+                });
+            }
+            
+            // Generate user avatar
+            generateUserAvatar();
+        }
+
+        // Setup emoji picker
+        function setupEmojiPicker() {
+            const pickerContainer = document.getElementById('emoji-picker');
+            const picker = pickerContainer.querySelector('emoji-picker');
+            
+            if (picker) {
+                picker.addEventListener('emoji-click', event => {
+                    const textarea = document.getElementById('comment-input');
+                    const cursorPos = textarea.selectionStart;
+                    const textBefore = textarea.value.substring(0, cursorPos);
+                    const textAfter = textarea.value.substring(cursorPos);
+                    textarea.value = textBefore + event.detail.unicode + textAfter;
+                    textarea.focus();
+                    textarea.selectionStart = textarea.selectionEnd = cursorPos + event.detail.unicode.length;
+                    
+                    // Trigger input event
+                    textarea.dispatchEvent(new Event('input'));
+                    
+                    // Sembunyikan emoji picker
+                    pickerContainer.classList.remove('show');
+                });
             }
         }
 
-        // SETUP CAROUSEL DENGAN SAMPLE
-        function setupCarouselWithSample() {
-            const samplePosts = [
-                {
-                    title: "Inovasi Teknologi di Dunia Koperasi Modern",
-                    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-                    link: "#",
-                    content: "Teknologi terkini mengubah cara koperasi beroperasi, meningkatkan efisiensi dan pelayanan kepada anggota."
-                },
-                {
-                    title: "Strategi Pengembangan Koperasi di Era Digital",
-                    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-                    link: "#",
-                    content: "Pelajari strategi efektif untuk mengembangkan koperasi di tengah transformasi digital yang pesat."
-                },
-                {
-                    title: "Koperasi Ramah Lingkungan: Tren Masa Depan",
-                    image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-                    link: "#",
-                    content: "Banyak koperasi kini mengadopsi praktik ramah lingkungan sebagai bagian dari tanggung jawab sosial."
-                }
-            ];
+        // Toggle emoji picker
+        function toggleEmojiPicker() {
+            const pickerContainer = document.getElementById('emoji-picker');
+            pickerContainer.classList.toggle('show');
             
-            setupCarousel(samplePosts);
+            setTimeout(() => {
+                document.addEventListener('click', function closePicker(e) {
+                    if (!pickerContainer.contains(e.target) && !e.target.closest('.emoji-toggle')) {
+                        pickerContainer.classList.remove('show');
+                        document.removeEventListener('click', closePicker);
+                    }
+                });
+            }, 10);
         }
 
-        // SETUP CAROUSEL
-        function setupCarousel(carouselPosts) {
-            let carouselInner = document.getElementById("carousel-inner");
-            let indicators = document.getElementById("carousel-indicators");
-            carouselInner.innerHTML = '';
-            indicators.innerHTML = '';
+        // Generate user avatar
+        function generateUserAvatar() {
+            const avatar = document.getElementById('current-user-avatar');
+            if (avatar) {
+                const colors = ['#2A9D8F', '#E9C46A', '#F4A261', '#E76F51', '#457B9D'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                avatar.style.background = randomColor;
+                
+                const icons = ['fas fa-user', 'fas fa-user-tie', 'fas fa-user-graduate', 'fas fa-user-md'];
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                avatar.innerHTML = `<i class="${randomIcon}"></i>`;
+            }
+        }
+
+        // Tampilkan komentar
+        function displayComments(comments) {
+            let html = '';
             
-            carouselPosts.forEach((p, index) => {
-                let title, image, link, content;
+            comments.forEach(comment => {
+                const date = new Date(comment.timestamp);
+                const formattedDate = date.toLocaleDateString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
                 
-                if (p.title && p.title.$t) {
-                    // Post dari feed
-                    title = p.title.$t;
-                    link = p.link.find(l => l.rel === "alternate").href;
-                    image = p.media$thumbnail ? p.media$thumbnail.url.replace("s72-c","s800") : 
-                            "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
-                    content = p.content ? p.content.$t.substring(0, 120) + "..." : "Baca selengkapnya untuk informasi lebih detail.";
-                } else {
-                    // Post sample
-                    title = p.title;
-                    link = p.link;
-                    image = p.image;
-                    content = p.content;
-                }
-                
-                carouselInner.innerHTML += `
-                    <div class="carousel-slide" onclick="window.open('${link}', '_blank')">
-                        <img src="${image}" alt="${title}">
-                        <div class="carousel-content">
-                            <h3>${title}</h3>
-                            <p>${content}</p>
+                html += `
+                    <div class="comment-item" data-comment-id="${comment.id}">
+                        <div class="comment-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <div class="comment-author">${comment.author}</div>
+                                <div class="comment-time">
+                                    <i class="far fa-clock"></i> ${formattedDate}
+                                </div>
+                            </div>
+                            <div class="comment-text">${comment.text}</div>
+                            <div class="comment-actions">
+                                <button class="like-btn ${comment.liked ? 'liked' : ''}" onclick="likeComment(${comment.id})">
+                                    <i class="fas fa-thumbs-up"></i> Suka
+                                    ${comment.likes > 0 ? `<span class="like-count">${comment.likes}</span>` : ''}
+                                </button>
+                                <button class="reply-btn" onclick="replyToComment(${comment.id}, '${comment.author}')">
+                                    <i class="fas fa-reply"></i> Balas
+                                </button>
+                                <button class="delete-btn" onclick="deleteComment(${comment.id})">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
-                
-                indicators.innerHTML += `<div class="indicator ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`;
             });
             
-            // Setup indicator events
-            document.querySelectorAll('.indicator').forEach(indicator => {
-                indicator.addEventListener('click', function() {
-                    carouselIndex = parseInt(this.getAttribute('data-index'));
-                    updateCarousel();
-                });
-            });
-            
-            // Start carousel auto rotation
-            startCarouselAutoRotate();
+            return html;
         }
 
-        // CAROUSEL FUNCTIONS
-        function prevCarousel() {
-            let slides = document.querySelectorAll('.carousel-slide');
-            carouselIndex = (carouselIndex - 1 + slides.length) % slides.length;
-            updateCarousel();
-            resetCarouselAutoRotate();
+        // Handle reaction
+        function handleReaction(reactionType) {
+            if (!currentArticleId) return;
+            
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article) return;
+            
+            if (!article.reactions) {
+                article.reactions = { ...defaultReactions };
+            }
+            
+            // Tambah reaction
+            article.reactions[reactionType] = (article.reactions[reactionType] || 0) + 1;
+            
+            // Save to localStorage
+            localStorage.setItem(`article_${currentArticleId}_reactions`, JSON.stringify(article.reactions));
+            
+            // Update display
+            const reactionBtn = event.target.closest('.reaction-btn');
+            const countElement = document.getElementById(`${reactionType}-count`);
+            
+            if (countElement) {
+                countElement.textContent = article.reactions[reactionType];
+            }
+            
+            // Update total reactions
+            const totalReactions = Object.values(article.reactions).reduce((a, b) => a + b, 0);
+            document.getElementById('total-reactions').textContent = totalReactions;
+            
+            // Animation
+            reactionBtn.classList.add('active');
+            setTimeout(() => reactionBtn.classList.remove('active'), 300);
+            
+            // Update stats
+            updateStats();
         }
 
-        function nextCarousel() {
-            let slides = document.querySelectorAll('.carousel-slide');
-            carouselIndex = (carouselIndex + 1) % slides.length;
-            updateCarousel();
-            resetCarouselAutoRotate();
-        }
-
-        function updateCarousel() {
-            let carouselInner = document.getElementById("carousel-inner");
-            let indicators = document.querySelectorAll('.indicator');
+        // Like comment
+        function likeComment(commentId) {
+            if (!currentArticleId) return;
             
-            carouselInner.style.transform = `translateX(-${carouselIndex * 100}%)`;
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article || !article.comments) return;
             
-            indicators.forEach((indicator, index) => {
-                if (index === carouselIndex) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active');
+            const comment = article.comments.find(c => c.id === commentId);
+            if (!comment) return;
+            
+            if (!comment.likes) comment.likes = 0;
+            if (!comment.liked) {
+                comment.likes++;
+                comment.liked = true;
+            } else {
+                comment.likes--;
+                comment.liked = false;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
+            
+            // Update display
+            const likeBtn = document.querySelector(`[data-comment-id="${commentId}"] .like-btn`);
+            const likeCountSpan = document.querySelector(`[data-comment-id="${commentId}"] .like-count`);
+            
+            if (comment.liked) {
+                likeBtn.classList.add('liked');
+                likeBtn.innerHTML = `<i class="fas fa-thumbs-up"></i> Disuka`;
+                if (comment.likes > 0) {
+                    likeBtn.innerHTML += ` <span class="like-count">${comment.likes}</span>`;
                 }
-            });
-        }
-
-        function startCarouselAutoRotate() {
-            if (carouselInterval) clearInterval(carouselInterval);
-            carouselInterval = setInterval(nextCarousel, 5000);
-        }
-
-        function resetCarouselAutoRotate() {
-            if (carouselInterval) clearInterval(carouselInterval);
-            startCarouselAutoRotate();
-        }
-
-        // TAMBAH BERITA MANUAL
-        function addCustomNews() {
-            const title = document.getElementById('news-title').value;
-            const image = document.getElementById('news-image').value;
-            const link = document.getElementById('news-link').value;
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.innerHTML = `<i class="fas fa-thumbs-up"></i> Suka`;
+                if (comment.likes > 0) {
+                    likeBtn.innerHTML += ` <span class="like-count">${comment.likes}</span>`;
+                }
+            }
             
-            if (!title || !image || !link) {
-                alert('Harap isi semua field!');
+            // Animation
+            likeBtn.classList.add('pulse-animation');
+            setTimeout(() => likeBtn.classList.remove('pulse-animation'), 300);
+        }
+
+        // Reply to comment
+        function replyToComment(commentId, authorName) {
+            currentReplyTo = commentId;
+            currentReplyAuthor = authorName;
+            
+            const commentInput = document.getElementById('comment-input');
+            commentInput.placeholder = `Balas ${authorName}...`;
+            commentInput.focus();
+            
+            const replyActions = document.getElementById('reply-actions');
+            replyActions.style.display = 'block';
+            replyActions.innerHTML = `
+                <button class="cancel-reply-btn" onclick="cancelReply()">
+                    <i class="fas fa-times"></i> Batal balas ${authorName}
+                </button>
+            `;
+        }
+
+        // Cancel reply
+        function cancelReply() {
+            currentReplyTo = null;
+            currentReplyAuthor = null;
+            
+            const commentInput = document.getElementById('comment-input');
+            commentInput.placeholder = 'Tulis komentar Anda...';
+            
+            document.getElementById('reply-actions').style.display = 'none';
+        }
+
+        // Submit comment
+        function submitComment() {
+            if (!currentArticleId) return;
+            
+            const commentInput = document.getElementById('comment-input');
+            const commentText = commentInput.value.trim();
+            
+            if (!commentText) {
+                alert('Silakan tulis komentar terlebih dahulu!');
                 return;
             }
             
-            const customPost = {
-                title: title,
-                image: image,
-                link: link,
-                tag: "Kustom",
-                date: new Date().toLocaleDateString("id-ID", {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }),
-                author: "Anda"
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article) return;
+            
+            if (!article.comments) article.comments = [];
+            
+            // Generate random user name
+            const userNames = ['Pengunjung', 'Member Aktif', 'Pembaca Setia', 'Simpatisan', 'Anggota Koperasi'];
+            const randomName = userNames[Math.floor(Math.random() * userNames.length)];
+            
+            const newComment = {
+                id: Date.now(),
+                author: randomName,
+                text: commentText,
+                timestamp: new Date().toISOString(),
+                likes: 0,
+                liked: false
             };
             
-            customPosts.unshift(customPost); // Tambah di awal array
-            startIndex = 0; // Reset pagination
+            article.comments.push(newComment);
             
-            // Clear container and reload
-            document.getElementById('news-container').innerHTML = '';
-            loadMore();
+            // Save to localStorage
+            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
             
-            // Reset form
-            resetForm();
+            // Update display
+            updateCommentsDisplay(article.comments);
             
-            alert('Berita berhasil ditambahkan!');
+            // Reset input
+            commentInput.value = '';
+            commentInput.style.height = 'auto';
+            document.querySelector('.send-comment').classList.remove('active');
+            cancelReply();
+            
+            // Update stats
+            updateStats();
+            
+            // Scroll to new comment
+            setTimeout(() => {
+                const commentsList = document.getElementById('comments-list');
+                commentsList.scrollTop = commentsList.scrollHeight;
+            }, 100);
         }
 
-        // RESET FORM
-        function resetForm() {
-            document.getElementById('news-title').value = '';
-            document.getElementById('news-image').value = '';
-            document.getElementById('news-link').value = '';
-        }
-
-        // UPDATE NEWS COUNT
-        function updateNewsCount() {
-            const totalPosts = posts.length + customPosts.length;
-            document.getElementById('total-news').textContent = totalPosts;
-        }
-
-        // ADD SAMPLE POSTS
-        function addSamplePosts() {
-            const samplePosts = [
-                {
-                    title: {
-                        $t: "Koperasi Digital: Transformasi di Era Modern"
-                    },
-                    link: [
-                        {rel: "alternate", href: "#"}
-                    ],
-                    published: {
-                        $t: new Date().toISOString()
-                    },
-                    media$thumbnail: {
-                        url: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                    },
-                    category: [
-                        {term: "Teknologi"}
-                    ]
-                },
-                {
-                    title: {
-                        $t: "Strategi Pemasaran Koperasi di Media Sosial"
-                    },
-                    link: [
-                        {rel: "alternate", href: "#"}
-                    ],
-                    published: {
-                        $t: new Date(Date.now() - 86400000).toISOString()
-                    },
-                    media$thumbnail: {
-                        url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w-400&q=80"
-                    },
-                    category: [
-                        {term: "Pemasaran"}
-                    ]
-                },
-                {
-                    title: {
-                        $t: "Pengelolaan Keuangan Koperasi yang Efektif"
-                    },
-                    link: [
-                        {rel: "alternate", href: "#"}
-                    ],
-                    published: {
-                        $t: new Date(Date.now() - 172800000).toISOString()
-                    },
-                    media$thumbnail: {
-                        url: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                    },
-                    category: [
-                        {term: "Keuangan"}
-                    ]
-                },
-                {
-                    title: {
-                        $t: "Pelatihan Kewirausahaan untuk Anggota Koperasi"
-                    },
-                    link: [
-                        {rel: "alternate", href: "#"}
-                    ],
-                    published: {
-                        $t: new Date(Date.now() - 259200000).toISOString()
-                    },
-                    media$thumbnail: {
-                        url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                    },
-                    category: [
-                        {term: "Pelatihan"}
-                    ]
-                }
-            ];
+        // Update comments display
+        function updateCommentsDisplay(comments) {
+            const commentsList = document.getElementById('comments-list');
+            const commentsCount = document.getElementById('comments-count');
             
-            posts = samplePosts;
-            updateNewsCount();
-            loadMore();
+            commentsList.innerHTML = displayComments(comments);
+            commentsCount.textContent = comments.length;
         }
+
+        // Delete comment
+        function deleteComment(commentId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
+                return;
+            }
+            
+            if (!currentArticleId) return;
+            
+            const article = articles.find(a => a.id === currentArticleId);
+            if (!article || !article.comments) return;
+            
+            // Hapus komentar
+            article.comments = article.comments.filter(comment => comment.id !== commentId);
+            
+            // Save to localStorage
+            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
+            
+            // Update display
+            updateCommentsDisplay(article.comments);
+            
+            // Update stats
+            updateStats();
+        }
+
+        // Tutup modal
+        function closeModal() {
+            document.getElementById('article-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            currentArticleId = null;
+            cancelReply();
+        }
+
+        // Dapatkan nama kategori
+        function getCategoryName(category) {
+            const categories = {
+                'all': 'Semua',
+                'rat': 'RAT',
+                'keuangan': 'Keuangan',
+                'bisnis': 'Bisnis',
+                'pendidikan': 'Pendidikan',
+                'kegiatan': 'Kegiatan'
+            };
+            return categories[category] || category;
+        }
+
+        // Update statistik
+        function updateStats() {
+            // Total artikel
+            document.getElementById('total-articles').textContent = articles.length;
+            
+            // Total komentar
+            const totalComments = articles.reduce((total, article) => {
+                return total + (article.comments ? article.comments.length : 0);
+            }, 0);
+            document.getElementById('total-comments').textContent = totalComments;
+            
+            // Total views
+            const totalViews = articles.reduce((total, article) => {
+                return total + (article.views || 0);
+            }, 0);
+            document.getElementById('total-views').textContent = totalViews.toLocaleString();
+        }
+
+        // =================== FUNGSI UNTUK ADMIN ===================
+
+        // Fungsi untuk menambah artikel baru
+        function addNewArticle(articleData) {
+            if (!articleData.title || !articleData.category || !articleData.content) {
+                console.error('Data artikel tidak lengkap!');
+                console.log('Format yang benar:');
+                console.log(`addNewArticle({
+                    title: "Judul Artikel",
+                    category: "kategori", // rat, keuangan, bisnis, pendidikan, kegiatan
+                    image: "https://link-gambar.jpg",
+                    content: "<p>Isi artikel...</p>",
+                    author: "Nama Penulis"
+                })`);
+                return;
+            }
+            
+            const newArticle = {
+                id: Date.now(),
+                title: articleData.title,
+                category: articleData.category,
+                image: articleData.image || "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                content: articleData.content,
+                date: new Date().toISOString().split('T')[0],
+                author: articleData.author || "Admin",
+                views: 0,
+                reactions: { ...defaultReactions },
+                comments: []
+            };
+            
+            articles.unshift(newArticle);
+            saveArticlesToStorage();
+            filterAndDisplayArticles();
+            updateStats();
+            
+            console.log('Artikel berhasil ditambahkan!');
+            console.log('ID Artikel:', newArticle.id);
+            console.log('Judul:', newArticle.title);
+        }
+
+        // Fungsi untuk menghapus artikel
+        function deleteArticle(articleId) {
+            const articleIndex = articles.findIndex(a => a.id === articleId);
+            
+            if (articleIndex === -1) {
+                console.error('Artikel tidak ditemukan!');
+                return;
+            }
+            
+            if (!confirm(`Hapus artikel "${articles[articleIndex].title}"?`)) {
+                console.log('Penghapusan dibatalkan.');
+                return;
+            }
+            
+            articles.splice(articleIndex, 1);
+            saveArticlesToStorage();
+            filterAndDisplayArticles();
+            updateStats();
+            
+            console.log('Artikel berhasil dihapus!');
+            
+            // Hapus data dari localStorage
+            localStorage.removeItem(`article_${articleId}_reactions`);
+            localStorage.removeItem(`article_${articleId}_comments`);
+        }
+
+        // Fungsi untuk menampilkan daftar artikel
+        function listArticles() {
+            console.log('=== DAFTAR ARTIKEL ===');
+            articles.forEach(article => {
+                console.log(`ID: ${article.id} | Judul: ${article.title} | Kategori: ${article.category} | Views: ${article.views} | Tanggal: ${article.date}`);
+            });
+            console.log('Total:', articles.length, 'artikel');
+        }
+
+        console.log('=== PANDUAN ADMIN ===');
+        console.log('1. Tambah artikel: addNewArticle({title: "Judul", category: "ekonomi", content: "<p>isi</p>"})');
+        console.log('2. Hapus artikel: deleteArticle(id_artikel)');
+        console.log('3. List artikel: listArticles()');
     </script>
 </body>
 </html>
