@@ -4,327 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koperasi News Portal</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Emoji Picker CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.css">
     <style>
-        /* THEME FUTURISTIK DENGAN GRADASI KOPERASI LEMBUT */
-        :root {
-            --primary-gradient: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
-            --secondary-gradient: linear-gradient(135deg, #E9C46A 0%, #F4A261 100%);
-            --accent-gradient: linear-gradient(135deg, #E76F51 0%, #D65C40 100%);
-            --bg-gradient: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
-            --card-gradient: linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
-            --text-primary: #264653;
-            --text-secondary: #457B9D;
-            --text-light: #6C757D;
-            --border-color: #E0E0E0;
-            --shadow-light: rgba(0, 0, 0, 0.08);
-            --shadow-medium: rgba(0, 0, 0, 0.12);
-            --success: #2A9D8F;
-            --warning: #E9C46A;
-            --danger: #E76F51;
-            --card-radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: var(--bg-gradient);
-            font-family: "Poppins", sans-serif;
-            color: var(--text-primary);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Efek latar belakang gradasi lembut */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(42, 157, 143, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(233, 196, 106, 0.05) 0%, transparent 20%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* TOMBOL KEMBALI KE BERANDA */
-        .back-home {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
-        }
-
-        .back-home:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(42, 157, 143, 0.4);
-        }
-
-        /* CONTAINER UTAMA */
-        #news-portal {
-            max-width: 1400px;
-            margin: 0 auto;
             padding: 20px;
-            width: 100%;
         }
 
-        /* HEADER */
-        .portal-header {
-            background: var(--primary-gradient);
-            border-radius: var(--card-radius);
-            padding: 40px 30px;
-            margin: 20px 0 30px 0;
-            box-shadow: 0 10px 30px var(--shadow-medium);
-            color: white;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .portal-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="white" opacity="0.1"/></svg>');
-            pointer-events: none;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 2;
+        .header {
             text-align: center;
-            width: 100%;
+            padding: 30px;
+            background: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .header-content h1 {
-            font-size: 3.2rem;
-            font-weight: 700;
+        .header h1 {
+            font-size: 2.5rem;
             margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            word-wrap: break-word;
         }
 
-        .header-content p {
-            font-size: 1.2rem;
+        .header p {
+            font-size: 1.1rem;
             opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 20px;
-            word-wrap: break-word;
         }
 
-        .header-stats {
+        .statistics {
             display: flex;
             justify-content: center;
             gap: 30px;
             margin-top: 20px;
             flex-wrap: wrap;
-            width: 100%;
         }
 
         .stat-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
             border-radius: 50px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* DROPDOWN KATEGORI */
-        .filter-bar {
-            background: var(--card-gradient);
-            border-radius: var(--card-radius);
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px var(--shadow-light);
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .filter-left {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-
-        .dropdown-container {
-            position: relative;
-            min-width: 200px;
-        }
-
-        .dropdown-btn {
-            padding: 12px 20px;
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .dropdown-btn:hover {
-            border-color: var(--success);
-        }
-
-        .dropdown-btn.active {
-            border-color: var(--success);
-            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
-        }
-
-        .dropdown-content {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            margin-top: 5px;
-            box-shadow: 0 10px 30px var(--shadow-medium);
-            z-index: 100;
-            display: none;
-            overflow: hidden;
-        }
-
-        .dropdown-content.show {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(42, 157, 143, 0.05);
-        }
-
-        .dropdown-item.active {
-            background: var(--primary-gradient);
-            color: white;
-        }
-
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px 12px 45px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-family: "Poppins", sans-serif;
-            transition: var(--transition);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--success);
-            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-
-        /* GRID BERITA */
-        .news-grid {
+        .articles-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
             margin-bottom: 40px;
-            width: 100%;
         }
 
-        /* KARTU BERITA PROFESIONAL */
-        .news-card {
-            background: var(--card-gradient);
-            border-radius: var(--card-radius);
+        .article-card {
+            background: white;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 8px 25px var(--shadow-light);
-            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
             position: relative;
-            border: 1px solid var(--border-color);
-            height: 420px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
         }
 
-        .news-card:hover {
+        .article-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 35px var(--shadow-medium);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
 
-        .card-image {
+        .article-image {
+            width: 100%;
             height: 200px;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-        }
-
-        .card-image img {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
-            transition: transform 0.6s ease;
+            transition: transform 0.5s ease;
         }
 
-        .news-card:hover .card-image img {
+        .article-card:hover .article-image {
             transform: scale(1.05);
         }
 
@@ -332,789 +96,315 @@
             position: absolute;
             top: 15px;
             left: 15px;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
             color: white;
             padding: 6px 15px;
-            border-radius: 50px;
+            border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
             z-index: 2;
         }
 
-        .card-content {
-            padding: 20px;
-            flex-grow: 1;
+        .github-badge {
+            position: absolute;
+            top: 50px;
+            left: 15px;
+            background: linear-gradient(135deg, #E76F51 0%, #D65C40 100%);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
             display: flex;
-            flex-direction: column;
-            width: 100%;
+            align-items: center;
+            gap: 5px;
         }
 
-        .card-content h3 {
-            font-size: 1.3rem;
+        .article-content {
+            padding: 20px;
+        }
+
+        .article-content h3 {
+            color: #333;
             margin-bottom: 10px;
+            font-size: 1.2rem;
             line-height: 1.4;
-            color: var(--text-primary);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            word-wrap: break-word;
         }
 
-        .card-content p {
-            color: var(--text-light);
+        .article-content p {
+            color: #666;
             font-size: 0.95rem;
             line-height: 1.6;
             margin-bottom: 15px;
-            flex-grow: 1;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            word-wrap: break-word;
-        }
-
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-            width: 100%;
-        }
-
-        .card-date {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .read-more {
-            color: var(--success);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: var(--transition);
-        }
-
-        .read-more:hover {
-            gap: 10px;
-        }
-
-        /* MODAL ARTIKEL DETAIL - FULL SCREEN */
-        .article-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 0;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 0;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            position: relative;
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            padding: 20px 30px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--primary-gradient);
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .modal-header h2 {
-            font-size: 1.8rem;
-            margin-right: 20px;
-            flex-grow: 1;
-            word-wrap: break-word;
-            line-height: 1.4;
-        }
-
-        .close-modal {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .close-modal:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .close-modal::before,
-        .close-modal::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 2px;
-            background: white;
-            border-radius: 1px;
-        }
-
-        .close-modal::before {
-            transform: rotate(45deg);
-        }
-
-        .close-modal::after {
-            transform: rotate(-45deg);
-        }
-
-        .modal-body {
-            padding: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .article-image {
-            width: 100%;
-            height: 500px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .article-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap;
-            gap: 15px;
-            width: 100%;
+            color: #888;
+            font-size: 0.85rem;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
         }
 
-        .article-category {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .article-date {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .article-content {
-            line-height: 1.8;
-            color: var(--text-primary);
-            margin-bottom: 50px;
-            font-size: 1.1rem;
-            width: 100%;
-        }
-
-        .article-content p {
-            margin-bottom: 25px;
-            word-wrap: break-word;
-        }
-
-        .article-content h3 {
-            color: var(--text-primary);
-            margin: 30px 0 15px 0;
-            font-size: 1.5rem;
-            word-wrap: break-word;
-        }
-
-        /* SISTEM REACTIONS DI MODAL */
-        .article-reactions {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 40px;
-            padding: 25px;
-            background: #F8F9FA;
-            border-radius: 12px;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-
-        .reaction-options {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .reaction-btn {
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 50px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-        }
-
-        .reaction-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-color: var(--success);
-        }
-
-        .reaction-btn.active {
-            background: var(--primary-gradient);
-            color: white;
-            border-color: transparent;
-        }
-
-        .reaction-count {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-light);
-            font-size: 1rem;
-        }
-
-        /* SISTEM KOMENTAR STYLE SOSIAL MEDIA */
-        .comments-section {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-            width: 100%;
-        }
-
-        .comments-section h3 {
-            margin-bottom: 25px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.4rem;
-        }
-
-        /* Input Komentar Style Instagram/Facebook */
-        .comment-input-area {
-            margin-bottom: 30px;
-        }
-
-        .comment-input-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .comment-input-container {
-            flex: 1;
-            position: relative;
-        }
-
-        .comment-input {
-            width: 100%;
-            min-height: 50px;
-            padding: 12px 50px 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            font-family: "Poppins", sans-serif;
-            resize: none;
-            transition: var(--transition);
-            background: #F8F9FA;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .comment-input:focus {
-            outline: none;
-            border-color: var(--success);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.1);
-        }
-
-        .comment-input::placeholder {
-            color: var(--text-light);
-        }
-
-        .comment-input-actions {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .emoji-toggle, .send-comment {
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .emoji-toggle {
-            font-size: 1.4rem;
-            color: var(--text-light);
-        }
-
-        .emoji-toggle:hover {
-            color: var(--success);
-            transform: scale(1.1);
-        }
-
-        .send-comment {
-            color: var(--success);
-            font-size: 1.2rem;
-            opacity: 0.7;
-        }
-
-        .send-comment:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        .send-comment.active {
-            opacity: 1;
-            color: var(--success);
-        }
-
-        .emoji-picker-container {
-            position: absolute;
-            bottom: 50px;
-            right: 0;
-            z-index: 100;
-            display: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border-radius: 12px;
-            overflow: hidden;
-            width: 350px;
-        }
-
-        .emoji-picker-container.show {
-            display: block;
-        }
-
-        /* Daftar Komentar Style Social Media */
-        .comments-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .comment-item {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            padding: 0;
-            border-radius: 0;
-            border: none;
-            background: transparent;
-            position: relative;
-        }
-
-        .comment-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-        }
-
-        .comment-content {
-            flex: 1;
-            background: #F8F9FA;
-            padding: 12px 15px;
-            border-radius: 18px;
-            position: relative;
-            max-width: calc(100% - 48px);
-        }
-
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .comment-author {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-        }
-
-        .comment-time {
-            font-size: 0.8rem;
-            color: var(--text-light);
+        .author {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .comment-text {
-            color: var(--text-primary);
-            line-height: 1.5;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            word-wrap: break-word;
-            white-space: pre-wrap;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
         }
 
-        .comment-actions {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 900px;
+            margin: 30px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .modal-header h2 {
+            flex: 1;
+            margin-right: 20px;
+            font-size: 1.8rem;
+            line-height: 1.4;
+        }
+
+        .close-modal {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .article-meta-large {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .meta-left {
             display: flex;
             gap: 15px;
             align-items: center;
-            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
-        .reply-btn, .delete-btn, .like-btn {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            font-size: 0.85rem;
+        .article-category {
+            background: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .article-date {
+            color: #666;
             display: flex;
             align-items: center;
-            gap: 4px;
-            transition: var(--transition);
-            padding: 4px 8px;
-            border-radius: 4px;
+            gap: 8px;
         }
 
-        .reply-btn:hover {
-            color: var(--success);
-            background: rgba(42, 157, 143, 0.1);
-        }
-
-        .delete-btn:hover {
-            color: var(--danger);
-            background: rgba(231, 111, 81, 0.1);
-        }
-
-        .like-btn:hover {
-            color: #E4405F;
-            background: rgba(228, 64, 95, 0.1);
-        }
-
-        .like-btn.liked {
-            color: #E4405F;
-            font-weight: 600;
-        }
-
-        /* Balasan Komentar */
-        .replies-container {
-            margin-left: 48px;
-            margin-top: 15px;
-            padding-left: 20px;
-            border-left: 2px solid var(--border-color);
-        }
-
-        .reply-item {
+        .article-author {
+            color: #666;
             display: flex;
-            gap: 12px;
-            align-items: flex-start;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .article-body {
+            line-height: 1.8;
+            color: #333;
+            font-size: 1.05rem;
+        }
+
+        .article-body h3 {
+            color: #2A9D8F;
+            margin: 30px 0 15px 0;
+            font-size: 1.4rem;
+        }
+
+        .article-body p {
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2A9D8F;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #ffeaea 0%, #ffd6d6 100%);
+            border-radius: 10px;
+            border-left: 4px solid #E76F51;
+            margin: 20px 0;
+        }
+
+        .error-message h3 {
+            color: #E76F51;
             margin-bottom: 15px;
         }
 
-        .reply-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--secondary-gradient);
+        .controls {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            flex-shrink: 0;
-        }
-
-        .reply-content {
-            flex: 1;
-            background: white;
-            padding: 10px 15px;
-            border-radius: 18px;
-            border: 1px solid var(--border-color);
-        }
-
-        .reply-form {
-            margin-left: 48px;
-            margin-top: 15px;
-        }
-
-        .reply-input-wrapper {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .reply-input {
-            flex: 1;
-            min-height: 40px;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-family: "Poppins", sans-serif;
-            resize: none;
-            background: #F8F9FA;
-            font-size: 0.9rem;
-        }
-
-        .reply-input:focus {
-            outline: none;
-            border-color: var(--success);
-            background: white;
-        }
-
-        .reply-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            padding-left: 52px;
-        }
-
-        /* PAGINATION */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 15px;
-            margin: 50px 0;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-
-        .page-btn {
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            flex-shrink: 0;
-        }
-
-        .page-btn:hover {
-            border-color: var(--success);
-            color: var(--success);
-            transform: translateY(-2px);
-        }
-
-        .page-btn.active {
-            background: var(--primary-gradient);
-            color: white;
-            border-color: transparent;
-        }
-
-        .page-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .page-btn.disabled:hover {
-            transform: none;
-            border-color: var(--border-color);
-            color: inherit;
-        }
-
-        /* FOOTER */
-        .portal-footer {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 40px 30px;
-            border-radius: var(--card-radius);
-            margin-top: 50px;
-            text-align: center;
-            width: 100%;
-        }
-
-        .footer-content {
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .footer-logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            word-wrap: break-word;
-        }
-
-        .copyright {
             margin-top: 30px;
-            opacity: 0.8;
-            font-size: 0.9rem;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
         }
 
-        /* RESPONSIVE DESIGN */
-        @media (max-width: 1200px) {
-            .news-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-            
-            .modal-body {
-                padding: 25px;
-            }
-            
-            #news-portal {
-                padding: 20px;
-            }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
 
-        @media (max-width: 992px) {
-            .header-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-            
-            .filter-left {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .dropdown-container, .search-box {
-                width: 100%;
-            }
-            
-            .news-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 25px;
-            }
-            
-            .article-image {
-                height: 400px;
-            }
-            
-            .replies-container {
-                margin-left: 40px;
-            }
-            
-            .emoji-picker-container {
-                width: 300px;
-                right: -50px;
-            }
+        .btn-primary {
+            background: linear-gradient(135deg, #2A9D8F 0%, #1D6F7D 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            color: #666;
+            border-top: 1px solid #eee;
         }
 
         @media (max-width: 768px) {
-            .back-home {
-                top: 10px;
-                left: 10px;
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .portal-header {
-                padding: 30px 20px;
-                margin-top: 60px;
-            }
-            
-            .header-content h1 {
+            .header h1 {
                 font-size: 2rem;
-                padding: 0 10px;
             }
             
-            .header-stats {
-                gap: 15px;
-                padding: 0 10px;
-            }
-            
-            .stat-item {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .news-grid {
+            .articles-container {
                 grid-template-columns: 1fr;
-                gap: 20px;
+            }
+            
+            .modal-content {
+                margin: 10px;
             }
             
             .modal-header {
-                padding: 15px 20px;
+                padding: 20px;
                 flex-direction: column;
                 gap: 15px;
                 align-items: flex-start;
@@ -1125,744 +415,254 @@
             }
             
             .close-modal {
-                width: 36px;
-                height: 36px;
                 position: absolute;
-                top: 15px;
-                right: 15px;
-            }
-            
-            .close-modal::before,
-            .close-modal::after {
-                width: 18px;
-                height: 2px;
+                top: 20px;
+                right: 20px;
             }
             
             .modal-body {
                 padding: 20px;
             }
             
-            .article-image {
-                height: 300px;
+            .modal-image {
+                height: 250px;
             }
             
-            .article-meta {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .article-reactions {
+            .article-meta-large {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 20px;
-                padding: 20px;
+                gap: 10px;
             }
-            
-            .reaction-options {
-                justify-content: center;
-                width: 100%;
-            }
-            
-            .reaction-btn {
-                padding: 8px 16px;
-                font-size: 1rem;
-            }
-            
-            .comments-list {
-                max-height: 500px;
-            }
-            
-            .comment-content {
-                max-width: calc(100% - 48px);
-            }
-            
-            .emoji-picker-container {
-                width: 280px;
-                right: -80px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #news-portal {
-                padding: 15px;
-            }
-            
-            .header-content h1 {
-                font-size: 1.8rem;
-            }
-            
-            .header-content p {
-                font-size: 1rem;
-                padding: 0 10px;
-            }
-            
-            .filter-bar {
-                padding: 15px;
-            }
-            
-            .dropdown-btn, .search-box input {
-                padding: 10px 15px 10px 40px;
-            }
-            
-            .search-box i {
-                left: 15px;
-            }
-            
-            .page-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
-            
-            .reaction-options {
-                justify-content: space-between;
-                width: 100%;
-            }
-            
-            .reaction-btn {
-                flex: 1;
-                justify-content: center;
-                min-width: 70px;
-            }
-            
-            .comment-input-wrapper {
-                gap: 8px;
-            }
-            
-            .user-avatar {
-                width: 36px;
-                height: 36px;
-                font-size: 0.9rem;
-            }
-            
-            .comment-input {
-                font-size: 0.9rem;
-                padding: 10px 45px 10px 12px;
-            }
-            
-            .comment-content {
-                padding: 10px 12px;
-            }
-            
-            .comment-avatar {
-                width: 32px;
-                height: 32px;
-                font-size: 0.85rem;
-            }
-            
-            .replies-container {
-                margin-left: 36px;
-                padding-left: 15px;
-            }
-            
-            .reply-avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 0.8rem;
-            }
-            
-            .emoji-picker-container {
-                width: 250px;
-                right: -100px;
-                bottom: 60px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .header-content h1 {
-                font-size: 1.6rem;
-            }
-            
-            .stat-item {
-                padding: 8px 16px;
-                font-size: 0.85rem;
-            }
-            
-            .news-card {
-                height: 400px;
-            }
-            
-            .card-image {
-                height: 180px;
-            }
-            
-            .card-content h3 {
-                font-size: 1.2rem;
-            }
-            
-            .card-content p {
-                font-size: 0.9rem;
-            }
-            
-            .emoji-picker-container {
-                width: 220px;
-                right: -120px;
-            }
-        }
-
-        /* SCROLLBAR STYLING */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--success);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1D6F7D;
-        }
-
-        /* LOADING ANIMATION */
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: var(--text-light);
-            width: 100%;
-        }
-
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--success);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 15px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ANIMASI UNTUK INTERAKSI */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .new-comment {
-            animation: fadeIn 0.3s ease;
-        }
-
-        .pulse-animation {
-            animation: pulse 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <!-- TOMBOL KEMBALI KE BERANDA -->
-    <button class="back-home" onclick="window.location.href='index.html'">
-        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-    </button>
-
-    <div id="news-portal">
+    <div class="container">
         <!-- HEADER -->
-        <header class="portal-header">
-            <div class="header-content">
-                <h1><i class="fas fa-newspaper"></i> Berita & Kegiatan Terbaru Koperasi</h1>
-                <p>Koperasi terpercaya dengan informasi terkini seputar ekonomi, keuangan, dan perkembangan koperasi</p>
-                <div class="header-stats">
-                    <div class="stat-item">
-                        <i class="fas fa-newspaper"></i> <span id="total-articles">0</span> Artikel
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-comments"></i> <span id="total-comments">0</span> Komentar
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-eye"></i> <span id="total-views">0</span> Dilihat
-                    </div>
+        <header class="header">
+            <h1><i class="fas fa-newspaper"></i> Koperasi News Portal</h1>
+            <p>Berita & Kegiatan Terbaru Koperasi "Asmara Tani"</p>
+            <div class="statistics">
+                <div class="stat-item">
+                    <i class="fas fa-newspaper"></i> <span id="total-articles">0</span> Artikel
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-external-link-alt"></i> <span id="github-articles">0</span> dari GitHub
                 </div>
             </div>
         </header>
 
-        <!-- FILTER BAR DENGAN DROPDOWN -->
-        <div class="filter-bar">
-            <div class="filter-left">
-                <div class="dropdown-container">
-                    <button class="dropdown-btn" id="category-dropdown">
-                        <span id="selected-category">
-                            <i class="fas fa-filter"></i> Pilih Kategori
-                        </span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="dropdown-content" id="category-list">
-                        <div class="dropdown-item active" data-category="all">
-                            <i class="fas fa-globe"></i> Semua Kategori
-                        </div>
-                        <div class="dropdown-item" data-category="rat">
-                            <i class="fas fa-chart-line"></i> RAT
-                        </div>
-                        <div class="dropdown-item" data-category="keuangan">
-                            <i class="fas fa-money-bill-wave"></i> Keuangan
-                        </div>
-                        <div class="dropdown-item" data-category="bisnis">
-                            <i class="fas fa-microchip"></i> Bisnis
-                        </div>
-                        <div class="dropdown-item" data-category="pendidikan">
-                            <i class="fas fa-graduation-cap"></i> Pendidikan
-                        </div>
-                        <div class="dropdown-item" data-category="kegiatan">
-                            <i class="fas fa-gavel"></i> Kegiatan
-                        </div>
-                    </div>
-                </div>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="search-input" placeholder="Cari artikel...">
-                </div>
-            </div>
+        <!-- ARTIKEL CONTAINER -->
+        <div class="articles-container" id="articles-container">
+            <!-- Artikel akan dimuat di sini -->
         </div>
 
-        <!-- GRID BERITA -->
-        <div class="news-grid" id="news-container">
-            <!-- Berita akan dimuat di sini -->
+        <!-- LOADING -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <h3>Memuat artikel...</h3>
         </div>
 
-        <!-- LOADING INDICATOR -->
-        <div class="loading" id="loading-indicator">Memuat artikel...</div>
-
-        <!-- PAGINATION -->
-        <div class="pagination" id="pagination-container">
-            <!-- Pagination akan dibuat secara dinamis -->
+        <!-- CONTROLS -->
+        <div class="controls">
+            <button class="btn btn-primary" onclick="addSampleArticle()">
+                <i class="fas fa-plus"></i> Tambah Artikel Contoh
+            </button>
+            <button class="btn btn-primary" onclick="addGitHubArticlePrompt()">
+                <i class="fab fa-github"></i> Tambah dari GitHub
+            </button>
+            <button class="btn btn-secondary" onclick="clearAllArticles()">
+                <i class="fas fa-trash"></i> Hapus Semua
+            </button>
         </div>
 
-        <!-- MODAL ARTIKEL DETAIL -->
-        <div class="article-modal" id="article-modal">
+        <!-- MODAL ARTIKEL -->
+        <div class="modal" id="article-modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="modal-title"></h2>
                     <button class="close-modal" onclick="closeModal()">
-                        <!-- X icon dibuat dengan CSS pseudo elements -->
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body" id="modal-body-content">
+                <div class="modal-body" id="modal-body">
                     <!-- Konten artikel akan dimuat di sini -->
                 </div>
             </div>
         </div>
 
         <!-- FOOTER -->
-        <footer class="portal-footer">
-            <div class="footer-content">
-                <div class="footer-logo">Koperasi News</div>
-                <p>Berita resmi yang menyajikan informasi terkini seputar perkembangan koperasi "Asmara Tani"</p>
-                <div class="copyright">
-                    © 2026 Informasi Koperasi. Hak Cipta Dilindungi.
-                </div>
-            </div>
+        <footer class="footer">
+            <p>© 2024 Koperasi News Portal | <i class="fas fa-heart" style="color: #E76F51;"></i> Dibuat dengan semangat koperasi</p>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: #888;">
+                Repository GitHub: <a href="https://github.com/Kangeldzi/kumpulan-artikel-koperasi" 
+                style="color: #2A9D8F; text-decoration: none;" target="_blank">
+                Kangeldzi/kumpulan-artikel-koperasi</a>
+            </p>
         </footer>
     </div>
 
-    <!-- Emoji Picker Script -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.js"></script>
-    
     <script>
-        // Konfigurasi
-        const ARTICLES_PER_PAGE = 9;
-        let currentPage = 1;
-        let currentCategory = 'all';
-        let currentSearch = '';
+        // =================== KONFIGURASI ===================
+        const GITHUB_REPO = "Kangeldzi/kumpulan-artikel-koperasi";
         let articles = [];
-        let filteredArticles = [];
-        let currentReplyTo = null;
-        let currentReplyAuthor = null;
         let currentArticleId = null;
-        
-        // Data reaksi default
-        const defaultReactions = {
-            'like': 0,
-            'laugh': 0,
-            'wow': 0,
-            'sad': 0,
-            'angry': 0
-        };
 
-        // Inisialisasi
+        // =================== DATA ARTIKEL DEFAULT ===================
+        const defaultArticles = [
+            {
+                id: 1,
+                title: "Transformasi Digital Koperasi di Era 4.0",
+                category: "Teknologi",
+                image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                content: `<p>Transformasi digital telah menjadi kebutuhan mendesak bagi koperasi di Indonesia. Dengan mengadopsi teknologi terkini, koperasi dapat meningkatkan efisiensi operasional, memperluas jangkauan layanan, dan memberikan nilai lebih kepada anggotanya.</p>
+                         <h3>Manfaat Transformasi Digital</h3>
+                         <p>Implementasi sistem digital dalam koperasi tidak hanya sebatas pada proses administrasi, tetapi juga mencakup pengembangan platform digital untuk pelayanan anggota, sistem pembayaran digital, hingga analisis data untuk pengambilan keputusan strategis.</p>
+                         <h3>Hasil yang Dicapai</h3>
+                         <p>Beberapa koperasi terkemuka telah berhasil menerapkan transformasi digital dengan hasil yang signifikan. Mereka mencatat peningkatan kinerja hingga 40% dalam hal efisiensi operasional dan kepuasan anggota.</p>`,
+                date: "15 Maret 2024",
+                author: "Admin Koperasi",
+                views: 0
+            },
+            {
+                id: 2,
+                title: "Strategi Pengembangan Keuangan Koperasi Berkelanjutan",
+                category: "Keuangan",
+                image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                content: `<p>Pengembangan keuangan yang berkelanjutan menjadi kunci keberhasilan koperasi dalam jangka panjang. Strategi yang tepat dapat memastikan pertumbuhan yang stabil dan manfaat yang optimal bagi seluruh anggota.</p>
+                         <h3>Strategi Efektif</h3>
+                         <p>Beberapa strategi yang efektif meliputi diversifikasi produk keuangan, penguatan modal internal, kerjasama dengan lembaga keuangan formal, dan penerapan prinsip kehati-hatian dalam pengelolaan dana.</p>
+                         <h3>Ketahanan Ekonomi</h3>
+                         <p>Koperasi yang menerapkan strategi keuangan berkelanjutan menunjukkan ketahanan yang lebih baik dalam menghadapi fluktuasi ekonomi dan mampu memberikan kontribusi signifikan bagi perekonomian lokal.</p>`,
+                date: "14 Maret 2024",
+                author: "Tim Keuangan",
+                views: 0
+            },
+            // ARTIKEL DARI GITHUB REPOSITORY ANDA
+            {
+                id: 1001,
+                title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini Bangkit Kembali",
+                category: "Keuangan",
+                image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
+                githubUrl: "artikel-pertama.html",
+                date: "20 Januari 2024",
+                author: "Kang L",
+                views: 0,
+                isGitHub: true
+            },
+            {
+                id: 1002,
+                title: "Inovasi Produk Koperasi di Era Digital",
+                category: "Inovasi",
+                image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                githubUrl: "artikel-kedua.html", // Anda bisa buat file ini nanti
+                date: "18 Januari 2024",
+                author: "Tim Inovasi",
+                views: 0,
+                isGitHub: true
+            }
+        ];
+
+        // =================== INISIALISASI ===================
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Koperasi News Portal Dimuat');
+            console.log('📁 Repository GitHub:', GITHUB_REPO);
+            
             // Load artikel dari localStorage
-            loadArticlesFromStorage();
+            loadArticles();
             
-            // Setup event listeners
-            setupEventListeners();
+            // Test koneksi GitHub
+            testGitHubConnection();
             
-            // Setup dropdown kategori
-            setupCategoryDropdown();
-            
-            // Update statistik
-            updateStats();
-            
-            // Sembunyikan loading indicator
-            setTimeout(() => {
-                document.getElementById('loading-indicator').style.display = 'none';
-            }, 1000);
+            // Tampilkan panduan di console
+            showConsoleGuide();
         });
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Search input
-            document.getElementById('search-input').addEventListener('input', function(e) {
-                currentSearch = e.target.value.toLowerCase();
-                filterAndDisplayArticles();
-            });
-            
-            // Close modal dengan ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                }
-            });
-            
-            // Close modal dengan klik di luar
-            document.getElementById('article-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeModal();
-                }
-            });
-        }
+        // =================== FUNGSI UTAMA ===================
 
-        // Setup dropdown kategori
-        function setupCategoryDropdown() {
-            const dropdownBtn = document.getElementById('category-dropdown');
-            const dropdownContent = document.getElementById('category-list');
-            const dropdownItems = dropdownContent.querySelectorAll('.dropdown-item');
+        // Load artikel
+        function loadArticles() {
+            const saved = localStorage.getItem('koperasi_articles');
             
-            // Toggle dropdown
-            dropdownBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dropdownContent.classList.toggle('show');
-                dropdownBtn.classList.toggle('active');
-                
-                // Rotate icon
-                const icon = this.querySelector('.fa-chevron-down');
-                icon.style.transform = dropdownContent.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0)';
-            });
-            
-            // Pilih kategori
-            dropdownItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const category = this.getAttribute('data-category');
-                    
-                    // Update selected item
-                    dropdownItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update button text
-                    const icon = this.querySelector('i').cloneNode(true);
-                    const text = this.textContent.trim();
-                    document.getElementById('selected-category').innerHTML = '';
-                    document.getElementById('selected-category').appendChild(icon);
-                    document.getElementById('selected-category').appendChild(document.createTextNode(' ' + text));
-                    
-                    // Filter artikel
-                    filterCategory(category);
-                    
-                    // Tutup dropdown
-                    dropdownContent.classList.remove('show');
-                    dropdownBtn.classList.remove('active');
-                    const chevronIcon = dropdownBtn.querySelector('.fa-chevron-down');
-                    chevronIcon.style.transform = 'rotate(0)';
-                });
-            });
-            
-            // Tutup dropdown ketika klik di luar
-            document.addEventListener('click', function(e) {
-                if (!dropdownBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
-                    dropdownContent.classList.remove('show');
-                    dropdownBtn.classList.remove('active');
-                    const icon = dropdownBtn.querySelector('.fa-chevron-down');
-                    icon.style.transform = 'rotate(0)';
-                }
-            });
-        }
-
-        // Load artikel dari localStorage
-        function loadArticlesFromStorage() {
-            const storedArticles = localStorage.getItem('koperasi_news_articles');
-            
-            if (storedArticles) {
-                articles = JSON.parse(storedArticles);
+            if (saved) {
+                articles = JSON.parse(saved);
+                console.log('📂 Artikel dimuat dari localStorage:', articles.length);
             } else {
-                // Load artikel sample jika tidak ada data
-                loadSampleArticles();
-                saveArticlesToStorage();
+                articles = [...defaultArticles];
+                saveArticles();
+                console.log('📂 Menggunakan artikel default');
             }
             
-            // Load reaksi dari localStorage
-            loadReactionsFromStorage();
-            
-            // Load komentar dari localStorage
-            loadCommentsFromStorage();
-            
-            // Tampilkan artikel
-            filterAndDisplayArticles();
-        }
-
-        // Load artikel sample
-        function loadSampleArticles() {
-            articles = [
-                {
-                    id: 1,
-                    title: "Transformasi Digital Koperasi di Era 4.0",
-                    category: "bisnis",
-                    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                    content: `<p>Transformasi digital telah menjadi kebutuhan mendesak bagi koperasi di Indonesia. Dengan mengadopsi teknologi terkini, koperasi dapat meningkatkan efisiensi operasional, memperluas jangkauan layanan, dan memberikan nilai lebih kepada anggotanya.</p>
-                             <h3>Manfaat Transformasi Digital</h3>
-                             <p>Implementasi sistem digital dalam koperasi tidak hanya sebatas pada proses administrasi, tetapi juga mencakup pengembangan platform digital untuk pelayanan anggota, sistem pembayaran digital, hingga analisis data untuk pengambilan keputusan strategis.</p>
-                             <h3>Hasil yang Dicapai</h3>
-                             <p>Beberapa koperasi terkemuka telah berhasil menerapkan transformasi digital dengan hasil yang signifikan. Mereka mencatat peningkatan kinerja hingga 40% dalam hal efisiensi operasional dan kepuasan anggota.</p>`,
-                    date: "2024-03-15",
-                    author: "Admin Koperasi",
-                    views: 0,
-                    reactions: { ...defaultReactions },
-                    comments: [
-                        {
-                            id: 101,
-                            author: "Pengunjung",
-                            text: "Artikel yang sangat informatif! 👍",
-                            timestamp: "2024-03-15T10:30:00Z",
-                            likes: 0,
-                            liked: false,
-                            replies: [
-                                {
-                                    id: 102,
-                                    author: "Member Aktif",
-                                    text: "Setuju! Teknologi memang penting untuk koperasi. 😊",
-                                    timestamp: "2024-03-15T11:15:00Z",
-                                    likes: 0,
-                                    liked: false
-                                }
-                            ]
-                        },
-                        {
-                            id: 103,
-                            author: "Pembaca Setia",
-                            text: "Kapan ada pelatihan digital untuk koperasi? 🤔",
-                            timestamp: "2024-03-15T12:45:00Z",
-                            likes: 0,
-                            liked: true
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    title: "Strategi Pengembangan Keuangan Koperasi Berkelanjutan",
-                    category: "keuangan",
-                    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                    content: `<p>Pengembangan keuangan yang berkelanjutan menjadi kunci keberhasilan koperasi dalam jangka panjang. Strategi yang tepat dapat memastikan pertumbuhan yang stabil dan manfaat yang optimal bagi seluruh anggota.</p>
-                             <h3>Strategi Efektif</h3>
-                             <p>Beberapa strategi yang efektif meliputi diversifikasi produk keuangan, penguatan modal internal, kerjasama dengan lembaga keuangan formal, dan penerapan prinsip kehati-hatian dalam pengelolaan dana.</p>
-                             <h3>Ketahanan Ekonomi</h3>
-                             <p>Koperasi yang menerapkan strategi keuangan berkelanjutan menunjukkan ketahanan yang lebih baik dalam menghadapi fluktuasi ekonomi dan mampu memberikan kontribusi signifikan bagi perekonomian lokal.</p>`,
-                    date: "2024-03-14",
-                    author: "Tim Keuangan",
-                    views: 0,
-                    reactions: { ...defaultReactions },
-                    comments: [
-                        {
-                            id: 201,
-                            author: "Anggota Koperasi",
-                            text: "Sangat membantu untuk pengembangan koperasi kami! 💪",
-                            timestamp: "2024-03-14T09:20:00Z",
-                            likes: 0,
-                            liked: false
-                        }
-                    ]
-                }
-            ];
-        }
-
-        // Save artikel ke localStorage
-        function saveArticlesToStorage() {
-            localStorage.setItem('koperasi_news_articles', JSON.stringify(articles));
-        }
-
-        // Load reaksi dari localStorage
-        function loadReactionsFromStorage() {
-            articles.forEach(article => {
-                const storedReactions = localStorage.getItem(`article_${article.id}_reactions`);
-                if (storedReactions) {
-                    article.reactions = JSON.parse(storedReactions);
-                } else {
-                    article.reactions = { ...defaultReactions };
-                    localStorage.setItem(`article_${article.id}_reactions`, JSON.stringify(article.reactions));
-                }
-            });
-        }
-
-        // Load komentar dari localStorage
-        function loadCommentsFromStorage() {
-            articles.forEach(article => {
-                const storedComments = localStorage.getItem(`article_${article.id}_comments`);
-                if (storedComments) {
-                    article.comments = JSON.parse(storedComments);
-                } else {
-                    // Jika tidak ada komentar di localStorage, gunakan komentar dari sample
-                    if (!article.comments) {
-                        article.comments = [];
-                    }
-                    localStorage.setItem(`article_${article.id}_comments`, JSON.stringify(article.comments));
-                }
-            });
-        }
-
-        // Filter dan tampilkan artikel
-        function filterAndDisplayArticles() {
-            // Filter berdasarkan kategori dan pencarian
-            filteredArticles = articles.filter(article => {
-                const matchesCategory = currentCategory === 'all' || article.category === currentCategory;
-                const matchesSearch = currentSearch === '' || 
-                                     article.title.toLowerCase().includes(currentSearch) ||
-                                     (article.content && article.content.toLowerCase().includes(currentSearch));
-                return matchesCategory && matchesSearch;
-            });
-            
-            // Update total artikel
-            document.getElementById('total-articles').textContent = articles.length;
-            
-            // Reset ke halaman pertama
-            currentPage = 1;
-            
-            // Tampilkan artikel
             displayArticles();
-            displayPagination();
+            updateStats();
             
-            // Sembunyikan loading indicator
-            document.getElementById('loading-indicator').style.display = 'none';
+            // Sembunyikan loading
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        }
+
+        // Save artikel
+        function saveArticles() {
+            localStorage.setItem('koperasi_articles', JSON.stringify(articles));
         }
 
         // Tampilkan artikel
         function displayArticles() {
-            const container = document.getElementById('news-container');
-            const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
-            const endIndex = startIndex + ARTICLES_PER_PAGE;
-            const currentArticles = filteredArticles.slice(startIndex, endIndex);
+            const container = document.getElementById('articles-container');
             
-            container.innerHTML = '';
-            
-            if (currentArticles.length === 0) {
+            if (articles.length === 0) {
                 container.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-light);">
-                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                        <h3>Tidak ada artikel yang ditemukan</h3>
-                        <p>Coba gunakan kata kunci lain atau pilih kategori berbeda</p>
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #666;">
+                        <i class="fas fa-newspaper" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+                        <h3>Belum ada artikel</h3>
+                        <p>Gunakan tombol di bawah untuk menambahkan artikel</p>
                     </div>
                 `;
                 return;
             }
             
-            currentArticles.forEach(article => {
-                const date = new Date(article.date);
-                const formattedDate = date.toLocaleDateString('id-ID', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-                
-                const shortContent = article.content ? 
-                    article.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 
-                    "Artikel ini tidak memiliki konten preview.";
-                
-                container.innerHTML += `
-                    <div class="news-card" onclick="openArticle(${article.id})">
-                        <div class="category-badge">${getCategoryName(article.category)}</div>
-                        <div class="card-image">
-                            <img src="${article.image}" alt="${article.title}" onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
-                        </div>
-                        <div class="card-content">
+            container.innerHTML = '';
+            
+            articles.forEach(article => {
+                const articleHTML = `
+                    <div class="article-card" onclick="openArticle(${article.id})">
+                        ${article.isGitHub ? 
+                            `<div class="github-badge">
+                                <i class="fab fa-github"></i> GitHub
+                            </div>` : ''
+                        }
+                        <div class="category-badge">${article.category}</div>
+                        <img src="${article.image}" alt="${article.title}" class="article-image"
+                             onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="article-content">
                             <h3>${article.title}</h3>
-                            <p>${shortContent}</p>
-                            <div class="card-meta">
-                                <div class="card-date">
-                                    <i class="far fa-calendar-alt"></i> ${formattedDate}
+                            <p>${article.isGitHub ? '📄 Artikel dari repository GitHub. Klik untuk membaca...' : (article.content ? article.content.replace(/<[^>]*>/g, '').substring(0, 120) + '...' : '')}</p>
+                            <div class="article-meta">
+                                <div class="author">
+                                    <i class="fas fa-user"></i> ${article.author}
                                 </div>
-                                <div class="read-more">
-                                    Baca Selengkapnya <i class="fas fa-arrow-right"></i>
+                                <div>
+                                    <i class="far fa-calendar-alt"></i> ${article.date}
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
+                container.innerHTML += articleHTML;
             });
         }
 
-        // Tampilkan pagination
-        function displayPagination() {
-            const container = document.getElementById('pagination-container');
-            const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
+        // Update statistik
+        function updateStats() {
+            document.getElementById('total-articles').textContent = articles.length;
             
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-            
-            let paginationHTML = '';
-            
-            // Tombol sebelumnya
-            paginationHTML += `
-                <button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" 
-                        onclick="${currentPage > 1 ? `changePage(${currentPage - 1})` : ''}">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            `;
-            
-            // Halaman
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                    paginationHTML += `
-                        <button class="page-btn ${i === currentPage ? 'active' : ''}" 
-                                onclick="changePage(${i})">
-                            ${i}
-                        </button>
-                    `;
-                } else if (i === currentPage - 2 || i === currentPage + 2) {
-                    paginationHTML += `<span class="page-dots">...</span>`;
-                }
-            }
-            
-            // Tombol berikutnya
-            paginationHTML += `
-                <button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" 
-                        onclick="${currentPage < totalPages ? `changePage(${currentPage + 1})` : ''}">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-            
-            container.innerHTML = paginationHTML;
-        }
-
-        // Ganti halaman
-        function changePage(page) {
-            currentPage = page;
-            displayArticles();
-            displayPagination();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Filter kategori
-        function filterCategory(category) {
-            currentCategory = category;
-            filterAndDisplayArticles();
+            const githubCount = articles.filter(a => a.isGitHub).length;
+            document.getElementById('github-articles').textContent = githubCount;
         }
 
         // Buka artikel
-        function openArticle(articleId) {
+        async function openArticle(articleId) {
             const article = articles.find(a => a.id === articleId);
             if (!article) return;
             
@@ -1870,455 +670,196 @@
             
             // Update views
             article.views = (article.views || 0) + 1;
-            saveArticlesToStorage();
-            updateStats();
-            
-            // Format tanggal
-            const date = new Date(article.date);
-            const formattedDate = date.toLocaleDateString('id-ID', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            saveArticles();
             
             // Tampilkan modal
             document.getElementById('modal-title').textContent = article.title;
-            
-            // Buat konten modal lengkap
-            const modalBody = document.getElementById('modal-body-content');
-            modalBody.innerHTML = createArticleContent(article, formattedDate);
-            
-            // Tampilkan modal
-            document.getElementById('article-modal').style.display = 'flex';
+            document.getElementById('article-modal').style.display = 'block';
             document.body.style.overflow = 'hidden';
             
-            // Setup event listeners untuk konten modal
-            setupModalEventListeners();
+            // Jika artikel dari GitHub
+            if (article.isGitHub && article.githubUrl) {
+                await loadGitHubArticle(article);
+            } else {
+                // Artikel lokal
+                showLocalArticle(article);
+            }
         }
 
-        // Buat konten artikel lengkap
-        function createArticleContent(article, formattedDate) {
-            const reactions = article.reactions || { ...defaultReactions };
-            const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
-            
-            return `
-                <img src="${article.image}" class="article-image" alt="${article.title}" 
+        // Tampilkan artikel lokal
+        function showLocalArticle(article) {
+            document.getElementById('modal-body').innerHTML = `
+                <img src="${article.image}" class="modal-image" alt="${article.title}"
                      onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
-                
-                <div class="article-meta">
-                    <div class="article-category">${getCategoryName(article.category)}</div>
-                    <div class="article-date">
-                        <i class="far fa-calendar-alt"></i> ${formattedDate}
+                <div class="article-meta-large">
+                    <div class="meta-left">
+                        <div class="article-category">${article.category}</div>
+                        <div class="article-date">
+                            <i class="far fa-calendar-alt"></i> ${article.date}
+                        </div>
+                        <div class="article-author">
+                            <i class="fas fa-user"></i> ${article.author}
+                        </div>
+                    </div>
+                    <div style="color: #888; font-size: 0.9rem;">
+                        <i class="fas fa-eye"></i> ${article.views} dilihat
                     </div>
                 </div>
-                
-                <div class="article-content">
-                    ${article.content || '<p>Artikel ini tidak memiliki konten.</p>'}
+                <div class="article-body">
+                    ${article.content}
                 </div>
-                
-                <!-- REACTIONS -->
-                <div class="article-reactions">
-                    <div class="reaction-options">
-                        <button class="reaction-btn" data-reaction="like" onclick="handleReaction('like')">
-                            <span class="reaction-emoji">❤️</span>
-                            <span class="reaction-count" id="like-count">${reactions.like}</span>
-                        </button>
-                        <button class="reaction-btn" data-reaction="laugh" onclick="handleReaction('laugh')">
-                            <span class="reaction-emoji">😆</span>
-                            <span class="reaction-count" id="laugh-count">${reactions.laugh}</span>
-                        </button>
-                        <button class="reaction-btn" data-reaction="wow" onclick="handleReaction('wow')">
-                            <span class="reaction-emoji">😮</span>
-                            <span class="reaction-count" id="wow-count">${reactions.wow}</span>
-                        </button>
-                        <button class="reaction-btn" data-reaction="sad" onclick="handleReaction('sad')">
-                            <span class="reaction-emoji">😢</span>
-                            <span class="reaction-count" id="sad-count">${reactions.sad}</span>
-                        </button>
-                        <button class="reaction-btn" data-reaction="angry" onclick="handleReaction('angry')">
-                            <span class="reaction-emoji">😡</span>
-                            <span class="reaction-count" id="angry-count">${reactions.angry}</span>
-                        </button>
-                    </div>
-                    <div class="reaction-count">
-                        <i class="fas fa-users"></i>
-                        <span id="total-reactions">${totalReactions}</span> Reactions
-                    </div>
+            `;
+        }
+
+        // Load artikel dari GitHub
+        async function loadGitHubArticle(article) {
+            const githubUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${article.githubUrl}`;
+            
+            document.getElementById('modal-body').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <h3>Memuat artikel dari GitHub...</h3>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+                        <i class="fab fa-github"></i> ${githubUrl}
+                    </p>
                 </div>
+            `;
+            
+            try {
+                console.log('🌐 Mengambil:', githubUrl);
                 
-                <!-- KOMENTAR -->
-                <div class="comments-section">
-                    <h3><i class="fas fa-comments"></i> Komentar (<span id="comments-count">${article.comments ? article.comments.length : 0}</span>)</h3>
-                    
-                    <!-- INPUT KOMENTAR -->
-                    <div class="comment-input-area">
-                        <div class="comment-input-wrapper">
-                            <div class="user-avatar" id="current-user-avatar">
-                                <i class="fas fa-user"></i>
+                // Tambahkan cache buster
+                const urlWithCache = `${githubUrl}?t=${Date.now()}`;
+                
+                const response = await fetch(urlWithCache, {
+                    headers: {
+                        'Accept': 'text/html',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                console.log('📊 Status:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const htmlContent = await response.text();
+                console.log('✅ Berhasil! Panjang:', htmlContent.length, 'karakter');
+                
+                // Parse konten HTML
+                const articleContent = parseGitHubContent(htmlContent);
+                
+                // Tampilkan konten
+                document.getElementById('modal-body').innerHTML = `
+                    <img src="${article.image}" class="modal-image" alt="${article.title}"
+                         onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                    <div class="article-meta-large">
+                        <div class="meta-left">
+                            <div class="article-category" style="background: linear-gradient(135deg, #E76F51 0%, #D65C40 100%);">
+                                <i class="fab fa-github"></i> ${article.category} (GitHub)
                             </div>
-                            <div class="comment-input-container">
-                                <textarea class="comment-input" id="comment-input" 
-                                          placeholder="Tulis komentar Anda..." 
-                                          rows="1"></textarea>
-                                <div class="comment-input-actions">
-                                    <button class="emoji-toggle" onclick="toggleEmojiPicker()">
-                                        <i class="far fa-smile"></i>
-                                    </button>
-                                    <button class="send-comment" onclick="submitComment()">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
-                                <div class="emoji-picker-container" id="emoji-picker">
-                                    <emoji-picker></emoji-picker>
-                                </div>
+                            <div class="article-date">
+                                <i class="far fa-calendar-alt"></i> ${article.date}
+                            </div>
+                            <div class="article-author">
+                                <i class="fas fa-user"></i> ${article.author}
                             </div>
                         </div>
-                        <div class="reply-actions" id="reply-actions" style="display: none;">
-                            <button class="cancel-reply-btn" onclick="cancelReply()">
-                                <i class="fas fa-times"></i> Batal balas
+                        <div style="color: #888; font-size: 0.9rem;">
+                            <i class="fas fa-eye"></i> ${article.views} dilihat
+                        </div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+                               padding: 15px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #2A9D8F;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <div style="color: #2A9D8F; font-weight: 600;">
+                                <i class="fas fa-info-circle"></i> Artikel dari Repository GitHub
+                            </div>
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem; word-break: break-all;">
+                            <i class="fas fa-link"></i> ${githubUrl}
+                        </div>
+                    </div>
+                    <div class="article-body">
+                        ${articleContent || '<p style="color: #666; text-align: center; padding: 40px;">Konten artikel berhasil dimuat dari GitHub.</p>'}
+                    </div>
+                `;
+                
+                console.log('🎉 Artikel GitHub berhasil ditampilkan!');
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                
+                document.getElementById('modal-body').innerHTML = `
+                    <div class="error-message">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Gagal Memuat Artikel</h3>
+                        <p style="margin: 15px 0; color: #666;">${error.message}</p>
+                        <div style="background: #fff5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin-bottom: 10px; font-size: 0.9rem;">
+                                <strong>URL yang dicoba:</strong>
+                            </p>
+                            <p style="word-break: break-all; font-family: monospace; font-size: 0.85rem; color: #E76F51;">
+                                https://raw.githubusercontent.com/${GITHUB_REPO}/main/${article.githubUrl}
+                            </p>
+                        </div>
+                        <p style="margin: 20px 0; color: #666; font-size: 0.9rem;">
+                            Pastikan file <strong>"${article.githubUrl}"</strong> ada di repository Anda.
+                        </p>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 25px;">
+                            <button onclick="retryLoadGitHub(${article.id})" class="btn btn-primary" style="padding: 10px 20px;">
+                                <i class="fas fa-redo"></i> Coba Lagi
+                            </button>
+                            <button onclick="closeModal()" class="btn btn-secondary" style="padding: 10px 20px;">
+                                <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- DAFTAR KOMENTAR -->
-                    <div class="comments-list" id="comments-list">
-                        ${article.comments && article.comments.length > 0 ? 
-                            displayComments(article.comments) : 
-                            '<div style="text-align: center; padding: 30px; color: var(--text-light);">Belum ada komentar. Jadilah yang pertama berkomentar!</div>'
-                        }
-                    </div>
-                </div>
-            `;
-        }
-
-        // Setup event listeners untuk modal
-        function setupModalEventListeners() {
-            // Setup emoji picker
-            setupEmojiPicker();
-            
-            // Setup auto-resize untuk textarea komentar
-            const commentInput = document.getElementById('comment-input');
-            if (commentInput) {
-                commentInput.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = (this.scrollHeight) + 'px';
-                    
-                    const sendBtn = document.querySelector('.send-comment');
-                    if (this.value.trim().length > 0) {
-                        sendBtn.classList.add('active');
-                    } else {
-                        sendBtn.classList.remove('active');
-                    }
-                });
-                
-                // Ctrl+Enter untuk submit
-                commentInput.addEventListener('keydown', function(e) {
-                    if (e.ctrlKey && e.key === 'Enter') {
-                        submitComment();
-                    }
-                });
-            }
-            
-            // Generate user avatar
-            generateUserAvatar();
-        }
-
-        // Setup emoji picker
-        function setupEmojiPicker() {
-            const pickerContainer = document.getElementById('emoji-picker');
-            const picker = pickerContainer.querySelector('emoji-picker');
-            
-            if (picker) {
-                picker.addEventListener('emoji-click', event => {
-                    const textarea = document.getElementById('comment-input');
-                    const cursorPos = textarea.selectionStart;
-                    const textBefore = textarea.value.substring(0, cursorPos);
-                    const textAfter = textarea.value.substring(cursorPos);
-                    textarea.value = textBefore + event.detail.unicode + textAfter;
-                    textarea.focus();
-                    textarea.selectionStart = textarea.selectionEnd = cursorPos + event.detail.unicode.length;
-                    
-                    // Trigger input event
-                    textarea.dispatchEvent(new Event('input'));
-                    
-                    // Sembunyikan emoji picker
-                    pickerContainer.classList.remove('show');
-                });
-            }
-        }
-
-        // Toggle emoji picker
-        function toggleEmojiPicker() {
-            const pickerContainer = document.getElementById('emoji-picker');
-            pickerContainer.classList.toggle('show');
-            
-            setTimeout(() => {
-                document.addEventListener('click', function closePicker(e) {
-                    if (!pickerContainer.contains(e.target) && !e.target.closest('.emoji-toggle')) {
-                        pickerContainer.classList.remove('show');
-                        document.removeEventListener('click', closePicker);
-                    }
-                });
-            }, 10);
-        }
-
-        // Generate user avatar
-        function generateUserAvatar() {
-            const avatar = document.getElementById('current-user-avatar');
-            if (avatar) {
-                const colors = ['#2A9D8F', '#E9C46A', '#F4A261', '#E76F51', '#457B9D'];
-                const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                avatar.style.background = randomColor;
-                
-                const icons = ['fas fa-user', 'fas fa-user-tie', 'fas fa-user-graduate', 'fas fa-user-md'];
-                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
-                avatar.innerHTML = `<i class="${randomIcon}"></i>`;
-            }
-        }
-
-        // Tampilkan komentar
-        function displayComments(comments) {
-            let html = '';
-            
-            comments.forEach(comment => {
-                const date = new Date(comment.timestamp);
-                const formattedDate = date.toLocaleDateString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                html += `
-                    <div class="comment-item" data-comment-id="${comment.id}">
-                        <div class="comment-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="comment-content">
-                            <div class="comment-header">
-                                <div class="comment-author">${comment.author}</div>
-                                <div class="comment-time">
-                                    <i class="far fa-clock"></i> ${formattedDate}
-                                </div>
-                            </div>
-                            <div class="comment-text">${comment.text}</div>
-                            <div class="comment-actions">
-                                <button class="like-btn ${comment.liked ? 'liked' : ''}" onclick="likeComment(${comment.id})">
-                                    <i class="fas fa-thumbs-up"></i> Suka
-                                    ${comment.likes > 0 ? `<span class="like-count">${comment.likes}</span>` : ''}
-                                </button>
-                                <button class="reply-btn" onclick="replyToComment(${comment.id}, '${comment.author}')">
-                                    <i class="fas fa-reply"></i> Balas
-                                </button>
-                                <button class="delete-btn" onclick="deleteComment(${comment.id})">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 `;
-            });
-            
-            return html;
+            }
         }
 
-        // Handle reaction
-        function handleReaction(reactionType) {
-            if (!currentArticleId) return;
-            
-            const article = articles.find(a => a.id === currentArticleId);
-            if (!article) return;
-            
-            if (!article.reactions) {
-                article.reactions = { ...defaultReactions };
-            }
-            
-            // Tambah reaction
-            article.reactions[reactionType] = (article.reactions[reactionType] || 0) + 1;
-            
-            // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_reactions`, JSON.stringify(article.reactions));
-            
-            // Update display
-            const reactionBtn = event.target.closest('.reaction-btn');
-            const countElement = document.getElementById(`${reactionType}-count`);
-            
-            if (countElement) {
-                countElement.textContent = article.reactions[reactionType];
-            }
-            
-            // Update total reactions
-            const totalReactions = Object.values(article.reactions).reduce((a, b) => a + b, 0);
-            document.getElementById('total-reactions').textContent = totalReactions;
-            
-            // Animation
-            reactionBtn.classList.add('active');
-            setTimeout(() => reactionBtn.classList.remove('active'), 300);
-            
-            // Update stats
-            updateStats();
-        }
-
-        // Like comment
-        function likeComment(commentId) {
-            if (!currentArticleId) return;
-            
-            const article = articles.find(a => a.id === currentArticleId);
-            if (!article || !article.comments) return;
-            
-            const comment = article.comments.find(c => c.id === commentId);
-            if (!comment) return;
-            
-            if (!comment.likes) comment.likes = 0;
-            if (!comment.liked) {
-                comment.likes++;
-                comment.liked = true;
-            } else {
-                comment.likes--;
-                comment.liked = false;
-            }
-            
-            // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
-            
-            // Update display
-            const likeBtn = document.querySelector(`[data-comment-id="${commentId}"] .like-btn`);
-            const likeCountSpan = document.querySelector(`[data-comment-id="${commentId}"] .like-count`);
-            
-            if (comment.liked) {
-                likeBtn.classList.add('liked');
-                likeBtn.innerHTML = `<i class="fas fa-thumbs-up"></i> Disuka`;
-                if (comment.likes > 0) {
-                    likeBtn.innerHTML += ` <span class="like-count">${comment.likes}</span>`;
+        // Parse konten dari GitHub HTML
+        function parseGitHubContent(html) {
+            try {
+                // Coba parse sebagai HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Cari elemen yang mungkin berisi konten artikel
+                const selectors = [
+                    'article',
+                    'main',
+                    '.content',
+                    '.post-content',
+                    '.article-content',
+                    '.entry-content',
+                    '#content',
+                    '.container',
+                    '.wrapper',
+                    'body'
+                ];
+                
+                for (const selector of selectors) {
+                    const element = doc.querySelector(selector);
+                    if (element && element.textContent.trim().length > 50) {
+                        // Bersihkan script dan style
+                        const cleanElement = element.cloneNode(true);
+                        cleanElement.querySelectorAll('script, style').forEach(el => el.remove());
+                        return cleanElement.innerHTML;
+                    }
                 }
-            } else {
-                likeBtn.classList.remove('liked');
-                likeBtn.innerHTML = `<i class="fas fa-thumbs-up"></i> Suka`;
-                if (comment.likes > 0) {
-                    likeBtn.innerHTML += ` <span class="like-count">${comment.likes}</span>`;
-                }
+                
+                // Jika tidak ditemukan, tampilkan konten mentah (dibatasi)
+                return `<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.9rem; padding: 20px; background: #f8f9fa; border-radius: 8px; max-height: 500px; overflow-y: auto;">
+                    ${html.substring(0, 2000)}${html.length > 2000 ? '...' : ''}
+                </div>`;
+                
+            } catch (error) {
+                console.error('Error parsing HTML:', error);
+                return `<p>Konten artikel: ${html.substring(0, 1000)}...</p>`;
             }
-            
-            // Animation
-            likeBtn.classList.add('pulse-animation');
-            setTimeout(() => likeBtn.classList.remove('pulse-animation'), 300);
-        }
-
-        // Reply to comment
-        function replyToComment(commentId, authorName) {
-            currentReplyTo = commentId;
-            currentReplyAuthor = authorName;
-            
-            const commentInput = document.getElementById('comment-input');
-            commentInput.placeholder = `Balas ${authorName}...`;
-            commentInput.focus();
-            
-            const replyActions = document.getElementById('reply-actions');
-            replyActions.style.display = 'block';
-            replyActions.innerHTML = `
-                <button class="cancel-reply-btn" onclick="cancelReply()">
-                    <i class="fas fa-times"></i> Batal balas ${authorName}
-                </button>
-            `;
-        }
-
-        // Cancel reply
-        function cancelReply() {
-            currentReplyTo = null;
-            currentReplyAuthor = null;
-            
-            const commentInput = document.getElementById('comment-input');
-            commentInput.placeholder = 'Tulis komentar Anda...';
-            
-            document.getElementById('reply-actions').style.display = 'none';
-        }
-
-        // Submit comment
-        function submitComment() {
-            if (!currentArticleId) return;
-            
-            const commentInput = document.getElementById('comment-input');
-            const commentText = commentInput.value.trim();
-            
-            if (!commentText) {
-                alert('Silakan tulis komentar terlebih dahulu!');
-                return;
-            }
-            
-            const article = articles.find(a => a.id === currentArticleId);
-            if (!article) return;
-            
-            if (!article.comments) article.comments = [];
-            
-            // Generate random user name
-            const userNames = ['Pengunjung', 'Member Aktif', 'Pembaca Setia', 'Simpatisan', 'Anggota Koperasi'];
-            const randomName = userNames[Math.floor(Math.random() * userNames.length)];
-            
-            const newComment = {
-                id: Date.now(),
-                author: randomName,
-                text: commentText,
-                timestamp: new Date().toISOString(),
-                likes: 0,
-                liked: false
-            };
-            
-            article.comments.push(newComment);
-            
-            // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
-            
-            // Update display
-            updateCommentsDisplay(article.comments);
-            
-            // Reset input
-            commentInput.value = '';
-            commentInput.style.height = 'auto';
-            document.querySelector('.send-comment').classList.remove('active');
-            cancelReply();
-            
-            // Update stats
-            updateStats();
-            
-            // Scroll to new comment
-            setTimeout(() => {
-                const commentsList = document.getElementById('comments-list');
-                commentsList.scrollTop = commentsList.scrollHeight;
-            }, 100);
-        }
-
-        // Update comments display
-        function updateCommentsDisplay(comments) {
-            const commentsList = document.getElementById('comments-list');
-            const commentsCount = document.getElementById('comments-count');
-            
-            commentsList.innerHTML = displayComments(comments);
-            commentsCount.textContent = comments.length;
-        }
-
-        // Delete comment
-        function deleteComment(commentId) {
-            if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
-                return;
-            }
-            
-            if (!currentArticleId) return;
-            
-            const article = articles.find(a => a.id === currentArticleId);
-            if (!article || !article.comments) return;
-            
-            // Hapus komentar
-            article.comments = article.comments.filter(comment => comment.id !== commentId);
-            
-            // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
-            
-            // Update display
-            updateCommentsDisplay(article.comments);
-            
-            // Update stats
-            updateStats();
         }
 
         // Tutup modal
@@ -2326,468 +867,190 @@
             document.getElementById('article-modal').style.display = 'none';
             document.body.style.overflow = 'auto';
             currentArticleId = null;
-            cancelReply();
         }
 
-        // Dapatkan nama kategori
-        function getCategoryName(category) {
-            const categories = {
-                'all': 'Semua',
-                'rat': 'RAT',
-                'keuangan': 'Keuangan',
-                'bisnis': 'Bisnis',
-                'pendidikan': 'Pendidikan',
-                'kegiatan': 'Kegiatan'
-            };
-            return categories[category] || category;
-        }
-
-        // Update statistik
-        function updateStats() {
-            // Total artikel
-            document.getElementById('total-articles').textContent = articles.length;
-            
-            // Total komentar
-            const totalComments = articles.reduce((total, article) => {
-                return total + (article.comments ? article.comments.length : 0);
-            }, 0);
-            document.getElementById('total-comments').textContent = totalComments;
-            
-            // Total views
-            const totalViews = articles.reduce((total, article) => {
-                return total + (article.views || 0);
-            }, 0);
-            document.getElementById('total-views').textContent = totalViews.toLocaleString();
-        }
-
-        // =================== FUNGSI UNTUK ADMIN ===================
-
-        // Fungsi untuk menambah artikel baru
-        function addNewArticle(articleData) {
-            if (!articleData.title || !articleData.category || !articleData.content) {
-                console.error('Data artikel tidak lengkap!');
-                console.log('Format yang benar:');
-                console.log(`addNewArticle({
-                    title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini KUD Asmara Tani Bangkit Kembali Di Tangan Kreatif Anak Muda Milenial",
-                    category: "RAT", // rat, keuangan, bisnis, pendidikan, kegiatan
-                    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
-                    content: "<p>Sabtu 18 September 2020 sekumpulan anak muda yang berasal dari Desa yang berbeda melakukan RAT atau Rapat Keanggotaan Baru kepengurusan KUD Asmara Tani, di dampingi oleh beberapa senior dari pengurus KUD Asmara Tani terdahulu, dan Alhamdulillah berkat do'a dan dukungan dari para tokoh Masyarakat dan Para senior dari pengurus KUD Asmara Tani sehingga acara Rapat keanggotaan (RAT) tahun 2020 berjalan dengan sukses tanpa ekses, sehingga terbentuklah kepengurusan yang baru dan sah di saksikan oleh pihak Pemerintahan Desa Ciasmara dan Sesepuh atau para tokoh Masyarakat yang dulu pernah tergabung dalam kepengurusan KUD Asmara Tani tersebut.
-                    Setelah terbentuknya kepengurusan KUD Asmara Tani yang baru lalu para anggota dan pengurus yang baru saja di sahkan mulai berbenah dan langsung bekerja, mulai dari mengumpulkan arsif dan berkas-berkas dokumen KUD, sampai dengan peremajaan kembali perizinan dan legalitas yang sah bahkan pada tahun ini berbeda dengan tahun kebelakang, legalitas KUD ini akan di daftarkan di Notaris.</p>",
-                    author: "Kang L"
-                
-                    title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini KUD Asmara Tani Bangkit Kembali Di Tangan Kreatif Anak Muda Milenial",
-                    category: "kategori", // rat, keuangan, bisnis, pendidikan, kegiatan
-                    image: "https://link-gambar.jpg",
-                    content: "<p>Isi artikel...</p>",
-                    author: "Nama Penulis"
-                })`);
-                return;
+        // Coba lagi load GitHub
+        function retryLoadGitHub(articleId) {
+            const article = articles.find(a => a.id === articleId);
+            if (article) {
+                loadGitHubArticle(article);
             }
+        }
+
+        // Test koneksi GitHub
+        async function testGitHubConnection() {
+            const testUrl = `https://raw.githubusercontent.com/${GITHUB_REPO}/main/artikel-pertama.html`;
             
+            try {
+                const response = await fetch(testUrl);
+                console.log('🔗 Test koneksi GitHub:');
+                console.log('URL:', testUrl);
+                console.log('Status:', response.status, response.statusText);
+                console.log('OK?', response.ok);
+                
+                if (response.ok) {
+                    const content = await response.text();
+                    console.log('✅ BERHASIL! Panjang:', content.length, 'karakter');
+                    console.log('Preview:', content.substring(0, 200) + '...');
+                    return true;
+                } else {
+                    console.log('❌ GAGAL: File tidak ditemukan atau ada error');
+                    return false;
+                }
+            } catch (error) {
+                console.log('❌ ERROR koneksi:', error.message);
+                return false;
+            }
+        }
+
+        // =================== FUNGSI ADMIN ===================
+
+        // Tambah artikel contoh
+        function addSampleArticle() {
             const newArticle = {
                 id: Date.now(),
-                title: articleData.title,
-                category: articleData.category,
-                image: articleData.image || "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                content: articleData.content,
-                date: new Date().toISOString().split('T')[0],
-                author: articleData.author || "Admin",
-                views: 0,
-                reactions: { ...defaultReactions },
-                comments: []
+                title: "Artikel Contoh " + (articles.length + 1),
+                category: "Contoh",
+                image: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                content: `<p>Ini adalah artikel contoh yang ditambahkan secara dinamis.</p>
+                         <h3>Sub Judul Contoh</h3>
+                         <p>Isi konten artikel contoh yang bisa Anda edit sesuai kebutuhan.</p>`,
+                date: new Date().toLocaleDateString('id-ID'),
+                author: "Admin",
+                views: 0
             };
             
             articles.unshift(newArticle);
-            saveArticlesToStorage();
-            filterAndDisplayArticles();
+            saveArticles();
+            displayArticles();
             updateStats();
             
-            console.log('Artikel berhasil ditambahkan!');
-            console.log('ID Artikel:', newArticle.id);
-            console.log('Judul:', newArticle.title);
+            console.log('✅ Artikel contoh ditambahkan:', newArticle);
+            alert(`Artikel "${newArticle.title}" berhasil ditambahkan!`);
         }
 
-        // Fungsi untuk menghapus artikel
-        function deleteArticle(articleId) {
-            const articleIndex = articles.findIndex(a => a.id === articleId);
+        // Tambah artikel dari GitHub (prompt)
+        function addGitHubArticlePrompt() {
+            const title = prompt("Judul Artikel:");
+            if (!title) return;
             
-            if (articleIndex === -1) {
-                console.error('Artikel tidak ditemukan!');
-                return;
-            }
+            const category = prompt("Kategori:", "Keuangan");
+            const fileName = prompt("Nama file di GitHub (contoh: artikel-pertama.html):", "artikel-pertama.html");
+            const author = prompt("Penulis:", "Kang L");
+            const image = prompt("URL Gambar (kosongkan untuk default):", "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg");
             
-            if (!confirm(`Hapus artikel "${articles[articleIndex].title}"?`)) {
-                console.log('Penghapusan dibatalkan.');
-                return;
-            }
+            const newArticle = {
+                id: Date.now(),
+                title: title,
+                category: category || "Keuangan",
+                image: image || "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                githubUrl: fileName || "artikel-pertama.html",
+                date: new Date().toLocaleDateString('id-ID'),
+                author: author || "Kang L",
+                views: 0,
+                isGitHub: true
+            };
             
-            articles.splice(articleIndex, 1);
-            saveArticlesToStorage();
-            filterAndDisplayArticles();
+            articles.unshift(newArticle);
+            saveArticles();
+            displayArticles();
             updateStats();
             
-            console.log('Artikel berhasil dihapus!');
-            
-            // Hapus data dari localStorage
-            localStorage.removeItem(`article_${articleId}_reactions`);
-            localStorage.removeItem(`article_${articleId}_comments`);
+            console.log('✅ Artikel GitHub ditambahkan:', newArticle);
+            alert(`Artikel "${newArticle.title}" berhasil ditambahkan!\n\nAkan diambil dari: https://raw.githubusercontent.com/${GITHUB_REPO}/main/${newArticle.githubUrl}`);
         }
 
-        // Fungsi untuk menampilkan daftar artikel
-        function listArticles() {
-            console.log('=== DAFTAR ARTIKEL ===');
-            articles.forEach(article => {
-                console.log(`ID: ${article.id} | Judul: ${article.title} | Kategori: ${article.category} | Views: ${article.views} | Tanggal: ${article.date}`);
+        // Hapus semua artikel
+        function clearAllArticles() {
+            if (confirm("Hapus SEMUA artikel? Tindakan ini tidak dapat dibatalkan!")) {
+                articles = [];
+                saveArticles();
+                displayArticles();
+                updateStats();
+                console.log('🗑️ Semua artikel dihapus');
+                alert('Semua artikel telah dihapus!');
+            }
+        }
+
+        // =================== FUNGSI GLOBAL UNTUK CONSOLE ===================
+
+        // Fungsi untuk menambah artikel dari GitHub (dari console)
+        function addGitHubArticle(articleData) {
+            const newArticle = {
+                id: Date.now(),
+                title: articleData.title,
+                category: articleData.category || "Keuangan",
+                image: articleData.image || "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                githubUrl: articleData.githubUrl || articleData.fileName || "artikel-pertama.html",
+                date: new Date().toLocaleDateString('id-ID'),
+                author: articleData.author || "Kang L",
+                views: 0,
+                isGitHub: true
+            };
+            
+            articles.unshift(newArticle);
+            saveArticles();
+            displayArticles();
+            updateStats();
+            
+            console.log('✅ Artikel GitHub ditambahkan:');
+            console.log('📄 Judul:', newArticle.title);
+            console.log('🔗 File:', newArticle.githubUrl);
+            console.log('🌐 URL:', `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${newArticle.githubUrl}`);
+            
+            return newArticle.id;
+        }
+
+        // Tampilkan panduan di console
+        function showConsoleGuide() {
+            console.log('🚀 =================== PANDUAN ADMIN ===================');
+            console.log('Repository GitHub:', GITHUB_REPO);
+            console.log('');
+            console.log('1. Tambah artikel dari GitHub:');
+            console.log(`   addGitHubArticle({
+                title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini Bangkit Kembali",
+                category: "Keuangan",
+                image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
+                githubUrl: "artikel-pertama.html",
+                author: "Kang L"
+            })`);
+            console.log('');
+            console.log('2. Test koneksi GitHub: testGitHubConnection()');
+            console.log('3. Tambah artikel contoh: addSampleArticle()');
+            console.log('4. Hapus semua: clearAllArticles()');
+            console.log('5. Lihat semua artikel: console.log(articles)');
+            console.log('=======================================================');
+        }
+
+        // Test artikel spesifik Anda
+        function testYourArticle() {
+            console.log('🧪 Testing artikel Anda...');
+            
+            const testResult = addGitHubArticle({
+                title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini Bangkit Kembali",
+                category: "Keuangan",
+                image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
+                githubUrl: "artikel-pertama.html",
+                author: "Kang L"
             });
-            console.log('Total:', articles.length, 'artikel');
+            
+            console.log('✅ Artikel ditambahkan dengan ID:', testResult);
+            console.log('📁 Buka artikel untuk test...');
+            
+            // Buka artikel
+            setTimeout(() => {
+                openArticle(testResult);
+            }, 500);
         }
 
-        console.log('=== PANDUAN ADMIN ===');
-        console.log('1. Tambah artikel: addNewArticle({title: "Judul", category: "ekonomi", content: "<p>isi</p>"})');
-        console.log('2. Hapus artikel: deleteArticle(id_artikel)');
-        console.log('3. List artikel: listArticles()');
-    // =================== FUNGSI UNTUK GITHUB ===================
-
-// Fungsi untuk menambah artikel dari GitHub
-function addArticleWithExternalSource(articleData) {
-    if (!articleData.title || !articleData.category || !articleData.externalUrl) {
-        console.error('Data artikel tidak lengkap!');
-        console.log('Format yang benar:');
-        console.log(`addArticleWithExternalSource({
-            title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini KUD Asmara Tani Bangkit Kembali Di Tangan Kreatif Anak Muda Milenial",
-            category: "RAT", // rat, keuangan, bisnis, pendidikan, kegiatan
-            image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
-            externalUrl: "https://github.com/Kangeldzi/Koperasi-Asmara-Tani-/blob/fe9974516410d0cb485918c1e98547f1938779c4/artikel-1.html",
-            author: "Kang L"
-        })`);
-        return;
-    }
-    
-    const newArticle = {
-        id: Date.now(),
-        title: articleData.title,
-        category: articleData.category,
-        image: articleData.image || "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        externalUrl: articleData.externalUrl,
-        content: null, // Konten akan diambil dari externalUrl
-        date: new Date().toISOString().split('T')[0],
-        author: articleData.author || "Admin",
-        views: 0,
-        reactions: { ...defaultReactions },
-        comments: []
-    };
-    
-    articles.unshift(newArticle);
-    saveArticlesToStorage();
-    filterAndDisplayArticles();
-    updateStats();
-    
-    console.log('✅ Artikel dari GitHub berhasil ditambahkan!');
-    console.log('📄 Judul:', newArticle.title);
-    console.log('🔗 URL:', newArticle.externalUrl);
-    console.log('🆔 ID Artikel:', newArticle.id);
-    
-    // Tampilkan notifikasi
-    showNotification('Artikel dari GitHub berhasil ditambahkan!', 'success');
-}
-
-// Fungsi untuk membuka artikel dari GitHub
-async function openExternalArticle(articleId) {
-    const article = articles.find(a => a.id === articleId);
-    if (!article || !article.externalUrl) return;
-    
-    try {
-        // Tampilkan loading
-        document.getElementById('modal-title').textContent = "Memuat artikel...";
-        document.getElementById('modal-body-content').innerHTML = `
-            <div class="loading" style="padding: 100px;">
-                Memuat artikel dari GitHub...
-            </div>
-        `;
-        
-        // Tampilkan modal
-        document.getElementById('article-modal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        
-        currentArticleId = articleId;
-        
-        // Update views
-        article.views = (article.views || 0) + 1;
-        saveArticlesToStorage();
-        updateStats();
-        
-        // Ambil konten dari GitHub
-        const response = await fetch(article.externalUrl);
-        if (!response.ok) throw new Error('Gagal memuat dari GitHub');
-        
-        const htmlContent = await response.text();
-        
-        // Parse HTML
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlContent, 'text/html');
-        
-        // Ekstrak konten utama
-        let articleContent = '';
-        const contentSelectors = ['article', 'main', '.content', '.post-content', 'body'];
-        
-        for (const selector of contentSelectors) {
-            const element = doc.querySelector(selector);
-            if (element && element.innerHTML.length > 100) {
-                articleContent = element.innerHTML;
-                break;
-            }
-        }
-        
-        // Jika tidak ditemukan, gunakan body
-        if (!articleContent) {
-            articleContent = doc.body.innerHTML;
-        }
-        
-        // Tampilkan konten
-        const formattedDate = new Date(article.date).toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        const reactions = article.reactions || { ...defaultReactions };
-        const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
-        
-        document.getElementById('modal-title').textContent = article.title;
-        document.getElementById('modal-body-content').innerHTML = `
-            <img src="${article.image}" class="article-image" alt="${article.title}" 
-                 onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
-            
-            <div class="article-meta">
-                <div class="article-category" style="background: var(--accent-gradient);">
-                    <i class="fas fa-external-link-alt"></i> ${getCategoryName(article.category)} (GitHub)
-                </div>
-                <div class="article-date">
-                    <i class="far fa-calendar-alt"></i> ${formattedDate}
-                </div>
-            </div>
-            
-            <div class="article-content">
-                ${articleContent}
-            </div>
-            
-            <!-- REACTIONS -->
-            <div class="article-reactions">
-                <div class="reaction-options">
-                    <button class="reaction-btn" data-reaction="like" onclick="handleReaction('like')">
-                        <span class="reaction-emoji">❤️</span>
-                        <span class="reaction-count" id="like-count">${reactions.like}</span>
-                    </button>
-                    <button class="reaction-btn" data-reaction="laugh" onclick="handleReaction('laugh')">
-                        <span class="reaction-emoji">😆</span>
-                        <span class="reaction-count" id="laugh-count">${reactions.laugh}</span>
-                    </button>
-                    <button class="reaction-btn" data-reaction="wow" onclick="handleReaction('wow')">
-                        <span class="reaction-emoji">😮</span>
-                        <span class="reaction-count" id="wow-count">${reactions.wow}</span>
-                    </button>
-                    <button class="reaction-btn" data-reaction="sad" onclick="handleReaction('sad')">
-                        <span class="reaction-emoji">😢</span>
-                        <span class="reaction-count" id="sad-count">${reactions.sad}</span>
-                    </button>
-                    <button class="reaction-btn" data-reaction="angry" onclick="handleReaction('angry')">
-                        <span class="reaction-emoji">😡</span>
-                        <span class="reaction-count" id="angry-count">${reactions.angry}</span>
-                    </button>
-                </div>
-                <div class="reaction-count">
-                    <i class="fas fa-users"></i>
-                    <span id="total-reactions">${totalReactions}</span> Reactions
-                </div>
-            </div>
-            
-            <!-- KOMENTAR -->
-            <div class="comments-section">
-                <h3><i class="fas fa-comments"></i> Komentar (<span id="comments-count">${article.comments ? article.comments.length : 0}</span>)</h3>
-                
-                <!-- INPUT KOMENTAR -->
-                <div class="comment-input-area">
-                    <div class="comment-input-wrapper">
-                        <div class="user-avatar" id="current-user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="comment-input-container">
-                            <textarea class="comment-input" id="comment-input" 
-                                      placeholder="Tulis komentar Anda..." 
-                                      rows="1"></textarea>
-                            <div class="comment-input-actions">
-                                <button class="emoji-toggle" onclick="toggleEmojiPicker()">
-                                    <i class="far fa-smile"></i>
-                                </button>
-                                <button class="send-comment" onclick="submitComment()">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                            <div class="emoji-picker-container" id="emoji-picker">
-                                <emoji-picker></emoji-picker>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="reply-actions" id="reply-actions" style="display: none;">
-                        <button class="cancel-reply-btn" onclick="cancelReply()">
-                            <i class="fas fa-times"></i> Batal balas
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- DAFTAR KOMENTAR -->
-                <div class="comments-list" id="comments-list">
-                    ${article.comments && article.comments.length > 0 ? 
-                        displayComments(article.comments) : 
-                        '<div style="text-align: center; padding: 30px; color: var(--text-light);">Belum ada komentar. Jadilah yang pertama berkomentar!</div>'
-                    }
-                </div>
-            </div>
-        `;
-        
-        // Setup event listeners
-        setupModalEventListeners();
-        
-    } catch (error) {
-        console.error('Error loading from GitHub:', error);
-        document.getElementById('modal-body-content').innerHTML = `
-            <div style="text-align: center; padding: 100px; color: var(--text-danger);">
-                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                <h3>Gagal Memuat Artikel dari GitHub</h3>
-                <p>${article.title}</p>
-                <p><small>URL: ${article.externalUrl}</small></p>
-                <button onclick="openArticle(${articleId})" style="margin-top: 20px; padding: 10px 20px; background: var(--primary-gradient); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                    Coba Buka Kembali
-                </button>
-            </div>
-        `;
-    }
-}
-
-// Fungsi untuk menampilkan notifikasi
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 12px 20px;
-        background: ${type === 'success' ? '#2A9D8F' : '#E76F51'};
-        color: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        z-index: 9999;
-        animation: slideIn 0.3s ease;
-        font-weight: 500;
-        max-width: 300px;
-        word-wrap: break-word;
-    `;
-    
-    notification.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// Modifikasi fungsi openArticle untuk handle GitHub
-const originalOpenArticle = openArticle;
-openArticle = function(articleId) {
-    const article = articles.find(a => a.id === articleId);
-    if (article && article.externalUrl) {
-        openExternalArticle(articleId);
-    } else {
-        originalOpenArticle(articleId);
-    }
-};
-
-// Modifikasi fungsi displayArticles untuk menampilkan badge GitHub
-const originalDisplayArticles = displayArticles;
-displayArticles = function() {
-    const container = document.getElementById('news-container');
-    const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
-    const endIndex = startIndex + ARTICLES_PER_PAGE;
-    const currentArticles = filteredArticles.slice(startIndex, endIndex);
-    
-    container.innerHTML = '';
-    
-    if (currentArticles.length === 0) {
-        container.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-light);">
-                <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                <h3>Tidak ada artikel yang ditemukan</h3>
-                <p>Coba gunakan kata kunci lain atau pilih kategori berbeda</p>
-            </div>
-        `;
-        return;
-    }
-    
-    currentArticles.forEach(article => {
-        const date = new Date(article.date);
-        const formattedDate = date.toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        
-        const shortContent = article.content ? 
-            article.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 
-            (article.externalUrl ? "📄 Artikel dari sumber eksternal. Klik untuk membaca..." : "Artikel ini tidak memiliki konten preview.");
-        
-        // Badge untuk artikel GitHub
-        const githubBadge = article.externalUrl ? 
-            `<div class="category-badge" style="background: var(--accent-gradient); top: 50px;">
-                <i class="fas fa-external-link-alt"></i> GitHub
-            </div>` : '';
-        
-        container.innerHTML += `
-            <div class="news-card" onclick="openArticle(${article.id})">
-                ${githubBadge}
-                <div class="category-badge">${getCategoryName(article.category)}</div>
-                <div class="card-image">
-                    <img src="${article.image}" alt="${article.title}" onerror="this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
-                </div>
-                <div class="card-content">
-                    <h3>${article.title}</h3>
-                    <p>${shortContent}</p>
-                    <div class="card-meta">
-                        <div class="card-date">
-                            <i class="far fa-calendar-alt"></i> ${formattedDate}
-                        </div>
-                        <div class="read-more">
-                            Baca Selengkapnya <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-};
-
-// Update console guide
-console.log('=== PANDUAN ADMIN DENGAN GITHUB ===');
-console.log('1. Tambah artikel lokal: addNewArticle({title: "Judul", category: "kategori", content: "<p>isi</p>"})');
-console.log('2. Tambah dari GitHub: addArticleWithExternalSource({title: "Judul", category: "kategori", externalUrl: "https://raw.githubusercontent.com/username/repo/main/file.html"})');
-console.log('3. Hapus artikel: deleteArticle(id_artikel)');
-console.log('4. List artikel: listArticles()');
-console.log('');
-console.log('📌 CONTOH GITHUB:');
-console.log(`addArticleWithExternalSource({
-    title: "Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini KUD Asmara Tani Bangkit Kembali Di Tangan Kreatif Anak Muda Milenial",
-    category: "RAT",
-    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
-    externalUrl: ":artikel-1.html",
-    author: "Kang L"
-})`);
+        // Jalankan test otomatis
+        setTimeout(() => {
+            testGitHubConnection();
+            console.log('💡 Tips: Ketik "testYourArticle()" di console untuk test artikel Anda');
+        }, 2000);
     </script>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
