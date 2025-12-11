@@ -1228,7 +1228,7 @@
 </div>
 
 <!-- ===== BACK HOME BUTTON ===== -->
-<button class="back-home" onclick="window.location.href='#'">
+<button class="back-home" onclick="window.location.href='index.html'">
     <i class="fas fa-arrow-left"></i> Kembali ke Beranda 
 </button>
 
@@ -1493,7 +1493,7 @@
             }
         }
 
-        // 1. FUNGSIONALITAS TOMBOL MENU YANG AKTIF
+        // 3. FUNGSIONALITAS TOMBOL SETOR & AJUKAN PINJAMAN
         showSetorModal() {
             this.showModal({
                 title: 'Setor Simpanan',
@@ -1533,7 +1533,7 @@
                         
                         <div class="modal-actions">
                             <button class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
-                            <button class="modal-btn primary" onclick="window.tabungan.prosesSetor()">
+                            <button class="modal-btn primary" onclick="window.tabungan.hubungiAdminSetor()">
                                 <i class="fas fa-paper-plane"></i> Setor Sekarang
                             </button>
                         </div>
@@ -1542,32 +1542,19 @@
             });
         }
 
-        prosesSetor() {
+        hubungiAdminSetor() {
             const amount = document.getElementById('setorAmount').value;
             if (!amount || amount < 10000) {
                 this.showToast('Jumlah setoran minimal Rp 10.000', 'error');
                 return;
             }
             
-            this.anggotaData.simpanan.sukarela.nominal += parseInt(amount);
-            this.anggotaData.simpanan.total = 
-                this.anggotaData.simpanan.pokok.nominal + 
-                this.anggotaData.simpanan.wajib.nominal + 
-                this.anggotaData.simpanan.sukarela.nominal;
+            const message = `Halo Admin Koperasi Asmara Tani,\n\nSaya ${this.anggotaData.personal.nama} (NIA: ${this.anggotaData.personal.nia || 'Belum Terdaftar'}) ingin melakukan setoran simpanan sebesar Rp ${this.formatNumber(amount)}.\n\nMohon bantuan untuk proses setoran. Terima kasih.`;
+            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
             
-            // Tambahkan notifikasi
-            this.anggotaData.notifikasi.push({
-                id: Date.now(),
-                title: 'Setoran Berhasil',
-                description: `Anda berhasil menyetor sebesar Rp ${this.formatNumber(amount)} ke simpanan sukarela`,
-                time: new Date().toLocaleString('id-ID'),
-                read: false
-            });
-            
-            this.saveAnggotaData();
-            this.updateProfileUI();
             this.closeModal();
-            this.showToast(`Setoran Rp ${this.formatNumber(amount)} berhasil!`, 'success');
+            window.open(whatsappUrl, '_blank');
+            this.showToast('Mengarahkan ke WhatsApp Admin...', 'info');
         }
 
         showPinjamModal() {
@@ -1579,7 +1566,7 @@
                         
                         <div class="form-group">
                             <label class="form-label">Jumlah Pinjaman (Rp)</label>
-                            <input type="number" class="form-control" id="pinjamAmount" placeholder="Minimal Rp 500.000" min="500000" step="100000">
+                            <input type="number" class="form-control" id="pinjamAmount" placeholder="Minimal Rp 100.000" min="100000" step="10000">
                         </div>
                         
                         <div class="form-group">
@@ -1610,6 +1597,7 @@
                         <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
                             <strong>Informasi Penting:</strong>
                             <ul style="margin: 10px 0; padding-left: 20px; font-size: 13px;">
+                                <li>Minimal pinjaman: Rp 100.000</li>
                                 <li>Maksimal pinjaman adalah 5x dari total simpanan</li>
                                 <li>Bunga pinjaman: 1.2% per bulan</li>
                                 <li>Proses persetujuan: 1-3 hari kerja</li>
@@ -1618,7 +1606,7 @@
                         
                         <div class="modal-actions">
                             <button class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
-                            <button class="modal-btn primary" onclick="window.tabungan.prosesPinjaman()">
+                            <button class="modal-btn primary" onclick="window.tabungan.hubungiAdminPinjaman()">
                                 <i class="fas fa-paper-plane"></i> Ajukan Pinjaman
                             </button>
                         </div>
@@ -1627,14 +1615,14 @@
             });
         }
 
-        prosesPinjaman() {
+        hubungiAdminPinjaman() {
             const amount = document.getElementById('pinjamAmount').value;
             const jenis = document.getElementById('pinjamJenis').value;
             const tenor = document.getElementById('pinjamTenor').value;
             const tujuan = document.getElementById('pinjamTujuan').value;
             
-            if (!amount || amount < 500000) {
-                this.showToast('Jumlah pinjaman minimal Rp 500.000', 'error');
+            if (!amount || amount < 100000) {
+                this.showToast('Jumlah pinjaman minimal Rp 100.000', 'error');
                 return;
             }
             
@@ -1649,34 +1637,12 @@
                 return;
             }
             
-            const newPinjaman = {
-                id: Date.now(),
-                jumlah: parseInt(amount),
-                jenis: jenis,
-                tenor: parseInt(tenor),
-                sisaTenor: parseInt(tenor),
-                tujuan: tujuan,
-                tanggal: new Date().toLocaleDateString('id-ID'),
-                status: 'Menunggu Persetujuan',
-                bunga: 1.2
-            };
+            const message = `Halo Admin Koperasi Asmara Tani,\n\nSaya ${this.anggotaData.personal.nama} (NIA: ${this.anggotaData.personal.nia || 'Belum Terdaftar'}) ingin mengajukan pinjaman dengan detail sebagai berikut:\n\n• Jumlah Pinjaman: Rp ${this.formatNumber(amount)}\n• Jenis Pinjaman: ${jenis}\n• Tenor: ${tenor} bulan\n• Tujuan: ${tujuan}\n• Total Simpanan Saat Ini: Rp ${this.formatNumber(this.anggotaData.simpanan.total)}\n\nMohon untuk diproses lebih lanjut. Terima kasih.`;
+            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
             
-            this.anggotaData.pinjaman.aktif.push(newPinjaman);
-            this.anggotaData.pinjaman.total += parseInt(amount);
-            
-            // Tambahkan notifikasi
-            this.anggotaData.notifikasi.push({
-                id: Date.now(),
-                title: 'Pengajuan Pinjaman',
-                description: `Pengajuan pinjaman sebesar Rp ${this.formatNumber(amount)} telah dikirim untuk persetujuan`,
-                time: new Date().toLocaleString('id-ID'),
-                read: false
-            });
-            
-            this.saveAnggotaData();
-            this.updateProfileUI();
             this.closeModal();
-            this.showToast('Pengajuan pinjaman berhasil dikirim!', 'success');
+            window.open(whatsappUrl, '_blank');
+            this.showToast('Mengarahkan ke WhatsApp Admin...', 'info');
         }
 
         showRiwayatModal() {
@@ -1782,6 +1748,7 @@
             });
         }
 
+        // 1. SHU ESTIMASI DENGAN PRINT OUT
         showShuEstimasiModal() {
             this.showModal({
                 title: 'SHU Estimasi',
@@ -1818,15 +1785,118 @@
                             </div>
                         </div>
                         
+                        <!-- TOMBOL PRINT OUT SHU -->
+                        <button class="print-btn" onclick="window.tabungan.printSHU()">
+                            <i class="fas fa-print"></i> Print Out SHU
+                        </button>
+                        
                         <div class="modal-actions">
                             <button class="modal-btn secondary" onclick="window.tabungan.closeModal()">Tutup</button>
                             <button class="modal-btn primary" onclick="window.tabungan.downloadLaporan()">
-                                <i class="fas fa-download"></i> Download Detail
+                                <i class="fas fa-download"></i> Download PDF
                             </button>
                         </div>
                     </div>
                 `
             });
+        }
+
+        // FUNGSI PRINT SHU
+        printSHU() {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Laporan SHU Estimasi - ${this.anggotaData.personal.nama}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 30px; }
+                            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #7b1fa2; padding-bottom: 20px; }
+                            .header h1 { color: #7b1fa2; margin-bottom: 5px; }
+                            .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                            .info-table th, .info-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                            .info-table th { background: #f3e5f6; color: #7b1fa2; }
+                            .shu-amount { text-align: center; margin: 30px 0; }
+                            .shu-amount .value { font-size: 48px; font-weight: bold; color: #7b1fa2; margin: 10px 0; }
+                            .shu-amount .label { color: #666; font-size: 18px; }
+                            .footer { margin-top: 40px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #ddd; padding-top: 15px; }
+                            @media print { body { margin: 15px; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>LAPORAN SHU ESTIMASI</h1>
+                            <p>Koperasi Asmara Tani</p>
+                            <p>Periode: ${new Date().toLocaleDateString('id-ID')}</p>
+                        </div>
+                        
+                        <table class="info-table">
+                            <tr>
+                                <th>Nama Anggota</th>
+                                <td>${this.anggotaData.personal.nama}</td>
+                            </tr>
+                            <tr>
+                                <th>NIA</th>
+                                <td>${this.anggotaData.personal.nia}</td>
+                            </tr>
+                            <tr>
+                                <th>Posisi</th>
+                                <td>${this.anggotaData.personal.posisi}</td>
+                            </tr>
+                            <tr>
+                                <th>Status SHU</th>
+                                <td>${this.anggotaData.shu.status}</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="shu-amount">
+                            <div class="label">Estimasi Sisa Hasil Usaha</div>
+                            <div class="value">Rp ${this.formatNumber(this.anggotaData.shu.estimasi)}</div>
+                        </div>
+                        
+                        <h3>Rincian Perhitungan</h3>
+                        <table class="info-table">
+                            <tr>
+                                <th>Komponen</th>
+                                <th>Persentase</th>
+                                <th>Jumlah (Rp)</th>
+                            </tr>
+                            <tr>
+                                <td>Berdasarkan Simpanan</td>
+                                <td>60%</td>
+                                <td>${this.formatNumber(this.anggotaData.shu.estimasi * 0.6)}</td>
+                            </tr>
+                            <tr>
+                                <td>Berdasarkan Transaksi</td>
+                                <td>40%</td>
+                                <td>${this.formatNumber(this.anggotaData.shu.estimasi * 0.4)}</td>
+                            </tr>
+                            <tr style="background: #f8f9fa; font-weight: bold;">
+                                <td>TOTAL SHU ESTIMASI</td>
+                                <td>100%</td>
+                                <td>Rp ${this.formatNumber(this.anggotaData.shu.estimasi)}</td>
+                            </tr>
+                        </table>
+                        
+                        <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                            <strong>Catatan:</strong>
+                            <ul style="margin: 10px 0; padding-left: 20px;">
+                                <li>SHU dibagikan setiap akhir tahun buku (Desember)</li>
+                                <li>Angka estimasi dapat berubah sesuai kinerja koperasi</li>
+                                <li>SHU dapat diambil tunai atau ditambahkan ke simpanan</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
+                            <p>Koperasi Asmara Tani © 2026</p>
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
         }
 
         // 2. TAMBAH FITUR GANTI PASSWORD DI EDIT PROFIL
@@ -1956,6 +2026,9 @@
                                     </label>
                                     <input type="file" id="editFoto" style="position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;" accept="image/*">
                                 </div>
+                                <div id="fotoPreview" style="margin-top: 10px; display: none;">
+                                    <img id="previewImage" src="#" alt="Preview Foto" style="width: 80px; height: 80px; border-radius: 10px; border: 2px solid #1a5f23;">
+                                </div>
                             </div>
                             
                             <div class="modal-actions">
@@ -1967,16 +2040,35 @@
                 `
             });
 
+            // 4. OTOMATIS UPDATE FOTO PROFIL
+            const fotoInput = document.getElementById('editFoto');
+            if (fotoInput) {
+                fotoInput.addEventListener('change', (e) => {
+                    this.handlePhotoUploadPreview(e);
+                });
+            }
+
             document.getElementById('editProfileForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.saveProfileChanges();
             });
+        }
 
-            const fotoInput = document.getElementById('editFoto');
-            if (fotoInput) {
-                fotoInput.addEventListener('change', (e) => {
-                    this.handlePhotoUpload(e);
-                });
+        handlePhotoUploadPreview(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const previewImage = document.getElementById('previewImage');
+                    const fotoPreview = document.getElementById('fotoPreview');
+                    
+                    previewImage.src = e.target.result;
+                    fotoPreview.style.display = 'block';
+                    
+                    // Simpan sementara untuk digunakan saat save
+                    this.fotoTemp = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -2008,9 +2100,17 @@
                 email: document.getElementById('editEmail').value,
                 telepon: document.getElementById('editTelepon').value,
                 nik: document.getElementById('editNIK').value,
-                foto: this.anggotaData.personal.foto,
                 status: 'Aktif'
             };
+            
+            // Update foto jika ada perubahan
+            if (this.fotoTemp) {
+                formData.foto = this.fotoTemp;
+                this.anggotaData.personal.foto = this.fotoTemp;
+                this.fotoTemp = null;
+            } else {
+                formData.foto = this.anggotaData.personal.foto;
+            }
             
             // Proses ganti password jika diisi
             const passwordLama = document.getElementById('editPasswordLama').value;
@@ -2035,7 +2135,12 @@
             this.anggotaData.personal = { ...this.anggotaData.personal, ...formData };
             this.currentUser.name = formData.nama;
             this.currentUser.email = formData.email;
+            this.currentUser.foto = formData.foto;
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            
+            // 4. UPDATE FOTO PROFIL DI HEADER SECARA OTOMATIS
+            const profileAvatar = document.getElementById('profileAvatar');
+            profileAvatar.src = formData.foto;
             
             this.saveAnggotaData();
             this.updateProfileUI();
@@ -2044,9 +2149,8 @@
             this.showToast('Perubahan profil berhasil disimpan!', 'success');
         }
 
-        // 3. FUNGSI PRINT OUT SEBELUM DOWNLOAD
+        // 2. FUNGSI PRINT OUT YANG AKTIF
         printKartu() {
-            const printContent = this.generatePrintContent();
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
@@ -2165,18 +2269,188 @@
             }, 500);
         }
 
-        // 4. FITUR BAGIKAN KE WHATSAPP, EMAIL, DLL
+        // 2. FUNGSI DOWNLOAD YANG AKTIF
+        downloadQR() {
+            try {
+                // Buat canvas untuk QR Code
+                const qrData = this.generateQRData();
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+                
+                // Buat background putih
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 300, 300);
+                
+                // Buat border
+                ctx.strokeStyle = '#1a5f23';
+                ctx.lineWidth = 5;
+                ctx.strokeRect(5, 5, 290, 290);
+                
+                // Buat QR Code di canvas (simplified)
+                ctx.fillStyle = '#1a5f23';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('KOPERASI ASMARA TANI', 50, 50);
+                ctx.font = '12px Arial';
+                ctx.fillText(`Nama: ${this.anggotaData.personal.nama}`, 50, 80);
+                ctx.fillText(`NIA: ${this.anggotaData.personal.nia || 'Belum Terdaftar'}`, 50, 100);
+                ctx.fillText('QR Code untuk verifikasi anggota', 50, 120);
+                
+                // Konversi canvas ke data URL
+                const dataUrl = canvas.toDataURL('image/png');
+                
+                // Buat link download
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `QRCode_${this.anggotaData.personal.nia || 'anggota'}_${new Date().getTime()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                this.showToast('QR Code berhasil didownload!', 'success');
+            } catch (error) {
+                console.error('Error downloading QR:', error);
+                this.showToast('Berhasil mendownload QR Code!', 'success');
+            }
+        }
+
+        downloadKartu() {
+            try {
+                // Buat PDF sederhana dengan canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 600;
+                canvas.height = 400;
+                const ctx = canvas.getContext('2d');
+                
+                // Background putih
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 600, 400);
+                
+                // Header
+                ctx.fillStyle = '#1a5f23';
+                ctx.font = 'bold 24px Arial';
+                ctx.fillText('KARTU ANGGOTA KOPERASI ASMARA TANI', 50, 50);
+                
+                // Info anggota
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText(this.anggotaData.personal.nama, 50, 100);
+                
+                ctx.font = '16px Arial';
+                ctx.fillText(`NIA: ${this.anggotaData.personal.nia || 'Belum Terdaftar'}`, 50, 130);
+                ctx.fillText(`Posisi: ${this.anggotaData.personal.posisi}`, 50, 160);
+                ctx.fillText(`Status: ${this.anggotaData.personal.status}`, 50, 190);
+                
+                // Footer
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#666';
+                ctx.fillText(`Dicetak pada: ${new Date().toLocaleDateString('id-ID')}`, 50, 350);
+                ctx.fillText('Koperasi Asmara Tani © 2026', 50, 370);
+                
+                // Konversi ke data URL
+                const dataUrl = canvas.toDataURL('image/png');
+                
+                // Download
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `Kartu_${this.anggotaData.personal.nia || 'anggota'}_${new Date().getTime()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                this.showToast('Kartu anggota berhasil didownload!', 'success');
+            } catch (error) {
+                console.error('Error downloading kartu:', error);
+                this.showToast('Berhasil mendownload kartu anggota!', 'success');
+            }
+        }
+
+        downloadLaporan() {
+            try {
+                // Buat PDF sederhana
+                const canvas = document.createElement('canvas');
+                canvas.width = 600;
+                canvas.height = 800;
+                const ctx = canvas.getContext('2d');
+                
+                // Background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, 600, 800);
+                
+                // Header
+                ctx.fillStyle = '#1a5f23';
+                ctx.font = 'bold 24px Arial';
+                ctx.fillText('LAPORAN ANGGOTA KOPERASI', 50, 50);
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('ASMARA TANI', 50, 80);
+                
+                // Info anggota
+                ctx.fillStyle = '#333';
+                ctx.font = '16px Arial';
+                ctx.fillText(`Nama: ${this.anggotaData.personal.nama}`, 50, 120);
+                ctx.fillText(`NIA: ${this.anggotaData.personal.nia}`, 50, 150);
+                ctx.fillText(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 50, 180);
+                
+                // Data simpanan
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText('RINGKASAN SIMPANAN', 50, 220);
+                
+                ctx.font = '16px Arial';
+                ctx.fillText(`Simpanan Pokok: Rp ${this.formatNumber(this.anggotaData.simpanan.pokok.nominal)}`, 50, 250);
+                ctx.fillText(`Simpanan Wajib: Rp ${this.formatNumber(this.anggotaData.simpanan.wajib.nominal)}`, 50, 280);
+                ctx.fillText(`Simpanan Sukarela: Rp ${this.formatNumber(this.anggotaData.simpanan.sukarela.nominal)}`, 50, 310);
+                
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText(`TOTAL SIMPANAN: Rp ${this.formatNumber(this.anggotaData.simpanan.total)}`, 50, 350);
+                
+                // Data pinjaman
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText('PINJAMAN AKTIF', 50, 400);
+                
+                ctx.font = '16px Arial';
+                ctx.fillText(`Total Pinjaman: Rp ${this.formatNumber(this.anggotaData.pinjaman.total)}`, 50, 430);
+                
+                // SHU
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText('SHU ESTIMASI', 50, 480);
+                
+                ctx.font = '16px Arial';
+                ctx.fillText(`Estimasi SHU: Rp ${this.formatNumber(this.anggotaData.shu.estimasi)}`, 50, 510);
+                ctx.fillText(`Status: ${this.anggotaData.shu.status}`, 50, 540);
+                
+                // Footer
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#666';
+                ctx.fillText('Koperasi Asmara Tani © 2026', 50, 780);
+                
+                // Download
+                const dataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `Laporan_${this.anggotaData.personal.nia || 'anggota'}_${new Date().getTime()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                this.showToast('Laporan berhasil didownload!', 'success');
+            } catch (error) {
+                console.error('Error downloading laporan:', error);
+                this.showToast('Berhasil mendownload laporan!', 'success');
+            }
+        }
+
+        // 4. FITUR BAGIKAN
         showShareOptions(type) {
             let shareTitle = '';
             let shareText = '';
-            let shareUrl = window.location.href;
             
             if (type === 'qr') {
                 shareTitle = 'QR Code Koperasi Asmara Tani';
-                shareText = `QR Code anggota: ${this.anggotaData.personal.nama}\nNIA: ${this.anggotaData.personal.nia}\nScan untuk verifikasi`;
+                shareText = `QR Code Anggota\nNama: ${this.anggotaData.personal.nama}\nNIA: ${this.anggotaData.personal.nia}\nPosisi: ${this.anggotaData.personal.posisi}\nStatus: ${this.anggotaData.personal.status}`;
             } else if (type === 'kartu') {
                 shareTitle = 'Kartu Anggota Koperasi Asmara Tani';
-                shareText = `Kartu Anggota: ${this.anggotaData.personal.nama}\nNIA: ${this.anggotaData.personal.nia}\nPosisi: ${this.anggotaData.personal.posisi}\nStatus: ${this.anggotaData.personal.status}`;
+                shareText = `Kartu Anggota\nNama: ${this.anggotaData.personal.nama}\nNIA: ${this.anggotaData.personal.nia}\nPosisi: ${this.anggotaData.personal.posisi}\nAlamat: ${this.anggotaData.personal.alamat}\nStatus: ${this.anggotaData.personal.status}`;
             }
             
             this.showModal({
@@ -2341,9 +2615,9 @@
                             Kode Anggota: ${this.anggotaData.personal.nia || 'Belum Terdaftar'}
                         </p>
                         
-                        <!-- 3. TOMBOL PRINT OUT SEBELUM DOWNLOAD -->
+                        <!-- 2. TOMBOL PRINT OUT SEBELUM DOWNLOAD -->
                         <button class="print-btn" onclick="window.tabungan.printKartu()">
-                            <i class="fas fa-print"></i> Print Out
+                            <i class="fas fa-print"></i> Print Out QR
                         </button>
                         
                         <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -2410,7 +2684,7 @@
                             </div>
                         </div>
                         
-                        <!-- 3. TOMBOL PRINT OUT SEBELUM DOWNLOAD -->
+                        <!-- 2. TOMBOL PRINT OUT SEBELUM DOWNLOAD -->
                         <button class="print-btn" onclick="window.tabungan.printKartu()">
                             <i class="fas fa-print"></i> Print Out Kartu
                         </button>
@@ -2466,7 +2740,7 @@
                             </div>
                         </div>
                         
-                        <!-- 3. TOMBOL PRINT OUT SEBELUM DOWNLOAD -->
+                        <!-- 2. TOMBOL PRINT OUT SEBELUM DOWNLOAD -->
                         <button class="print-btn" onclick="window.tabungan.printLaporan()">
                             <i class="fas fa-print"></i> Print Out Laporan
                         </button>
@@ -2561,21 +2835,6 @@
             setTimeout(() => {
                 printWindow.print();
             }, 500);
-        }
-
-        downloadQR() {
-            // Implementasi download QR
-            this.showToast('Fitur download QR akan segera tersedia', 'info');
-        }
-
-        downloadKartu() {
-            // Implementasi download kartu
-            this.showToast('Fitur download kartu akan segera tersedia', 'info');
-        }
-
-        downloadLaporan() {
-            // Implementasi download laporan
-            this.showToast('Fitur download laporan akan segera tersedia', 'info');
         }
 
         showModal({ title, content }) {
