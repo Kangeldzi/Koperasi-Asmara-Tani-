@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -39,25 +39,56 @@
         }
 
         body {
-            background: var(--bg-light);
+            background: linear-gradient(135deg, #f8fff8 0%, #f0f7f0 50%, #e8f5e9 100%);
             color: var(--text-primary);
-            padding-bottom: 90px;
+            padding-bottom: 30px;
             min-height: 100vh;
+            position: relative;
+        }
+
+        /* Background pattern subtle */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(26, 95, 35, 0.03) 0%, transparent 55%),
+                radial-gradient(circle at 75% 75%, rgba(255, 152, 0, 0.02) 0%, transparent 55%);
+            z-index: -1;
         }
 
         /* ===== HEADER PROFILE ===== */
         .profile-container {
             padding: 20px;
-            background: var(--card-bg);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border-radius: 0 0 30px 30px;
-            box-shadow: var(--shadow-light);
+            box-shadow: var(--shadow-medium);
             margin-bottom: 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(30deg);
         }
 
         .profile-header {
             display: flex;
             align-items: center;
             gap: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .avatar {
@@ -65,7 +96,8 @@
             height: 72px;
             border-radius: 20px;
             overflow: hidden;
-            border: 3px solid var(--primary);
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .avatar img {
@@ -79,19 +111,21 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            color: white;
         }
 
         .badge {
-            background: var(--accent-blue);
-            color: white;
+            background: white;
+            color: var(--primary);
             font-size: 12px;
             padding: 2px 6px;
             border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .username {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: rgba(255, 255, 255, 0.9);
             margin-top: 2px;
         }
 
@@ -100,6 +134,8 @@
             display: flex;
             gap: 10px;
             margin-top: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .btn {
@@ -118,25 +154,28 @@
         }
 
         .btn.qr {
-            background: #f1f2f6;
+            background: rgba(255, 255, 255, 0.9);
             color: var(--text-primary);
+            backdrop-filter: blur(10px);
         }
 
         .btn.qr:hover {
-            background: #e4e6eb;
+            background: white;
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .btn.pro {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--secondary), #ff8a00);
             color: white;
             font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         .btn.pro:hover {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            background: linear-gradient(135deg, #ffb347, #ffcc80);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(26, 95, 35, 0.2);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
         }
 
         /* ===== CARD PLAN ===== */
@@ -152,6 +191,7 @@
             box-shadow: var(--shadow-medium);
             position: relative;
             overflow: hidden;
+            border: none;
         }
 
         .plan-card::before {
@@ -169,6 +209,8 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .plan-icon {
@@ -182,6 +224,7 @@
             color: #333;
             font-weight: bold;
             font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .plan-text h3 {
@@ -202,6 +245,7 @@
             border-radius: 20px;
             padding: 5px 0;
             box-shadow: var(--shadow-light);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .menu-item {
@@ -221,7 +265,7 @@
         }
 
         .menu-item:hover {
-            background: rgba(26, 95, 35, 0.03);
+            background: linear-gradient(90deg, rgba(26, 95, 35, 0.03), rgba(26, 95, 35, 0.08));
             padding-left: 20px;
         }
 
@@ -235,12 +279,13 @@
             width: 40px;
             height: 40px;
             border-radius: 12px;
-            background: #eef2f7;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
-            color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(26, 95, 35, 0.2);
         }
 
         .menu-text {
@@ -262,55 +307,99 @@
             font-weight: 600;
         }
 
-        /* ===== BOTTOM NAV ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 12px 0 20px;
-            border-radius: 25px 25px 0 0;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-
-        .nav-item {
+        /* ===== FOOTER ===== */
+        .footer {
             text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 20px 15px;
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             position: relative;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        .nav-item.active {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .nav-item.active::after {
+        .footer::before {
             content: '';
             position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background: var(--primary);
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
         }
 
-        .nav-icon {
+        .footer p {
+            margin: 0;
+            padding: 10px 0;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* ===== STATS CARD STYLES ===== */
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-light);
+            margin: 20px 15px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #f8f9fa, #f1f3f4);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
             font-size: 22px;
+            font-weight: bold;
+            color: var(--primary);
             margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
         }
 
         /* ===== MODAL STYLES ===== */
@@ -345,6 +434,7 @@
             overflow-y: auto;
             transform: translateY(20px);
             transition: transform 0.3s ease;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
         }
 
         .modal-overlay.active .modal-content {
@@ -357,27 +447,35 @@
             align-items: center;
             padding: 20px;
             border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 20px 20px 0 0;
         }
 
         .modal-header h3 {
             font-size: 18px;
-            color: var(--text-primary);
+            color: white;
         }
 
         .modal-close {
-            background: none;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             font-size: 20px;
-            color: var(--text-muted);
+            color: white;
             cursor: pointer;
             padding: 5px;
             border-radius: 6px;
             transition: all 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-close:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
         }
 
         .modal-body {
@@ -486,53 +584,6 @@
 
         .toast.info {
             border-left: 4px solid var(--accent-blue);
-        }
-
-        /* ===== STATS CARD STYLES ===== */
-        .stats-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: var(--shadow-light);
-            margin: 20px 15px;
-        }
-
-        .stats-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .stats-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .stat-item {
-            background: var(--bg-light);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: var(--text-secondary);
         }
 
         /* ===== KARTU DIGITAL STYLES ===== */
@@ -843,12 +894,9 @@
                 grid-template-columns: 1fr;
             }
             
-            .bottom-nav {
-                padding: 10px 0 15px;
-            }
-            
-            .nav-icon {
-                font-size: 20px;
+            .footer {
+                font-size: 13px;
+                padding: 15px;
             }
         }
 
@@ -857,6 +905,7 @@
                 max-width: 400px;
                 margin: 0 auto;
                 box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+                border-radius: 0;
             }
         }
     </style>
@@ -985,28 +1034,9 @@
     </div>
 </div>
 
-<!-- ===== BOTTOM NAV ===== -->
-<div class="bottom-nav">
-    <div class="nav-item" data-page="home">
-        <div class="nav-icon">🏠</div>
-        Home
-    </div>
-    <div class="nav-item" data-page="activity">
-        <div class="nav-icon">📊</div>
-        Aktivitas
-    </div>
-    <div class="nav-item" data-page="notifications">
-        <div class="nav-icon">🔔</div>
-        Notifikasi
-    </div>
-    <div class="nav-item" data-page="explore">
-        <div class="nav-icon">🧭</div>
-        Jelajah
-    </div>
-    <div class="nav-item active" data-page="profile">
-        <div class="nav-icon">👤</div>
-        Profil
-    </div>
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+    <p>Copyright © Koperasi Asmara Tani 2026</p>
 </div>
 
 <!-- ===== MODAL OVERLAY ===== -->
@@ -1229,15 +1259,6 @@
                 });
             });
             
-            // Bottom nav
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const page = e.currentTarget.getAttribute('data-page');
-                    this.handleNavigation(page);
-                });
-            });
-            
             // Modal close
             document.getElementById('modalClose').addEventListener('click', () => this.closeModal());
             document.getElementById('modalOverlay').addEventListener('click', (e) => {
@@ -1250,15 +1271,6 @@
         // ===== NAVIGATION HANDLING =====
         handleNavigation(page) {
             console.log(`Navigating to: ${page}`);
-            
-            // Update active nav item
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            const navItem = document.querySelector(`[data-page="${page}"]`);
-            if (navItem) {
-                navItem.classList.add('active');
-            }
             
             // Handle page navigation
             switch(page) {
@@ -1509,10 +1521,10 @@
                             Kode Anggota: ${this.anggotaData.personal.nia || 'Belum Terdaftar'}
                         </p>
                         <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button class="modal-btn secondary" onclick="tabungan.showPrintPreview('qr')">
+                            <button class="modal-btn secondary" onclick="window.tabungan.showPrintPreview('qr')">
                                 <i class="fas fa-download"></i> Download QR
                             </button>
-                            <button class="modal-btn primary" onclick="tabungan.showShareOptions('qr')">
+                            <button class="modal-btn primary" onclick="window.tabungan.showShareOptions('qr')">
                                 <i class="fas fa-share-alt"></i> Bagikan QR
                             </button>
                         </div>
@@ -1591,13 +1603,13 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
-                                <button type="button" class="modal-btn secondary" style="margin-top: 10px; padding: 10px; font-size: 14px;" onclick="tabungan.showChangePasswordModal()">
+                                <button type="button" class="modal-btn secondary" style="margin-top: 10px; padding: 10px; font-size: 14px;" onclick="window.tabungan.showChangePasswordModal()">
                                     <i class="fas fa-key"></i> Ganti Password
                                 </button>
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Simpan Perubahan</button>
                             </div>
                         </form>
@@ -1662,7 +1674,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Ganti Password</button>
                             </div>
                         </form>
@@ -1809,21 +1821,21 @@
                     <div style="padding: 10px 0;">
                         <p>Pilih jenis simpanan:</p>
                         <div style="margin: 15px 0;">
-                            <div class="modal-option" onclick="tabungan.setorSimpanan('pokok')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
+                            <div class="modal-option" onclick="window.tabungan.setorSimpanan('pokok')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
                                 <i class="fas fa-key" style="color: #1a5f23; font-size: 1.2rem; width: 30px;"></i>
                                 <div>
                                     <strong>Simpanan Pokok</strong>
                                     <div style="font-size: 12px; color: #666;">Rp 100,000 (sekali bayar)</div>
                                 </div>
                             </div>
-                            <div class="modal-option" onclick="tabungan.setorSimpanan('wajib')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
+                            <div class="modal-option" onclick="window.tabungan.setorSimpanan('wajib')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
                                 <i class="fas fa-calendar-alt" style="color: #1a5f23; font-size: 1.2rem; width: 30px;"></i>
                                 <div>
                                     <strong>Simpanan Wajib</strong>
                                     <div style="font-size: 12px; color: #666;">Rp 250,000/bulan</div>
                                 </div>
                             </div>
-                            <div class="modal-option" onclick="tabungan.setorSimpanan('sukarela')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                            <div class="modal-option" onclick="window.tabungan.setorSimpanan('sukarela')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
                                 <i class="fas fa-star" style="color: #1a5f23; font-size: 1.2rem; width: 30px;"></i>
                                 <div>
                                     <strong>Simpanan Sukarela</strong>
@@ -1871,7 +1883,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Konfirmasi Setoran via WhatsApp</button>
                             </div>
                         </form>
@@ -1917,7 +1929,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Konfirmasi Setoran via WhatsApp</button>
                             </div>
                         </form>
@@ -1954,7 +1966,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Konfirmasi Setoran via WhatsApp</button>
                             </div>
                         </form>
@@ -2010,14 +2022,14 @@
                     <div style="padding: 10px 0;">
                         <p>Silakan pilih jenis pinjaman:</p>
                         <div style="margin: 15px 0;">
-                            <div class="modal-option" onclick="tabungan.ajukanPinjaman('reguler')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
+                            <div class="modal-option" onclick="window.tabungan.ajukanPinjaman('reguler')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;">
                                 <i class="fas fa-home" style="color: #1a5f23; font-size: 1.2rem; width: 30px;"></i>
                                 <div>
                                     <strong>Pinjaman Reguler</strong>
                                     <div style="font-size: 12px; color: #666;">Rp 1-10 juta, 12 bulan</div>
                                 </div>
                             </div>
-                            <div class="modal-option" onclick="tabungan.ajukanPinjaman('mikro')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
+                            <div class="modal-option" onclick="window.tabungan.ajukanPinjaman('mikro')" style="display: flex; align-items: center; gap: 10px; padding: 15px; background: rgba(26, 95, 35, 0.05); border-radius: 12px; cursor: pointer; transition: all 0.3s ease;">
                                 <i class="fas fa-briefcase" style="color: #1a5f23; font-size: 1.2rem; width: 30px;"></i>
                                 <div>
                                     <strong>Pinjaman Mikro</strong>
@@ -2068,7 +2080,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Ajukan Pinjaman via WhatsApp</button>
                             </div>
                         </form>
@@ -2108,7 +2120,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Ajukan Pinjaman via WhatsApp</button>
                             </div>
                         </form>
@@ -2185,10 +2197,10 @@
                         </div>
                         
                         <div class="modal-actions" style="margin-top: 25px;">
-                            <button class="modal-btn secondary" onclick="tabungan.showPrintPreview('laporan')">
+                            <button class="modal-btn secondary" onclick="window.tabungan.showPrintPreview('laporan')">
                                 <i class="fas fa-download"></i> Download PDF
                             </button>
-                            <button class="modal-btn primary" onclick="tabungan.closeModal()">
+                            <button class="modal-btn primary" onclick="window.tabungan.closeModal()">
                                 <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
@@ -2233,13 +2245,13 @@
                         </div>
                         
                         <div class="modal-actions small-buttons">
-                            <button class="modal-btn secondary small-btn" onclick="tabungan.showPrintPreview('kartu')">
+                            <button class="modal-btn secondary small-btn" onclick="window.tabungan.showPrintPreview('kartu')">
                                 <i class="fas fa-download"></i> Download Kartu
                             </button>
-                            <button class="modal-btn secondary small-btn" onclick="tabungan.showPrintPreview('qr')">
+                            <button class="modal-btn secondary small-btn" onclick="window.tabungan.showPrintPreview('qr')">
                                 <i class="fas fa-qrcode"></i> Download QR
                             </button>
-                            <button class="modal-btn primary small-btn" onclick="tabungan.showShareOptions('kartu')">
+                            <button class="modal-btn primary small-btn" onclick="window.tabungan.showShareOptions('kartu')">
                                 <i class="fas fa-share-alt"></i> Bagikan
                             </button>
                         </div>
@@ -2273,7 +2285,7 @@
                         <p>${description}</p>
                         
                         <div class="share-options">
-                            <div class="share-option" onclick="tabungan.shareViaWhatsApp('${type}')">
+                            <div class="share-option" onclick="window.tabungan.shareViaWhatsApp('${type}')">
                                 <div class="share-icon whatsapp">
                                     <i class="fab fa-whatsapp"></i>
                                 </div>
@@ -2284,7 +2296,7 @@
                                 <i class="fas fa-chevron-right" style="color: #999;"></i>
                             </div>
                             
-                            <div class="share-option" onclick="tabungan.shareViaEmail('${type}')">
+                            <div class="share-option" onclick="window.tabungan.shareViaEmail('${type}')">
                                 <div class="share-icon email">
                                     <i class="fas fa-envelope"></i>
                                 </div>
@@ -2295,7 +2307,7 @@
                                 <i class="fas fa-chevron-right" style="color: #999;"></i>
                             </div>
                             
-                            <div class="share-option" onclick="tabungan.shareViaOther(${JSON.stringify(shareData)})">
+                            <div class="share-option" onclick="window.tabungan.shareViaOther(${JSON.stringify(shareData)})">
                                 <div class="share-icon other">
                                     <i class="fas fa-share-alt"></i>
                                 </div>
@@ -2389,7 +2401,7 @@
                         </div>
                         
                         <div class="modal-actions">
-                            <button class="modal-btn primary" onclick="tabungan.closeModal()" style="flex: 1;">
+                            <button class="modal-btn primary" onclick="window.tabungan.closeModal()" style="flex: 1;">
                                 <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
@@ -2438,10 +2450,10 @@
                         </div>
                         
                         <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
-                            <button class="modal-btn secondary" onclick="tabungan.showQRModal()" style="padding: 10px 15px;">
+                            <button class="modal-btn secondary" onclick="window.tabungan.showQRModal()" style="padding: 10px 15px;">
                                 <i class="fas fa-qrcode"></i> Tampilkan QR
                             </button>
-                            <button class="modal-btn primary" onclick="tabungan.showKartuModal()" style="padding: 10px 15px;">
+                            <button class="modal-btn primary" onclick="window.tabungan.showKartuModal()" style="padding: 10px 15px;">
                                 <i class="fas fa-id-card"></i> Kartu Lengkap
                             </button>
                         </div>
@@ -2476,8 +2488,8 @@
                         </div>
                         
                         <div class="modal-actions">
-                            <button class="modal-btn secondary" onclick="tabungan.closeModal()">Tutup</button>
-                            <button class="modal-btn primary" onclick="tabungan.showSetorModal()">
+                            <button class="modal-btn secondary" onclick="window.tabungan.closeModal()">Tutup</button>
+                            <button class="modal-btn primary" onclick="window.tabungan.showSetorModal()">
                                 <i class="fas fa-money-bill-wave"></i> Setor Simpanan
                             </button>
                         </div>
@@ -2525,8 +2537,8 @@
                         </div>
                         
                         <div class="modal-actions">
-                            <button class="modal-btn secondary" onclick="tabungan.closeModal()">Tutup</button>
-                            <button class="modal-btn primary" onclick="tabungan.bayarAngsuran()">
+                            <button class="modal-btn secondary" onclick="window.tabungan.closeModal()">Tutup</button>
+                            <button class="modal-btn primary" onclick="window.tabungan.bayarAngsuran()">
                                 <i class="fas fa-hand-holding-usd"></i> Bayar Angsuran
                             </button>
                         </div>
@@ -2564,8 +2576,8 @@
                         </div>
                         
                         <div class="modal-actions">
-                            <button class="modal-btn secondary" onclick="tabungan.closeModal()">Tutup</button>
-                            <button class="modal-btn primary" onclick="tabungan.detailShu()">
+                            <button class="modal-btn secondary" onclick="window.tabungan.closeModal()">Tutup</button>
+                            <button class="modal-btn primary" onclick="window.tabungan.detailShu()">
                                 <i class="fas fa-chart-line"></i> Detail Perhitungan
                             </button>
                         </div>
@@ -2606,7 +2618,7 @@
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" onclick="tabungan.closeModal()">Batal</button>
+                                <button type="button" class="modal-btn secondary" onclick="window.tabungan.closeModal()">Batal</button>
                                 <button type="submit" class="modal-btn primary">Konfirmasi Pembayaran via WhatsApp</button>
                             </div>
                         </form>
@@ -2670,7 +2682,7 @@
                         </div>
                         
                         <div class="modal-actions">
-                            <button class="modal-btn primary" onclick="tabungan.closeModal()" style="flex: 1;">
+                            <button class="modal-btn primary" onclick="window.tabungan.closeModal()" style="flex: 1;">
                                 <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
@@ -2715,9 +2727,9 @@
         window.location.href = 'login.html';
     } else {
         // Initialize dashboard when DOM is loaded
-        let tabungan;
+        window.tabungan = null;
         document.addEventListener('DOMContentLoaded', () => {
-            tabungan = new DigitalTabungan();
+            window.tabungan = new DigitalTabungan();
             
             // Handle print events
             window.addEventListener('afterprint', () => {
