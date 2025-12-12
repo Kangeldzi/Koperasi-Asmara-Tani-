@@ -1253,6 +1253,43 @@
     </style>
 </head>
 <body>
+    <!-- DI AWAL FILE admin.html DAN index.html -->
+<script>
+// ===== STRUKTUR DATA TERPUSAT =====
+function initializeKoperasiData() {
+  if (!localStorage.getItem('koperasiData')) {
+    const initialData = {
+      version: '2.0',
+      lastSync: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      anggotaData: [],
+      adminUpdates: {},
+      userUpdates: {},
+      syncLog: [],
+      settings: {
+        minSimpanan: 10000,
+        minPinjaman: 100000,
+        bungaPinjaman: 1.2,
+        adminWhatsapp: '085218483129'
+      }
+    };
+    localStorage.setItem('koperasiData', JSON.stringify(initialData));
+  }
+  
+  // Pastikan anggotaData ada
+  if (!localStorage.getItem('anggotaData')) {
+    localStorage.setItem('anggotaData', JSON.stringify([]));
+  }
+  
+  // Pastikan adminUpdates ada
+  if (!localStorage.getItem('adminUpdates')) {
+    localStorage.setItem('adminUpdates', JSON.stringify({}));
+  }
+}
+
+// Jalankan saat halaman load
+document.addEventListener('DOMContentLoaded', initializeKoperasiData);
+</script>
     <!-- Dashboard Container -->
     <div class="dashboard-container">
         <!-- Sidebar -->
