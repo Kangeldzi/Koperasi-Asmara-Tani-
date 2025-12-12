@@ -1290,6 +1290,320 @@ function initializeKoperasiData() {
 // Jalankan saat halaman load
 document.addEventListener('DOMContentLoaded', initializeKoperasiData);
 </script>
+// js/sync-manager.js
+console.log('Loading Sync Manager...');
+
+// ===== SINKRONISASI REAL-TIME MANAGER =====
+class DataSyncManager {
+    constructor() {
+        this.syncInterval = 3000; // Sinkron setiap 3 detik
+        this.isSyncing = false;
+        this.syncTimeout = null;
+        this.init();
+    }
+    
+    init() {
+        console.log('Sync Manager Initialized');
+        
+        // Mulai sinkronisasi
+        this.startSync();
+        
+        // Event listener untuk update dari tab/browser lain
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'koperasiData' || e.key === 'adminUpdates' || e.key === 'anggotaData') {
+                console.log('Storage changed:', e.key);
+                this.onDataChanged(e.key);
+            }
+        });
+        
+        // Event listener untuk sebelum tab/window ditutup
+        window.addEventListener('beforeunload', () => {
+            if (this.syncTimeout) {
+                clearTimeout(this.syncTimeout);
+            }
+        });
+    }
+    
+    startSync() {
+        // Sync pertama kali dengan delay 1 detik
+        setTimeout(() => this.syncData(), 1000);
+        
+        // Sync periodik
+        this.syncTimeout = setInterval(() => {
+            if (!this.isSyncing) {
+                this.syncData();
+            }
+        }, this.syncInterval);
+    }
+    
+    syncData() {
+        if (this.isSyncing) {
+            console.log('Sync already in progress, skipping...');
+            return;
+        }
+        
+        this.isSyncing = true;
+        console.log('Starting data sync...');
+        
+        try {
+            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // Update sync timestamp
+            koperasiData.lastSync = new Date().toISOString();
+            koperasiData.syncCount = (koperasiData.syncCount || 0) + 1;
+            
+            // Log sinkronisasi
+            this.logSync('SYNC_START', 'Memulai sinkronisasi data');
+            
+            // Role-based sync
+            if (currentUser) {
+                if (currentUser.role === 'admin') {
+                    this.pushAdminUpdates(koperasiData);
+                } else {
+                    this.pullAdminUpdates(koperasiData, currentUser.email);
+                }
+            }
+            
+            // Simpan data terupdate
+            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+            
+            this.logSync('SYNC_SUCCESS', 'Sinkronisasi berhasil');
+            console.log('Data sync completed successfully');
+            
+            // Show sync indicator
+            this.showSyncIndicator('success');
+            
+        } catch (error) {
+            console.error('Sync Error:', error);
+            this.logSync('SYNC_ERROR', error.message);
+            this.showSyncIndicator('error');
+        } finally {
+            this.isSyncing = false;
+        }
+    }
+    
+    pushAdminUpdates(koperasiData) {
+        const adminUpdates = JSON.parse(localStorage.getItem('adminUpdates')) || {};
+        
+        if (Object.keys(adminUpdates).length > 0) {
+            console.log('Pushing admin updates:', Object.keys(adminUpdates).length, 'updates');
+            
+            // Gabungkan dengan existing updates
+            koperasiData.adminUpdates = { 
+                ...koperasiData.adminUpdates, 
+                ...adminUpdates 
+            };
+            
+            // Update timestamp
+            koperasiData.lastAdminPush = new Date().toISOString();
+            
+            // Log
+            this.logSync('ADMIN_PUSH', `Push ${Object.keys(adminUpdates).length} updates`);
+            
+            // Kosongkan adminUpdates lokal setelah dipush
+            localStorage.setItem('adminUpdates', JSON.stringify({}));
+        }
+    }
+    
+    pullAdminUpdates(koperasiData, userEmail) {
+        if (koperasiData.adminUpdates && koperasiData.adminUpdates[userEmail]) {
+            console.log('Pulling updates for:', userEmail);
+            
+            const updates = koperasiData.adminUpdates[userEmail];
+            const semuaAnggota = JSON.parse(localStorage.getItem('anggotaData')) || [];
+            const userIndex = semuaAnggota.findIndex(a => a.email === userEmail);
+            
+            if (userIndex !== -1) {
+                let updated = false;
+                
+                // Apply simpanan updates
+                if (updates.simpanan) {
+                    Object.keys(updates.simpanan).forEach(jenis => {
+                        if (semuaAnggota[userIndex].simpanan) {
+                            semuaAnggota[userIndex].simpanan[jenis] = {
+                                ...semuaAnggota[userIndex].simpanan[jenis],
+                                ...updates.simpanan[jenis],
+                                updatedAt: new Date().toISOString()
+                            };
+                            updated = true;
+                        }
+                    });
+                    
+                    // Recalculate total
+                    if (semuaAnggota[userIndex].simpanan) {
+                        semuaAnggota[userIndex].simpanan.total = 
+                            (semuaAnggota[userIndex].simpanan.pokok?.nominal || 0) +
+                            (semuaAnggota[userIndex].simpanan.wajib?.nominal || 0) +
+                            (semuaAnggota[userIndex].simpanan.sukarela?.nominal || 0);
+                    }
+                }
+                
+                // Apply personal data updates
+                if (updates.personal) {
+                    semuaAnggota[userIndex] = {
+                        ...semuaAnggota[userIndex],
+                        ...updates.personal,
+                        updatedAt: new Date().toISOString()
+                    };
+                    updated = true;
+                }
+                
+                // Update metadata
+                semuaAnggota[userIndex].lastUpdated = new Date().toISOString();
+                semuaAnggota[userIndex].updatedBy = 'admin';
+                
+                if (updated) {
+                    // Simpan data yang diupdate
+                    localStorage.setItem('anggotaData', JSON.stringify(semuaAnggota));
+                    
+                    // Trigger UI update
+                    this.triggerUIUpdate(userEmail, updates);
+                    
+                    // Log
+                    this.logSync('USER_UPDATE', `Data diperbarui untuk ${userEmail}`);
+                    
+                    // Show notification
+                    this.showNotification('Data diperbarui oleh admin!', 'info');
+                }
+                
+                // Hapus update yang sudah diproses
+                delete koperasiData.adminUpdates[userEmail];
+                
+                // Log removal
+                this.logSync('UPDATE_CLEARED', `Update cleared for ${userEmail}`);
+            }
+        }
+    }
+    
+    triggerUIUpdate(userEmail, updates) {
+        // Dispatch custom event untuk update UI
+        const event = new CustomEvent('dataSynced', {
+            detail: { 
+                email: userEmail,
+                updates: updates,
+                timestamp: new Date().toISOString(),
+                source: 'admin'
+            }
+        });
+        window.dispatchEvent(event);
+        
+        // Juga dispatch event khusus untuk tabungan digital
+        if (window.tabungan) {
+            const tabunganEvent = new CustomEvent('tabunganDataUpdated', {
+                detail: { email: userEmail }
+            });
+            window.dispatchEvent(tabunganEvent);
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Hanya tampilkan jika di tabungan digital
+        if (window.tabungan && window.tabungan.showToast) {
+            window.tabungan.showToast(message, type);
+        } else if (window.showNotification) {
+            window.showNotification(message, type);
+        } else {
+            // Fallback notification
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+    }
+    
+    showSyncIndicator(status) {
+        const indicator = document.getElementById('syncIndicator');
+        if (indicator) {
+            indicator.classList.remove('syncing', 'success', 'error');
+            
+            if (status === 'syncing') {
+                indicator.classList.add('syncing');
+                indicator.title = 'Menyinkronkan data...';
+            } else if (status === 'success') {
+                indicator.classList.add('success');
+                indicator.title = 'Data tersinkron ' + new Date().toLocaleTimeString();
+                
+                // Remove success class after 2 seconds
+                setTimeout(() => {
+                    indicator.classList.remove('success');
+                }, 2000);
+            } else if (status === 'error') {
+                indicator.classList.add('error');
+                indicator.title = 'Gagal sinkronisasi';
+                
+                // Remove error class after 5 seconds
+                setTimeout(() => {
+                    indicator.classList.remove('error');
+                }, 5000);
+            }
+        }
+    }
+    
+    logSync(type, message) {
+        const log = {
+            type,
+            message,
+            timestamp: new Date().toISOString(),
+            user: JSON.parse(localStorage.getItem('currentUser'))?.email || 'system',
+            userAgent: navigator.userAgent
+        };
+        
+        const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+        koperasiData.syncLog = koperasiData.syncLog || [];
+        koperasiData.syncLog.push(log);
+        
+        // Keep only last 50 logs
+        if (koperasiData.syncLog.length > 50) {
+            koperasiData.syncLog = koperasiData.syncLog.slice(-50);
+        }
+        
+        localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+    }
+    
+    onDataChanged(key) {
+        console.log(`Data changed: ${key}`);
+        
+        // Refresh UI berdasarkan perubahan
+        if (key === 'anggotaData') {
+            if (window.loadAnggotaData) {
+                window.loadAnggotaData();
+            }
+            if (window.refreshAnggotaTable) {
+                window.refreshAnggotaTable();
+            }
+        }
+        
+        if (window.tabungan && window.tabungan.updateProfileUI) {
+            window.tabungan.updateProfileUI();
+        }
+        
+        // Dispatch change event
+        const event = new CustomEvent('localStorageChanged', {
+            detail: { key: key }
+        });
+        window.dispatchEvent(event);
+    }
+    
+    // Manual sync
+    manualSync() {
+        console.log('Manual sync triggered');
+        this.showSyncIndicator('syncing');
+        this.syncData();
+    }
+    
+    // Get sync status
+    getSyncStatus() {
+        const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+        return {
+            lastSync: koperasiData.lastSync,
+            syncCount: koperasiData.syncCount || 0,
+            pendingUpdates: Object.keys(koperasiData.adminUpdates || {}).length,
+            logCount: (koperasiData.syncLog || []).length
+        };
+    }
+}
+
+// Global instance
+window.SyncManager = DataSyncManager;
+console.log('Sync Manager loaded successfully');    
     <!-- Dashboard Container -->
     <div class="dashboard-container">
         <!-- Sidebar -->
