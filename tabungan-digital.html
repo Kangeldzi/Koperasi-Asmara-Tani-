@@ -1104,7 +1104,77 @@
     </style>
 </head>
 <body>
-
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Tabungan Digital - Koperasi Asmara Tani</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        /* CSS utama di sini */
+    </style>
+</head>
+<body>
+    <!-- ========== SISIPKAN DI SINI (SETELAH </head>) ========== -->
+    <script>
+    // ===== STRUKTUR DATA TERPUSAT =====
+    function initializeKoperasiData() {
+        console.log('Initializing Koperasi Data Structure...');
+        
+        // Cek jika koperasiData belum ada
+        if (!localStorage.getItem('koperasiData')) {
+            const initialData = {
+                version: '2.0',
+                createdAt: new Date().toISOString(),
+                lastSync: new Date().toISOString(),
+                anggotaData: [],
+                adminUpdates: {},
+                userUpdates: {},
+                syncLog: [],
+                settings: {
+                    minSimpanan: 10000,
+                    minPinjaman: 100000,
+                    bungaPinjaman: 1.2,
+                    bungaSimpanan: 0.5,
+                    adminWhatsapp: '085218483129',
+                    namaKoperasi: 'Koperasi Asmara Tani',
+                    tahunBuku: 2026
+                }
+            };
+            localStorage.setItem('koperasiData', JSON.stringify(initialData));
+            console.log('Created new koperasiData structure');
+        }
+        
+        // Pastikan anggotaData ada
+        if (!localStorage.getItem('anggotaData')) {
+            localStorage.setItem('anggotaData', JSON.stringify([]));
+            console.log('Created new anggotaData array');
+        }
+        
+        // Pastikan adminUpdates ada
+        if (!localStorage.getItem('adminUpdates')) {
+            localStorage.setItem('adminUpdates', JSON.stringify({}));
+            console.log('Created new adminUpdates object');
+        }
+        
+        console.log('Koperasi data structure initialized successfully');
+        return true;
+    }
+    
+    // Jalankan saat halaman load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeKoperasiData);
+    } else {
+        initializeKoperasiData();
+    }
+    </script>
+    <!-- ========== SAMPAI DI SINI ========== -->
+    
+    <!-- KONTEN HTML UTAMA DIMULAI DI SINI -->
+    <div class="profile-container">
+        <!-- Header profile, dll -->
 <!-- ===== PROFILE HEADER ===== -->
 <div class="profile-container">
     <div class="profile-header">
