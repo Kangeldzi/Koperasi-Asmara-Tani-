@@ -1067,6 +1067,63 @@
             color: white;
         }
 
+        /* ===== REAL-TIME SYNC STYLES ===== */
+        .sync-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        
+        .sync-indicator.syncing {
+            background: #2196F3;
+            animation: spin 1s linear infinite;
+        }
+        
+        .sync-indicator.success {
+            background: #4CAF50;
+        }
+        
+        .sync-indicator.error {
+            background: #F44336;
+        }
+        
+        .last-sync-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 3px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .user-sync-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: 2px solid white;
+            box-shadow: 0 0 3px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
             .avatar {
@@ -1104,20 +1161,7 @@
     </style>
 </head>
 <body>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buku Tabungan Digital - Koperasi Asmara Tani</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        /* CSS utama di sini */
-    </style>
-</head>
-<body>
-    <!-- ========== SISIPKAN DI SINI (SETELAH </head>) ========== -->
+    <!-- ===== STRUKTUR DATA TERPUSAT ===== -->
     <script>
     // ===== STRUKTUR DATA TERPUSAT =====
     function initializeKoperasiData() {
@@ -1170,481 +1214,515 @@
         initializeKoperasiData();
     }
     </script>
-    <!-- ========== SAMPAI DI SINI ========== -->
-  // js/sync-manager.js
-console.log('Loading Sync Manager...');
 
-// ===== SINKRONISASI REAL-TIME MANAGER =====
-class DataSyncManager {
-    constructor() {
-        this.syncInterval = 3000; // Sinkron setiap 3 detik
-        this.isSyncing = false;
-        this.syncTimeout = null;
-        this.init();
-    }
-    
-    init() {
-        console.log('Sync Manager Initialized');
-        
-        // Mulai sinkronisasi
-        this.startSync();
-        
-        // Event listener untuk update dari tab/browser lain
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'koperasiData' || e.key === 'adminUpdates' || e.key === 'anggotaData') {
-                console.log('Storage changed:', e.key);
-                this.onDataChanged(e.key);
-            }
-        });
-        
-        // Event listener untuk sebelum tab/window ditutup
-        window.addEventListener('beforeunload', () => {
-            if (this.syncTimeout) {
-                clearTimeout(this.syncTimeout);
-            }
-        });
-    }
-    
-    startSync() {
-        // Sync pertama kali dengan delay 1 detik
-        setTimeout(() => this.syncData(), 1000);
-        
-        // Sync periodik
-        this.syncTimeout = setInterval(() => {
-            if (!this.isSyncing) {
-                this.syncData();
-            }
-        }, this.syncInterval);
-    }
-    
-    syncData() {
-        if (this.isSyncing) {
-            console.log('Sync already in progress, skipping...');
-            return;
-        }
-        
-        this.isSyncing = true;
-        console.log('Starting data sync...');
-        
-        try {
-            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            
-            // Update sync timestamp
-            koperasiData.lastSync = new Date().toISOString();
-            koperasiData.syncCount = (koperasiData.syncCount || 0) + 1;
-            
-            // Log sinkronisasi
-            this.logSync('SYNC_START', 'Memulai sinkronisasi data');
-            
-            // Role-based sync
-            if (currentUser) {
-                if (currentUser.role === 'admin') {
-                    this.pushAdminUpdates(koperasiData);
-                } else {
-                    this.pullAdminUpdates(koperasiData, currentUser.email);
-                }
-            }
-            
-            // Simpan data terupdate
-            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-            
-            this.logSync('SYNC_SUCCESS', 'Sinkronisasi berhasil');
-            console.log('Data sync completed successfully');
-            
-            // Show sync indicator
-            this.showSyncIndicator('success');
-            
-        } catch (error) {
-            console.error('Sync Error:', error);
-            this.logSync('SYNC_ERROR', error.message);
-            this.showSyncIndicator('error');
-        } finally {
+    <!-- ===== PROFILE HEADER ===== -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="avatar">
+                <img id="profileAvatar" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg" alt="Profile">
+            </div>
+            <div class="user-info">
+                <h2 id="profileName">Loading... <span class="badge">✔</span></h2>
+                <div class="username" id="profileRole">@loading</div>
+                <div class="last-sync-time" id="lastSyncTime">Terakhir sinkron: -</div>
+            </div>
+        </div>
+
+        <div class="btn-area">
+            <button class="btn qr" id="qrButton">
+                <i class="fas fa-qrcode"></i> Tampilkan QR
+            </button>
+            <button class="btn pro" id="upgradeButton">
+                <i class="fas fa-edit"></i> Edit Profil
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== CARD PLAN ===== -->
+    <div class="plan-card">
+        <div class="plan-left">
+            <div class="plan-icon">
+                <i class="fas fa-book-open" style="color: #333;"></i>
+            </div>
+            <div class="plan-text">
+                <h3 id="tabunganTitle">Tabungan Digital</h3>
+                <p id="tabunganStatus">Memuat status...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== STATS CARD ===== -->
+    <div class="stats-card">
+        <div class="stats-header">
+            <div class="stats-title">Ringkasan Keuangan</div>
+            <div id="syncIndicator" class="sync-indicator success" title="Terhubung real-time"></div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value" id="totalSimpanan">Rp 0</div>
+                <div class="stat-label">Total Simpanan</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalPinjaman">Rp 0</div>
+                <div class="stat-label">Pinjaman</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="shuEstimasi">Rp 0</div>
+                <div class="stat-label">SHU Estimasi</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="statusAnggota">...</div>
+                <div class="stat-label">Status Anggota</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MENU 1: AKSI CEPAT ===== -->
+    <div class="menu-section">
+        <div class="menu-item" data-action="setor">
+            <div class="menu-left">
+                <div class="menu-icon">📥</div>
+                <div class="menu-text">Setor Simpanan</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <div class="menu-item" data-action="pinjam">
+            <div class="menu-left">
+                <div class="menu-icon">🫴🏼</div>
+                <div class="menu-text">Ajukan Pinjaman</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <div class="menu-item" data-action="riwayat">
+            <div class="menu-left">
+                <div class="menu-icon">📝</div>
+                <div class="menu-text">Riwayat Transaksi</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <div class="menu-item" data-action="kartu">
+            <div class="menu-left">
+                <div class="menu-icon">🪪</div>
+                <div class="menu-text">Kartu Anggota</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+
+    <!-- ===== MENU 2: TAMPILAN KARTU ===== -->
+    <div class="menu-section">
+        <div class="menu-item" data-action="total_simpanan">
+            <div class="menu-left">
+                <div class="menu-icon">🪙</div>
+                <div class="menu-text">Total Simpanan</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <div class="menu-item" data-action="pinjaman_aktif">
+            <div class="menu-left">
+                <div class="menu-icon">💵</div>
+                <div class="menu-text">Pinjaman Aktif</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <div class="menu-item" data-action="shu_estimasi">
+            <div class="menu-left">
+                <div class="menu-icon">💎</div>
+                <div class="menu-text">SHU Estimasi</div>
+            </div>
+            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+
+    <!-- ===== BACK HOME BUTTON ===== -->
+    <button class="back-home" onclick="window.location.href='index.html'">
+        <i class="fas fa-arrow-left"></i> Kembali ke Beranda 
+    </button>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+        <p>Copyright © Koperasi Asmara Tani 2026</p>
+    </div>
+
+    <!-- ===== MODAL OVERLAY ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast" id="toast">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage">Toast message here</span>
+    </div>
+
+    <!-- ===== PRINT CARD (HIDDEN) ===== -->
+    <div id="printCard" class="print-card"></div>
+
+    <!-- ===== SINKRONISASI REAL-TIME MANAGER ===== -->
+    <script>
+    console.log('Loading Sync Manager...');
+
+    class DataSyncManager {
+        constructor() {
+            this.syncInterval = 3000; // Sinkron setiap 3 detik
             this.isSyncing = false;
+            this.syncTimeout = null;
+            this.init();
         }
-    }
-    
-    pushAdminUpdates(koperasiData) {
-        const adminUpdates = JSON.parse(localStorage.getItem('adminUpdates')) || {};
         
-        if (Object.keys(adminUpdates).length > 0) {
-            console.log('Pushing admin updates:', Object.keys(adminUpdates).length, 'updates');
+        init() {
+            console.log('Sync Manager Initialized');
             
-            // Gabungkan dengan existing updates
-            koperasiData.adminUpdates = { 
-                ...koperasiData.adminUpdates, 
-                ...adminUpdates 
-            };
+            // Mulai sinkronisasi
+            this.startSync();
             
-            // Update timestamp
-            koperasiData.lastAdminPush = new Date().toISOString();
+            // Event listener untuk update dari tab/browser lain
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'koperasiData' || e.key === 'adminUpdates' || e.key === 'anggotaData') {
+                    console.log('Storage changed:', e.key);
+                    this.onDataChanged(e.key);
+                }
+            });
             
-            // Log
-            this.logSync('ADMIN_PUSH', `Push ${Object.keys(adminUpdates).length} updates`);
-            
-            // Kosongkan adminUpdates lokal setelah dipush
-            localStorage.setItem('adminUpdates', JSON.stringify({}));
+            // Event listener untuk sebelum tab/window ditutup
+            window.addEventListener('beforeunload', () => {
+                if (this.syncTimeout) {
+                    clearTimeout(this.syncTimeout);
+                }
+            });
         }
-    }
-    
-    pullAdminUpdates(koperasiData, userEmail) {
-        if (koperasiData.adminUpdates && koperasiData.adminUpdates[userEmail]) {
-            console.log('Pulling updates for:', userEmail);
+        
+        startSync() {
+            // Sync pertama kali dengan delay 1 detik
+            setTimeout(() => this.syncData(), 1000);
             
-            const updates = koperasiData.adminUpdates[userEmail];
-            const semuaAnggota = JSON.parse(localStorage.getItem('anggotaData')) || [];
-            const userIndex = semuaAnggota.findIndex(a => a.email === userEmail);
+            // Sync periodik
+            this.syncTimeout = setInterval(() => {
+                if (!this.isSyncing) {
+                    this.syncData();
+                }
+            }, this.syncInterval);
+        }
+        
+        syncData() {
+            if (this.isSyncing) {
+                console.log('Sync already in progress, skipping...');
+                return;
+            }
             
-            if (userIndex !== -1) {
-                let updated = false;
+            this.isSyncing = true;
+            console.log('Starting data sync...');
+            
+            try {
+                const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
                 
-                // Apply simpanan updates
-                if (updates.simpanan) {
-                    Object.keys(updates.simpanan).forEach(jenis => {
-                        if (semuaAnggota[userIndex].simpanan) {
-                            semuaAnggota[userIndex].simpanan[jenis] = {
-                                ...semuaAnggota[userIndex].simpanan[jenis],
-                                ...updates.simpanan[jenis],
-                                updatedAt: new Date().toISOString()
-                            };
-                            updated = true;
-                        }
-                    });
-                    
-                    // Recalculate total
-                    if (semuaAnggota[userIndex].simpanan) {
-                        semuaAnggota[userIndex].simpanan.total = 
-                            (semuaAnggota[userIndex].simpanan.pokok?.nominal || 0) +
-                            (semuaAnggota[userIndex].simpanan.wajib?.nominal || 0) +
-                            (semuaAnggota[userIndex].simpanan.sukarela?.nominal || 0);
+                // Update sync timestamp
+                koperasiData.lastSync = new Date().toISOString();
+                koperasiData.syncCount = (koperasiData.syncCount || 0) + 1;
+                
+                // Log sinkronisasi
+                this.logSync('SYNC_START', 'Memulai sinkronisasi data');
+                
+                // Role-based sync
+                if (currentUser) {
+                    if (currentUser.role === 'admin') {
+                        this.pushAdminUpdates(koperasiData);
+                    } else {
+                        this.pullAdminUpdates(koperasiData, currentUser.email);
                     }
                 }
                 
-                // Apply personal data updates
-                if (updates.personal) {
-                    semuaAnggota[userIndex] = {
-                        ...semuaAnggota[userIndex],
-                        ...updates.personal,
-                        updatedAt: new Date().toISOString()
-                    };
-                    updated = true;
-                }
+                // Simpan data terupdate
+                localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
                 
-                // Update metadata
-                semuaAnggota[userIndex].lastUpdated = new Date().toISOString();
-                semuaAnggota[userIndex].updatedBy = 'admin';
+                this.logSync('SYNC_SUCCESS', 'Sinkronisasi berhasil');
+                console.log('Data sync completed successfully');
                 
-                if (updated) {
-                    // Simpan data yang diupdate
-                    localStorage.setItem('anggotaData', JSON.stringify(semuaAnggota));
-                    
-                    // Trigger UI update
-                    this.triggerUIUpdate(userEmail, updates);
-                    
-                    // Log
-                    this.logSync('USER_UPDATE', `Data diperbarui untuk ${userEmail}`);
-                    
-                    // Show notification
-                    this.showNotification('Data diperbarui oleh admin!', 'info');
-                }
+                // Show sync indicator
+                this.showSyncIndicator('success');
                 
-                // Hapus update yang sudah diproses
-                delete koperasiData.adminUpdates[userEmail];
+                // Update last sync time in UI
+                this.updateLastSyncTime();
                 
-                // Log removal
-                this.logSync('UPDATE_CLEARED', `Update cleared for ${userEmail}`);
+            } catch (error) {
+                console.error('Sync Error:', error);
+                this.logSync('SYNC_ERROR', error.message);
+                this.showSyncIndicator('error');
+            } finally {
+                this.isSyncing = false;
             }
         }
-    }
-    
-    triggerUIUpdate(userEmail, updates) {
-        // Dispatch custom event untuk update UI
-        const event = new CustomEvent('dataSynced', {
-            detail: { 
-                email: userEmail,
-                updates: updates,
-                timestamp: new Date().toISOString(),
-                source: 'admin'
-            }
-        });
-        window.dispatchEvent(event);
         
-        // Juga dispatch event khusus untuk tabungan digital
-        if (window.tabungan) {
-            const tabunganEvent = new CustomEvent('tabunganDataUpdated', {
-                detail: { email: userEmail }
-            });
-            window.dispatchEvent(tabunganEvent);
-        }
-    }
-    
-    showNotification(message, type = 'info') {
-        // Hanya tampilkan jika di tabungan digital
-        if (window.tabungan && window.tabungan.showToast) {
-            window.tabungan.showToast(message, type);
-        } else if (window.showNotification) {
-            window.showNotification(message, type);
-        } else {
-            // Fallback notification
-            console.log(`[${type.toUpperCase()}] ${message}`);
-        }
-    }
-    
-    showSyncIndicator(status) {
-        const indicator = document.getElementById('syncIndicator');
-        if (indicator) {
-            indicator.classList.remove('syncing', 'success', 'error');
+        pushAdminUpdates(koperasiData) {
+            const adminUpdates = JSON.parse(localStorage.getItem('adminUpdates')) || {};
             
-            if (status === 'syncing') {
-                indicator.classList.add('syncing');
-                indicator.title = 'Menyinkronkan data...';
-            } else if (status === 'success') {
-                indicator.classList.add('success');
-                indicator.title = 'Data tersinkron ' + new Date().toLocaleTimeString();
+            if (Object.keys(adminUpdates).length > 0) {
+                console.log('Pushing admin updates:', Object.keys(adminUpdates).length, 'updates');
                 
-                // Remove success class after 2 seconds
-                setTimeout(() => {
-                    indicator.classList.remove('success');
-                }, 2000);
-            } else if (status === 'error') {
-                indicator.classList.add('error');
-                indicator.title = 'Gagal sinkronisasi';
+                // Gabungkan dengan existing updates
+                koperasiData.adminUpdates = { 
+                    ...koperasiData.adminUpdates, 
+                    ...adminUpdates 
+                };
                 
-                // Remove error class after 5 seconds
-                setTimeout(() => {
-                    indicator.classList.remove('error');
-                }, 5000);
-            }
-        }
-    }
-    
-    logSync(type, message) {
-        const log = {
-            type,
-            message,
-            timestamp: new Date().toISOString(),
-            user: JSON.parse(localStorage.getItem('currentUser'))?.email || 'system',
-            userAgent: navigator.userAgent
-        };
-        
-        const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-        koperasiData.syncLog = koperasiData.syncLog || [];
-        koperasiData.syncLog.push(log);
-        
-        // Keep only last 50 logs
-        if (koperasiData.syncLog.length > 50) {
-            koperasiData.syncLog = koperasiData.syncLog.slice(-50);
-        }
-        
-        localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-    }
-    
-    onDataChanged(key) {
-        console.log(`Data changed: ${key}`);
-        
-        // Refresh UI berdasarkan perubahan
-        if (key === 'anggotaData') {
-            if (window.loadAnggotaData) {
-                window.loadAnggotaData();
-            }
-            if (window.refreshAnggotaTable) {
-                window.refreshAnggotaTable();
+                // Update timestamp
+                koperasiData.lastAdminPush = new Date().toISOString();
+                
+                // Log
+                this.logSync('ADMIN_PUSH', `Push ${Object.keys(adminUpdates).length} updates`);
+                
+                // Kosongkan adminUpdates lokal setelah dipush
+                localStorage.setItem('adminUpdates', JSON.stringify({}));
             }
         }
         
-        if (window.tabungan && window.tabungan.updateProfileUI) {
-            window.tabungan.updateProfileUI();
+        pullAdminUpdates(koperasiData, userEmail) {
+            if (koperasiData.adminUpdates && koperasiData.adminUpdates[userEmail]) {
+                console.log('Pulling updates for:', userEmail);
+                
+                const updates = koperasiData.adminUpdates[userEmail];
+                const semuaAnggota = JSON.parse(localStorage.getItem('anggotaData')) || [];
+                const userIndex = semuaAnggota.findIndex(a => a.email === userEmail);
+                
+                if (userIndex !== -1) {
+                    let updated = false;
+                    
+                    // Apply simpanan updates
+                    if (updates.simpanan) {
+                        Object.keys(updates.simpanan).forEach(jenis => {
+                            if (semuaAnggota[userIndex].simpanan) {
+                                semuaAnggota[userIndex].simpanan[jenis] = {
+                                    ...semuaAnggota[userIndex].simpanan[jenis],
+                                    ...updates.simpanan[jenis],
+                                    updatedAt: new Date().toISOString()
+                                };
+                                updated = true;
+                            }
+                        });
+                        
+                        // Recalculate total
+                        if (semuaAnggota[userIndex].simpanan) {
+                            semuaAnggota[userIndex].simpanan.total = 
+                                (semuaAnggota[userIndex].simpanan.pokok?.nominal || 0) +
+                                (semuaAnggota[userIndex].simpanan.wajib?.nominal || 0) +
+                                (semuaAnggota[userIndex].simpanan.sukarela?.nominal || 0);
+                        }
+                    }
+                    
+                    // Apply personal data updates
+                    if (updates.personal) {
+                        semuaAnggota[userIndex] = {
+                            ...semuaAnggota[userIndex],
+                            ...updates.personal,
+                            updatedAt: new Date().toISOString()
+                        };
+                        updated = true;
+                    }
+                    
+                    // Apply pinjaman updates
+                    if (updates.pinjaman) {
+                        semuaAnggota[userIndex].pinjaman = {
+                            ...semuaAnggota[userIndex].pinjaman,
+                            ...updates.pinjaman
+                        };
+                        updated = true;
+                    }
+                    
+                    // Apply SHU updates
+                    if (updates.shu) {
+                        semuaAnggota[userIndex].shu = {
+                            ...semuaAnggota[userIndex].shu,
+                            ...updates.shu
+                        };
+                        updated = true;
+                    }
+                    
+                    // Update metadata
+                    semuaAnggota[userIndex].lastUpdated = new Date().toISOString();
+                    semuaAnggota[userIndex].updatedBy = 'admin';
+                    
+                    if (updated) {
+                        // Simpan data yang diupdate
+                        localStorage.setItem('anggotaData', JSON.stringify(semuaAnggota));
+                        
+                        // Trigger UI update
+                        this.triggerUIUpdate(userEmail, updates);
+                        
+                        // Log
+                        this.logSync('USER_UPDATE', `Data diperbarui untuk ${userEmail}`);
+                        
+                        // Show notification
+                        this.showNotification('Data diperbarui oleh admin!', 'info');
+                    }
+                    
+                    // Hapus update yang sudah diproses
+                    delete koperasiData.adminUpdates[userEmail];
+                    
+                    // Log removal
+                    this.logSync('UPDATE_CLEARED', `Update cleared for ${userEmail}`);
+                }
+            }
         }
         
-        // Dispatch change event
-        const event = new CustomEvent('localStorageChanged', {
-            detail: { key: key }
-        });
-        window.dispatchEvent(event);
+        triggerUIUpdate(userEmail, updates) {
+            // Dispatch custom event untuk update UI
+            const event = new CustomEvent('dataSynced', {
+                detail: { 
+                    email: userEmail,
+                    updates: updates,
+                    timestamp: new Date().toISOString(),
+                    source: 'admin'
+                }
+            });
+            window.dispatchEvent(event);
+            
+            // Juga dispatch event khusus untuk tabungan digital
+            if (window.tabungan) {
+                const tabunganEvent = new CustomEvent('tabunganDataUpdated', {
+                    detail: { email: userEmail }
+                });
+                window.dispatchEvent(tabunganEvent);
+            }
+        }
+        
+        showNotification(message, type = 'info') {
+            // Hanya tampilkan jika di tabungan digital
+            if (window.tabungan && window.tabungan.showToast) {
+                window.tabungan.showToast(message, type);
+            } else if (window.showNotification) {
+                window.showNotification(message, type);
+            } else {
+                // Fallback notification
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+        }
+        
+        showSyncIndicator(status) {
+            const indicator = document.getElementById('syncIndicator');
+            if (indicator) {
+                indicator.classList.remove('syncing', 'success', 'error');
+                
+                if (status === 'syncing') {
+                    indicator.classList.add('syncing');
+                    indicator.title = 'Menyinkronkan data...';
+                } else if (status === 'success') {
+                    indicator.classList.add('success');
+                    indicator.title = 'Data tersinkron ' + new Date().toLocaleTimeString();
+                    
+                    // Remove success class after 2 seconds
+                    setTimeout(() => {
+                        indicator.classList.remove('success');
+                    }, 2000);
+                } else if (status === 'error') {
+                    indicator.classList.add('error');
+                    indicator.title = 'Gagal sinkronisasi';
+                    
+                    // Remove error class after 5 seconds
+                    setTimeout(() => {
+                        indicator.classList.remove('error');
+                    }, 5000);
+                }
+            }
+        }
+        
+        updateLastSyncTime() {
+            const lastSyncElement = document.getElementById('lastSyncTime');
+            if (lastSyncElement) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                lastSyncElement.textContent = `Terakhir sinkron: ${timeString}`;
+            }
+        }
+        
+        logSync(type, message) {
+            const log = {
+                type,
+                message,
+                timestamp: new Date().toISOString(),
+                user: JSON.parse(localStorage.getItem('currentUser'))?.email || 'system',
+                userAgent: navigator.userAgent
+            };
+            
+            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+            koperasiData.syncLog = koperasiData.syncLog || [];
+            koperasiData.syncLog.push(log);
+            
+            // Keep only last 50 logs
+            if (koperasiData.syncLog.length > 50) {
+                koperasiData.syncLog = koperasiData.syncLog.slice(-50);
+            }
+            
+            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+        }
+        
+        onDataChanged(key) {
+            console.log(`Data changed: ${key}`);
+            
+            // Refresh UI berdasarkan perubahan
+            if (key === 'anggotaData') {
+                if (window.loadAnggotaData) {
+                    window.loadAnggotaData();
+                }
+                if (window.refreshAnggotaTable) {
+                    window.refreshAnggotaTable();
+                }
+            }
+            
+            if (window.tabungan && window.tabungan.updateProfileUI) {
+                window.tabungan.updateProfileUI();
+            }
+            
+            // Dispatch change event
+            const event = new CustomEvent('localStorageChanged', {
+                detail: { key: key }
+            });
+            window.dispatchEvent(event);
+        }
+        
+        // Manual sync
+        manualSync() {
+            console.log('Manual sync triggered');
+            this.showSyncIndicator('syncing');
+            this.syncData();
+        }
+        
+        // Get sync status
+        getSyncStatus() {
+            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+            return {
+                lastSync: koperasiData.lastSync,
+                syncCount: koperasiData.syncCount || 0,
+                pendingUpdates: Object.keys(koperasiData.adminUpdates || {}).length,
+                logCount: (koperasiData.syncLog || []).length
+            };
+        }
     }
-    
-    // Manual sync
-    manualSync() {
-        console.log('Manual sync triggered');
-        this.showSyncIndicator('syncing');
-        this.syncData();
-    }
-    
-    // Get sync status
-    getSyncStatus() {
-        const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-        return {
-            lastSync: koperasiData.lastSync,
-            syncCount: koperasiData.syncCount || 0,
-            pendingUpdates: Object.keys(koperasiData.adminUpdates || {}).length,
-            logCount: (koperasiData.syncLog || []).length
-        };
-    }
-}
 
-// Global instance
-window.SyncManager = DataSyncManager;
-console.log('Sync Manager loaded successfully');  
-    ‎<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    ‎<script src="sync-manager.js"></script>
-    <!-- KONTEN HTML UTAMA DIMULAI DI SINI -->
-    <div class="profile-container">
-        <!-- Header profile, dll -->
-<!-- ===== PROFILE HEADER ===== -->
-<div class="profile-container">
-    <div class="profile-header">
-        <div class="avatar">
-            <img id="profileAvatar" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg" alt="Profile">
-        </div>
-        <div class="user-info">
-            <h2 id="profileName">Loading... <span class="badge">✔</span></h2>
-            <div class="username" id="profileRole">@loading</div>
-        </div>
-    </div>
+    // Global instance
+    window.SyncManager = DataSyncManager;
+    console.log('Sync Manager loaded successfully');
+    </script>
 
-    <div class="btn-area">
-        <button class="btn qr" id="qrButton">
-            <i class="fas fa-qrcode"></i> Tampilkan QR
-        </button>
-        <button class="btn pro" id="upgradeButton">
-            <i class="fas fa-edit"></i> Edit Profil
-        </button>
-    </div>
-</div>
-
-<!-- ===== CARD PLAN ===== -->
-<div class="plan-card">
-    <div class="plan-left">
-        <div class="plan-icon">
-            <i class="fas fa-book-open" style="color: #333;"></i>
-        </div>
-        <div class="plan-text">
-            <h3 id="tabunganTitle">Tabungan Digital</h3>
-            <p id="tabunganStatus">Memuat status...</p>
-        </div>
-    </div>
-</div>
-
-<!-- ===== STATS CARD ===== -->
-<div class="stats-card">
-    <div class="stats-header">
-        <div class="stats-title">Ringkasan Keuangan</div>
-    </div>
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-value" id="totalSimpanan">Rp 0</div>
-            <div class="stat-label">Total Simpanan</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value" id="totalPinjaman">Rp 0</div>
-            <div class="stat-label">Pinjaman</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value" id="shuEstimasi">Rp 0</div>
-            <div class="stat-label">SHU Estimasi</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value" id="statusAnggota">...</div>
-            <div class="stat-label">Status Anggota</div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== MENU 1: AKSI CEPAT ===== -->
-<div class="menu-section">
-    <div class="menu-item" data-action="setor">
-        <div class="menu-left">
-            <div class="menu-icon">📥</div>
-            <div class="menu-text">Setor Simpanan</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-
-    <div class="menu-item" data-action="pinjam">
-        <div class="menu-left">
-            <div class="menu-icon">🫴🏼</div>
-            <div class="menu-text">Ajukan Pinjaman</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-
-    <div class="menu-item" data-action="riwayat">
-        <div class="menu-left">
-            <div class="menu-icon">📝</div>
-            <div class="menu-text">Riwayat Transaksi</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-
-    <div class="menu-item" data-action="kartu">
-        <div class="menu-left">
-            <div class="menu-icon">🪪</div>
-            <div class="menu-text">Kartu Anggota</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-</div>
-
-<!-- ===== MENU 2: TAMPILAN KARTU ===== -->
-<div class="menu-section">
-    <div class="menu-item" data-action="total_simpanan">
-        <div class="menu-left">
-            <div class="menu-icon">🪙</div>
-            <div class="menu-text">Total Simpanan</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-
-    <div class="menu-item" data-action="pinjaman_aktif">
-        <div class="menu-left">
-            <div class="menu-icon">💵</div>
-            <div class="menu-text">Pinjaman Aktif</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-
-    <div class="menu-item" data-action="shu_estimasi">
-        <div class="menu-left">
-            <div class="menu-icon">💎</div>
-            <div class="menu-text">SHU Estimasi</div>
-        </div>
-        <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-    </div>
-</div>
-
-<!-- ===== BACK HOME BUTTON ===== -->
-<button class="back-home" onclick="window.location.href='index.html'">
-    <i class="fas fa-arrow-left"></i> Kembali ke Beranda 
-</button>
-
-<!-- ===== FOOTER ===== -->
-<div class="footer">
-    <p>Copyright © Koperasi Asmara Tani 2026</p>
-</div>
-
-<!-- ===== MODAL OVERLAY ===== -->
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modalTitle">Modal Title</h3>
-            <button class="modal-close" id="modalClose">&times;</button>
-        </div>
-        <div class="modal-body" id="modalBody">
-            <!-- Modal content will be inserted here -->
-        </div>
-    </div>
-</div>
-
-<!-- ===== TOAST CONTAINER ===== -->
-<div class="toast" id="toast">
-    <i class="fas fa-info-circle"></i>
-    <span id="toastMessage">Toast message here</span>
-</div>
-
-<!-- ===== PRINT CARD (HIDDEN) ===== -->
-<div id="printCard" class="print-card"></div>
-
-<script>
+    <!-- ===== DIGITAL TABUNGAN SCRIPT ===== -->
+    <script>
     // ===== DASHBOARD FUNCTIONALITY =====
     class DigitalTabungan {
         constructor() {
@@ -1658,6 +1736,10 @@ console.log('Sync Manager loaded successfully');
             
             this.loadAnggotaData();
             this.init();
+            
+            // Setup real-time sync
+            this.setupRealTimeSync();
+            this.startSyncInterval();
         }
 
         loadAnggotaData() {
@@ -1681,7 +1763,8 @@ console.log('Sync Manager loaded successfully');
                         agama: anggota.agama || '',
                         statusPerkawinan: anggota.status || '',
                         nik: anggota.nik || '',
-                        tanggalDaftar: anggota.tanggalDaftar || ''
+                        tanggalDaftar: anggota.tanggalDaftar || '',
+                        lastUpdated: anggota.lastUpdated || ''
                     },
                     simpanan: anggota.simpanan || {
                         pokok: { nominal: 200000, status: 'lunas' },
@@ -1736,6 +1819,7 @@ console.log('Sync Manager loaded successfully');
                 };
             }
             
+            // Update current user data
             this.currentUser.name = this.anggotaData.personal.nama || this.currentUser.email;
             this.currentUser.foto = this.anggotaData.personal.foto;
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
@@ -1764,7 +1848,9 @@ console.log('Sync Manager loaded successfully');
                 pinjaman: this.anggotaData.pinjaman,
                 shu: this.anggotaData.shu,
                 notifikasi: this.anggotaData.notifikasi,
-                lastUpdated: new Date().toISOString()
+                lastUpdated: new Date().toISOString(),
+                lastUpdatedBy: 'user', // Tandai bahwa update berasal dari user
+                version: '2.0'
             };
             
             if (index !== -1) {
@@ -1774,41 +1860,174 @@ console.log('Sync Manager loaded successfully');
             }
             
             localStorage.setItem('anggotaData', JSON.stringify(semuaAnggota));
+            
+            // ===== TAMBAHKAN: Sinkronisasi ke admin (untuk edit profil oleh user) =====
+            if (this.currentUser.role !== 'admin') {
+                // Simpan perubahan ke userUpdates untuk nanti di-pull oleh admin
+                const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+                koperasiData.userUpdates = koperasiData.userUpdates || {};
+                
+                // Hanya simpan perubahan profil (personal data)
+                const changes = {
+                    personal: {
+                        nama: this.anggotaData.personal.nama,
+                        telepon: this.anggotaData.personal.telepon,
+                        alamat: this.anggotaData.personal.alamat,
+                        jenisKelamin: this.anggotaData.personal.jenisKelamin,
+                        agama: this.anggotaData.personal.agama,
+                        statusPerkawinan: this.anggotaData.personal.statusPerkawinan,
+                        nik: this.anggotaData.personal.nik,
+                        foto: this.anggotaData.personal.foto,
+                        posisi: this.anggotaData.personal.posisi,
+                        updatedAt: new Date().toISOString(),
+                        updatedBy: 'user'
+                    }
+                };
+                
+                koperasiData.userUpdates[this.currentUser.email] = changes;
+                localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+                
+                console.log('User changes saved for admin sync');
+            }
         }
 
         init() {
             this.updateProfileUI();
             this.setupEventListeners();
-            this.syncWithAdminData();
             
             setTimeout(() => {
                 this.showToast(`Selamat datang, ${this.anggotaData.personal.nama || this.currentUser.email}!`, 'success');
             }, 1000);
         }
 
+        setupRealTimeSync() {
+            // Event listener untuk sync dari admin
+            window.addEventListener('dataSynced', (e) => {
+                if (e.detail.email === this.currentUser.email) {
+                    console.log('Data synced from admin:', e.detail);
+                    this.loadAnggotaData();
+                    this.updateProfileUI();
+                    this.showToast('Data telah diperbarui oleh admin!', 'success');
+                }
+            });
+            
+            // Event khusus untuk tabungan digital
+            window.addEventListener('tabunganDataUpdated', (e) => {
+                if (e.detail.email === this.currentUser.email) {
+                    this.loadAnggotaData();
+                    this.updateProfileUI();
+                    this.showToast('Data simpanan diperbarui!', 'info');
+                }
+            });
+            
+            // Listen untuk storage changes
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'anggotaData' || e.key === 'adminUpdates' || e.key === 'koperasiData') {
+                    this.syncWithAdminData();
+                }
+            });
+            
+            // Custom event untuk force refresh
+            window.addEventListener('forceRefresh', () => {
+                this.loadAnggotaData();
+                this.updateProfileUI();
+            });
+        }
+
+        startSyncInterval() {
+            // Auto sync setiap 2 detik untuk real-time update
+            setInterval(() => {
+                this.syncWithAdminData();
+            }, 2000);
+        }
+
         syncWithAdminData() {
-            // Sinkronisasi data dengan admin
-            const adminUpdates = JSON.parse(localStorage.getItem('simpananUpdates')) || {};
-            const myUpdates = adminUpdates[this.currentUser.email];
+            // Cek update dari admin melalui koperasiData
+            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+            const myUpdates = koperasiData.adminUpdates?.[this.currentUser.email];
             
             if (myUpdates) {
-                if (myUpdates.pokok !== undefined) {
-                    this.anggotaData.simpanan.pokok.nominal = myUpdates.pokok;
-                }
-                if (myUpdates.wajib !== undefined) {
-                    this.anggotaData.simpanan.wajib.nominal = myUpdates.wajib;
-                }
-                if (myUpdates.sukarela !== undefined) {
-                    this.anggotaData.simpanan.sukarela.nominal = myUpdates.sukarela;
+                console.log('Admin updates detected:', myUpdates);
+                
+                let dataChanged = false;
+                
+                // Apply simpanan updates
+                if (myUpdates.simpanan) {
+                    Object.keys(myUpdates.simpanan).forEach(jenis => {
+                        if (this.anggotaData.simpanan && this.anggotaData.simpanan[jenis]) {
+                            const oldValue = this.anggotaData.simpanan[jenis].nominal;
+                            const newValue = myUpdates.simpanan[jenis].nominal;
+                            
+                            if (oldValue !== newValue) {
+                                this.anggotaData.simpanan[jenis] = {
+                                    ...this.anggotaData.simpanan[jenis],
+                                    ...myUpdates.simpanan[jenis],
+                                    updatedAt: new Date().toISOString()
+                                };
+                                dataChanged = true;
+                                console.log(`Simpanan ${jenis} updated: ${oldValue} -> ${newValue}`);
+                            }
+                        }
+                    });
+                    
+                    // Recalculate total jika ada perubahan
+                    if (dataChanged) {
+                        this.anggotaData.simpanan.total = 
+                            (this.anggotaData.simpanan.pokok?.nominal || 0) +
+                            (this.anggotaData.simpanan.wajib?.nominal || 0) +
+                            (this.anggotaData.simpanan.sukarela?.nominal || 0);
+                    }
                 }
                 
-                this.anggotaData.simpanan.total = 
-                    this.anggotaData.simpanan.pokok.nominal + 
-                    this.anggotaData.simpanan.wajib.nominal + 
-                    this.anggotaData.simpanan.sukarela.nominal;
+                // Apply personal data updates
+                if (myUpdates.personal) {
+                    Object.keys(myUpdates.personal).forEach(key => {
+                        if (this.anggotaData.personal[key] !== myUpdates.personal[key]) {
+                            this.anggotaData.personal[key] = myUpdates.personal[key];
+                            dataChanged = true;
+                            console.log(`Personal ${key} updated: ${myUpdates.personal[key]}`);
+                        }
+                    });
+                }
                 
-                this.saveAnggotaData();
-                this.updateProfileUI();
+                // Apply pinjaman updates
+                if (myUpdates.pinjaman) {
+                    this.anggotaData.pinjaman = {
+                        ...this.anggotaData.pinjaman,
+                        ...myUpdates.pinjaman
+                    };
+                    dataChanged = true;
+                }
+                
+                // Apply SHU updates
+                if (myUpdates.shu) {
+                    this.anggotaData.shu = {
+                        ...this.anggotaData.shu,
+                        ...myUpdates.shu
+                    };
+                    dataChanged = true;
+                }
+                
+                if (dataChanged) {
+                    // Simpan perubahan
+                    this.saveAnggotaData();
+                    
+                    // Update UI
+                    this.updateProfileUI();
+                    
+                    // Update current user info jika nama berubah
+                    if (myUpdates.personal?.nama) {
+                        this.currentUser.name = myUpdates.personal.nama;
+                        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                    }
+                    
+                    // Hapus update yang sudah diproses
+                    delete koperasiData.adminUpdates[this.currentUser.email];
+                    localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+                    
+                    // Tampilkan notifikasi
+                    this.showToast('Data berhasil disinkronkan!', 'success');
+                }
             }
         }
 
@@ -1823,6 +2042,14 @@ console.log('Sync Manager loaded successfully');
                 profileName.innerHTML = `${this.anggotaData.personal.nama} <span class="badge">✔</span>`;
                 profileRole.textContent = `@${this.anggotaData.personal.posisi.toLowerCase().replace(' ', '_')}`;
                 profileAvatar.src = this.anggotaData.personal.foto;
+                
+                // Tambah indikator sync di foto profil
+                if (!document.querySelector('.user-sync-indicator')) {
+                    const syncIndicator = document.createElement('div');
+                    syncIndicator.className = 'user-sync-indicator';
+                    profileAvatar.parentElement.style.position = 'relative';
+                    profileAvatar.parentElement.appendChild(syncIndicator);
+                }
             } else {
                 profileName.innerHTML = `${this.currentUser.email} <span class="badge">?</span>`;
                 profileRole.textContent = `@${this.currentUser.role.toLowerCase()}`;
@@ -1841,6 +2068,17 @@ console.log('Sync Manager loaded successfully');
             document.getElementById('totalPinjaman').textContent = `Rp ${this.formatNumber(this.anggotaData.pinjaman.total)}`;
             document.getElementById('shuEstimasi').textContent = `Rp ${this.formatNumber(this.anggotaData.shu.estimasi)}`;
             document.getElementById('statusAnggota').textContent = this.anggotaData.personal.status;
+            
+            // Update last updated time
+            if (this.anggotaData.personal.lastUpdated) {
+                const lastUpdated = new Date(this.anggotaData.personal.lastUpdated);
+                const timeString = lastUpdated.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+                const dateString = lastUpdated.toLocaleDateString('id-ID');
+                document.getElementById('lastSyncTime').textContent = `Diperbarui: ${dateString} ${timeString}`;
+            }
         }
 
         setupEventListeners() {
@@ -2941,7 +3179,8 @@ console.log('Sync Manager loaded successfully');
                 totalSimpanan: this.anggotaData.simpanan.total,
                 totalPinjaman: this.anggotaData.pinjaman.total,
                 shuEstimasi: this.anggotaData.shu.estimasi,
-                scanTime: new Date().toISOString()
+                scanTime: new Date().toISOString(),
+                lastSync: new Date().toISOString()
             };
             
             return JSON.stringify(data);
@@ -3248,22 +3487,34 @@ console.log('Sync Manager loaded successfully');
         }
     }
 
-    // ===== LOGIN INTEGRATION =====
+    // ===== MAIN DIGITAL TABUNGAN SCRIPT =====
+    // Initialize app
+    function initializeApp() {
+        // 1. Initialize data structure
+        initializeKoperasiData();
+        
+        // 2. Start sync manager
+        const syncManager = new DataSyncManager();
+        window.syncManager = syncManager;
+        
+        // 3. Initialize tabungan app
+        window.tabungan = new DigitalTabungan();
+        
+        console.log('Tabungan Digital initialized with real-time sync');
+    }
+
+    // Check login dan initialize
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
     if (!currentUser) {
         window.location.href = 'login.html';
     } else {
-        window.tabungan = null;
-        document.addEventListener('DOMContentLoaded', () => {
-            window.tabungan = new DigitalTabungan();
-            
-            // Refresh data setiap 5 detik untuk sinkronisasi dengan admin
-            setInterval(() => {
-                window.tabungan.syncWithAdminData();
-            }, 5000);
-        });
+        // Initialize ketika DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
     }
-</script>
+    </script>
 </body>
 </html>
