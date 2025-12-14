@@ -4571,6 +4571,263 @@
             initializeData();
         });
     };
+// ================================================
+// GOOGLE SHEETS SYNC INTEGRATION - DIPINDAHKAN KE SINI
+// ================================================
+
+// Load Google Sheets Sync Manager
+const googleSheetsScript = document.createElement('script');
+googleSheetsScript.src = 'js/google-sheets-sync.js';
+document.head.appendChild(googleSheetsScript);
+
+googleSheetsScript.onload = function() {
+    console.log('Google Sheets Sync loaded, initializing...');
+    
+    // Initialize Google Sheets Sync
+    window.googleSheetsSync = new GoogleSheetsSync();
+    
+    // Add Google Sheets UI
+    addGoogleSheetsUI();
+    
+    // Setup event listeners
+    setupGoogleSheetsEvents();
+    
+    console.log('Google Sheets Sync initialized');
+};
+
+function addGoogleSheetsUI() {
+    // Add Google Sheets indicator
+    const indicator = document.createElement('div');
+    indicator.id = 'googleSheetsIndicator';
+    indicator.className = 'google-sheets-indicator not-configured';
+    indicator.innerHTML = '<i class="fab fa-google"></i>';
+    indicator.title = 'Google Sheets Sync (Belum dikonfigurasi)';
+    indicator.onclick = () => toggleGoogleSheetsPanel();
+    
+    document.body.appendChild(indicator);
+    
+    // Add Google Sheets panel
+    const panel = document.createElement('div');
+    panel.id = 'googleSheetsPanel';
+    panel.className = 'google-sheets-sync-panel';
+    panel.innerHTML = `
+        <div class="google-sheets-header">
+            <h4><i class="fab fa-google"></i> Google Sheets Sync</h4>
+            <button id="closeGoogleSheetsBtn" style="background: none; border: none; color: white; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="google-sheets-content">
+            <div id="googleSheetsStatus" class="google-sheets-status">
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 5px;">Status</div>
+                <div style="font-size: 11px; color: #666;">Menunggu konfigurasi...</div>
+            </div>
+            
+            <div style="margin: 15px 0;">
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px;">Konfigurasi</div>
+                <div style="font-size: 11px; color: #666; margin-bottom: 10px;">
+                    Untuk menggunakan Google Sheets Sync, Anda perlu setup:
+                </div>
+                <ol style="font-size: 11px; color: #666; margin-left: 15px; margin-bottom: 15px;">
+                    <li>Google Sheet ID</li>
+                    <li>Google API Key</li>
+                </ol>
+                <button id="setupGoogleSheetsBtn" class="google-sheets-btn warning" style="width: 100%;">
+                    <i class="fas fa-cog"></i> Panduan Setup
+                </button>
+            </div>
+            
+            <div style="margin: 15px 0;">
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px;">Aksi Sync</div>
+                <div class="google-sheets-actions">
+                    <button id="syncFromSheetsBtn" class="google-sheets-btn primary">
+                        <i class="fas fa-download"></i> Ambil Data
+                    </button>
+                    <button id="syncToSheetsBtn" class="google-sheets-btn success">
+                        <i class="fas fa-upload"></i> Kirim Data
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 5px;">Sync Log</div>
+                <div id="googleSheetsLog" style="max-height: 100px; overflow-y: auto; font-size: 10px; color: #666;">
+                    <!-- Log will appear here -->
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(panel);
+    
+    // Event listeners
+    document.getElementById('closeGoogleSheetsBtn').addEventListener('click', toggleGoogleSheetsPanel);
+    document.getElementById('setupGoogleSheetsBtn').addEventListener('click', setupGoogleSheets);
+    document.getElementById('syncFromSheetsBtn').addEventListener('click', syncFromGoogleSheets);
+    document.getElementById('syncToSheetsBtn').addEventListener('click', syncToGoogleSheets);
+    
+    // Update status
+    updateGoogleSheetsStatus();
+}
+
+function toggleGoogleSheetsPanel() {
+    const panel = document.getElementById('googleSheetsPanel');
+    if (panel.classList.contains('active')) {
+        panel.classList.remove('active');
+    } else {
+        panel.classList.add('active');
+        updateGoogleSheetsStatus();
+        loadGoogleSheetsLog();
+    }
+}
+
+function updateGoogleSheetsStatus() {
+    const indicator = document.getElementById('googleSheetsIndicator');
+    const statusDiv = document.getElementById('googleSheetsStatus');
+    
+    if (!window.googleSheetsSync) return;
+    
+    const status = window.googleSheetsSync.getSyncStatus();
+    
+    if (status.isConfigured) {
+        indicator.className = 'google-sheets-indicator';
+        indicator.title = `Google Sheets Sync (Terakhir: ${status.lastSync ? new Date(status.lastSync).toLocaleTimeString() : 'Belum sync'})`;
+        
+        if (statusDiv) {
+            statusDiv.innerHTML = `
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 5px; color: #34A853;">
+                    <i class="fas fa-check-circle"></i> Terkonfigurasi
+                </div>
+                <div style="font-size: 11px; color: #666;">
+                    Terakhir sync: ${status.lastSync ? new Date(status.lastSync).toLocaleString() : 'Belum sync'}
+                </div>
+                <div style="font-size: 11px; color: #666; margin-top: 5px;">
+                    Log: ${status.logCount} entri
+                </div>
+            `;
+            statusDiv.className = 'google-sheets-status success';
+        }
+    } else {
+        indicator.className = 'google-sheets-indicator not-configured';
+        indicator.title = 'Google Sheets Sync (Belum dikonfigurasi)';
+        
+        if (statusDiv) {
+            statusDiv.innerHTML = `
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 5px; color: #FBBC05;">
+                    <i class="fas fa-exclamation-triangle"></i> Belum Dikonfigurasi
+                </div>
+                <div style="font-size: 11px; color: #666;">
+                    Klik "Panduan Setup" untuk konfigurasi Google Sheets
+                </div>
+            `;
+            statusDiv.className = 'google-sheets-status';
+        }
+    }
+}
+
+function setupGoogleSheets() {
+    if (window.googleSheetsSync) {
+        window.googleSheetsSync.setupGoogleSheet();
+    } else {
+        alert('Google Sheets Sync belum diinisialisasi. Refresh halaman.');
+    }
+}
+
+function syncFromGoogleSheets() {
+    if (window.googleSheetsSync) {
+        window.googleSheetsSync.manualSyncFromSheets();
+        
+        // Update status setelah sync
+        setTimeout(updateGoogleSheetsStatus, 2000);
+    } else {
+        alert('Google Sheets Sync belum diinisialisasi.');
+    }
+}
+
+function syncToGoogleSheets() {
+    if (window.googleSheetsSync) {
+        window.googleSheetsSync.manualSyncToSheets();
+        
+        // Update status setelah sync
+        setTimeout(updateGoogleSheetsStatus, 2000);
+    } else {
+        alert('Google Sheets Sync belum diinisialisasi.');
+    }
+}
+
+function loadGoogleSheetsLog() {
+    const logDiv = document.getElementById('googleSheetsLog');
+    if (!logDiv) return;
+    
+    const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+    const logs = koperasiData.googleSheetsLog || [];
+    
+    if (logs.length === 0) {
+        logDiv.innerHTML = '<div style="text-align: center; padding: 10px; color: #999;">Tidak ada log</div>';
+        return;
+    }
+    
+    // Sort logs by timestamp (newest first)
+    logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    logDiv.innerHTML = logs.slice(0, 5).map(log => `
+        <div style="padding: 5px; margin-bottom: 3px; background: ${log.type.includes('SUCCESS') ? '#e6f4ea' : log.type.includes('ERROR') ? '#fce8e6' : '#fef7e0'}; border-radius: 3px;">
+            <div style="font-weight: 600; font-size: 9px;">${log.type}</div>
+            <div style="font-size: 9px;">${log.message}</div>
+            <div style="font-size: 8px; color: #999; margin-top: 2px;">${new Date(log.timestamp).toLocaleTimeString()}</div>
+        </div>
+    `).join('');
+}
+
+function setupGoogleSheetsEvents() {
+    // Listen untuk google sheets updates
+    window.addEventListener('googleSheetsDataUpdated', function(e) {
+        console.log('Google Sheets data updated:', e.detail);
+        
+        // Refresh semua data
+        if (typeof window.initializeData === 'function') {
+            window.initializeData();
+        }
+        
+        // Show notification
+        if (typeof window.showNotification === 'function') {
+            window.showNotification('Data diperbarui dari Google Sheets', 'success');
+        }
+    });
+    
+    // Update status periodically
+    setInterval(updateGoogleSheetsStatus, 30000);
+}
+
+// Add Google Sheets export button to export section
+function addGoogleSheetsExportButton() {
+    const exportSection = document.querySelector('.page-title > div');
+    if (exportSection) {
+        const googleSheetsBtn = document.createElement('button');
+        googleSheetsBtn.className = 'btn btn-outline btn-sm';
+        googleSheetsBtn.id = 'exportToGoogleSheetsBtn';
+        googleSheetsBtn.innerHTML = '<i class="fab fa-google"></i> Export ke Google Sheets';
+        googleSheetsBtn.title = 'Export data ke Google Sheets';
+        googleSheetsBtn.style.marginLeft = '10px';
+        
+        exportSection.appendChild(googleSheetsBtn);
+        
+        googleSheetsBtn.addEventListener('click', function() {
+            if (window.googleSheetsSync) {
+                window.googleSheetsSync.manualSyncToSheets();
+            } else {
+                alert('Google Sheets Sync belum diinisialisasi.');
+            }
+        });
+    }
+}
+
+// Initialize after a delay
+setTimeout(() => {
+    if (typeof addGoogleSheetsExportButton === 'function') {
+        addGoogleSheetsExportButton();
+    }
+}, 3000);        
 </script>
 </body>
 </html>
