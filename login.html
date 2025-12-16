@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Koperasi Asmara Tani</title>
+    <title>Login & Register - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* SEMUA CSS SEBELUMNYA TETAP SAMA */
+        /* CSS tetap sama seperti sebelumnya */
         :root {
             --primary: #2e7d32;
             --primary-light: #4caf50;
@@ -90,212 +90,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
-        /* MODAL BACKUP/RESTORE - HANYA UNTUK ADMIN */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-        
-        @keyframes modalSlideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-header h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        
-        .modal-close:hover {
-            transform: scale(1.2);
-        }
-        
-        .modal-body {
-            padding: 25px;
-        }
-        
-        .backup-section {
-            margin-bottom: 30px;
-        }
-        
-        .section-title {
-            font-size: 1.1rem;
-            color: var(--primary-dark);
-            margin-bottom: 15px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .section-title i {
-            font-size: 1.2rem;
-        }
-        
-        .backup-info {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: var(--dark);
-            border-left: 4px solid var(--primary);
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-sm {
-            padding: 10px 15px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-backup {
-            background: linear-gradient(135deg, var(--info), #42a5f5);
-            color: white;
-        }
-        
-        .btn-restore {
-            background: linear-gradient(135deg, var(--success), #66bb6a);
-            color: white;
-        }
-        
-        .btn-reset {
-            background: linear-gradient(135deg, var(--danger), #ef5350);
-            color: white;
-        }
-        
-        .btn-backup:hover, .btn-restore:hover, .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .restore-file-input {
-            margin: 15px 0;
-        }
-        
-        .file-input-label {
-            display: block;
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            border: 2px dashed var(--gray-light);
-            transition: all 0.3s ease;
-        }
-        
-        .file-input-label:hover {
-            background: var(--gray-light);
-            border-color: var(--primary);
-        }
-        
-        .file-input-label i {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .file-name-display {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: var(--gray);
-            word-break: break-all;
-        }
-        
-        .data-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .stat-card {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 5px 0;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--gray);
-        }
-        
-        /* HIDDEN BACKUP BUTTON - Hanya muncul dengan shortcut */
-        .hidden-backup-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: transparent;
-            border: none;
-            color: transparent;
-            z-index: 9999;
-            cursor: pointer;
-        }
-        
-        /* ADMIN ONLY BADGE */
-        .admin-only-badge {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        /* MAIN CONTAINER - TETAP SAMA */
         .main-container {
             display: flex;
             align-items: center;
@@ -694,24 +488,10 @@
                 flex-direction: column;
                 gap: 0;
             }
-            
-            .modal-content {
-                width: 95%;
-                max-height: 90vh;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .data-stats {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- TIDAK ADA TOMBOL BACKUP DI HALAMAN LOGIN -->
     <button class="back-home" id="backHome">
         <i class="fas fa-home"></i> Beranda
     </button>
@@ -719,96 +499,6 @@
     <button class="close-btn" id="closeBtn" title="Tutup">
         <i class="fas fa-times"></i>
     </button>
-    
-    <!-- HIDDEN BUTTON UNTUK SHORTCUT ADMIN -->
-    <button class="hidden-backup-btn" id="hiddenBackupBtn" title="Admin Backup (Ctrl+Alt+B)"></button>
-    
-    <!-- MODAL BACKUP/RESTORE - HANYA MUNCUL DENGAN SHORTCUT ADMIN -->
-    <div class="modal-overlay" id="backupModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-database"></i> Admin Backup & Restore 
-                    <span class="admin-only-badge">ADMIN ONLY</span>
-                </h3>
-                <button class="modal-close" id="modalClose">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="backup-info" style="background: #fff3cd; border-left-color: #ffc107;">
-                    <strong><i class="fas fa-exclamation-circle"></i> PERINGATAN ADMIN:</strong>
-                    Fitur ini hanya untuk Administrator. Semua tindakan dicatat dalam log sistem.
-                </div>
-                
-                <div class="backup-section">
-                    <div class="section-title">
-                        <i class="fas fa-download"></i> Backup Data
-                    </div>
-                    <div class="backup-info">
-                        Backup semua data anggota, user login, dan data Excel ke file JSON. 
-                        <strong>Rahasiakan file backup!</strong>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary btn-sm btn-backup" id="backupAll">
-                            <i class="fas fa-file-export"></i> Backup Semua Data
-                        </button>
-                        <button class="btn btn-primary btn-sm btn-backup" id="backupExcel">
-                            <i class="fas fa-file-excel"></i> Backup Data Excel
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="backup-section">
-                    <div class="section-title">
-                        <i class="fas fa-upload"></i> Restore Data
-                    </div>
-                    <div class="backup-info">
-                        Upload file backup JSON untuk mengembalikan data. 
-                        <strong>Pastikan file backup valid!</strong>
-                    </div>
-                    <div class="restore-file-input">
-                        <label class="file-input-label" for="restoreFile">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <div>Pilih file backup (.json)</div>
-                        </label>
-                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
-                        <div class="file-name-display" id="restoreFileName">Belum ada file dipilih</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary btn-sm btn-restore" id="restoreData">
-                            <i class="fas fa-file-import"></i> Restore Data
-                        </button>
-                        <button class="btn btn-primary btn-sm btn-restore" id="mergeData">
-                            <i class="fas fa-blend"></i> Gabungkan Data
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="backup-section">
-                    <div class="section-title">
-                        <i class="fas fa-chart-bar"></i> Statistik Data
-                    </div>
-                    <div class="data-stats" id="dataStats">
-                        <!-- Statistik akan diisi oleh JavaScript -->
-                    </div>
-                </div>
-                
-                <div class="backup-section">
-                    <div class="section-title">
-                        <i class="fas fa-exclamation-triangle"></i> Opsi Berbahaya
-                        <span class="admin-only-badge">SUPER ADMIN</span>
-                    </div>
-                    <div class="backup-info" style="border-left-color: var(--danger); background: #f8d7da;">
-                        <strong>Hanya untuk Super Admin!</strong> Hapus semua data dari sistem. 
-                        Tindakan ini tidak dapat dibatalkan dan dicatat dalam log!
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary btn-sm btn-reset" id="resetData">
-                            <i class="fas fa-trash-alt"></i> Reset Semua Data
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <div class="main-container">
         <!-- Container Login (Default) -->
@@ -858,6 +548,10 @@
                         Email atau kata sandi salah. Silakan coba lagi.
                     </div>
                     
+                    <div class="success-message" id="successMessage">
+                        Login berhasil! Mengarahkan ke dashboard...
+                    </div>
+                    
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Masuk
                     </button>
@@ -878,7 +572,6 @@
             
             <div class="form-container">
                 <form id="registrationForm">
-                    <!-- FORM REGISTRASI TETAP SAMA -->
                     <div class="form-group">
                         <label for="posisi">Posisi <span class="required">*</span></label>
                         <select id="posisi" class="form-select" required>
@@ -1035,1302 +728,993 @@
         </div>
     </div>
 
+    <!-- KOPERASI CORE SCRIPT -->
     <script>
-        // ==================== FIXED USER DATABASE SYSTEM ====================
-        const USER_DATABASE = {
-            KEY: 'koperasi_users_database',
-            PREDEFINED_USERS: {
-                'admin@koperasi.com': { 
-                    password: 'admin014212', 
-                    name: 'Administrator', 
-                    role: 'Admin',
-                    email: 'admin@koperasi.com',
-                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                    norek: '4098-01-019526-53-3 (BRI)',
-                    access: 'dashboard',
-                    isSuperAdmin: true, // Tambahkan flag super admin
-                    createdAt: '2024-01-01T00:00:00.000Z',
-                    lastLogin: null
-                },
-                'pengurus@koperasi.com': { 
-                    password: 'pengurus4212', 
-                    name: 'Ketua Pengurus', 
-                    role: 'Pengurus',
-                    email: 'pengurus@koperasi.com',
-                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
-                    norek: '1234-5678-9012-3456 (BCA)',
-                    access: 'dashboard',
-                    isSuperAdmin: false,
-                    createdAt: '2024-01-01T00:00:00.000Z',
-                    lastLogin: null
-                }
+    // ===== KOPERASI CORE SYSTEM =====
+    const KOPERASI_CORE = {
+        // Storage keys
+        KEYS: {
+            USERS: 'koperasi_users',
+            ANGGOTA: 'koperasi_anggota',
+            SIMPANAN: 'koperasi_simpanan',
+            PINJAMAN: 'koperasi_pinjaman',
+            TRANSAKSI: 'koperasi_transaksi',
+            BARANG: 'koperasi_barang',
+            SHU: 'koperasi_shu',
+            SETTINGS: 'koperasi_settings',
+            SESSION: 'koperasi_current_user',
+            ADMIN_UPDATES: 'koperasi_admin_updates',
+            USER_UPDATES: 'koperasi_user_updates'
+        },
+        
+        // Default admin users
+        DEFAULT_ADMINS: {
+            'admin@koperasi.com': {
+                password: 'admin014212',
+                name: 'Administrator',
+                role: 'Admin',
+                email: 'admin@koperasi.com',
+                foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                norek: '4098-01-019526-53-3 (BRI)',
+                access: 'dashboard',
+                isSuperAdmin: true,
+                createdAt: '2024-01-01T00:00:00.000Z'
             },
-            
-            // Inisialisasi database user
-            initialize: function() {
-                try {
-                    let users = localStorage.getItem(this.KEY);
-                    
-                    if (!users) {
-                        // Simpan predefined users pertama kali
-                        localStorage.setItem(this.KEY, JSON.stringify(this.PREDEFINED_USERS));
-                        console.log('✅ Database user diinisialisasi dengan admin default');
-                        return this.PREDEFINED_USERS;
-                    }
-                    
-                    // Gabungkan dengan predefined users jika ada yang baru
-                    const existingUsers = JSON.parse(users);
-                    const mergedUsers = { ...this.PREDEFINED_USERS, ...existingUsers };
-                    localStorage.setItem(this.KEY, JSON.stringify(mergedUsers));
-                    
-                    console.log('✅ Database user dimuat:', Object.keys(mergedUsers).length, 'users');
-                    return mergedUsers;
-                    
-                } catch (error) {
-                    console.error('❌ Error inisialisasi database user:', error);
-                    return this.PREDEFINED_USERS;
-                }
-            },
-            
-            // Get all users
-            getAllUsers: function() {
-                try {
-                    const users = localStorage.getItem(this.KEY);
-                    return users ? JSON.parse(users) : this.PREDEFINED_USERS;
-                } catch (error) {
-                    console.error('Error getting users:', error);
-                    return this.PREDEFINED_USERS;
-                }
-            },
-            
-            // Get single user by email
-            getUser: function(email) {
-                try {
-                    const users = this.getAllUsers();
-                    return users[email] || null;
-                } catch (error) {
-                    console.error('Error getting user:', error);
-                    return null;
-                }
-            },
-            
-            // Check if user is admin/super admin
-            isAdminUser: function(email) {
-                try {
-                    const user = this.getUser(email);
-                    if (!user) return false;
-                    
-                    return user.role === 'Admin' || user.role === 'Pengurus' || user.isSuperAdmin === true;
-                } catch (error) {
-                    console.error('Error checking admin:', error);
-                    return false;
-                }
-            },
-            
-            // Check if user is super admin
-            isSuperAdmin: function(email) {
-                try {
-                    const user = this.getUser(email);
-                    if (!user) return false;
-                    
-                    return user.isSuperAdmin === true || email === 'admin@koperasi.com';
-                } catch (error) {
-                    console.error('Error checking super admin:', error);
-                    return false;
-                }
-            },
-            
-            // Save new user
-            saveUser: function(email, userData) {
-                try {
-                    const users = this.getAllUsers();
-                    
-                    // Cek apakah email sudah terdaftar
-                    if (users[email]) {
-                        return { 
-                            success: false, 
-                            message: 'Email sudah terdaftar' 
-                        };
-                    }
-                    
-                    // Tambahkan metadata
-                    userData.createdAt = new Date().toISOString();
-                    userData.lastLogin = null;
-                    userData.isSuperAdmin = false; // Default bukan super admin
-                    
-                    // Simpan user baru
-                    users[email] = userData;
-                    localStorage.setItem(this.KEY, JSON.stringify(users));
-                    
-                    console.log('✅ User baru disimpan:', email);
-                    return { success: true, user: userData };
-                    
-                } catch (error) {
-                    console.error('Error saving user:', error);
-                    return { success: false, message: error.message };
-                }
-            },
-            
-            // Verify login credentials
-            verifyLogin: function(email, password) {
-                try {
-                    const user = this.getUser(email);
-                    
-                    if (!user) {
-                        return { 
-                            success: false, 
-                            message: 'Email tidak terdaftar' 
-                        };
-                    }
-                    
-                    if (user.password !== password) {
-                        return { 
-                            success: false, 
-                            message: 'Password salah' 
-                        };
-                    }
-                    
-                    // Update last login
-                    this.updateLastLogin(email);
-                    
-                    return { 
-                        success: true, 
-                        user: user 
-                    };
-                    
-                } catch (error) {
-                    console.error('Error verifying login:', error);
-                    return { 
-                        success: false, 
-                        message: 'Terjadi kesalahan sistem' 
-                    };
-                }
-            },
-            
-            // Update last login time
-            updateLastLogin: function(email) {
-                try {
-                    const users = this.getAllUsers();
-                    
-                    if (users[email]) {
-                        users[email].lastLogin = new Date().toISOString();
-                        localStorage.setItem(this.KEY, JSON.stringify(users));
-                    }
-                    
-                } catch (error) {
-                    console.error('Error updating last login:', error);
-                }
+            'pengurus@koperasi.com': {
+                password: 'pengurus4212',
+                name: 'Ketua Pengurus',
+                role: 'Pengurus',
+                email: 'pengurus@koperasi.com',
+                foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                norek: '1234-5678-9012-3456 (BCA)',
+                access: 'dashboard',
+                isSuperAdmin: false,
+                createdAt: '2024-01-01T00:00:00.000Z'
             }
-        };
-
-        // ==================== ADMIN BACKUP SYSTEM (HIDDEN) ====================
-        const ADMIN_BACKUP_SYSTEM = {
-            // Backup semua data
-            backupAllData: function() {
-                try {
-                    // Log admin action
-                    this.logAdminAction('BACKUP_ALL_DATA');
-                    
-                    const backupData = {
-                        metadata: {
-                            system: 'Koperasi Asmara Tani',
-                            version: '1.0',
-                            backupDate: new Date().toISOString(),
-                            backedUpBy: localStorage.getItem('currentAdmin') || 'Unknown',
-                            totalRecords: 0
-                        },
-                        anggotaData: JSON.parse(localStorage.getItem('koperasi_anggota_database')) || [],
-                        userData: USER_DATABASE.getAllUsers(),
-                        excelData: JSON.parse(localStorage.getItem('koperasi_excel_data')) || []
-                    };
-                    
-                    backupData.metadata.totalRecords = 
-                        backupData.anggotaData.length + 
-                        Object.keys(backupData.userData).length + 
-                        backupData.excelData.length;
-                    
-                    const timestamp = new Date().getTime();
-                    const filename = `koperasi_admin_backup_${timestamp}.json`;
-                    
-                    this.downloadJSON(backupData, filename);
-                    this.showAdminNotification('✅ Backup berhasil! File telah diunduh.', 'success');
-                    
-                    return { success: true, filename: filename };
-                } catch (error) {
-                    console.error('Backup error:', error);
-                    this.showAdminNotification('❌ Backup gagal: ' + error.message, 'error');
-                    return { success: false, message: error.message };
-                }
-            },
+        },
+        
+        // Initialize all databases
+        init() {
+            console.log('🔄 Initializing Koperasi Core System...');
             
-            // Restore data dari file
-            restoreData: function(backupFile, merge = false) {
-                return new Promise((resolve, reject) => {
-                    try {
-                        const reader = new FileReader();
-                        
-                        reader.onload = function(e) {
-                            try {
-                                const backupData = JSON.parse(e.target.result);
-                                
-                                // Validasi file backup
-                                if (!backupData.metadata || !backupData.metadata.system) {
-                                    throw new Error('Format file backup tidak valid');
-                                }
-                                
-                                if (merge) {
-                                    // Log admin action
-                                    ADMIN_BACKUP_SYSTEM.logAdminAction('MERGE_DATA');
-                                    // Gabungkan data dengan yang sudah ada
-                                    ADMIN_BACKUP_SYSTEM.mergeBackupData(backupData);
-                                    ADMIN_BACKUP_SYSTEM.showAdminNotification('✅ Data berhasil digabungkan!', 'success');
-                                    resolve({ success: true, action: 'merge' });
-                                } else {
-                                    // Log admin action
-                                    ADMIN_BACKUP_SYSTEM.logAdminAction('RESTORE_DATA');
-                                    // Ganti semua data dengan data backup
-                                    ADMIN_BACKUP_SYSTEM.replaceAllData(backupData);
-                                    ADMIN_BACKUP_SYSTEM.showAdminNotification('✅ Data berhasil direstore!', 'success');
-                                    resolve({ success: true, action: 'replace' });
-                                }
-                                
-                                // Update statistik
-                                ADMIN_BACKUP_SYSTEM.updateDataStats();
-                                
-                            } catch (error) {
-                                ADMIN_BACKUP_SYSTEM.showAdminNotification('❌ Format file tidak valid: ' + error.message, 'error');
-                                reject(error);
-                            }
-                        };
-                        
-                        reader.onerror = function() {
-                            ADMIN_BACKUP_SYSTEM.showAdminNotification('❌ Gagal membaca file', 'error');
-                            reject(new Error('Gagal membaca file'));
-                        };
-                        
-                        reader.readAsText(backupFile);
-                        
-                    } catch (error) {
-                        ADMIN_BACKUP_SYSTEM.showAdminNotification('❌ Restore gagal: ' + error.message, 'error');
-                        reject(error);
-                    }
-                });
-            },
-            
-            // Gabungkan data backup dengan data yang ada
-            mergeBackupData: function(backupData) {
-                // Merge user data
-                const existingUsers = USER_DATABASE.getAllUsers();
-                const backupUsers = backupData.userData || {};
-                
-                const mergedUsers = { ...existingUsers };
-                Object.keys(backupUsers).forEach(email => {
-                    if (!mergedUsers[email]) {
-                        mergedUsers[email] = backupUsers[email];
-                    }
-                });
-                
-                // Simpan ke Local Storage
-                localStorage.setItem('koperasi_users_database', JSON.stringify(mergedUsers));
-                
-                // Merge anggota data
-                const existingAnggota = JSON.parse(localStorage.getItem('koperasi_anggota_database')) || [];
-                const backupAnggota = backupData.anggotaData || [];
-                
-                const emailSet = new Set(existingAnggota.map(a => a.email));
-                const newAnggota = backupAnggota.filter(a => !emailSet.has(a.email));
-                const mergedAnggota = [...existingAnggota, ...newAnggota];
-                
-                localStorage.setItem('koperasi_anggota_database', JSON.stringify(mergedAnggota));
-                
-                // Merge excel data
-                const existingExcel = JSON.parse(localStorage.getItem('koperasi_excel_data')) || [];
-                const backupExcel = backupData.excelData || [];
-                
-                const mergedExcel = [...existingExcel, ...backupExcel];
-                localStorage.setItem('koperasi_excel_data', JSON.stringify(mergedExcel));
-                
-                console.log(`✅ Merge berhasil: +${Object.keys(backupUsers).length} users, +${newAnggota.length} anggota baru`);
-            },
-            
-            // Ganti semua data dengan data backup
-            replaceAllData: function(backupData) {
-                // Simpan user data
-                localStorage.setItem('koperasi_users_database', JSON.stringify(backupData.userData || {}));
-                
-                // Simpan anggota data
-                localStorage.setItem('koperasi_anggota_database', JSON.stringify(backupData.anggotaData || []));
-                
-                // Simpan excel data
-                localStorage.setItem('koperasi_excel_data', JSON.stringify(backupData.excelData || []));
-                
-                console.log('✅ Semua data telah direplace dengan data backup');
-            },
-            
-            // Reset semua data (hanya untuk super admin)
-            resetAllData: function(currentAdminEmail) {
-                // Cek apakah super admin
-                if (!USER_DATABASE.isSuperAdmin(currentAdminEmail)) {
-                    this.showAdminNotification('❌ Akses ditolak! Hanya Super Admin yang bisa reset data.', 'error');
-                    return { success: false, message: 'Akses ditolak' };
-                }
-                
-                if (confirm('⚠️ PERINGATAN SUPER ADMIN!\n\nYAKIN INGIN MENGHAPUS SEMUA DATA?\n\nTindakan ini akan menghapus:\n• Semua data anggota\n• Semua akun user\n• Semua data Excel\n\nTindakan tidak dapat dibatalkan!')) {
-                    
-                    // Log admin action
-                    this.logAdminAction('RESET_ALL_DATA', currentAdminEmail);
-                    
-                    localStorage.removeItem('koperasi_anggota_database');
-                    localStorage.removeItem('koperasi_users_database');
-                    localStorage.removeItem('koperasi_excel_data');
-                    
-                    // Inisialisasi ulang dengan data default
-                    USER_DATABASE.initialize();
-                    localStorage.setItem('koperasi_anggota_database', JSON.stringify([]));
-                    localStorage.setItem('koperasi_excel_data', JSON.stringify([]));
-                    
-                    this.showAdminNotification('✅ Semua data telah direset oleh Super Admin!', 'success');
-                    this.updateDataStats();
-                    
-                    return { success: true };
-                }
-                return { success: false, cancelled: true };
-            },
-            
-            // Download JSON file
-            downloadJSON: function(data, filename) {
-                const jsonString = JSON.stringify(data, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                URL.revokeObjectURL(url);
-            },
-            
-            // Tampilkan statistik data
-            updateDataStats: function() {
-                try {
-                    const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota_database')) || [];
-                    const userStats = this.getUserStats();
-                    const excelData = JSON.parse(localStorage.getItem('koperasi_excel_data')) || [];
-                    
-                    const statsHTML = `
-                        <div class="stat-card">
-                            <div class="stat-number">${anggotaData.length}</div>
-                            <div class="stat-label">Total Anggota</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">${userStats.total}</div>
-                            <div class="stat-label">Akun Login</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">${excelData.length}</div>
-                            <div class="stat-label">Data Excel</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">${userStats.anggota}</div>
-                            <div class="stat-label">Anggota Biasa</div>
-                        </div>
-                    `;
-                    
-                    const statsElement = document.getElementById('dataStats');
-                    if (statsElement) {
-                        statsElement.innerHTML = statsHTML;
-                    }
-                    
-                } catch (error) {
-                    console.error('Error updating stats:', error);
-                }
-            },
-            
-            // Get user statistics
-            getUserStats: function() {
-                try {
-                    const users = USER_DATABASE.getAllUsers();
-                    const userList = Object.values(users);
-                    
-                    return {
-                        total: userList.length,
-                        admin: userList.filter(u => u.role === 'Admin').length,
-                        pengurus: userList.filter(u => u.role === 'Pengurus').length,
-                        anggota: userList.filter(u => u.role === 'Anggota').length,
-                        superAdmin: userList.filter(u => u.isSuperAdmin === true).length,
-                        active: userList.filter(u => u.lastLogin).length
-                    };
-                } catch (error) {
-                    console.error('Error getting stats:', error);
-                    return { total: 0, admin: 0, pengurus: 0, anggota: 0, superAdmin: 0, active: 0 };
-                }
-            },
-            
-            // Tampilkan notifikasi untuk admin
-            showAdminNotification: function(message, type = 'info') {
-                alert('[ADMIN] ' + message);
-            },
-            
-            // Log admin actions
-            logAdminAction: function(action, adminEmail = null) {
-                try {
-                    const adminLogs = JSON.parse(localStorage.getItem('koperasi_admin_logs')) || [];
-                    const admin = adminEmail || localStorage.getItem('currentAdmin') || 'Unknown';
-                    
-                    const logEntry = {
-                        action: action,
-                        admin: admin,
-                        timestamp: new Date().toISOString(),
-                        ip: 'localhost' // Dalam production, ini bisa diisi dengan IP asli
-                    };
-                    
-                    adminLogs.push(logEntry);
-                    
-                    // Simpan maksimal 100 log terakhir
-                    if (adminLogs.length > 100) {
-                        adminLogs.shift();
-                    }
-                    
-                    localStorage.setItem('koperasi_admin_logs', JSON.stringify(adminLogs));
-                    console.log('📋 Admin Log:', logEntry);
-                    
-                } catch (error) {
-                    console.error('Error logging admin action:', error);
-                }
-            },
-            
-            // Check admin access
-            checkAdminAccess: function() {
-                try {
-                    // Cek apakah ada admin yang login
-                    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-                    
-                    if (!currentUser) {
-                        this.showAdminNotification('❌ Anda harus login sebagai admin terlebih dahulu!', 'error');
-                        return false;
-                    }
-                    
-                    // Cek apakah user adalah admin
-                    if (!USER_DATABASE.isAdminUser(currentUser.email)) {
-                        this.showAdminNotification('❌ Akses ditolak! Hanya admin yang bisa mengakses fitur ini.', 'error');
-                        return false;
-                    }
-                    
-                    // Simpan admin yang sedang mengakses
-                    localStorage.setItem('currentAdmin', currentUser.email);
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Error checking admin access:', error);
-                    return false;
-                }
-            }
-        };
-
-        // ==================== HIDDEN ADMIN SHORTCUT SYSTEM ====================
-        const ADMIN_SHORTCUT = {
-            // Shortcut keys
-            SHORTCUT_KEYS: {
-                OPEN_BACKUP: ['Control', 'Alt', 'B'], // Ctrl+Alt+B
-                OPEN_BACKUP_ALTERNATE: ['Control', 'Shift', 'B'], // Ctrl+Shift+B
-                SECRET_ADMIN_CODE: ['A', 'D', 'M', 'I', 'N'] // Ketik "ADMIN"
-            },
-            
-            // Current key sequence
-            currentKeys: [],
-            secretCodeTyped: '',
-            
-            // Initialize keyboard listener
-            initialize: function() {
-                // Listen for keyboard shortcuts
-                document.addEventListener('keydown', this.handleKeyDown.bind(this));
-                
-                // Listen for keypress for secret code
-                document.addEventListener('keypress', this.handleKeyPress.bind(this));
-                
-                console.log('🔐 Admin shortcut system initialized');
-            },
-            
-            // Handle key down for shortcuts
-            handleKeyDown: function(e) {
-                // Add key to sequence
-                this.currentKeys.push(e.key);
-                
-                // Keep only last 3 keys
-                if (this.currentKeys.length > 3) {
-                    this.currentKeys.shift();
-                }
-                
-                // Check for Ctrl+Alt+B
-                if (this.checkShortcut(this.SHORTCUT_KEYS.OPEN_BACKUP)) {
-                    e.preventDefault();
-                    this.openAdminBackup();
-                }
-                
-                // Check for Ctrl+Shift+B
-                if (this.checkShortcut(this.SHORTCUT_KEYS.OPEN_BACKUP_ALTERNATE)) {
-                    e.preventDefault();
-                    this.openAdminBackup();
-                }
-            },
-            
-            // Handle key press for secret code
-            handleKeyPress: function(e) {
-                // Add character to secret code
-                this.secretCodeTyped += e.key.toUpperCase();
-                
-                // Keep only last 5 characters
-                if (this.secretCodeTyped.length > 5) {
-                    this.secretCodeTyped = this.secretCodeTyped.substring(1);
-                }
-                
-                // Check for "ADMIN" secret code
-                if (this.secretCodeTyped === 'ADMIN') {
-                    this.openAdminBackup();
-                    this.secretCodeTyped = ''; // Reset
-                }
-                
-                // Check for "RESET" secret code (super admin only)
-                if (this.secretCodeTyped === 'RESET') {
-                    if (confirm('⚠️ SECRET SUPER ADMIN CODE!\n\nAnda akan membuka mode Super Admin Reset.\nLanjutkan?')) {
-                        this.openSuperAdminReset();
-                    }
-                    this.secretCodeTyped = ''; // Reset
-                }
-            },
-            
-            // Check if current keys match shortcut
-            checkShortcut: function(shortcut) {
-                if (this.currentKeys.length !== shortcut.length) return false;
-                
-                return this.currentKeys.every((key, index) => 
-                    key.toLowerCase() === shortcut[index].toLowerCase()
-                );
-            },
-            
-            // Open admin backup modal
-            openAdminBackup: function() {
-                // Cek akses admin
-                if (ADMIN_BACKUP_SYSTEM.checkAdminAccess()) {
-                    const backupModal = document.getElementById('backupModal');
-                    backupModal.style.display = 'flex';
-                    ADMIN_BACKUP_SYSTEM.updateDataStats();
-                    
-                    // Log admin access
-                    ADMIN_BACKUP_SYSTEM.logAdminAction('OPEN_BACKUP_MODAL');
-                    
-                    console.log('🔓 Admin backup modal opened');
-                }
-            },
-            
-            // Open super admin reset
-            openSuperAdminReset: function() {
-                const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-                
-                if (currentUser && USER_DATABASE.isSuperAdmin(currentUser.email)) {
-                    if (confirm('⚡ SUPER ADMIN MODE!\n\nAnda akan membuka panel reset data.\nLanjutkan?')) {
-                        const backupModal = document.getElementById('backupModal');
-                        backupModal.style.display = 'flex';
-                        ADMIN_BACKUP_SYSTEM.updateDataStats();
-                        
-                        // Highlight reset section
-                        setTimeout(() => {
-                            const resetBtn = document.getElementById('resetData');
-                            if (resetBtn) {
-                                resetBtn.style.animation = 'pulse 1s infinite';
-                                resetBtn.style.boxShadow = '0 0 20px #f44336';
-                            }
-                        }, 100);
-                        
-                        ADMIN_BACKUP_SYSTEM.logAdminAction('OPEN_SUPER_ADMIN_RESET', currentUser.email);
-                    }
+            try {
+                // Initialize users database
+                let users = localStorage.getItem(this.KEYS.USERS);
+                if (!users) {
+                    localStorage.setItem(this.KEYS.USERS, JSON.stringify(this.DEFAULT_ADMINS));
+                    console.log('✅ Created default users database');
                 } else {
-                    alert('❌ Akses ditolak! Hanya Super Admin yang bisa mengakses mode ini.');
+                    const existingUsers = JSON.parse(users);
+                    const mergedUsers = { ...this.DEFAULT_ADMINS, ...existingUsers };
+                    localStorage.setItem(this.KEYS.USERS, JSON.stringify(mergedUsers));
                 }
-            },
-            
-            // Reset key sequence after a delay
-            resetKeySequence: function() {
-                setTimeout(() => {
-                    this.currentKeys = [];
-                }, 1000);
-            }
-        };
-
-        // ==================== DATABASE MANAGEMENT SYSTEM ====================
-        const DATABASE = {
-            STORAGE_KEY: 'koperasi_anggota_database',
-            EXCEL_KEY: 'koperasi_excel_data',
-            EXCEL_EXPORT_INTERVAL: 30000, // 30 detik
-            initialize: function() {
-                // Inisialisasi database jika belum ada
-                if (!localStorage.getItem(this.STORAGE_KEY)) {
-                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify([]));
-                }
-                if (!localStorage.getItem(this.EXCEL_KEY)) {
-                    localStorage.setItem(this.EXCEL_KEY, JSON.stringify([]));
-                }
-                return true;
-            },
-            
-            // Fungsi untuk menyimpan data anggota
-            saveAnggota: function(anggotaData) {
-                try {
-                    const allAnggota = this.getAllAnggota();
-                    
-                    // Cek apakah email sudah terdaftar
-                    const emailExists = allAnggota.some(anggota => 
-                        anggota.email.toLowerCase() === anggotaData.email.toLowerCase()
-                    );
-                    
-                    if (emailExists) {
-                        return { success: false, message: 'Email sudah terdaftar' };
-                    }
-                    
-                    // Generate ID unik
-                    anggotaData.id = 'AGT-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-                    anggotaData.createdAt = new Date().toISOString();
-                    anggotaData.updatedAt = new Date().toISOString();
-                    anggotaData.statusAktif = 'Aktif';
-                    anggotaData.tabunganDigital = {
-                        saldo: 0,
-                        riwayat: []
-                    };
-                    
-                    // Simpan ke database anggota
-                    allAnggota.push(anggotaData);
-                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(allAnggota));
-                    
-                    // Simpan ke database users untuk login
-                    const userResult = USER_DATABASE.saveUser(anggotaData.email, {
-                        password: anggotaData.password,
-                        name: anggotaData.nama,
-                        role: anggotaData.posisi === 'Anggota' ? 'Anggota' : anggotaData.posisi,
-                        email: anggotaData.email,
-                        foto: anggotaData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
-                        norek: 'Belum diatur',
-                        access: anggotaData.posisi === 'Anggota' ? 'anggota' : 'dashboard',
-                        anggotaId: anggotaData.id,
-                        tabunganDigitalId: anggotaData.tabunganDigital ? anggotaData.tabunganDigital.id : null
-                    });
-                    
-                    if (!userResult.success) {
-                        // Rollback jika gagal save user
-                        const index = allAnggota.findIndex(a => a.id === anggotaData.id);
-                        if (index !== -1) {
-                            allAnggota.splice(index, 1);
-                            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(allAnggota));
-                        }
-                        return userResult;
-                    }
-                    
-                    // Simpan ke database Excel
-                    this.saveToExcel(anggotaData);
-                    
-                    return { success: true, data: anggotaData };
-                } catch (error) {
-                    console.error('Error saving anggota:', error);
-                    return { success: false, message: error.message };
-                }
-            },
-            
-            // Fungsi untuk menyimpan ke database Excel
-            saveToExcel: function(anggotaData) {
-                try {
-                    const excelData = JSON.parse(localStorage.getItem(this.EXCEL_KEY)) || [];
-                    
-                    // Format data untuk Excel
-                    const excelRow = {
-                        'ID': anggotaData.id,
-                        'Tanggal Daftar': new Date().toLocaleString('id-ID'),
-                        'Nama': anggotaData.nama,
-                        'Email': anggotaData.email,
-                        'Password': anggotaData.password,
-                        'WhatsApp': anggotaData.whatsapp,
-                        'NIK': anggotaData.nik,
-                        'Posisi': anggotaData.posisi,
-                        'Alamat': anggotaData.alamat,
-                        'Jenis Kelamin': anggotaData.jenis_kelamin,
-                        'Agama': anggotaData.agama,
-                        'Status': anggotaData.status,
-                        'Status Aktif': 'Aktif',
-                        'Tabungan Digital ID': anggotaData.tabunganDigital ? anggotaData.tabunganDigital.id : 'N/A',
-                        'Saldo Awal': 0,
-                        'Created At': new Date().toISOString()
-                    };
-                    
-                    excelData.push(excelRow);
-                    localStorage.setItem(this.EXCEL_KEY, JSON.stringify(excelData));
-                    
-                    // Trigger auto export
-                    this.autoExportToExcel();
-                    
-                    return { success: true };
-                } catch (error) {
-                    console.error('Error saving to Excel:', error);
-                    return { success: false, message: error.message };
-                }
-            },
-            
-            // Fungsi untuk mendapatkan semua data anggota
-            getAllAnggota: function() {
-                try {
-                    return JSON.parse(localStorage.getItem(this.STORAGE_KEY)) || [];
-                } catch (error) {
-                    console.error('Error getting anggota:', error);
-                    return [];
-                }
-            },
-            
-            // Fungsi untuk auto-export ke Excel
-            autoExportToExcel: function() {
-                try {
-                    const excelData = JSON.parse(localStorage.getItem(this.EXCEL_KEY)) || [];
-                    if (excelData.length === 0) return;
-                    
-                    // Convert ke CSV format
-                    const csv = this.convertToCSV(excelData);
-                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    
-                    // Create download link
-                    const link = document.createElement('a');
-                    link.setAttribute('hidden', '');
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', `Data_Anggota_Koperasi_${this.getCurrentDate()}.csv`);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    console.log('✅ Data otomatis di-export ke Excel:', new Date().toLocaleString());
-                    return { success: true };
-                } catch (error) {
-                    console.error('❌ Gagal auto-export Excel:', error);
-                    return { success: false, message: error.message };
-                }
-            },
-            
-            // Fungsi convert data ke CSV
-            convertToCSV: function(data) {
-                if (!data || data.length === 0) return '';
                 
-                // Get headers
-                const headers = Object.keys(data[0]);
-                
-                // Create CSV rows
-                const csvRows = [
-                    headers.join(','), // Header row
-                    ...data.map(row => 
-                        headers.map(header => {
-                            const value = row[header] || '';
-                            // Escape quotes and wrap in quotes if contains comma
-                            const escaped = String(value).replace(/"/g, '""');
-                            return escaped.includes(',') ? `"${escaped}"` : escaped;
-                        }).join(',')
-                    )
+                // Initialize other databases
+                const databases = [
+                    this.KEYS.ANGGOTA,
+                    this.KEYS.SIMPANAN,
+                    this.KEYS.PINJAMAN,
+                    this.KEYS.TRANSAKSI,
+                    this.KEYS.BARANG,
+                    this.KEYS.SHU,
+                    this.KEYS.SETTINGS,
+                    this.KEYS.ADMIN_UPDATES,
+                    this.KEYS.USER_UPDATES
                 ];
                 
-                return csvRows.join('\n');
-            },
-            
-            // Fungsi untuk mendapatkan tanggal saat ini untuk filename
-            getCurrentDate: function() {
-                const now = new Date();
-                return `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
-            },
-            
-            // Fungsi untuk setup auto-export interval
-            setupAutoExport: function() {
-                setInterval(() => {
-                    this.autoExportToExcel();
-                }, this.EXCEL_EXPORT_INTERVAL);
+                databases.forEach(key => {
+                    if (!localStorage.getItem(key)) {
+                        if (key === this.KEYS.ADMIN_UPDATES || key === this.KEYS.USER_UPDATES) {
+                            localStorage.setItem(key, JSON.stringify({}));
+                        } else if (key === this.KEYS.SETTINGS) {
+                            const defaultSettings = {
+                                minSimpanan: 10000,
+                                minPinjaman: 100000,
+                                bungaPinjaman: 1.2,
+                                bungaSimpanan: 0.5,
+                                adminWhatsapp: '085218483129',
+                                namaKoperasi: 'Koperasi Asmara Tani',
+                                tahunBuku: new Date().getFullYear()
+                            };
+                            localStorage.setItem(key, JSON.stringify(defaultSettings));
+                        } else {
+                            localStorage.setItem(key, JSON.stringify([]));
+                        }
+                        console.log(`✅ Created ${key} database`);
+                    }
+                });
+                
+                console.log('✅ Koperasi Core System initialized successfully');
+                return true;
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                return false;
             }
-        };
+        },
+        
+        // User management
+        getAllUsers() {
+            try {
+                const users = localStorage.getItem(this.KEYS.USERS);
+                return users ? JSON.parse(users) : this.DEFAULT_ADMINS;
+            } catch (error) {
+                return this.DEFAULT_ADMINS;
+            }
+        },
+        
+        getUser(email) {
+            const users = this.getAllUsers();
+            return users[email] || null;
+        },
+        
+        saveUser(userData) {
+            try {
+                const users = this.getAllUsers();
+                const email = userData.email;
+                
+                if (users[email]) {
+                    return { success: false, message: 'Email sudah terdaftar' };
+                }
+                
+                userData.createdAt = new Date().toISOString();
+                userData.lastLogin = null;
+                userData.isSuperAdmin = false;
+                
+                users[email] = userData;
+                localStorage.setItem(this.KEYS.USERS, JSON.stringify(users));
+                
+                return { success: true, user: userData };
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        },
+        
+        // Anggota management
+        getAllAnggota() {
+            try {
+                const anggota = localStorage.getItem(this.KEYS.ANGGOTA);
+                return anggota ? JSON.parse(anggota) : [];
+            } catch (error) {
+                return [];
+            }
+        },
+        
+        getAnggota(email) {
+            const semuaAnggota = this.getAllAnggota();
+            return semuaAnggota.find(a => a.email === email) || null;
+        },
+        
+        saveAnggota(anggotaData) {
+            try {
+                const semuaAnggota = this.getAllAnggota();
+                const email = anggotaData.email;
+                const existingIndex = semuaAnggota.findIndex(a => a.email === email);
+                
+                // Generate ID jika baru
+                if (!anggotaData.id) {
+                    anggotaData.id = 'AGT-' + Date.now().toString().slice(-8);
+                }
+                
+                anggotaData.updatedAt = new Date().toISOString();
+                
+                if (existingIndex !== -1) {
+                    // Update existing
+                    semuaAnggota[existingIndex] = {
+                        ...semuaAnggota[existingIndex],
+                        ...anggotaData
+                    };
+                } else {
+                    // Add new
+                    anggotaData.createdAt = new Date().toISOString();
+                    anggotaData.statusAktif = 'Aktif';
+                    
+                    // Initialize simpanan data
+                    if (!anggotaData.simpanan) {
+                        anggotaData.simpanan = {
+                            pokok: { nominal: 200000, status: 'lunas' },
+                            wajib: { nominal: 20000, status: 'aktif' },
+                            sukarela: { nominal: 0, status: 'tersedia' },
+                            total: 220000
+                        };
+                    }
+                    
+                    // Initialize pinjaman data
+                    if (!anggotaData.pinjaman) {
+                        anggotaData.pinjaman = {
+                            aktif: [],
+                            total: 0
+                        };
+                    }
+                    
+                    // Initialize SHU data
+                    if (!anggotaData.shu) {
+                        anggotaData.shu = {
+                            estimasi: 0,
+                            status: 'Dalam perhitungan'
+                        };
+                    }
+                    
+                    semuaAnggota.push(anggotaData);
+                }
+                
+                localStorage.setItem(this.KEYS.ANGGOTA, JSON.stringify(semuaAnggota));
+                
+                // Sync ke dashboard data
+                this.syncToDashboardData(anggotaData);
+                
+                return { success: true, data: anggotaData };
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        },
+        
+        syncToDashboardData(anggotaData) {
+            try {
+                // Juga simpan ke data dashboard system
+                const dashboardData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+                const existingIndex = dashboardData.findIndex(a => a.email === anggotaData.email);
+                
+                const dashboardAnggota = {
+                    id: anggotaData.id,
+                    posisi: anggotaData.posisi,
+                    nama: anggotaData.nama,
+                    alamat: anggotaData.alamat,
+                    jenisKelamin: anggotaData.jenis_kelamin || anggotaData.jenisKelamin,
+                    agama: anggotaData.agama,
+                    status: anggotaData.status,
+                    email: anggotaData.email,
+                    whatsapp: anggotaData.whatsapp,
+                    nik: anggotaData.nik,
+                    tanggalDaftar: anggotaData.tanggal_daftar || anggotaData.tanggalDaftar,
+                    statusAktif: 'Aktif',
+                    foto: anggotaData.foto,
+                    password: anggotaData.password,
+                    totalSimpanan: anggotaData.simpanan?.total || 220000,
+                    totalPinjaman: anggotaData.pinjaman?.total || 0,
+                    saldo: (anggotaData.simpanan?.total || 220000) - (anggotaData.pinjaman?.total || 0),
+                    createdAt: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                if (existingIndex !== -1) {
+                    dashboardData[existingIndex] = dashboardAnggota;
+                } else {
+                    dashboardData.push(dashboardAnggota);
+                }
+                
+                localStorage.setItem('anggotaData', JSON.stringify(dashboardData));
+                
+                return true;
+            } catch (error) {
+                console.error('Error syncing to dashboard data:', error);
+                return false;
+            }
+        },
+        
+        // Login verification
+        verifyLogin(email, password) {
+            try {
+                const user = this.getUser(email);
+                
+                if (!user) {
+                    return {
+                        success: false,
+                        message: 'Email tidak terdaftar'
+                    };
+                }
+                
+                if (user.password !== password) {
+                    return {
+                        success: false,
+                        message: 'Password salah'
+                    };
+                }
+                
+                // Update last login
+                this.updateLastLogin(email);
+                
+                return {
+                    success: true,
+                    user: user
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: 'Terjadi kesalahan sistem'
+                };
+            }
+        },
+        
+        updateLastLogin(email) {
+            try {
+                const users = this.getAllUsers();
+                if (users[email]) {
+                    users[email].lastLogin = new Date().toISOString();
+                    localStorage.setItem(this.KEYS.USERS, JSON.stringify(users));
+                }
+            } catch (error) {
+                console.error('Error updating last login:', error);
+            }
+        },
+        
+        // Session management
+        getCurrentSession() {
+            try {
+                const session = localStorage.getItem(this.KEYS.SESSION);
+                return session ? JSON.parse(session) : null;
+            } catch (error) {
+                return null;
+            }
+        },
+        
+        setCurrentSession(user) {
+            try {
+                localStorage.setItem(this.KEYS.SESSION, JSON.stringify(user));
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        
+        clearCurrentSession() {
+            localStorage.removeItem(this.KEYS.SESSION);
+            return true;
+        },
+        
+        isLoggedIn() {
+            return this.getCurrentSession() !== null;
+        },
+        
+        requireLogin(redirectTo = 'login.html') {
+            if (!this.isLoggedIn()) {
+                window.location.href = redirectTo;
+                return false;
+            }
+            return true;
+        },
+        
+        // Real-time sync system
+        saveAdminUpdate(anggotaEmail, updateType, updateData) {
+            try {
+                let adminUpdates = JSON.parse(localStorage.getItem(this.KEYS.ADMIN_UPDATES)) || {};
+                
+                if (!adminUpdates[anggotaEmail]) {
+                    adminUpdates[anggotaEmail] = {};
+                }
+                
+                adminUpdates[anggotaEmail][updateType] = {
+                    ...updateData,
+                    timestamp: new Date().toISOString(),
+                    processed: false
+                };
+                
+                localStorage.setItem(this.KEYS.ADMIN_UPDATES, JSON.stringify(adminUpdates));
+                
+                // Trigger sync event
+                this.triggerSyncEvent('admin_update', { email: anggotaEmail, type: updateType });
+                
+                return { success: true };
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        },
+        
+        saveUserUpdate(anggotaEmail, updateType, updateData) {
+            try {
+                let userUpdates = JSON.parse(localStorage.getItem(this.KEYS.USER_UPDATES)) || {};
+                
+                if (!userUpdates[anggotaEmail]) {
+                    userUpdates[anggotaEmail] = {};
+                }
+                
+                userUpdates[anggotaEmail][updateType] = {
+                    ...updateData,
+                    timestamp: new Date().toISOString(),
+                    processed: false
+                };
+                
+                localStorage.setItem(this.KEYS.USER_UPDATES, JSON.stringify(userUpdates));
+                
+                // Trigger sync event
+                this.triggerSyncEvent('user_update', { email: anggotaEmail, type: updateType });
+                
+                return { success: true };
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        },
+        
+        getPendingUpdates(email) {
+            try {
+                const adminUpdates = JSON.parse(localStorage.getItem(this.KEYS.ADMIN_UPDATES)) || {};
+                const userUpdates = JSON.parse(localStorage.getItem(this.KEYS.USER_UPDATES)) || {};
+                
+                return {
+                    admin: adminUpdates[email] || {},
+                    user: userUpdates[email] || {}
+                };
+            } catch (error) {
+                return { admin: {}, user: {} };
+            }
+        },
+        
+        markUpdateProcessed(email, updateType, source = 'admin') {
+            try {
+                const key = source === 'admin' ? this.KEYS.ADMIN_UPDATES : this.KEYS.USER_UPDATES;
+                let updates = JSON.parse(localStorage.getItem(key)) || {};
+                
+                if (updates[email] && updates[email][updateType]) {
+                    delete updates[email][updateType];
+                    
+                    if (Object.keys(updates[email]).length === 0) {
+                        delete updates[email];
+                    }
+                    
+                    localStorage.setItem(key, JSON.stringify(updates));
+                }
+                
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        
+        triggerSyncEvent(eventType, data) {
+            const event = new CustomEvent('koperasi_sync', {
+                detail: { type: eventType, data: data }
+            });
+            window.dispatchEvent(event);
+            
+            localStorage.setItem('koperasi_last_sync', JSON.stringify({
+                type: eventType,
+                data: data,
+                timestamp: new Date().toISOString()
+            }));
+        },
+        
+        // Helper functions
+        formatRupiah(amount) {
+            if (!amount) return 'Rp 0';
+            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        },
+        
+        formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+    };
 
-        // ==================== GLOBAL FUNCTIONS ====================
-        // Fungsi global untuk toggle password
-        function togglePassword(inputId, button) {
+    // Initialize core system
+    KOPERASI_CORE.init();
+    </script>
+
+    <script>
+    // ===== MAIN APPLICATION =====
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM ===');
+        
+        // Initialize KOPERASI_CORE
+        KOPERASI_CORE.init();
+        
+        // Element references
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const backHomeBtn = document.getElementById('backHome');
+        const closeBtn = document.getElementById('closeBtn');
+        const backToLoginLink = document.getElementById('backToLogin');
+        
+        // Navigation
+        backHomeBtn.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Toggle form functions
+        function showLoginForm() {
+            loginContainer.style.display = 'flex';
+            registerContainer.style.display = 'none';
+        }
+        
+        function showRegisterForm() {
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+        }
+        
+        backToLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLoginForm();
+        });
+        
+        // Toggle password visibility
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        }
+        
+        // Global toggle password function
+        window.togglePassword = function(inputId, button) {
             const input = document.getElementById(inputId);
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
             button.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        }
-
-        // ==================== MAIN APPLICATION ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM (SECURE) ===');
-            
-            // Initialize semua database
-            USER_DATABASE.initialize();
-            DATABASE.initialize();
-            
-            // Initialize admin shortcut system
-            ADMIN_SHORTCUT.initialize();
-            
-            console.log('✅ Semua database diinisialisasi');
-            console.log('✅ Admin shortcut system aktif');
-            console.log('🔐 Shortcut: Ctrl+Alt+B atau ketik "ADMIN"');
-            
-            // Setup auto-export
-            DATABASE.setupAutoExport();
-            
-            // ==================== ADMIN BACKUP MODAL EVENT LISTENERS ====================
-            const backupModal = document.getElementById('backupModal');
-            const modalClose = document.getElementById('modalClose');
-            const restoreFileInput = document.getElementById('restoreFile');
-            const restoreFileName = document.getElementById('restoreFileName');
-            
-            // Close backup modal
-            modalClose.addEventListener('click', function() {
-                backupModal.style.display = 'none';
-                localStorage.removeItem('currentAdmin'); // Clear admin session
-            });
-            
-            // Close modal when clicking outside
-            backupModal.addEventListener('click', function(e) {
-                if (e.target === backupModal) {
-                    backupModal.style.display = 'none';
-                    localStorage.removeItem('currentAdmin'); // Clear admin session
-                }
-            });
-            
-            // Backup all data
-            document.getElementById('backupAll').addEventListener('click', function() {
-                ADMIN_BACKUP_SYSTEM.backupAllData();
-            });
-            
-            // Restore file selection
-            restoreFileInput.addEventListener('change', function() {
-                if (this.files.length > 0) {
-                    restoreFileName.textContent = `File dipilih: ${this.files[0].name}`;
-                    restoreFileName.style.color = 'var(--success)';
-                } else {
-                    restoreFileName.textContent = 'Belum ada file dipilih';
-                    restoreFileName.style.color = 'var(--gray)';
-                }
-            });
-            
-            // Restore data (replace)
-            document.getElementById('restoreData').addEventListener('click', function() {
-                if (!restoreFileInput.files.length) {
-                    alert('Pilih file backup terlebih dahulu!');
-                    return;
-                }
+        };
+        
+        // User type selector
+        const userTypes = document.querySelectorAll('.user-type');
+        let currentUserType = 'admin';
+        
+        userTypes.forEach(type => {
+            type.addEventListener('click', function() {
+                userTypes.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
                 
-                if (confirm('⚠️ PERINGATAN ADMIN!\n\nData yang ada akan digantikan dengan data dari file backup.\n\nApakah Anda yakin?')) {
-                    ADMIN_BACKUP_SYSTEM.restoreData(restoreFileInput.files[0], false)
-                        .then(() => {
-                            restoreFileInput.value = '';
-                            restoreFileName.textContent = 'Belum ada file dipilih';
-                            restoreFileName.style.color = 'var(--gray)';
-                        })
-                        .catch(error => console.error('Restore error:', error));
-                }
+                currentUserType = this.getAttribute('data-type');
+                updateFormForUserType(currentUserType);
             });
+        });
+        
+        function updateFormForUserType(userType) {
+            const loginHeader = document.querySelector('.login-header h2');
+            const loginSubtitle = document.querySelector('.login-header p');
+            const registerText = document.getElementById('registerText');
             
-            // Merge data
-            document.getElementById('mergeData').addEventListener('click', function() {
-                if (!restoreFileInput.files.length) {
-                    alert('Pilih file backup terlebih dahulu!');
-                    return;
-                }
-                
-                if (confirm('Data dari file backup akan digabungkan dengan data yang ada.\n\nApakah Anda yakin?')) {
-                    ADMIN_BACKUP_SYSTEM.restoreData(restoreFileInput.files[0], true)
-                        .then(() => {
-                            restoreFileInput.value = '';
-                            restoreFileName.textContent = 'Belum ada file dipilih';
-                            restoreFileName.style.color = 'var(--gray)';
-                        })
-                        .catch(error => console.error('Merge error:', error));
-                }
-            });
-            
-            // Reset all data (SUPER ADMIN ONLY)
-            document.getElementById('resetData').addEventListener('click', function() {
-                const currentAdmin = localStorage.getItem('currentAdmin');
-                ADMIN_BACKUP_SYSTEM.resetAllData(currentAdmin);
-            });
-            
-            // Update data stats periodically
-            setInterval(() => {
-                if (backupModal.style.display === 'flex') {
-                    ADMIN_BACKUP_SYSTEM.updateDataStats();
-                }
-            }, 3000);
-
-            // ==================== EXISTING APPLICATION CODE ====================
-            // Element references
-            const loginContainer = document.getElementById('loginContainer');
-            const registerContainer = document.getElementById('registerContainer');
-            const backHomeBtn = document.getElementById('backHome');
-            const closeBtn = document.getElementById('closeBtn');
-            const backToLoginLink = document.getElementById('backToLogin');
-
-            // Event listeners untuk navigasi
-            backHomeBtn.addEventListener('click', function() {
-                window.location.href = 'index.html';
-            });
-
-            closeBtn.addEventListener('click', function() {
-                if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
-                    window.location.href = 'index.html';
-                }
-            });
-
-            // Fungsi toggle form
-            function showLoginForm() {
-                loginContainer.style.display = 'flex';
-                registerContainer.style.display = 'none';
+            if (userType === 'admin') {
+                loginHeader.textContent = 'Masuk ke Dashboard';
+                loginSubtitle.textContent = 'Silakan masuk dengan akun Admin/Pengurus';
+                registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Hubungi Administrator</a>';
+            } else {
+                loginHeader.textContent = 'Masuk sebagai Anggota';
+                loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
+                registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai anggota</a>';
             }
-
-            function showRegisterForm() {
-                loginContainer.style.display = 'none';
-                registerContainer.style.display = 'block';
-            }
-
-            backToLoginLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                showLoginForm();
-            });
-
-            // Toggle password visibility untuk login
-            const togglePasswordBtn = document.getElementById('togglePassword');
-            const passwordInput = document.getElementById('password');
             
-            if (togglePasswordBtn && passwordInput) {
-                togglePasswordBtn.addEventListener('click', function() {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-                });
-            }
-
-            // User type selector
-            const userTypes = document.querySelectorAll('.user-type');
-            let currentUserType = 'admin';
-            
-            userTypes.forEach(type => {
-                type.addEventListener('click', function() {
-                    userTypes.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    currentUserType = this.getAttribute('data-type');
-                    updateFormForUserType(currentUserType);
-                });
-            });
-
-            function updateFormForUserType(userType) {
-                const loginHeader = document.querySelector('.login-header h2');
-                const loginSubtitle = document.querySelector('.login-header p');
-                const registerText = document.getElementById('registerText');
-                
-                if (userType === 'admin') {
-                    loginHeader.textContent = 'Masuk ke Dashboard';
-                    loginSubtitle.textContent = 'Silakan masuk dengan akun Admin/Pengurus';
-                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Hubungi Administrator</a>';
-                } else {
-                    loginHeader.textContent = 'Masuk sebagai Anggota';
-                    loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
-                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai anggota</a>';
-                }
-                
-                // Update event listener untuk register link
-                const registerLink = document.getElementById('registerLink');
-                if (registerLink) {
-                    registerLink.onclick = function(e) {
-                        e.preventDefault();
-                        if (userType === 'admin') {
-                            window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20admin/pengurus', '_blank');
-                        } else {
-                            showRegisterForm();
-                        }
-                    };
-                }
-            }
-
-            // Inisialisasi awal
-            updateFormForUserType(currentUserType);
-
-            // Form login
-            const loginForm = document.getElementById('loginForm');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
+            const registerLink = document.getElementById('registerLink');
+            if (registerLink) {
+                registerLink.onclick = function(e) {
                     e.preventDefault();
+                    if (userType === 'admin') {
+                        window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20admin/pengurus', '_blank');
+                    } else {
+                        showRegisterForm();
+                    }
+                };
+            }
+        }
+        
+        updateFormForUserType(currentUserType);
+        
+        // Form login
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember').checked;
+                
+                if (!email || !password) {
+                    showError('Harap isi semua field yang diperlukan.');
+                    return;
+                }
+                
+                // Verify login using KOPERASI_CORE
+                const loginResult = KOPERASI_CORE.verifyLogin(email, password);
+                
+                if (loginResult.success) {
+                    const user = loginResult.user;
                     
-                    const email = document.getElementById('email').value.trim();
-                    const password = document.getElementById('password').value;
-                    const remember = document.getElementById('remember').checked;
+                    console.log('✅ Login successful:', email);
                     
-                    if (!email || !password) {
-                        showError('Harap isi semua field yang diperlukan.');
+                    // Check access based on user type
+                    if (currentUserType === 'admin' && user.access !== 'dashboard') {
+                        showError('Akses ditolak. Silakan login sebagai anggota.');
                         return;
                     }
                     
-                    // VERIFIKASI LOGIN DARI DATABASE USER
-                    const loginResult = USER_DATABASE.verifyLogin(email, password);
+                    if (currentUserType === 'anggota' && user.access !== 'anggota') {
+                        showError('Akses ditolak. Silakan login sebagai admin.');
+                        return;
+                    }
                     
-                    if (loginResult.success) {
-                        const user = loginResult.user;
-                        
-                        console.log('✅ Login berhasil:', user.email);
-                        
-                        // Cek akses berdasarkan user type
-                        if (currentUserType === 'admin' && user.access !== 'dashboard') {
-                            showError('Akses ditolak. Silakan login sebagai anggota.');
-                            return;
-                        }
-                        
-                        if (currentUserType === 'anggota' && user.access !== 'anggota') {
-                            showError('Akses ditolak. Silakan login sebagai admin.');
-                            return;
-                        }
-                        
-                        // Login berhasil - Simpan session
-                        localStorage.setItem('currentUser', JSON.stringify(user));
-                        
-                        if (remember) {
-                            localStorage.setItem('rememberedEmail', email);
-                        } else {
-                            localStorage.removeItem('rememberedEmail');
-                        }
-                        
-                        // Redirect berdasarkan role
+                    // Save session
+                    KOPERASI_CORE.setCurrentSession(user);
+                    
+                    // Save remembered email
+                    if (remember) {
+                        localStorage.setItem('koperasi_remembered_email', email);
+                    } else {
+                        localStorage.removeItem('koperasi_remembered_email');
+                    }
+                    
+                    // Show success message
+                    if (successMessage) {
+                        successMessage.style.display = 'block';
+                        errorMessage.style.display = 'none';
+                    }
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
                         if (user.access === 'dashboard') {
                             window.location.href = 'dashboard-admin.html';
                         } else {
                             window.location.href = 'tabungan-digital.html';
                         }
-                    } else {
-                        showError(loginResult.message || 'Email atau kata sandi salah.');
-                    }
-                });
-            }
-            
-            function showError(message) {
-                if (errorMessage) {
-                    errorMessage.textContent = message;
-                    errorMessage.style.display = 'block';
-                    setTimeout(() => {
-                        errorMessage.style.display = 'none';
-                    }, 5000);
+                    }, 1500);
+                    
+                } else {
+                    showError(loginResult.message || 'Email atau kata sandi salah.');
                 }
+            });
+        }
+        
+        function showError(message) {
+            if (errorMessage) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                if (successMessage) successMessage.style.display = 'none';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
             }
-
-            // Cek remembered email
-            const rememberedEmail = localStorage.getItem('rememberedEmail');
-            if (rememberedEmail) {
-                document.getElementById('email').value = rememberedEmail;
-                document.getElementById('remember').checked = true;
-            }
-
-            // Lupa password
-            const forgotPassword = document.querySelector('.forgot-password');
-            if (forgotPassword) {
-                forgotPassword.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    alert('Hubungi Administrator untuk reset password.\n\nEmail: admin@koperasi.com\nWhatsApp: 0852-1848-3129');
-                });
-            }
-
-            // Form pendaftaran - Update tanggal daftar
-            function updateTanggalDaftar() {
-                const now = new Date();
-                const options = { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                };
-                const formattedDate = now.toLocaleDateString('id-ID', options);
-                document.getElementById('tanggal_daftar').value = formattedDate;
-            }
-            
-            updateTanggalDaftar();
-            setInterval(updateTanggalDaftar, 1000);
-            
-            // File upload handlers
-            const fotoInput = document.getElementById('foto');
-            const fotoName = document.getElementById('foto-name');
-            const buktiTransferInput = document.getElementById('bukti_transfer');
-            const buktiTransferName = document.getElementById('bukti-transfer-name');
-            
-            if (fotoInput && fotoName) {
-                fotoInput.addEventListener('change', function() {
-                    fotoName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
-                });
-            }
-            
-            if (buktiTransferInput && buktiTransferName) {
-                buktiTransferInput.addEventListener('change', function() {
-                    buktiTransferName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
-                });
-            }
-            
-            // Form submission pendaftaran
-            const registrationForm = document.getElementById('registrationForm');
-            const errorMessageDaftar = document.getElementById('errorMessageDaftar');
-            const successMessageDaftar = document.getElementById('successMessageDaftar');
-            
-            if (registrationForm) {
-                registrationForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (!validateForm()) return;
-                    
-                    const password = document.getElementById('password_daftar').value;
-                    const email = document.getElementById('email_daftar').value.trim();
-                    
-                    // Simpan foto
-                    let fotoUrl = '';
-                    if (fotoInput.files.length > 0) {
-                        fotoUrl = URL.createObjectURL(fotoInput.files[0]);
-                    }
-                    
-                    const formData = {
-                        posisi: document.getElementById('posisi').value,
-                        nama: document.getElementById('nama').value,
-                        alamat: document.getElementById('alamat').value,
-                        jenis_kelamin: document.getElementById('jenis_kelamin').value,
-                        agama: document.getElementById('agama').value,
-                        status: document.getElementById('status').value,
-                        email: email,
-                        whatsapp: document.getElementById('whatsapp').value,
-                        nik: document.getElementById('nik').value,
-                        tanggal_daftar: document.getElementById('tanggal_daftar').value,
-                        foto: fotoUrl || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
-                        password: password
-                    };
-                    
-                    // Simpan ke database
-                    const result = DATABASE.saveAnggota(formData);
-                    
-                    if (result.success) {
-                        showSuccessDaftar('✅ Pendaftaran berhasil! Akun Anda sudah aktif dan bisa digunakan untuk login.');
-                        
-                        // Reset form
-                        registrationForm.reset();
-                        if (fotoName) fotoName.textContent = 'Belum ada file dipilih';
-                        if (buktiTransferName) buktiTransferName.textContent = 'Belum ada file dipilih';
-                        updateTanggalDaftar();
-                        
-                        // Kembali ke login setelah 3 detik
-                        setTimeout(() => {
-                            showLoginForm();
-                            
-                            // Auto-fill email di form login
-                            document.getElementById('email').value = email;
-                            document.getElementById('password').value = password;
-                            
-                            // Tampilkan pesan
-                            alert('✅ Akun berhasil dibuat!\n\nEmail: ' + email + '\nPassword: ' + password + '\n\nSekarang Anda bisa login dengan akun ini.');
-                        }, 2000);
-                    } else {
-                        showErrorDaftar('❌ Pendaftaran gagal: ' + result.message);
-                    }
-                });
-            }
-            
-            function validateForm() {
-                const requiredFields = [
-                    'posisi', 'nama', 'alamat', 'jenis_kelamin', 
-                    'agama', 'status', 'email_daftar', 'whatsapp', 'nik', 'foto',
-                    'password_daftar', 'ulangi_password'
-                ];
+        }
+        
+        // Check remembered email
+        const rememberedEmail = localStorage.getItem('koperasi_remembered_email');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('remember').checked = true;
+        }
+        
+        // Forgot password
+        const forgotPassword = document.querySelector('.forgot-password');
+        if (forgotPassword) {
+            forgotPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Hubungi Administrator untuk reset password.\n\nEmail: admin@koperasi.com\nWhatsApp: 0852-1848-3129');
+            });
+        }
+        
+        // Registration form - Update tanggal daftar
+        function updateTanggalDaftar() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const formattedDate = now.toLocaleDateString('id-ID', options);
+            document.getElementById('tanggal_daftar').value = formattedDate;
+        }
+        
+        updateTanggalDaftar();
+        setInterval(updateTanggalDaftar, 1000);
+        
+        // File upload handlers
+        const fotoInput = document.getElementById('foto');
+        const fotoName = document.getElementById('foto-name');
+        const buktiTransferInput = document.getElementById('bukti_transfer');
+        const buktiTransferName = document.getElementById('bukti-transfer-name');
+        
+        if (fotoInput && fotoName) {
+            fotoInput.addEventListener('change', function() {
+                fotoName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+            });
+        }
+        
+        if (buktiTransferInput && buktiTransferName) {
+            buktiTransferInput.addEventListener('change', function() {
+                buktiTransferName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+            });
+        }
+        
+        // Registration form submission
+        const registrationForm = document.getElementById('registrationForm');
+        const errorMessageDaftar = document.getElementById('errorMessageDaftar');
+        const successMessageDaftar = document.getElementById('successMessageDaftar');
+        
+        if (registrationForm) {
+            registrationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                for (let field of requiredFields) {
-                    const element = document.getElementById(field);
-                    if (!element || !element.value) {
-                        showErrorDaftar(`Field ${field} harus diisi.`);
-                        if (element) element.focus();
-                        return false;
-                    }
-                }
-                
-                const email = document.getElementById('email_daftar').value.trim();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    showErrorDaftar('Format email tidak valid.');
-                    document.getElementById('email_daftar').focus();
-                    return false;
-                }
+                if (!validateForm()) return;
                 
                 const password = document.getElementById('password_daftar').value;
-                const ulangiPassword = document.getElementById('ulangi_password').value;
+                const email = document.getElementById('email_daftar').value.trim();
                 
-                if (password.length < 6) {
-                    showErrorDaftar('Password minimal 6 karakter.');
-                    document.getElementById('password_daftar').focus();
-                    return false;
+                // Handle photo upload
+                let fotoUrl = '';
+                if (fotoInput.files.length > 0) {
+                    const file = fotoInput.files[0];
+                    fotoUrl = URL.createObjectURL(file);
+                } else {
+                    fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
                 }
                 
-                if (password !== ulangiPassword) {
-                    showErrorDaftar('Password tidak sama.');
-                    document.getElementById('ulangi_password').focus();
-                    return false;
+                // Prepare data for KOPERASI_CORE
+                const anggotaData = {
+                    posisi: document.getElementById('posisi').value,
+                    nama: document.getElementById('nama').value,
+                    alamat: document.getElementById('alamat').value,
+                    jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                    agama: document.getElementById('agama').value,
+                    status: document.getElementById('status').value,
+                    email: email,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    nik: document.getElementById('nik').value,
+                    tanggal_daftar: document.getElementById('tanggal_daftar').value,
+                    foto: fotoUrl,
+                    password: password,
+                    simpanan: {
+                        pokok: { nominal: 200000, status: 'lunas' },
+                        wajib: { nominal: 20000, status: 'aktif' },
+                        sukarela: { nominal: 0, status: 'tersedia' },
+                        total: 220000
+                    },
+                    pinjaman: {
+                        aktif: [],
+                        total: 0
+                    },
+                    shu: {
+                        estimasi: 0,
+                        status: 'Dalam perhitungan'
+                    }
+                };
+                
+                // Save to KOPERASI_CORE
+                const coreResult = KOPERASI_CORE.saveAnggota(anggotaData);
+                
+                if (!coreResult.success) {
+                    showErrorDaftar('❌ ' + coreResult.message);
+                    return;
                 }
                 
-                // Cek apakah email sudah terdaftar di database USER
-                const existingUser = USER_DATABASE.getUser(email);
-                if (existingUser) {
-                    showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain atau login dengan email ini.');
-                    document.getElementById('email_daftar').focus();
-                    return false;
+                // Also create user account for login
+                const userData = {
+                    password: password,
+                    name: anggotaData.nama,
+                    role: anggotaData.posisi === 'Anggota' ? 'Anggota' : anggotaData.posisi,
+                    email: email,
+                    foto: fotoUrl,
+                    norek: 'Belum diatur',
+                    access: anggotaData.posisi === 'Anggota' ? 'anggota' : 'dashboard',
+                    anggotaId: coreResult.data.id,
+                    createdAt: new Date().toISOString()
+                };
+                
+                const userResult = KOPERASI_CORE.saveUser(userData);
+                
+                if (!userResult.success) {
+                    showErrorDaftar('❌ Gagal membuat akun login');
+                    return;
                 }
                 
-                const whatsapp = document.getElementById('whatsapp').value;
-                if (whatsapp.length < 10) {
-                    showErrorDaftar('WhatsApp minimal 10 digit.');
-                    document.getElementById('whatsapp').focus();
+                // Show success
+                showSuccessDaftar('✅ Pendaftaran berhasil! Akun Anda sudah aktif.');
+                
+                // Reset form
+                setTimeout(() => {
+                    registrationForm.reset();
+                    if (fotoName) fotoName.textContent = 'Belum ada file dipilih';
+                    if (buktiTransferName) buktiTransferName.textContent = 'Belum ada file dipilih';
+                    updateTanggalDaftar();
+                    
+                    // Auto-fill login form
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                    
+                    // Show login form
+                    showLoginForm();
+                    
+                    // Alert user
+                    alert('🎉 Pendaftaran berhasil!\n\nEmail: ' + email + '\nPassword: ' + password + '\n\nSekarang Anda bisa login dengan akun ini.');
+                    
+                    // Trigger sync event for dashboard
+                    KOPERASI_CORE.triggerSyncEvent('anggota_baru', { email: email, data: anggotaData });
+                    
+                }, 2000);
+            });
+        }
+        
+        function validateForm() {
+            const requiredFields = [
+                'posisi', 'nama', 'alamat', 'jenis_kelamin', 
+                'agama', 'status', 'email_daftar', 'whatsapp', 'nik', 'foto',
+                'password_daftar', 'ulangi_password'
+            ];
+            
+            for (let field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element || !element.value) {
+                    showErrorDaftar(`Field ${field} harus diisi.`);
+                    if (element) element.focus();
                     return false;
                 }
-                
-                const nik = document.getElementById('nik').value;
-                if (nik.length < 10 || isNaN(nik)) {
-                    showErrorDaftar('NIK harus minimal 10 digit angka.');
-                    document.getElementById('nik').focus();
-                    return false;
-                }
-                
-                return true;
             }
             
-            function showErrorDaftar(message) {
-                if (errorMessageDaftar) {
-                    errorMessageDaftar.textContent = message;
-                    errorMessageDaftar.style.display = 'block';
-                    if (successMessageDaftar) successMessageDaftar.style.display = 'none';
-                    setTimeout(() => {
-                        errorMessageDaftar.style.display = 'none';
-                    }, 5000);
-                }
+            const email = document.getElementById('email_daftar').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showErrorDaftar('Format email tidak valid.');
+                document.getElementById('email_daftar').focus();
+                return false;
             }
             
-            function showSuccessDaftar(message) {
-                if (successMessageDaftar) {
-                    successMessageDaftar.textContent = message;
-                    successMessageDaftar.style.display = 'block';
-                    if (errorMessageDaftar) errorMessageDaftar.style.display = 'none';
-                    setTimeout(() => {
-                        successMessageDaftar.style.display = 'none';
-                    }, 5000);
-                }
+            const password = document.getElementById('password_daftar').value;
+            const ulangiPassword = document.getElementById('ulangi_password').value;
+            
+            if (password.length < 6) {
+                showErrorDaftar('Password minimal 6 karakter.');
+                document.getElementById('password_daftar').focus();
+                return false;
             }
             
-            // Test the system
-            console.log('=== SYSTEM READY ===');
-            console.log('Total users:', Object.keys(USER_DATABASE.getAllUsers()).length);
-            console.log('Total anggota:', DATABASE.getAllAnggota().length);
-            console.log('Admin access: Ctrl+Alt+B atau ketik "ADMIN"');
-        });
-    </script>
+            if (password !== ulangiPassword) {
+                showErrorDaftar('Password tidak sama.');
+                document.getElementById('ulangi_password').focus();
+                return false;
+            }
+            
+            // Check if email already exists in KOPERASI_CORE
+            const existingUser = KOPERASI_CORE.getUser(email);
+            if (existingUser) {
+                showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain.');
+                document.getElementById('email_daftar').focus();
+                return false;
+            }
+            
+            const whatsapp = document.getElementById('whatsapp').value;
+            if (whatsapp.length < 10) {
+                showErrorDaftar('WhatsApp minimal 10 digit.');
+                document.getElementById('whatsapp').focus();
+                return false;
+            }
+            
+            const nik = document.getElementById('nik').value;
+            if (nik.length < 10 || isNaN(nik)) {
+                showErrorDaftar('NIK harus minimal 10 digit angka.');
+                document.getElementById('nik').focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function showErrorDaftar(message) {
+            if (errorMessageDaftar) {
+                errorMessageDaftar.textContent = message;
+                errorMessageDaftar.style.display = 'block';
+                if (successMessageDaftar) successMessageDaftar.style.display = 'none';
+                setTimeout(() => {
+                    errorMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function showSuccessDaftar(message) {
+            if (successMessageDaftar) {
+                successMessageDaftar.textContent = message;
+                successMessageDaftar.style.display = 'block';
+                if (errorMessageDaftar) errorMessageDaftar.style.display = 'none';
+                setTimeout(() => {
+                    successMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Initialize sample data if needed
+        function initializeSampleData() {
+            const sampleUsers = {
+                'eldzi4212@gmail.com': {
+                    password: 'syukuran',
+                    name: 'Eldzi Anggota',
+                    role: 'Anggota',
+                    email: 'eldzi4212@gmail.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                    norek: 'Belum diatur',
+                    access: 'anggota',
+                    anggotaId: 'AGT-SAMPLE001',
+                    isSuperAdmin: false,
+                    createdAt: new Date().toISOString()
+                },
+                'anggota@koperasi.com': {
+                    password: 'anggota123',
+                    name: 'Contoh Anggota',
+                    role: 'Anggota',
+                    email: 'anggota@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                    norek: 'Belum diatur',
+                    access: 'anggota',
+                    anggotaId: 'AGT-SAMPLE002',
+                    isSuperAdmin: false,
+                    createdAt: new Date().toISOString()
+                }
+            };
+            
+            // Add sample users if they don't exist
+            Object.entries(sampleUsers).forEach(([email, userData]) => {
+                const existingUser = KOPERASI_CORE.getUser(email);
+                if (!existingUser) {
+                    KOPERASI_CORE.saveUser(userData);
+                    
+                    // Also create sample anggota data
+                    const anggotaData = {
+                        id: userData.anggotaId,
+                        posisi: userData.role,
+                        nama: userData.name,
+                        alamat: 'Jl. Contoh No. 123, Kota Contoh',
+                        jenis_kelamin: 'Laki-laki',
+                        agama: 'Islam',
+                        status: 'Belum Menikah',
+                        email: email,
+                        whatsapp: '081234567890',
+                        nik: '1234567890123456',
+                        tanggal_daftar: new Date().toLocaleDateString('id-ID'),
+                        foto: userData.foto,
+                        password: userData.password,
+                        simpanan: {
+                            pokok: { nominal: 200000, status: 'lunas' },
+                            wajib: { nominal: 20000, status: 'aktif' },
+                            sukarela: { nominal: 50000, status: 'tersedia' },
+                            total: 270000
+                        },
+                        pinjaman: {
+                            aktif: [{
+                                jenis: 'Pinjaman Konsumsi',
+                                jumlah: 1000000,
+                                tanggal: '2023-03-10',
+                                tenor: '12 Bulan',
+                                bunga: 1.5,
+                                sisaTenor: '6 bulan',
+                                tujuan: 'Kebutuhan konsumsi',
+                                status: 'Belum Lunas'
+                            }],
+                            total: 1000000
+                        },
+                        shu: {
+                            estimasi: 500000,
+                            status: 'Dalam perhitungan'
+                        }
+                    };
+                    
+                    KOPERASI_CORE.saveAnggota(anggotaData);
+                }
+            });
+        }
+        
+        // Initialize sample data
+        initializeSampleData();
+        
+        // Test the system
+        console.log('=== LOGIN SYSTEM READY ===');
+        console.log('Test admin: admin@koperasi.com / admin014212');
+        console.log('Test anggota: eldzi4212@gmail.com / syukuran');
+        console.log('Total users:', Object.keys(KOPERASI_CORE.getAllUsers()).length);
+        console.log('Total anggota:', KOPERASI_CORE.getAllAnggota().length);
+    });
+</script>
 </body>
-    </html>
+</html>
