@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Koperasi Asmara Tani</title>
+    <title>Login & Register - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -515,7 +515,7 @@
                 </div>
                 
                 <div class="user-type-selector">
-                    <div class="user-type active" data-type="admin">Admin/Pengurus</div>
+                    <div class="user-type active" data-type="admin">Ketua/Sekretaris</div>
                     <div class="user-type" data-type="anggota">Anggota</div>
                 </div>
                 
@@ -547,6 +547,10 @@
                         Email atau kata sandi salah. Silakan coba lagi.
                     </div>
                     
+                    <div class="success-message" id="successMessage">
+                        Login berhasil! Mengarahkan ke dashboard...
+                    </div>
+                    
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Masuk
                     </button>
@@ -571,8 +575,6 @@
                         <label for="posisi">Posisi <span class="required">*</span></label>
                         <select id="posisi" class="form-select" required>
                             <option value="">Pilih Posisi</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Pengurus">Pengurus</option>
                             <option value="Anggota">Anggota</option>
                         </select>
                     </div>
@@ -723,502 +725,640 @@
         </div>
     </div>
 
+    <!-- SIMPLIFIED KOPERASI CORE SCRIPT -->
     <script>
-        // ==================== AUTO-EXCEL SYSTEM ====================
-        const EXCEL_SYSTEM = {
-            autoExport: true,
-            exportInterval: 30000, // 30 detik
-            lastExport: null
-        };
+    // ===== SIMPLIFIED KOPERASI CORE =====
+    const KOPERASI_CORE = {
+        KEYS: {
+            USERS: 'koperasi_users',
+            ANGGOTA: 'koperasi_anggota',
+            SESSION: 'koperasi_current_user'
+        },
+        
+        // Default users untuk testing
+        initDefaultUsers() {
+            const defaultUsers = {
+                'ketua@koperasi.com': {
+                    password: 'ketua014212',
+                    name: 'Ketua Koperasi',
+                    role: 'Ketua',
+                    email: 'ketua@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                    norek: '4098-01-019526-53-3 (BRI)',
+                    access: 'dashboard',
+                    isSuperAdmin: true,
+                    createdAt: new Date().toISOString()
+                },
+                'sekretaris@koperasi.com': {
+                    password: 'sekretaris4212',
+                    name: 'Sekretaris Koperasi',
+                    role: 'Sekretaris',
+                    email: 'sekretaris@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                    norek: '1234-5678-9012-3456 (BCA)',
+                    access: 'dashboard',
+                    isSuperAdmin: false,
+                    createdAt: new Date().toISOString()
+                },
+                'anggota@koperasi.com': {
+                    password: 'anggota123',
+                    name: 'Contoh Anggota',
+                    role: 'Anggota',
+                    email: 'anggota@koperasi.com',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                    norek: 'Belum diatur',
+                    access: 'anggota',
+                    isSuperAdmin: false,
+                    createdAt: new Date().toISOString()
+                }
+            };
+            
+            // Initialize databases if not exists
+            if (!localStorage.getItem(this.KEYS.USERS)) {
+                localStorage.setItem(this.KEYS.USERS, JSON.stringify(defaultUsers));
+                console.log('✅ Created default users database');
+            }
+            
+            if (!localStorage.getItem(this.KEYS.ANGGOTA)) {
+                localStorage.setItem(this.KEYS.ANGGOTA, JSON.stringify([]));
+                console.log('✅ Created anggota database');
+            }
+            
+            return true;
+        },
+        
+        // Get user by email
+        getUser(email) {
+            try {
+                const users = JSON.parse(localStorage.getItem(this.KEYS.USERS) || '{}');
+                return users[email] || null;
+            } catch (error) {
+                console.error('Error getting user:', error);
+                return null;
+            }
+        },
+        
+        // Save new user
+        saveUser(userData) {
+            try {
+                const users = JSON.parse(localStorage.getItem(this.KEYS.USERS) || '{}');
+                const email = userData.email;
+                
+                if (users[email]) {
+                    return { success: false, message: 'Email sudah terdaftar' };
+                }
+                
+                userData.createdAt = new Date().toISOString();
+                userData.lastLogin = null;
+                userData.isSuperAdmin = false;
+                
+                users[email] = userData;
+                localStorage.setItem(this.KEYS.USERS, JSON.stringify(users));
+                
+                return { success: true, user: userData };
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        },
+        
+        // Save anggota data
+        saveAnggota(anggotaData) {
+            try {
+                const semuaAnggota = JSON.parse(localStorage.getItem(this.KEYS.ANGGOTA) || '[]');
+                const email = anggotaData.email;
+                
+                // Generate ID jika baru
+                if (!anggotaData.id) {
+                    anggotaData.id = 'AGT-' + Date.now().toString().slice(-8);
+                }
+                
+                anggotaData.createdAt = new Date().toISOString();
+                anggotaData.updatedAt = new Date().toISOString();
+                anggotaData.statusAktif = 'Aktif';
+                
+                // Initialize simpanan data
+                if (!anggotaData.simpanan) {
+                    anggotaData.simpanan = {
+                        pokok: { nominal: 200000, status: 'lunas' },
+                        wajib: { nominal: 20000, status: 'aktif' },
+                        sukarela: { nominal: 0, status: 'tersedia' },
+                        total: 220000
+                    };
+                }
+                
+                // Initialize pinjaman data
+                if (!anggotaData.pinjaman) {
+                    anggotaData.pinjaman = {
+                        aktif: [],
+                        total: 0
+                    };
+                }
+                
+                // Initialize SHU data
+                if (!anggotaData.shu) {
+                    anggotaData.shu = {
+                        estimasi: 0,
+                        status: 'Dalam perhitungan'
+                    };
+                }
+                
+                // Check if exists
+                const existingIndex = semuaAnggota.findIndex(a => a.email === email);
+                if (existingIndex !== -1) {
+                    semuaAnggota[existingIndex] = anggotaData;
+                } else {
+                    semuaAnggota.push(anggotaData);
+                }
+                
+                localStorage.setItem(this.KEYS.ANGGOTA, JSON.stringify(semuaAnggota));
+                
+                return { success: true, data: anggotaData };
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+        },
+        
+        // Verify login
+        verifyLogin(email, password) {
+            try {
+                const user = this.getUser(email);
+                
+                if (!user) {
+                    return {
+                        success: false,
+                        message: 'Email tidak terdaftar'
+                    };
+                }
+                
+                if (user.password !== password) {
+                    return {
+                        success: false,
+                        message: 'Password salah'
+                    };
+                }
+                
+                // Update last login
+                this.updateLastLogin(email);
+                
+                return {
+                    success: true,
+                    user: user
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: 'Terjadi kesalahan sistem'
+                };
+            }
+        },
+        
+        updateLastLogin(email) {
+            try {
+                const users = JSON.parse(localStorage.getItem(this.KEYS.USERS) || '{}');
+                if (users[email]) {
+                    users[email].lastLogin = new Date().toISOString();
+                    localStorage.setItem(this.KEYS.USERS, JSON.stringify(users));
+                }
+            } catch (error) {
+                console.error('Error updating last login:', error);
+            }
+        },
+        
+        // Session management
+        setCurrentSession(user) {
+            try {
+                localStorage.setItem(this.KEYS.SESSION, JSON.stringify(user));
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+    };
 
-        // Fungsi global untuk toggle password
-        function togglePassword(inputId, button) {
+    // Initialize core system
+    KOPERASI_CORE.initDefaultUsers();
+    </script>
+
+    <script>
+    // ===== MAIN APPLICATION =====
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM ===');
+        
+        // Element references
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const backHomeBtn = document.getElementById('backHome');
+        const closeBtn = document.getElementById('closeBtn');
+        const backToLoginLink = document.getElementById('backToLogin');
+        
+        // Navigation
+        backHomeBtn.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Toggle form functions
+        function showLoginForm() {
+            loginContainer.style.display = 'flex';
+            registerContainer.style.display = 'none';
+        }
+        
+        function showRegisterForm() {
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+        }
+        
+        backToLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLoginForm();
+        });
+        
+        // Toggle password visibility
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        }
+        
+        // Global toggle password function
+        window.togglePassword = function(inputId, button) {
             const input = document.getElementById(inputId);
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
             button.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        }
-
-        // FUNGSI AUTO-EXPORT KE EXCEL
-        function autoExportToExcel() {
-            if (!EXCEL_SYSTEM.autoExport) return;
-            
-            try {
-                const data = JSON.parse(localStorage.getItem('anggotaData')) || [];
-                if (data.length === 0) return;
+        };
+        
+        // User type selector
+        const userTypes = document.querySelectorAll('.user-type');
+        let currentUserType = 'admin';
+        
+        userTypes.forEach(type => {
+            type.addEventListener('click', function() {
+                userTypes.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
                 
-                // Convert ke CSV format (bisa dibuka di Excel)
-                const csv = convertToCSV(data);
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                
-                // Create hidden download link
-                const link = document.createElement('a');
-                link.setAttribute('hidden', '');
-                link.setAttribute('href', url);
-                link.setAttribute('download', `Data_Anggota_Koperasi_${getCurrentDate()}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                EXCEL_SYSTEM.lastExport = new Date();
-                console.log('✅ Data otomatis di-export ke Excel:', new Date().toLocaleString());
-                
-            } catch (error) {
-                console.error('❌ Gagal auto-export Excel:', error);
-            }
-        }
-
-        // FUNGSI CONVERT DATA KE CSV
-        function convertToCSV(data) {
-            const headers = ['ID', 'Nama', 'Email', 'WhatsApp', 'NIK', 'Posisi', 'Alamat', 'Jenis Kelamin', 'Agama', 'Status', 'Tanggal Daftar', 'Status Aktif'];
-            
-            const csvRows = [
-                headers.join(','), // Header
-                ...data.map(row => [
-                    `"${row.id || ''}"`,
-                    `"${row.nama || ''}"`,
-                    `"${row.email || ''}"`,
-                    `"${row.whatsapp || ''}"`,
-                    `"${row.nik || ''}"`,
-                    `"${row.posisi || ''}"`,
-                    `"${(row.alamat || '').replace(/"/g, '""')}"`,
-                    `"${row.jenisKelamin || ''}"`,
-                    `"${row.agama || ''}"`,
-                    `"${row.status || ''}"`,
-                    `"${row.tanggalDaftar || ''}"`,
-                    `"${row.statusAktif || ''}"`
-                ].join(','))
-            ];
-            
-            return csvRows.join('\n');
-        }
-
-        // FUNGSI TANGGAL UNTUK FILENAME
-        function getCurrentDate() {
-            const now = new Date();
-            return `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Database user
-            const userDatabase = {
-                'admin@koperasi.com': { 
-                    password: 'admin014212', 
-                    name: 'Administrator', 
-                    role: 'Admin',
-                    email: 'admin@koperasi.com',
-                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                    norek: '4098-01-019526-53-3 (BRI)',
-                    access: 'dashboard'
-                },
-                'pengurus@koperasi.com': { 
-                    password: 'pengurus4212', 
-                    name: 'Ketua Pengurus', 
-                    role: 'Pengurus',
-                    email: 'pengurus@koperasi.com',
-                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
-                    norek: '1234-5678-9012-3456 (BCA)',
-                    access: 'dashboard'
-                }
-            };
-
-            // Fungsi sinkronisasi ke Dashboard Admin
-            function sendDataToAdminDashboard(formData) {
-                try {
-                    let existingData = JSON.parse(localStorage.getItem('anggotaData')) || [];
-                    
-                    const newId = 'AGT-' + (existingData.length + 1).toString().padStart(3, '0');
-                    
-                    const newMember = {
-                        id: newId,
-                        posisi: formData.posisi,
-                        nama: formData.nama,
-                        alamat: formData.alamat,
-                        jenisKelamin: formData.jenis_kelamin,
-                        agama: formData.agama,
-                        status: formData.status,
-                        email: formData.email,
-                        whatsapp: formData.whatsapp,
-                        nik: formData.nik,
-                        tanggalDaftar: formData.tanggal_daftar,
-                        statusAktif: 'Aktif',
-                        foto: formData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
-                        password: formData.password,
-                        createdAt: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString()
-                    };
-                    
-                    existingData.push(newMember);
-                    localStorage.setItem('anggotaData', JSON.stringify(existingData));
-                    
-                    console.log('✅ Data anggota berhasil dikirim ke Dashboard Admin');
-                    
-                    // Auto-export ke Excel
-                    autoExportToExcel();
-                    
-                    return true;
-                    
-                } catch (error) {
-                    console.error('❌ Gagal mengirim data ke Dashboard:', error);
-                    return false;
-                }
-            }
-
-            // Element references
-            const loginContainer = document.getElementById('loginContainer');
-            const registerContainer = document.getElementById('registerContainer');
-            const backHomeBtn = document.getElementById('backHome');
-            const closeBtn = document.getElementById('closeBtn');
-            const backToLoginLink = document.getElementById('backToLogin');
-
-            // Event listeners
-            backHomeBtn.addEventListener('click', function() {
-                window.location.href = 'index.html';
+                currentUserType = this.getAttribute('data-type');
+                updateFormForUserType(currentUserType);
             });
-
-            closeBtn.addEventListener('click', function() {
-                if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
-                    window.location.href = 'index.html';
-                }
-            });
-
-            // Fungsi toggle form
-            function showLoginForm() {
-                loginContainer.style.display = 'flex';
-                registerContainer.style.display = 'none';
-            }
-
-            function showRegisterForm() {
-                loginContainer.style.display = 'none';
-                registerContainer.style.display = 'block';
-            }
-
-            backToLoginLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                showLoginForm();
-            });
-
-            // Toggle password visibility untuk login
-            const togglePasswordBtn = document.getElementById('togglePassword');
-            const passwordInput = document.getElementById('password');
+        });
+        
+        function updateFormForUserType(userType) {
+            const loginHeader = document.querySelector('.login-header h2');
+            const loginSubtitle = document.querySelector('.login-header p');
+            const registerText = document.getElementById('registerText');
             
-            if (togglePasswordBtn && passwordInput) {
-                togglePasswordBtn.addEventListener('click', function() {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-                });
+            if (userType === 'admin') {
+                loginHeader.textContent = 'Masuk sebagai Ketua/Sekretaris';
+                loginSubtitle.textContent = 'Silakan masuk dengan akun Ketua/Sekretaris';
+                registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Hubungi Administrator</a>';
+            } else {
+                loginHeader.textContent = 'Masuk sebagai Anggota';
+                loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
+                registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai anggota</a>';
             }
-
-            // User type selector
-            const userTypes = document.querySelectorAll('.user-type');
-            let currentUserType = 'admin';
             
-            userTypes.forEach(type => {
-                type.addEventListener('click', function() {
-                    userTypes.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    currentUserType = this.getAttribute('data-type');
-                    updateFormForUserType(currentUserType);
-                });
-            });
-
-            function updateFormForUserType(userType) {
-                const loginHeader = document.querySelector('.login-header h2');
-                const loginSubtitle = document.querySelector('.login-header p');
-                const registerText = document.getElementById('registerText');
-                
-                if (userType === 'admin') {
-                    loginHeader.textContent = 'Masuk ke Dashboard';
-                    loginSubtitle.textContent = 'Silakan masuk dengan akun Admin/Pengurus';
-                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Hubungi Administrator</a>';
-                } else {
-                    loginHeader.textContent = 'Masuk sebagai Anggota';
-                    loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
-                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai anggota</a>';
-                }
-                
-                // Update event listener untuk register link
-                const registerLink = document.getElementById('registerLink');
-                if (registerLink) {
-                    registerLink.onclick = function(e) {
-                        e.preventDefault();
-                        if (userType === 'admin') {
-                            window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20admin/pengurus', '_blank');
-                        } else {
-                            showRegisterForm();
-                        }
-                    };
-                }
-            }
-
-            // Inisialisasi awal
-            updateFormForUserType(currentUserType);
-
-            // Form login
-            const loginForm = document.getElementById('loginForm');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
+            const registerLink = document.getElementById('registerLink');
+            if (registerLink) {
+                registerLink.onclick = function(e) {
                     e.preventDefault();
+                    if (userType === 'admin') {
+                        window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20ketua/sekretaris', '_blank');
+                    } else {
+                        showRegisterForm();
+                    }
+                };
+            }
+        }
+        
+        updateFormForUserType(currentUserType);
+        
+        // Form login
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember').checked;
+                
+                if (!email || !password) {
+                    showError('Harap isi semua field yang diperlukan.');
+                    return;
+                }
+                
+                // Verify login
+                const loginResult = KOPERASI_CORE.verifyLogin(email, password);
+                
+                if (loginResult.success) {
+                    const user = loginResult.user;
                     
-                    const email = document.getElementById('email').value;
-                    const password = document.getElementById('password').value;
-                    const remember = document.getElementById('remember').checked;
+                    console.log('✅ Login successful:', email);
                     
-                    if (!email || !password) {
-                        showError('Harap isi semua field yang diperlukan.');
+                    // Check access based on user type
+                    if (currentUserType === 'admin' && user.access !== 'dashboard') {
+                        showError('Akses ditolak. Silakan login sebagai anggota.');
                         return;
                     }
                     
-                    if (userDatabase[email] && userDatabase[email].password === password) {
-                        const user = userDatabase[email];
-                        
-                        // Cek akses
-                        if (currentUserType === 'admin' && user.access !== 'dashboard') {
-                            showError('Akses ditolak. Silakan login sebagai anggota.');
-                            return;
-                        }
-                        
-                        if (currentUserType === 'anggota' && user.access !== 'anggota') {
-                            showError('Akses ditolak. Silakan login sebagai admin.');
-                            return;
-                        }
-                        
-                        // Login berhasil
-                        localStorage.setItem('currentUser', JSON.stringify(user));
-                        
-                        if (remember) {
-                            localStorage.setItem('rememberedEmail', email);
-                        } else {
-                            localStorage.removeItem('rememberedEmail');
-                        }
-                        
-                        // Redirect
+                    if (currentUserType === 'anggota' && user.access !== 'anggota') {
+                        showError('Akses ditolak. Silakan login sebagai ketua/sekretaris.');
+                        return;
+                    }
+                    
+                    // Save session
+                    KOPERASI_CORE.setCurrentSession(user);
+                    
+                    // Save remembered email
+                    if (remember) {
+                        localStorage.setItem('koperasi_remembered_email', email);
+                    } else {
+                        localStorage.removeItem('koperasi_remembered_email');
+                    }
+                    
+                    // Show success message
+                    if (successMessage) {
+                        successMessage.style.display = 'block';
+                        errorMessage.style.display = 'none';
+                    }
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
                         if (user.access === 'dashboard') {
                             window.location.href = 'dashboard-admin.html';
                         } else {
                             window.location.href = 'tabungan-digital.html';
                         }
-                    } else {
-                        showError('Email atau kata sandi salah.');
-                    }
-                });
-            }
-            
-            function showError(message) {
-                if (errorMessage) {
-                    errorMessage.textContent = message;
-                    errorMessage.style.display = 'block';
-                    setTimeout(() => {
-                        errorMessage.style.display = 'none';
-                    }, 5000);
+                    }, 1000);
+                    
+                } else {
+                    showError(loginResult.message || 'Email atau kata sandi salah.');
                 }
+            });
+        }
+        
+        function showError(message) {
+            if (errorMessage) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                if (successMessage) successMessage.style.display = 'none';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
             }
-
-            // Cek remembered email
-            const rememberedEmail = localStorage.getItem('rememberedEmail');
-            if (rememberedEmail) {
-                document.getElementById('email').value = rememberedEmail;
-                document.getElementById('remember').checked = true;
-            }
-
-            // Lupa password
-            const forgotPassword = document.querySelector('.forgot-password');
-            if (forgotPassword) {
-                forgotPassword.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    alert('Hubungi Administrator untuk reset password.');
-                });
-            }
-
-            // Form pendaftaran
-            function updateTanggalDaftar() {
-                const now = new Date();
-                const options = { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                };
-                const formattedDate = now.toLocaleDateString('id-ID', options);
-                document.getElementById('tanggal_daftar').value = formattedDate;
-            }
-            
-            updateTanggalDaftar();
-            setInterval(updateTanggalDaftar, 1000);
-            
-            // File upload handlers
-            const fotoInput = document.getElementById('foto');
-            const fotoName = document.getElementById('foto-name');
-            const buktiTransferInput = document.getElementById('bukti_transfer');
-            const buktiTransferName = document.getElementById('bukti-transfer-name');
-            
-            if (fotoInput && fotoName) {
-                fotoInput.addEventListener('change', function() {
-                    fotoName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
-                });
-            }
-            
-            if (buktiTransferInput && buktiTransferName) {
-                buktiTransferInput.addEventListener('change', function() {
-                    buktiTransferName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
-                });
-            }
-            
-            // Form submission pendaftaran
-            const registrationForm = document.getElementById('registrationForm');
-            const errorMessageDaftar = document.getElementById('errorMessageDaftar');
-            const successMessageDaftar = document.getElementById('successMessageDaftar');
-            
-            if (registrationForm) {
-                registrationForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (!validateForm()) return;
-                    
-                    const password = document.getElementById('password_daftar').value;
-                    const email = document.getElementById('email_daftar').value;
-                    
-                    const formData = {
-                        posisi: document.getElementById('posisi').value,
-                        nama: document.getElementById('nama').value,
-                        alamat: document.getElementById('alamat').value,
-                        jenis_kelamin: document.getElementById('jenis_kelamin').value,
-                        agama: document.getElementById('agama').value,
-                        status: document.getElementById('status').value,
-                        email: email,
-                        whatsapp: document.getElementById('whatsapp').value,
-                        nik: document.getElementById('nik').value,
-                        tanggal_daftar: document.getElementById('tanggal_daftar').value,
-                        foto: fotoInput.files.length > 0 ? URL.createObjectURL(fotoInput.files[0]) : '',
-                        password: password
-                    };
-                    
-                    // Simpan user untuk login
-                    userDatabase[email] = {
-                        password: password,
-                        name: formData.nama,
-                        role: 'Anggota',
-                        email: email,
-                        foto: formData.foto,
-                        norek: 'Belum diatur',
-                        access: 'anggota'
-                    };
-                    
-                    // Kirim ke Dashboard Admin
-                    const success = sendDataToAdminDashboard(formData);
-                    
-                    if (success) {
-                        showSuccessDaftar('Pendaftaran berhasil! Data terkirim ke sistem admin.');
-                        
-                        registrationForm.reset();
-                        if (fotoName) fotoName.textContent = 'Belum ada file dipilih';
-                        if (buktiTransferName) buktiTransferName.textContent = 'Belum ada file dipilih';
-                        updateTanggalDaftar();
-                        
-                        setTimeout(() => {
-                            showLoginForm();
-                        }, 3000);
-                    } else {
-                        showErrorDaftar('Pendaftaran gagal. Coba lagi atau hubungi admin.');
-                    }
-                });
-            }
-            
-            function validateForm() {
-                const requiredFields = [
-                    'posisi', 'nama', 'alamat', 'jenis_kelamin', 
-                    'agama', 'status', 'email_daftar', 'whatsapp', 'nik', 'foto',
-                    'password_daftar', 'ulangi_password'
-                ];
+        }
+        
+        // Check remembered email
+        const rememberedEmail = localStorage.getItem('koperasi_remembered_email');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('remember').checked = true;
+        }
+        
+        // Forgot password
+        const forgotPassword = document.querySelector('.forgot-password');
+        if (forgotPassword) {
+            forgotPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Hubungi Administrator untuk reset password.\n\nEmail: admin@koperasi.com\nWhatsApp: 0852-1848-3129');
+            });
+        }
+        
+        // Registration form - Update tanggal daftar
+        function updateTanggalDaftar() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const formattedDate = now.toLocaleDateString('id-ID', options);
+            document.getElementById('tanggal_daftar').value = formattedDate;
+        }
+        
+        updateTanggalDaftar();
+        setInterval(updateTanggalDaftar, 1000);
+        
+        // File upload handlers
+        const fotoInput = document.getElementById('foto');
+        const fotoName = document.getElementById('foto-name');
+        const buktiTransferInput = document.getElementById('bukti_transfer');
+        const buktiTransferName = document.getElementById('bukti-transfer-name');
+        
+        if (fotoInput && fotoName) {
+            fotoInput.addEventListener('change', function() {
+                fotoName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+            });
+        }
+        
+        if (buktiTransferInput && buktiTransferName) {
+            buktiTransferInput.addEventListener('change', function() {
+                buktiTransferName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+            });
+        }
+        
+        // Registration form submission
+        const registrationForm = document.getElementById('registrationForm');
+        const errorMessageDaftar = document.getElementById('errorMessageDaftar');
+        const successMessageDaftar = document.getElementById('successMessageDaftar');
+        
+        if (registrationForm) {
+            registrationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                for (let field of requiredFields) {
-                    const element = document.getElementById(field);
-                    if (!element || !element.value) {
-                        showErrorDaftar(`Field ${field} harus diisi.`);
-                        if (element) element.focus();
-                        return false;
-                    }
-                }
-                
-                const email = document.getElementById('email_daftar').value;
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    showErrorDaftar('Format email tidak valid.');
-                    document.getElementById('email_daftar').focus();
-                    return false;
-                }
+                if (!validateForm()) return;
                 
                 const password = document.getElementById('password_daftar').value;
-                const ulangiPassword = document.getElementById('ulangi_password').value;
+                const email = document.getElementById('email_daftar').value.trim();
                 
-                if (password.length < 6) {
-                    showErrorDaftar('Password minimal 6 karakter.');
-                    document.getElementById('password_daftar').focus();
-                    return false;
+                // Handle photo upload
+                let fotoUrl = '';
+                if (fotoInput.files.length > 0) {
+                    const file = fotoInput.files[0];
+                    fotoUrl = URL.createObjectURL(file);
+                } else {
+                    fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
                 }
                 
-                if (password !== ulangiPassword) {
-                    showErrorDaftar('Password tidak sama.');
-                    document.getElementById('ulangi_password').focus();
-                    return false;
+                // Prepare data for KOPERASI_CORE
+                const anggotaData = {
+                    posisi: document.getElementById('posisi').value,
+                    nama: document.getElementById('nama').value,
+                    alamat: document.getElementById('alamat').value,
+                    jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                    agama: document.getElementById('agama').value,
+                    status: document.getElementById('status').value,
+                    email: email,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    nik: document.getElementById('nik').value,
+                    tanggal_daftar: document.getElementById('tanggal_daftar').value,
+                    foto: fotoUrl,
+                    password: password
+                };
+                
+                // Save to KOPERASI_CORE
+                const coreResult = KOPERASI_CORE.saveAnggota(anggotaData);
+                
+                if (!coreResult.success) {
+                    showErrorDaftar('❌ ' + coreResult.message);
+                    return;
                 }
                 
-                if (userDatabase[email]) {
-                    showErrorDaftar('Email sudah terdaftar.');
-                    document.getElementById('email_daftar').focus();
-                    return false;
+                // Also create user account for login
+                const userData = {
+                    password: password,
+                    name: anggotaData.nama,
+                    role: 'Anggota',
+                    email: email,
+                    foto: fotoUrl,
+                    norek: 'Belum diatur',
+                    access: 'anggota',
+                    anggotaId: coreResult.data.id,
+                    createdAt: new Date().toISOString()
+                };
+                
+                const userResult = KOPERASI_CORE.saveUser(userData);
+                
+                if (!userResult.success) {
+                    showErrorDaftar('❌ Gagal membuat akun login');
+                    return;
                 }
                 
-                const whatsapp = document.getElementById('whatsapp').value;
-                if (whatsapp.length < 10) {
-                    showErrorDaftar('WhatsApp minimal 10 digit.');
-                    document.getElementById('whatsapp').focus();
+                // Show success
+                showSuccessDaftar('✅ Pendaftaran berhasil! Akun Anda sudah aktif.');
+                
+                // Reset form
+                setTimeout(() => {
+                    registrationForm.reset();
+                    if (fotoName) fotoName.textContent = 'Belum ada file dipilih';
+                    if (buktiTransferName) buktiTransferName.textContent = 'Belum ada file dipilih';
+                    updateTanggalDaftar();
+                    
+                    // Auto-fill login form
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                    
+                    // Show login form
+                    showLoginForm();
+                    
+                    // Alert user
+                    alert('🎉 Pendaftaran berhasil!\n\nEmail: ' + email + '\nPassword: ' + password + '\n\nSekarang Anda bisa login dengan akun ini.');
+                    
+                }, 2000);
+            });
+        }
+        
+        function validateForm() {
+            const requiredFields = [
+                'posisi', 'nama', 'alamat', 'jenis_kelamin', 
+                'agama', 'status', 'email_daftar', 'whatsapp', 'nik', 'foto',
+                'password_daftar', 'ulangi_password'
+            ];
+            
+            for (let field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element || !element.value) {
+                    showErrorDaftar(`Field ${field} harus diisi.`);
+                    if (element) element.focus();
                     return false;
                 }
-                
-                const nik = document.getElementById('nik').value;
-                if (nik.length < 10 || isNaN(nik)) {
-                    showErrorDaftar('NIK harus minimal 10 digit angka.');
-                    document.getElementById('nik').focus();
-                    return false;
-                }
-                
-                return true;
             }
             
-            function showErrorDaftar(message) {
-                if (errorMessageDaftar) {
-                    errorMessageDaftar.textContent = message;
-                    errorMessageDaftar.style.display = 'block';
-                    if (successMessageDaftar) successMessageDaftar.style.display = 'none';
-                    setTimeout(() => {
-                        errorMessageDaftar.style.display = 'none';
-                    }, 5000);
-                }
+            const email = document.getElementById('email_daftar').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showErrorDaftar('Format email tidak valid.');
+                document.getElementById('email_daftar').focus();
+                return false;
             }
             
-            function showSuccessDaftar(message) {
-                if (successMessageDaftar) {
-                    successMessageDaftar.textContent = message;
-                    successMessageDaftar.style.display = 'block';
-                    if (errorMessageDaftar) errorMessageDaftar.style.display = 'none';
-                }
+            const password = document.getElementById('password_daftar').value;
+            const ulangiPassword = document.getElementById('ulangi_password').value;
+            
+            if (password.length < 6) {
+                showErrorDaftar('Password minimal 6 karakter.');
+                document.getElementById('password_daftar').focus();
+                return false;
             }
-
-            // Auto-export setiap 30 detik
-            setInterval(autoExportToExcel, EXCEL_SYSTEM.exportInterval);
-
-            // Export pertama kali saat page load
-            setTimeout(autoExportToExcel, 5000);
-        });
-    </script>
+            
+            if (password !== ulangiPassword) {
+                showErrorDaftar('Password tidak sama.');
+                document.getElementById('ulangi_password').focus();
+                return false;
+            }
+            
+            // Check if email already exists
+            const existingUser = KOPERASI_CORE.getUser(email);
+            if (existingUser) {
+                showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain.');
+                document.getElementById('email_daftar').focus();
+                return false;
+            }
+            
+            const whatsapp = document.getElementById('whatsapp').value;
+            if (whatsapp.length < 10) {
+                showErrorDaftar('WhatsApp minimal 10 digit.');
+                document.getElementById('whatsapp').focus();
+                return false;
+            }
+            
+            const nik = document.getElementById('nik').value;
+            if (nik.length < 10 || isNaN(nik)) {
+                showErrorDaftar('NIK harus minimal 10 digit angka.');
+                document.getElementById('nik').focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function showErrorDaftar(message) {
+            if (errorMessageDaftar) {
+                errorMessageDaftar.textContent = message;
+                errorMessageDaftar.style.display = 'block';
+                if (successMessageDaftar) successMessageDaftar.style.display = 'none';
+                setTimeout(() => {
+                    errorMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function showSuccessDaftar(message) {
+            if (successMessageDaftar) {
+                successMessageDaftar.textContent = message;
+                successMessageDaftar.style.display = 'block';
+                if (errorMessageDaftar) errorMessageDaftar.style.display = 'none';
+                setTimeout(() => {
+                    successMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Console info
+        console.log('=== LOGIN SYSTEM READY ===');
+        console.log('Test accounts:');
+        console.log('1. Ketua: ketua@koperasi.com / ketua014212');
+        console.log('2. Sekretaris: sekretaris@koperasi.com / sekretaris4212');
+        console.log('3. Anggota: anggota@koperasi.com / anggota123');
+        console.log('4. Register: Buat akun baru (email bebas)');
+    });
+</script>
 </body>
 </html>
