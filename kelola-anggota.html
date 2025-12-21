@@ -208,6 +208,11 @@
             color: var(--primary-dark);
         }
         
+        .simpanan-display {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
         .action-buttons {
             display: flex;
             gap: 6px;
@@ -284,7 +289,7 @@
             background: white;
             border-radius: 12px;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -438,6 +443,22 @@
         }
         
         /* Responsive Design */
+        @media (max-width: 992px) {
+            .anggota-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .anggota-table th:nth-child(5),
+            .anggota-table td:nth-child(5),
+            .anggota-table th:nth-child(9),
+            .anggota-table td:nth-child(9),
+            .anggota-table th:nth-child(10),
+            .anggota-table td:nth-child(10) {
+                display: none;
+            }
+        }
+        
         @media (max-width: 768px) {
             body {
                 padding: 15px;
@@ -474,15 +495,12 @@
             }
             
             .anggota-table {
-                font-size: 0.7rem;
-                display: block;
-                overflow-x: auto;
+                font-size: 0.8rem;
             }
             
             .anggota-table th,
             .anggota-table td {
                 padding: 8px 6px;
-                font-size: 0.7rem;
             }
             
             .modal {
@@ -506,12 +524,27 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        @media (max-width: 576px) {
+            .anggota-table th:nth-child(3),
+            .anggota-table td:nth-child(3),
+            .anggota-table th:nth-child(4),
+            .anggota-table td:nth-child(4),
+            .anggota-table th:nth-child(6),
+            .anggota-table td:nth-child(6),
+            .anggota-table th:nth-child(7),
+            .anggota-table td:nth-child(7),
+            .anggota-table th:nth-child(8),
+            .anggota-table td:nth-child(8) {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- ✅ TOMBOL KEMBALI KE DASHBOARD ADMIN -->
     <button class="back-home" onclick="window.location.href='dashboard-admin.html'">
-    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
     </button>
     
     <div class="container">
@@ -549,6 +582,10 @@
             <div class="alert alert-success" id="successAlert"></div>
             <div class="alert alert-error" id="errorAlert"></div>
             
+            <div id="anggotaCount" style="margin-bottom: 15px; font-weight: 600; color: var(--primary);">
+                Total Anggota: <span id="totalAnggota">0</span>
+            </div>
+            
             <table class="anggota-table">
                 <thead>
                     <tr>
@@ -559,6 +596,7 @@
                         <th>Posisi</th>
                         <th>Status</th>
                         <th>Saldo</th>
+                        <th>Total Simpanan</th>
                         <th>Tanggal Bergabung</th>
                         <th>Aksi</th>
                     </tr>
@@ -580,6 +618,7 @@
             <div class="modal-body">
                 <form id="anggotaForm">
                     <input type="hidden" id="editEmail">
+                    <input type="hidden" id="originalNIA">
                     
                     <div class="anggota-detail-section">
                         <h4>Data Personal</h4>
@@ -588,6 +627,7 @@
                                 <div class="form-group">
                                     <label for="anggotaNIA">NIA *</label>
                                     <input type="text" id="anggotaNIA" class="form-control" required>
+                                    <small style="color: var(--gray); font-size: 0.8rem;">ID Anggota dapat diubah dan akan tersimpan permanen</small>
                                 </div>
                             </div>
                             <div class="form-col">
@@ -654,6 +694,39 @@
                     </div>
                     
                     <div class="anggota-detail-section">
+                        <h4>Data Simpanan</h4>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaSimpananPokok">Total Simpanan Pokok (Rp)</label>
+                                    <input type="number" id="anggotaSimpananPokok" class="form-control" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaSimpananWajib">Total Simpanan Wajib (Rp)</label>
+                                    <input type="number" id="anggotaSimpananWajib" class="form-control" value="0" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaSimpananSukarela">Total Simpanan Sukarela (Rp)</label>
+                                    <input type="number" id="anggotaSimpananSukarela" class="form-control" value="0" min="0">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaSaldo">Total Saldo (Rp)</label>
+                                    <input type="number" id="anggotaSaldo" class="form-control" value="0" min="0" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="anggota-detail-section">
                         <h4>Data Tambahan</h4>
                         <div class="form-row">
                             <div class="form-col">
@@ -691,8 +764,8 @@
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
-                                    <label for="anggotaSaldo">Saldo</label>
-                                    <input type="number" id="anggotaSaldo" class="form-control" value="0">
+                                    <label for="anggotaTanggalBergabung">Tanggal Bergabung</label>
+                                    <input type="date" id="anggotaTanggalBergabung" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -737,22 +810,114 @@
                     alamat: 'Kantor Pusat Koperasi',
                     agama: 'Islam',
                     saldo: 0,
-                    tanggal_bergabung: new Date().toLocaleDateString('id-ID'),
+                    simpanan_pokok: 0,
+                    simpanan_wajib: 0,
+                    simpanan_sukarela: 0,
+                    tanggal_bergabung: new Date().toISOString().split('T')[0],
                     namalengkap: 'Administrator System',
                     alamatlengkap: 'Kantor Pusat Koperasi',
                     alamatemail: 'admin@koperasi.com',
                     nowhatsapp: '-',
                     nikktp: '-',
-                    tanggalbergabung: new Date().toLocaleDateString('id-ID'),
+                    tanggalbergabung: new Date().toISOString().split('T')[0],
                     uploadfoto: ''
                 }];
                 localStorage.setItem('anggotaData', JSON.stringify(defaultAnggota));
+                this.updateAnggotaCount();
+            }
+
+            // Mendapatkan semua data anggota tanpa duplikat
+            getAllAnggota() {
+                const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
+                
+                // Filter duplikat berdasarkan email (unik)
+                const uniqueAnggota = [];
+                const emailSet = new Set();
+                
+                for (const anggota of anggotaData) {
+                    const email = anggota.alamatemail || anggota.email;
+                    if (email && !emailSet.has(email)) {
+                        emailSet.add(email);
+                        uniqueAnggota.push(anggota);
+                    }
+                }
+                
+                // Update localStorage dengan data unik
+                if (uniqueAnggota.length !== anggotaData.length) {
+                    localStorage.setItem('anggotaData', JSON.stringify(uniqueAnggota));
+                }
+                
+                this.updateAnggotaCount();
+                return uniqueAnggota;
+            }
+
+            // Update jumlah anggota
+            updateAnggotaCount() {
+                const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
+                const countElement = document.getElementById('totalAnggota');
+                if (countElement) {
+                    countElement.textContent = anggotaData.length;
+                }
+            }
+
+            // Cek duplikasi NIA
+            isNiaDuplicate(nia, currentEmail) {
+                const anggotaData = this.getAllAnggota();
+                return anggotaData.some(anggota => 
+                    (anggota.nia === nia) && 
+                    ((anggota.alamatemail || anggota.email) !== currentEmail)
+                );
+            }
+
+            // Cek duplikasi Email
+            isEmailDuplicate(email, currentEmail) {
+                const anggotaData = this.getAllAnggota();
+                return anggotaData.some(anggota => 
+                    ((anggota.alamatemail || anggota.email) === email) && 
+                    ((anggota.alamatemail || anggota.email) !== currentEmail)
+                );
+            }
+
+            // Tambah atau update anggota
+            saveAnggota(anggotaData, isEdit = false) {
+                let allAnggota = this.getAllAnggota();
+                const email = anggotaData.alamatemail || anggotaData.email;
+                
+                if (isEdit) {
+                    // Edit mode: cari berdasarkan email
+                    const index = allAnggota.findIndex(a => (a.alamatemail || a.email) === email);
+                    if (index !== -1) {
+                        allAnggota[index] = { ...allAnggota[index], ...anggotaData };
+                    }
+                } else {
+                    // Tambah mode: pastikan tidak ada duplikat
+                    if (this.isNiaDuplicate(anggotaData.nia, '')) {
+                        throw new Error('NIA sudah terdaftar!');
+                    }
+                    if (this.isEmailDuplicate(email, '')) {
+                        throw new Error('Email sudah terdaftar!');
+                    }
+                    allAnggota.push(anggotaData);
+                }
+                
+                localStorage.setItem('anggotaData', JSON.stringify(allAnggota));
+                this.updateAnggotaCount();
+                return true;
+            }
+
+            // Hapus anggota
+            deleteAnggota(email) {
+                let allAnggota = this.getAllAnggota();
+                allAnggota = allAnggota.filter(a => (a.alamatemail || a.email) !== email);
+                localStorage.setItem('anggotaData', JSON.stringify(allAnggota));
+                this.updateAnggotaCount();
+                return true;
             }
 
             // Sinkronisasi dengan Google Sheets
             async syncWithSheets() {
                 try {
-                    const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
+                    const anggotaData = this.getAllAnggota();
                     
                     const syncData = anggotaData.map(anggota => ({
                         nia: anggota.nia || '',
@@ -764,6 +929,9 @@
                         posisi: anggota.posisi || '',
                         status_aktif: anggota.status_aktif || 'aktif',
                         saldo: anggota.saldo || 0,
+                        simpanan_pokok: anggota.simpanan_pokok || 0,
+                        simpanan_wajib: anggota.simpanan_wajib || 0,
+                        simpanan_sukarela: anggota.simpanan_sukarela || 0,
                         alamat: anggota.alamatlengkap || anggota.alamat || '',
                         jenis_kelamin: anggota.jenis_kelamin || '',
                         agama: anggota.agama || '',
@@ -785,7 +953,7 @@
 
             // Export ke Excel
             exportToExcel() {
-                const anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
+                const anggotaData = this.getAllAnggota();
                 
                 const excelData = anggotaData.map(anggota => ({
                     'NIA': anggota.nia || '',
@@ -796,7 +964,10 @@
                     'Keterangan': anggota.keterangan || '',
                     'Posisi': anggota.posisi || '',
                     'Status': anggota.status_aktif || 'aktif',
-                    'Saldo': anggota.saldo || 0,
+                    'Saldo Total': anggota.saldo || 0,
+                    'Simpanan Pokok': anggota.simpanan_pokok || 0,
+                    'Simpanan Wajib': anggota.simpanan_wajib || 0,
+                    'Simpanan Sukarela': anggota.simpanan_sukarela || 0,
                     'Alamat Lengkap': anggota.alamatlengkap || anggota.alamat || '',
                     'Jenis Kelamin': anggota.jenis_kelamin || '',
                     'Agama': anggota.agama || '',
@@ -836,10 +1007,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Inisialisasi database
             const database = new AnggotaDatabase();
-            let anggotaData = JSON.parse(localStorage.getItem('anggotaData') || '[]');
+            let anggotaData = database.getAllAnggota();
 
             // Element references
-            const backHomeBtn = document.getElementById('backHome');
             const tambahAnggotaBtn = document.getElementById('tambahAnggotaBtn');
             const anggotaModal = document.getElementById('anggotaModal');
             const closeModal = document.getElementById('closeModal');
@@ -856,58 +1026,12 @@
             const exportBtn = document.getElementById('exportBtn');
             const modalTogglePassword = document.getElementById('modalTogglePassword');
             const anggotaPasswordInput = document.getElementById('anggotaPassword');
-
-            // ✅ TOMBOL KEMBALI KE DASHBOARD ADMIN
-            function setupBackHomeButton() {
-                if (backHomeBtn) {
-                    backHomeBtn.addEventListener('click', function() {
-                        console.log('Tombol Kembali diklik - Menuju Dashboard Admin');
-                        
-                        // Priority order untuk mencari dashboard
-                        const dashboardPaths = [
-                            'dashboard-admin.html',    // Target utama
-                            '../dashboard-admin.html',
-                            '/dashboard-admin.html',
-                            'dashboard.html',          // Fallback
-                            '../dashboard.html', 
-                            '/dashboard.html',
-                            'index.html'               // Fallback terakhir
-                        ];
-
-                        let redirectExecuted = false;
-
-                        // Coba setiap path secara berurutan
-                        dashboardPaths.forEach(path => {
-                            if (!redirectExecuted) {
-                                try {
-                                    // Cek jika file ada
-                                    fetch(path, { method: 'HEAD' })
-                                        .then(response => {
-                                            if (response.ok && !redirectExecuted) {
-                                                console.log(`✅ Dashboard ditemukan di: ${path}`);
-                                                redirectExecuted = true;
-                                                window.location.href = path;
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.log(`❌ ${path} tidak ditemukan`);
-                                        });
-                                } catch (e) {
-                                    console.log(`❌ Error akses ${path}`);
-                                }
-                            }
-                        });
-
-                        // Fallback setelah 500ms jika tidak ada yang berhasil
-                        setTimeout(() => {
-                            if (!redirectExecuted) {
-                                console.log('🔄 Menggunakan fallback ke dashboard-admin.html');
-                                window.location.href = 'dashboard-admin.html';
-                            }
-                        }, 500);
-                    });
-                }
-            }
+            
+            // Element untuk field simpanan baru
+            const simpananPokokInput = document.getElementById('anggotaSimpananPokok');
+            const simpananWajibInput = document.getElementById('anggotaSimpananWajib');
+            const simpananSukarelaInput = document.getElementById('anggotaSimpananSukarela');
+            const saldoInput = document.getElementById('anggotaSaldo');
 
             // ✅ TOGGLE PASSWORD VISIBILITY
             function setupPasswordToggle() {
@@ -920,13 +1044,32 @@
                 }
             }
 
+            // ✅ FUNGSI UNTUK MENGHITUNG TOTAL SALDO
+            function calculateTotalSaldo() {
+                const pokok = parseFloat(simpananPokokInput.value) || 0;
+                const wajib = parseFloat(simpananWajibInput.value) || 0;
+                const sukarela = parseFloat(simpananSukarelaInput.value) || 0;
+                const total = pokok + wajib + sukarela;
+                saldoInput.value = total;
+                return total;
+            }
+
+            // ✅ EVENT LISTENERS UNTUK FIELD SIMPANAN
+            function setupSimpananListeners() {
+                if (simpananPokokInput && simpananWajibInput && simpananSukarelaInput) {
+                    [simpananPokokInput, simpananWajibInput, simpananSukarelaInput].forEach(input => {
+                        input.addEventListener('input', calculateTotalSaldo);
+                    });
+                }
+            }
+
             // ✅ FIX: Event Listeners yang benar
             function initializeEventListeners() {
-                // Setup tombol kembali
-                setupBackHomeButton();
-                
                 // Setup toggle password
                 setupPasswordToggle();
+                
+                // Setup listeners untuk field simpanan
+                setupSimpananListeners();
 
                 // Tombol Tambah Anggota
                 if (tambahAnggotaBtn) {
@@ -935,8 +1078,15 @@
                         modalTitle.textContent = 'Tambah Anggota Baru';
                         anggotaForm.reset();
                         document.getElementById('editEmail').value = '';
+                        document.getElementById('originalNIA').value = '';
                         document.getElementById('anggotaStatus').value = 'aktif';
+                        
+                        // Set nilai default untuk simpanan
+                        document.getElementById('anggotaSimpananPokok').value = '0';
+                        document.getElementById('anggotaSimpananWajib').value = '0';
+                        document.getElementById('anggotaSimpananSukarela').value = '0';
                         document.getElementById('anggotaSaldo').value = '0';
+                        document.getElementById('anggotaTanggalBergabung').value = new Date().toISOString().split('T')[0];
                         
                         // Reset password field dan ikon mata
                         anggotaPasswordInput.setAttribute('type', 'password');
@@ -1018,20 +1168,27 @@
             }
 
             function saveAnggota() {
-                const anggotaNIA = document.getElementById('anggotaNIA').value;
-                const anggotaNama = document.getElementById('anggotaNama').value;
-                const anggotaEmail = document.getElementById('anggotaEmail').value;
+                const anggotaNIA = document.getElementById('anggotaNIA').value.trim();
+                const originalNIA = document.getElementById('originalNIA').value;
+                const anggotaNama = document.getElementById('anggotaNama').value.trim();
+                const anggotaEmail = document.getElementById('anggotaEmail').value.trim();
                 const anggotaPassword = document.getElementById('anggotaPassword').value;
-                const anggotaWhatsApp = document.getElementById('anggotaWhatsApp').value;
-                const anggotaNIK = document.getElementById('anggotaNIK').value;
+                const anggotaWhatsApp = document.getElementById('anggotaWhatsApp').value.trim();
+                const anggotaNIK = document.getElementById('anggotaNIK').value.trim();
                 const anggotaJenisKelamin = document.getElementById('anggotaJenisKelamin').value;
-                const anggotaKeterangan = document.getElementById('anggotaKeterangan').value;
-                const anggotaPosisi = document.getElementById('anggotaPosisi').value;
+                const anggotaKeterangan = document.getElementById('anggotaKeterangan').value.trim();
+                const anggotaPosisi = document.getElementById('anggotaPosisi').value.trim();
                 const anggotaStatus = document.getElementById('anggotaStatus').value;
-                const anggotaAlamat = document.getElementById('anggotaAlamat').value;
-                const anggotaAgama = document.getElementById('anggotaAgama').value;
-                const anggotaSaldo = document.getElementById('anggotaSaldo').value;
+                const anggotaAlamat = document.getElementById('anggotaAlamat').value.trim();
+                const anggotaAgama = document.getElementById('anggotaAgama').value.trim();
+                const anggotaTanggalBergabung = document.getElementById('anggotaTanggalBergabung').value;
                 const editEmail = document.getElementById('editEmail').value;
+                
+                // Nilai field simpanan baru
+                const simpananPokok = parseFloat(document.getElementById('anggotaSimpananPokok').value) || 0;
+                const simpananWajib = parseFloat(document.getElementById('anggotaSimpananWajib').value) || 0;
+                const simpananSukarela = parseFloat(document.getElementById('anggotaSimpananSukarela').value) || 0;
+                const totalSaldo = calculateTotalSaldo();
 
                 // Validasi
                 if (!anggotaNIA || !anggotaNama || !anggotaEmail || !anggotaPassword) {
@@ -1039,18 +1196,27 @@
                     return;
                 }
 
-                // Cek duplikasi NIA
-                const existingNIA = anggotaData.find(a => a.nia === anggotaNIA && a.email !== editEmail);
-                if (existingNIA) {
-                    showAlert('error', 'NIA sudah terdaftar!');
-                    return;
+                const isEditMode = !!editEmail;
+                
+                // Cek duplikasi NIA (kecuali jika sedang mengedit dan NIA tidak berubah)
+                if (isEditMode && anggotaNIA !== originalNIA) {
+                    if (database.isNiaDuplicate(anggotaNIA, editEmail)) {
+                        showAlert('error', 'NIA sudah terdaftar!');
+                        return;
+                    }
+                } else if (!isEditMode) {
+                    if (database.isNiaDuplicate(anggotaNIA, '')) {
+                        showAlert('error', 'NIA sudah terdaftar!');
+                        return;
+                    }
                 }
 
-                // Cek duplikasi email
-                const existingEmail = anggotaData.find(a => a.email === anggotaEmail && a.email !== editEmail);
-                if (existingEmail) {
-                    showAlert('error', 'Email sudah terdaftar!');
-                    return;
+                // Cek duplikasi email (kecuali jika sedang mengedit)
+                if (!isEditMode) {
+                    if (database.isEmailDuplicate(anggotaEmail, '')) {
+                        showAlert('error', 'Email sudah terdaftar!');
+                        return;
+                    }
                 }
 
                 const anggotaDataBaru = {
@@ -1066,36 +1232,36 @@
                     status_aktif: anggotaStatus,
                     alamat: anggotaAlamat,
                     agama: anggotaAgama,
-                    saldo: parseFloat(anggotaSaldo) || 0,
-                    tanggal_bergabung: new Date().toLocaleDateString('id-ID'),
+                    saldo: totalSaldo,
+                    simpanan_pokok: simpananPokok,
+                    simpanan_wajib: simpananWajib,
+                    simpanan_sukarela: simpananSukarela,
+                    tanggal_bergabung: anggotaTanggalBergabung || new Date().toISOString().split('T')[0],
                     namalengkap: anggotaNama,
                     alamatlengkap: anggotaAlamat,
                     alamatemail: anggotaEmail,
                     nowhatsapp: anggotaWhatsApp,
                     nikktp: anggotaNIK,
-                    tanggalbergabung: new Date().toLocaleDateString('id-ID')
+                    tanggalbergabung: anggotaTanggalBergabung || new Date().toISOString().split('T')[0]
                 };
 
-                if (editEmail) {
-                    // Edit mode
-                    const index = anggotaData.findIndex(a => a.email === editEmail);
-                    if (index !== -1) {
-                        anggotaData[index] = { ...anggotaData[index], ...anggotaDataBaru };
-                    }
-                } else {
-                    // Tambah mode
-                    anggotaData.push(anggotaDataBaru);
+                try {
+                    database.saveAnggota(anggotaDataBaru, isEditMode);
+                    
+                    // Sync dengan Google Sheets
+                    database.syncWithSheets();
+
+                    showAlert('success', isEditMode ? 'Anggota berhasil diperbarui!' : 'Anggota berhasil ditambahkan!');
+                    
+                    // Menutup modal secara otomatis setelah 1 detik
+                    setTimeout(() => {
+                        closeAnggotaModal();
+                        loadAnggotaTable();
+                    }, 1000);
+                    
+                } catch (error) {
+                    showAlert('error', error.message);
                 }
-
-                // Simpan ke localStorage
-                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
-                
-                // Sync dengan Google Sheets
-                database.syncWithSheets();
-
-                showAlert('success', editEmail ? 'Anggota berhasil diperbarui!' : 'Anggota berhasil ditambahkan!');
-                closeAnggotaModal();
-                loadAnggotaTable();
             }
 
             function showAlert(type, message) {
@@ -1115,7 +1281,15 @@
             function loadAnggotaTable() {
                 if (!anggotaTableBody) return;
                 
+                anggotaData = database.getAllAnggota();
                 anggotaTableBody.innerHTML = '';
+                
+                if (anggotaData.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="10" style="text-align: center; padding: 20px;">Belum ada data anggota</td>`;
+                    anggotaTableBody.appendChild(row);
+                    return;
+                }
                 
                 anggotaData.forEach(anggota => {
                     const row = document.createElement('tr');
@@ -1128,15 +1302,29 @@
                            </a>`
                         : '-';
                     
+                    // Hitung total simpanan
+                    const simpananPokok = anggota.simpanan_pokok || 0;
+                    const simpananWajib = anggota.simpanan_wajib || 0;
+                    const simpananSukarela = anggota.simpanan_sukarela || 0;
+                    const totalSimpanan = simpananPokok + simpananWajib + simpananSukarela;
+                    
                     row.innerHTML = `
-                        <td>${anggota.nia || '-'}</td>
+                        <td><strong>${anggota.nia || '-'}</strong></td>
                         <td>${anggota.namalengkap || anggota.nama || '-'}</td>
                         <td>${anggota.alamatemail || anggota.email || '-'}</td>
                         <td>${whatsappDisplay}</td>
                         <td>${anggota.posisi || '-'}</td>
                         <td><span class="status-badge ${statusClass}">${anggota.status_aktif || 'aktif'}</span></td>
                         <td class="saldo-display">Rp ${(anggota.saldo || 0).toLocaleString('id-ID')}</td>
-                        <td>${anggota.tanggalbergabung || anggota.tanggal_bergabung || '-'}</td>
+                        <td>
+                            <div class="simpanan-display">
+                                <div>Pokok: Rp ${simpananPokok.toLocaleString('id-ID')}</div>
+                                <div>Wajib: Rp ${simpananWajib.toLocaleString('id-ID')}</div>
+                                <div>Sukarela: Rp ${simpananSukarela.toLocaleString('id-ID')}</div>
+                                <div><strong>Total: Rp ${totalSimpanan.toLocaleString('id-ID')}</strong></div>
+                            </div>
+                        </td>
+                        <td>${formatDate(anggota.tanggalbergabung || anggota.tanggal_bergabung) || '-'}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="btn btn-info view-anggota" data-email="${anggota.alamatemail || anggota.email}">
@@ -1157,6 +1345,21 @@
 
                 // Event listeners untuk tombol aksi
                 attachActionButtonListeners();
+            }
+
+            function formatDate(dateString) {
+                if (!dateString) return '';
+                try {
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) return dateString;
+                    return date.toLocaleDateString('id-ID', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                } catch {
+                    return dateString;
+                }
             }
 
             function attachActionButtonListeners() {
@@ -1219,6 +1422,7 @@
 
             function isiFormAnggota(anggota) {
                 document.getElementById('anggotaNIA').value = anggota.nia || '';
+                document.getElementById('originalNIA').value = anggota.nia || '';
                 document.getElementById('anggotaNama').value = anggota.namalengkap || anggota.nama || '';
                 document.getElementById('anggotaEmail').value = anggota.alamatemail || anggota.email || '';
                 document.getElementById('anggotaPassword').value = anggota.password || '';
@@ -1230,8 +1434,14 @@
                 document.getElementById('anggotaStatus').value = anggota.status_aktif || 'aktif';
                 document.getElementById('anggotaAlamat').value = anggota.alamatlengkap || anggota.alamat || '';
                 document.getElementById('anggotaAgama').value = anggota.agama || '';
-                document.getElementById('anggotaSaldo').value = anggota.saldo || 0;
+                document.getElementById('anggotaTanggalBergabung').value = anggota.tanggalbergabung || anggota.tanggal_bergabung || '';
                 document.getElementById('editEmail').value = anggota.alamatemail || anggota.email || '';
+                
+                // Field simpanan baru
+                document.getElementById('anggotaSimpananPokok').value = anggota.simpanan_pokok || 0;
+                document.getElementById('anggotaSimpananWajib').value = anggota.simpanan_wajib || 0;
+                document.getElementById('anggotaSimpananSukarela').value = anggota.simpanan_sukarela || 0;
+                document.getElementById('anggotaSaldo').value = anggota.saldo || 0;
                 
                 // Reset password visibility saat form diisi
                 anggotaPasswordInput.setAttribute('type', 'password');
@@ -1240,8 +1450,7 @@
 
             function deleteAnggota(email) {
                 if (confirm(`Apakah Anda yakin ingin menghapus anggota ini?`)) {
-                    anggotaData = anggotaData.filter(a => (a.alamatemail || a.email) !== email);
-                    localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                    database.deleteAnggota(email);
                     database.syncWithSheets();
                     showAlert('success', 'Anggota berhasil dihapus!');
                     loadAnggotaTable();
@@ -1269,6 +1478,6 @@
             
             console.log('✅ Sistem Kelola Anggota siap digunakan');
         });
-    </script>
+</script>
 </body>
 </html>
