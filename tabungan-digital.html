@@ -1706,11 +1706,11 @@
             
             // Password modal listeners
             document.getElementById('closePasswordModal').addEventListener('click', () => {
-                document.getElementById('passwordModal').classList.remove('active');
+                this.closePasswordModal();
             });
             
             document.getElementById('cancelPasswordBtn').addEventListener('click', () => {
-                document.getElementById('passwordModal').classList.remove('active');
+                this.closePasswordModal();
             });
             
             document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
@@ -1720,7 +1720,7 @@
             
             document.getElementById('passwordModal').addEventListener('click', (e) => {
                 if (e.target === document.getElementById('passwordModal')) {
-                    document.getElementById('passwordModal').classList.remove('active');
+                    this.closePasswordModal();
                 }
             });
         }
@@ -2003,6 +2003,7 @@
                 `
             });
             
+            // Setup event listeners for edit profile form
             document.getElementById('editProfileForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.saveProfileChanges();
@@ -2082,7 +2083,10 @@
             
             this.loadAnggotaData();
             this.updateUI();
+            
+            // TUTUP MODAL EDIT PROFILE SETELAH BERHASIL SIMPAN
             this.closeModal();
+            
             this.showToast('Profil berhasil diperbarui', 'success');
         }
         
@@ -2375,7 +2379,7 @@ __________________________________
             
             window.open(whatsappUrl, '_blank');
             this.closeModal();
-            this.showToast(`Permintaan setoran ${statusText} dikirim ke WhatsApp`, 'success');
+            this.showToast(`Permintaan setoran ${statusText} dikirim ke WhatsApp', 'success`);
         }
         
         showPinjamModal() {
@@ -2739,6 +2743,87 @@ __________________________________
             });
         }
         
+        // ===== PASSWORD MODAL FUNCTIONS =====
+        
+        showPasswordModal() {
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('currentPassword').focus();
+            
+            const toggleCurrentPasswordBtn = document.getElementById('toggleCurrentPassword');
+            const currentPasswordField = document.getElementById('currentPassword');
+            const toggleNewPasswordBtn = document.getElementById('toggleNewPassword');
+            const newPasswordField = document.getElementById('newPassword');
+            const toggleConfirmPasswordBtn = document.getElementById('toggleConfirmPassword');
+            const confirmPasswordField = document.getElementById('confirmPassword');
+            
+            toggleCurrentPasswordBtn.addEventListener('click', () => {
+                const type = currentPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                currentPasswordField.setAttribute('type', type);
+                toggleCurrentPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            toggleNewPasswordBtn.addEventListener('click', () => {
+                const type = newPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                newPasswordField.setAttribute('type', type);
+                toggleNewPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            toggleConfirmPasswordBtn.addEventListener('click', () => {
+                const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordField.setAttribute('type', type);
+                toggleConfirmPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        }
+        
+        changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            const users = JSON.parse(localStorage.getItem('koperasi_users') || '[]');
+            const currentUser = users.find(u => u.email === this.currentUser.email);
+            
+            if (!currentUser || currentUser.password !== currentPassword) {
+                this.showToast('Password saat ini salah', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                this.showToast('Konfirmasi password tidak cocok', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                this.showToast('Password minimal 6 karakter', 'error');
+                return;
+            }
+            
+            currentUser.password = newPassword;
+            
+            const userIndex = users.findIndex(u => u.email === this.currentUser.email);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('koperasi_users', JSON.stringify(users));
+            }
+            
+            this.currentUser = currentUser;
+            localStorage.setItem('koperasi_current_user', JSON.stringify(this.currentUser));
+            
+            this.formattedData.personal.password = newPassword;
+            
+            // TUTUP MODAL PASSWORD SETELAH BERHASIL SIMPAN
+            this.closePasswordModal();
+            
+            this.showToast('Password berhasil diubah', 'success');
+            
+            document.getElementById('changePasswordForm').reset();
+        }
+        
+        closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('changePasswordForm').reset();
+        }
+        
         // ===== UTILITY FUNCTIONS =====
         
         showModal({ title, content }) {
@@ -2749,8 +2834,7 @@ __________________________________
         
         closeModal() {
             document.getElementById('modalOverlay').classList.remove('active');
-            document.getElementById('printPreview').style.display = 'none';
-            document.getElementById('printPreview').innerHTML = '';
+            document.getElementById('modalBody').innerHTML = '';
         }
         
         showToast(message, type = 'info') {
@@ -2890,82 +2974,12 @@ __________________________________
                 reader.readAsDataURL(file);
             }
         }
-        
-        showPasswordModal() {
-            document.getElementById('passwordModal').classList.add('active');
-            document.getElementById('currentPassword').focus();
-            
-            const toggleCurrentPasswordBtn = document.getElementById('toggleCurrentPassword');
-            const currentPasswordField = document.getElementById('currentPassword');
-            const toggleNewPasswordBtn = document.getElementById('toggleNewPassword');
-            const newPasswordField = document.getElementById('newPassword');
-            const toggleConfirmPasswordBtn = document.getElementById('toggleConfirmPassword');
-            const confirmPasswordField = document.getElementById('confirmPassword');
-            
-            toggleCurrentPasswordBtn.addEventListener('click', () => {
-                const type = currentPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                currentPasswordField.setAttribute('type', type);
-                toggleCurrentPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
-            
-            toggleNewPasswordBtn.addEventListener('click', () => {
-                const type = newPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                newPasswordField.setAttribute('type', type);
-                toggleNewPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
-            
-            toggleConfirmPasswordBtn.addEventListener('click', () => {
-                const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                confirmPasswordField.setAttribute('type', type);
-                toggleConfirmPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
-        }
-        
-        changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            const users = JSON.parse(localStorage.getItem('koperasi_users') || '[]');
-            const currentUser = users.find(u => u.email === this.currentUser.email);
-            
-            if (!currentUser || currentUser.password !== currentPassword) {
-                this.showToast('Password saat ini salah', 'error');
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                this.showToast('Konfirmasi password tidak cocok', 'error');
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                this.showToast('Password minimal 6 karakter', 'error');
-                return;
-            }
-            
-            currentUser.password = newPassword;
-            
-            const userIndex = users.findIndex(u => u.email === this.currentUser.email);
-            if (userIndex !== -1) {
-                users[userIndex] = currentUser;
-                localStorage.setItem('koperasi_users', JSON.stringify(users));
-            }
-            
-            this.currentUser = currentUser;
-            localStorage.setItem('koperasi_current_user', JSON.stringify(this.currentUser));
-            
-            this.formattedData.personal.password = newPassword;
-            
-            document.getElementById('passwordModal').classList.remove('active');
-            this.showToast('Password berhasil diubah', 'success');
-            
-            document.getElementById('changePasswordForm').reset();
-        }
     }
 
     // Initialize tabungan app
-    window.tabunganApp = new DigitalTabungan();
+    document.addEventListener('DOMContentLoaded', function() {
+        window.tabunganApp = new DigitalTabungan();
+    });
     </script>
 
     <!-- SISTEM INTEGRASI REAL-TIME -->
