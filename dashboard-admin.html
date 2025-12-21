@@ -1505,7 +1505,7 @@
                     <li><a href="#" class="active" data-tab="dashboard"><i class="fas fa-home"></i> <span>Dashboard Utama</span></a></li>
                     <li><a href="#" data-tab="anggota"><i class="fas fa-users"></i> <span>Data Anggota</span></a></li>
                     <!-- MENU KELOLA ANGGOTA DI SIDEBAR -->
-                    <li><a href="kelola-anggota.html" data-tab="kelola-anggota"><i class="fas fa-users-cog"></i> <span>Kelola Anggota</span></a></li>
+                    <li><a href="#kelola-anggota.html" data-tab="kelola-anggota"><i class="fas fa-users-cog"></i> <span>Kelola Anggota</span></a></li>
                     <!-- MENU TABUNGAN DIGITAL DI SIDEBAR -->
                     <li><a href="tabungan-digital.html"><i class="fas fa-book"></i> <span>Tabungan Digital</span></a></li>
                     <li><a href="#" data-tab="simpanan"><i class="fas fa-hand-holding-usd"></i> <span>Simpanan Anggota</span></a></li>
@@ -2530,7 +2530,7 @@
             // Nama bulan dalam bahasa Indonesia
             const bulanIndo = [
                 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                'Juli', 'Agustus', 'September', 'Okttober', 'November', 'Desember'
             ];
             
             // Ambil komponen waktu
@@ -2635,6 +2635,35 @@
             document.getElementById('searchAnggotaTab')?.addEventListener('keyup', (e) => {
                 if (e.key === 'Enter') this.searchAnggota();
             });
+            
+            // Tombol Save di modal
+            document.getElementById('saveAnggotaBtnKelola')?.addEventListener('click', () => {
+                this.saveAnggotaData();
+            });
+            
+            // Tombol Cancel di modal
+            document.getElementById('cancelBtnKelola')?.addEventListener('click', () => {
+                document.getElementById('anggotaModalKelola').style.display = 'none';
+            });
+            
+            // Tombol Close modal
+            document.getElementById('closeModalKelola')?.addEventListener('click', () => {
+                document.getElementById('anggotaModalKelola').style.display = 'none';
+            });
+            
+            // Toggle password
+            document.getElementById('modalTogglePasswordKelola')?.addEventListener('click', function() {
+                const passwordInput = document.getElementById('anggotaPassword');
+                const eyeIcon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.className = 'fas fa-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.className = 'fas fa-eye';
+                }
+            });
         }
         
         openTambahAnggotaModal() {
@@ -2662,7 +2691,19 @@
             
             tableBody.innerHTML = '';
             
+            // Load data dari localStorage
             const allAnggotaData = [...this.anggotaData, ...loadAnggotaFromLoginRegister()];
+            
+            if (allAnggotaData.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
+                            <i class="fas fa-info-circle"></i> Belum ada data anggota
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
             
             allAnggotaData.forEach(anggota => {
                 const row = document.createElement('tr');
@@ -4557,8 +4598,10 @@
         populateAnggotaDropdowns();
         updateActivityList();
         
-        // Jangan inisialisasi sample data otomatis
-        // Biarkan sistem kosong sampai ada input manual
+        // Update current year
+        const currentYear = new Date().getFullYear();
+        document.getElementById('currentYear').textContent = currentYear;
+        document.getElementById('currentYearFooter').textContent = currentYear;
         
         updateFinancialDataInRealTime();
         syncDataBetweenSystems();
@@ -4569,42 +4612,6 @@
         console.log('- Simpanan:', simpananData.length);
         console.log('- Pinjaman:', pinjamanData.length);
         console.log('- Barang:', barangData.length);
-    }
-
-    function initializeSampleData() {
-        console.log('Initializing sample data...');
-        
-        // Hanya inisialisasi jika benar-benar kosong
-        if (anggotaData.length === 0) {
-            console.log('✅ Tidak ada data sample, sistem akan kosong');
-        }
-        
-        if (simpananData.length === 0) {
-            console.log('✅ Data simpanan kosong');
-        }
-        
-        if (pinjamanData.length === 0) {
-            console.log('✅ Data pinjaman kosong');
-        }
-        
-        if (barangData.length === 0) {
-            console.log('✅ Data barang kosong');
-        }
-        
-        // Kosongkan semua data sample
-        anggotaData = [];
-        simpananData = [];
-        pinjamanData = [];
-        barangData = [];
-        
-        // Simpan data kosong
-        localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
-        localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
-        localStorage.setItem('simpananData', JSON.stringify(simpananData));
-        localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
-        localStorage.setItem('barangData', JSON.stringify(barangData));
-        
-        console.log('✅ Semua data sample dihapus, sistem siap digunakan');
     }
 
     function editMember(memberId) {
@@ -4653,8 +4660,6 @@
 
     async function confirmDeleteData() {
         if (currentEditingType === 'anggota') {
-            const deletedMember = anggotaData.find(member => member.id === currentEditingId);
-            
             anggotaData = anggotaData.filter(member => member.id !== currentEditingId);
             localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
             localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
@@ -5097,7 +5102,6 @@
 
     function downloadPDF(type) {
         showNotification('Fitur download PDF akan segera tersedia!', 'info');
-        // Implementasi download PDF bisa menggunakan jsPDF atau library lain
     }
 
     function updatePinjamanTerbaruTable() {
@@ -5238,11 +5242,6 @@
     // ===== PENGATURAN EVENT LISTENERS =====
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM Content Loaded - Initializing complete system...');
-        
-        // Setup tahun
-        const currentYear = new Date().getFullYear();
-        document.getElementById('currentYear').textContent = currentYear;
-        document.getElementById('currentYearFooter').textContent = currentYear;
         
         // Initialize complete system
         initializeCompleteSystem();
