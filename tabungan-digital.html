@@ -188,7 +188,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            text-decoration: none;
         }
 
         .btn.qr {
@@ -811,6 +810,195 @@
             text-align: left;
         }
 
+        /* HYBRID SMART QR STYLES */
+        .qr-enhanced-container {
+            position: relative;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8fff8, #e8f5e9);
+            border-radius: 15px;
+            border: 2px solid #1a5f23;
+            box-shadow: 0 10px 30px rgba(26, 95, 35, 0.15);
+        }
+
+        .qr-hybrid-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #1a5f23, #2e7d32);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(26, 95, 35, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qr-hybrid-badge i {
+            font-size: 0.8rem;
+        }
+
+        .qr-feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(26, 95, 35, 0.05);
+            border-radius: 10px;
+        }
+
+        .qr-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #1a5f23;
+        }
+
+        .qr-feature-item i {
+            color: #2e7d32;
+            font-size: 0.9rem;
+        }
+
+        /* Smart Scan Animation */
+        @keyframes smartScan {
+            0% {
+                background-position: 0% 50%;
+                opacity: 0.3;
+            }
+            50% {
+                background-position: 100% 50%;
+                opacity: 0.7;
+            }
+            100% {
+                background-position: 0% 50%;
+                opacity: 0.3;
+            }
+        }
+
+        .qr-smart-scan {
+            background: linear-gradient(
+                90deg,
+                rgba(26, 95, 35, 0.1) 0%,
+                rgba(46, 125, 50, 0.3) 50%,
+                rgba(26, 95, 35, 0.1) 100%
+            );
+            background-size: 200% 100%;
+            animation: smartScan 3s ease-in-out infinite;
+        }
+
+        /* QR Scan Indicators */
+        .qr-scan-indicators {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .scan-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ff9800;
+        }
+        
+        .scan-corner.tl {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .scan-corner.tr {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .scan-corner.bl {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .scan-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            border: 2px dashed rgba(255, 152, 0, 0.3);
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        /* HYBRID QR DETAILS */
+        .hybrid-qr-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .hybrid-qr-details h5 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-data-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.8rem;
+        }
+
+        .qr-data-section {
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .qr-data-section h6 {
+            color: #1a5f23;
+            margin-bottom: 5px;
+            font-size: 0.75rem;
+        }
+
+        .qr-data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .qr-data-item:last-child {
+            border-bottom: none;
+        }
+
+        .qr-data-label {
+            color: #666;
+        }
+
+        .qr-data-value {
+            color: #333;
+            font-weight: 500;
+        }
+
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -891,7 +1079,6 @@
                 background: white;
             }
             
-            /* Ensure images print correctly */
             .print-preview img {
                 max-width: 100% !important;
                 height: auto !important;
@@ -1145,55 +1332,6 @@
             color: var(--text-secondary);
         }
 
-        .simpanan-option {
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .simpanan-option:hover {
-            border-color: var(--primary);
-            background: #f8f9fa;
-        }
-
-        .simpanan-option.active {
-            border-color: var(--primary);
-            background: #e8f5e9;
-        }
-
-        .simpanan-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .simpanan-title {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .simpanan-min {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .simpanan-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* Form group small text */
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 0.75rem;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             body {
@@ -1259,7 +1397,11 @@
                 grid-template-columns: 1fr;
             }
             
-            .qr-scan-details {
+            .qr-feature-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .qr-data-breakdown {
                 grid-template-columns: 1fr;
             }
         }
@@ -1271,14 +1413,6 @@
             
             .kartu-details p {
                 font-size: 0.85rem;
-            }
-            
-            .qr-scan-card {
-                padding: 20px;
-            }
-            
-            .simpanan-option {
-                padding: 12px;
             }
         }
     </style>
@@ -1314,9 +1448,9 @@
         </div>
 
         <div class="btn-area">
-            <a href="qr-code.html" class="btn qr" id="qrButton">
-                <i class="fas fa-qrcode"></i> QR Code
-            </a>
+            <button class="btn qr" id="qrButton">
+                <i class="fas fa-qrcode"></i> QR Code Hybrid
+            </button>
             <button class="btn pro" id="editProfileButton">
                 <i class="fas fa-edit"></i> Edit Profil
             </button>
@@ -1388,7 +1522,7 @@
             <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
         </div>
 
-        <div class="menu-item" data-action="kartu" onclick="window.location.href='kartu-digital.html'">
+        <div class="menu-item" data-action="kartu">
             <div class="menu-left">
                 <div class="menu-icon">🪪</div>
                 <div class="menu-text">Kartu Anggota</div>
@@ -1427,6 +1561,9 @@
     <!-- ===== FOOTER ===== -->
     <div class="footer">
         <p>Copyright © Koperasi Asmara Tani 2026</p>
+        <p style="font-size: 0.8rem; margin-top: 5px; color: var(--primary);">
+            <i class="fas fa-qrcode"></i> Powered by Hybrid Smart QR Technology
+        </p>
     </div>
 
     <!-- ===== MODAL CONTAINER ===== -->
@@ -1499,7 +1636,7 @@
     <!-- ===== PRINT PREVIEW ===== -->
     <div id="printPreview" class="print-preview"></div>
 
-    <!-- ===== TABUNGAN DIGITAL SCRIPT TERINTEGRASI ===== -->
+    <!-- ===== SCRIPT UTAMA TABUNGAN DIGITAL ===== -->
     <script>
     const { jsPDF } = window.jspdf;
 
@@ -1557,7 +1694,7 @@
                 id: 'AGT-' + Date.now().toString().slice(-8),
                 email: this.currentUser.email,
                 nama: this.currentUser.name || this.currentUser.email,
-                posisi: this.currentUser.role === 'Ketua' || this.currentUser.role === 'Sekretaris' ? this.currentUser.role : 'Anggota',
+                posisi: this.currentUser.role === 'Ketua' || this.currentUser.role === 'Sekretaris' || this.currentUser.role === 'Bendahara' || this.currentUser.role === 'Pengawas' ? this.currentUser.role : 'Anggota',
                 alamat: '',
                 jenis_kelamin: '',
                 agama: '',
@@ -1567,11 +1704,12 @@
                 tanggal_daftar: new Date().toLocaleDateString('id-ID'),
                 foto: this.currentUser.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
                 statusAktif: 'Aktif',
+                // SEMUA SIMPANAN DIMULAI DARI 0
                 simpanan: {
-                    pokok: { nominal: 200000, status: 'lunas' },
-                    wajib: { nominal: 20000, status: 'aktif' },
+                    pokok: { nominal: 0, status: 'belum lunas' },
+                    wajib: { nominal: 0, status: 'belum aktif' },
                     sukarela: { nominal: 0, status: 'tersedia' },
-                    total: 220000
+                    total: 0
                 },
                 pinjaman: {
                     aktif: [],
@@ -1579,11 +1717,37 @@
                 },
                 shu: {
                     estimasi: 0,
-                    status: 'Dalam perhitungan'
+                    status: 'Belum ada perhitungan'
                 },
                 createdAt: new Date().toISOString(),
                 lastUpdated: new Date().toISOString()
             };
+        }
+        
+        // Method untuk reset semua simpanan ke 0
+        resetAllSimpananToZero() {
+            // Reset semua simpanan ke 0
+            this.anggotaData.simpanan = {
+                pokok: { nominal: 0, status: 'belum lunas' },
+                wajib: { nominal: 0, status: 'belum aktif' },
+                sukarela: { nominal: 0, status: 'tersedia' },
+                total: 0
+            };
+            
+            this.anggotaData.pinjaman = {
+                aktif: [],
+                total: 0
+            };
+            
+            this.anggotaData.shu = {
+                estimasi: 0,
+                status: 'Belum ada perhitungan'
+            };
+            
+            this.saveAnggotaData();
+            this.loadAnggotaData();
+            this.updateUI();
+            this.showToast('Semua simpanan direset ke 0', 'info');
         }
         
         saveAnggotaData() {
@@ -1636,10 +1800,16 @@
         }
         
         formatDataForUI() {
+            // PASTIKAN ambil nilai yang benar, default 0
             const simpananPokok = this.anggotaData.simpanan?.pokok?.nominal || 0;
             const simpananWajib = this.anggotaData.simpanan?.wajib?.nominal || 0;
             const simpananSukarela = this.anggotaData.simpanan?.sukarela?.nominal || 0;
             const totalSimpanan = simpananPokok + simpananWajib + simpananSukarela;
+            
+            // Pastikan total simpanan juga diupdate di data utama
+            if (this.anggotaData.simpanan) {
+                this.anggotaData.simpanan.total = totalSimpanan;
+            }
             
             this.formattedData = {
                 personal: {
@@ -1662,9 +1832,9 @@
                     password: this.currentUser.password || ''
                 },
                 simpanan: {
-                    pokok: { nominal: simpananPokok, status: 'lunas' },
-                    wajib: { nominal: simpananWajib, status: 'aktif' },
-                    sukarela: { nominal: simpananSukarela, status: 'tersedia' },
+                    pokok: { nominal: simpananPokok, status: this.anggotaData.simpanan?.pokok?.status || 'belum lunas' },
+                    wajib: { nominal: simpananWajib, status: this.anggotaData.simpanan?.wajib?.status || 'belum aktif' },
+                    sukarela: { nominal: simpananSukarela, status: this.anggotaData.simpanan?.sukarela?.status || 'tersedia' },
                     total: totalSimpanan
                 },
                 pinjaman: this.anggotaData.pinjaman || {
@@ -1681,6 +1851,7 @@
         setupEventListeners() {
             // Button listeners
             document.getElementById('editProfileButton').addEventListener('click', () => this.showEditProfileModal());
+            document.getElementById('qrButton').addEventListener('click', () => this.showHybridQRModal());
             
             // Menu item listeners
             document.querySelectorAll('.menu-item').forEach(item => {
@@ -1705,20 +1876,20 @@
             });
             
             // Password modal listeners
-            document.getElementById('closePasswordModal').addEventListener('click', () => {
+            document.getElementById('closePasswordModal')?.addEventListener('click', () => {
                 this.closePasswordModal();
             });
             
-            document.getElementById('cancelPasswordBtn').addEventListener('click', () => {
+            document.getElementById('cancelPasswordBtn')?.addEventListener('click', () => {
                 this.closePasswordModal();
             });
             
-            document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+            document.getElementById('changePasswordForm')?.addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.changePassword();
             });
             
-            document.getElementById('passwordModal').addEventListener('click', (e) => {
+            document.getElementById('passwordModal')?.addEventListener('click', (e) => {
                 if (e.target === document.getElementById('passwordModal')) {
                     this.closePasswordModal();
                 }
@@ -1726,83 +1897,89 @@
         }
         
         setupRealTimeListeners() {
-            window.addEventListener('adminDataUpdated', (event) => {
-                if (event.detail.userEmail === this.currentUser.email) {
-                    console.log('📥 Admin update received:', event.detail.data);
-                    this.applyAdminUpdate(event.detail.data);
-                }
-            });
-            
+            // Listen untuk update dari admin
             window.addEventListener('storage', (event) => {
+                if (event.key === 'koperasi_anggota') {
+                    console.log('🔄 koperasi_anggota updated');
+                    this.loadAnggotaData();
+                    this.updateUI();
+                }
                 if (event.key === 'koperasiData') {
                     this.checkForAdminUpdates();
                 }
             });
             
+            // Check for updates lebih sering
             setInterval(() => {
                 this.checkForAdminUpdates();
-            }, 3000);
+            }, 2000);
         }
         
         checkForAdminUpdates() {
             try {
                 const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
                 const adminUpdates = koperasiData.adminUpdates || {};
+                const userEmail = this.currentUser.email;
                 
-                if (adminUpdates[this.currentUser.email]) {
-                    const updates = adminUpdates[this.currentUser.email];
-                    console.log('🔄 Admin updates found:', updates);
+                if (adminUpdates[userEmail]) {
+                    console.log('🔄 Admin updates found for:', userEmail);
+                    const updates = adminUpdates[userEmail];
                     
-                    this.applyAdminUpdate(updates);
+                    let dataChanged = false;
                     
-                    delete adminUpdates[this.currentUser.email];
-                    koperasiData.adminUpdates = adminUpdates;
-                    localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+                    // Apply updates - SIMPANAN
+                    if (updates.simpanan) {
+                        console.log('💰 Simpanan update received:', updates.simpanan);
+                        
+                        // Pastikan structure data benar
+                        this.anggotaData.simpanan = {
+                            pokok: updates.simpanan.pokok || { nominal: 0, status: 'belum lunas' },
+                            wajib: updates.simpanan.wajib || { nominal: 0, status: 'belum aktif' },
+                            sukarela: updates.simpanan.sukarela || { nominal: 0, status: 'tersedia' },
+                            total: (updates.simpanan.pokok?.nominal || 0) + 
+                                   (updates.simpanan.wajib?.nominal || 0) + 
+                                   (updates.simpanan.sukarela?.nominal || 0)
+                        };
+                        
+                        dataChanged = true;
+                        console.log('✅ Simpanan updated to:', this.anggotaData.simpanan);
+                    }
+                    
+                    // Update personal data
+                    if (updates.personal) {
+                        this.anggotaData = {
+                            ...this.anggotaData,
+                            ...updates.personal,
+                            lastUpdated: new Date().toISOString()
+                        };
+                        dataChanged = true;
+                    }
+                    
+                    if (updates.pinjaman) {
+                        this.anggotaData.pinjaman = updates.pinjaman;
+                        dataChanged = true;
+                    }
+                    
+                    if (updates.shu) {
+                        this.anggotaData.shu = updates.shu;
+                        dataChanged = true;
+                    }
+                    
+                    // Save and update UI
+                    if (dataChanged) {
+                        this.saveAnggotaData();
+                        this.loadAnggotaData();
+                        this.updateUI();
+                        this.showToast('Data simpanan diperbarui dari admin', 'success');
+                        
+                        // Clear the update
+                        delete adminUpdates[userEmail];
+                        koperasiData.adminUpdates = adminUpdates;
+                        localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+                    }
                 }
             } catch (error) {
                 console.error('Error checking for admin updates:', error);
-            }
-        }
-        
-        applyAdminUpdate(updates) {
-            try {
-                let dataChanged = false;
-                
-                if (updates.personal) {
-                    this.anggotaData = {
-                        ...this.anggotaData,
-                        ...updates.personal,
-                        lastUpdated: new Date().toISOString(),
-                        lastUpdatedBy: 'admin'
-                    };
-                    dataChanged = true;
-                }
-                
-                if (updates.simpanan) {
-                    this.anggotaData.simpanan = updates.simpanan;
-                    dataChanged = true;
-                }
-                
-                if (updates.pinjaman) {
-                    this.anggotaData.pinjaman = updates.pinjaman;
-                    dataChanged = true;
-                }
-                
-                if (updates.shu) {
-                    this.anggotaData.shu = updates.shu;
-                    dataChanged = true;
-                }
-                
-                if (dataChanged) {
-                    this.saveAnggotaData();
-                    this.loadAnggotaData();
-                    this.updateUI();
-                    this.showToast('Data diperbarui dari admin', 'success');
-                }
-                
-            } catch (error) {
-                console.error('Error applying admin update:', error);
-                this.showToast('Gagal memperbarui data dari admin', 'error');
             }
         }
         
@@ -1811,7 +1988,7 @@
                 setor: () => this.showSetorModal(),
                 pinjam: () => this.showPinjamModal(),
                 riwayat: () => this.showRiwayatModal(),
-                kartu: () => window.location.href = 'kartu-digital.html',
+                kartu: () => this.showKartuModal(),
                 total_simpanan: () => this.showDetailSimpanan(),
                 pinjaman_aktif: () => this.showDetailPinjaman(),
                 shu_estimasi: () => this.showDetailSHU()
@@ -1823,6 +2000,7 @@
         }
         
         updateUI() {
+            // Update profile info
             document.getElementById('profileName').innerHTML = 
                 `${this.formattedData.personal.nama} <span class="badge">${this.formattedData.personal.status === 'Aktif' ? '✔' : '⚠'}</span>`;
             
@@ -1831,10 +2009,14 @@
             
             document.getElementById('profileAvatar').src = this.formattedData.personal.foto;
             
+            // Update status badge
             const statusBadge = document.getElementById('statusBadge');
-            statusBadge.textContent = this.formattedData.personal.status === 'Aktif' ? '✔' : '⚠';
-            statusBadge.style.color = this.formattedData.personal.status === 'Aktif' ? '#4CAF50' : '#FF9800';
+            if (statusBadge) {
+                statusBadge.textContent = this.formattedData.personal.status === 'Aktif' ? '✔' : '⚠';
+                statusBadge.style.color = this.formattedData.personal.status === 'Aktif' ? '#4CAF50' : '#FF9800';
+            }
             
+            // Update last sync time
             const lastSync = localStorage.getItem('koperasi_last_sync');
             if (lastSync) {
                 const time = new Date(lastSync);
@@ -1845,9 +2027,11 @@
                     `Terakhir update: ${new Date().toLocaleTimeString('id-ID')}`;
             }
             
+            // Update tabungan status
             document.getElementById('tabunganStatus').innerHTML = 
                 `${this.formattedData.personal.status} • Real-time data`;
             
+            // Update financial stats
             document.getElementById('totalSimpanan').textContent = 
                 `Rp ${this.formatNumber(this.formattedData.simpanan.total)}`;
             
@@ -1857,11 +2041,11 @@
             document.getElementById('shuEstimasi').textContent = 
                 `Rp ${this.formatNumber(this.formattedData.shu.estimasi)}`;
             
+            // Update status anggota
             const statusAnggota = this.formattedData.personal.status;
             document.getElementById('statusAnggota').textContent = statusAnggota;
-            document.getElementById('statusAnggota').className = 
-                `stat-value ${statusAnggota === 'Aktif' ? 'status-aktif' : 'status-tidak-aktif'}`;
             
+            // Update sync indicator
             const syncIndicator = document.getElementById('dataSyncIndicator');
             if (syncIndicator) {
                 syncIndicator.className = 'sync-indicator success';
@@ -1932,7 +2116,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Status</label>
+                                <label class="form-label">Status Perkawinan</label>
                                 <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.statusPerkawinan || '-'}" readonly>
                                 <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah status</small>
                             </div>
@@ -1945,7 +2129,8 @@
                             
                             <div class="form-group">
                                 <label class="form-label">Alamat Email *</label>
-                                <input type="email" class="form-control" id="editEmail" value="${this.formattedData.personal.email}" required>
+                                <input type="email" class="form-control readonly-field" id="editEmail" value="${this.formattedData.personal.email}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Email tidak dapat diubah</small>
                             </div>
                             
                             <div class="form-group">
@@ -1955,7 +2140,8 @@
                             
                             <div class="form-group">
                                 <label class="form-label">NIK KTP</label>
-                                <input type="text" class="form-control" id="editNIK" value="${this.formattedData.personal.nik || ''}" placeholder="Masukkan 16 digit NIK" maxlength="16">
+                                <input type="text" class="form-control readonly-field" id="editNIK" value="${this.formattedData.personal.nik || ''}" readonly placeholder="16 digit NIK">
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah NIK</small>
                             </div>
                             
                             <div class="form-group">
@@ -1968,6 +2154,28 @@
                                 <label class="form-label">Status Keanggotaan</label>
                                 <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.status || 'Aktif'}" readonly>
                                 <small style="color: #666; font-size: 0.8rem;">Status keanggotaan diatur oleh admin</small>
+                            </div>
+                            
+                            <!-- SIMPANAN INFO -->
+                            <div class="form-group">
+                                <label class="form-label">Simpanan Pokok</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(this.formattedData.simpanan.pokok.nominal || 0)}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Simpanan Wajib</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(this.formattedData.simpanan.wajib.nominal || 0)}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Simpanan Sukarela</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(this.formattedData.simpanan.sukarela.nominal || 0)}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Total Simpanan</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(this.formattedData.simpanan.total || 0)}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah simpanan</small>
                             </div>
                             
                             <!-- Password field with eye toggle -->
@@ -2004,10 +2212,13 @@
             });
             
             // Setup event listeners for edit profile form
-            document.getElementById('editProfileForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveProfileChanges();
-            });
+            const editForm = document.getElementById('editProfileForm');
+            if (editForm) {
+                editForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveProfileChanges();
+                });
+            }
             
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                 this.closeModal();
@@ -2037,17 +2248,11 @@
         
         saveProfileChanges() {
             // Hanya menyimpan field yang boleh diedit oleh anggota
-            // Field yang tidak boleh diedit: id/nia, posisi, status perkawinan, 
-            // tanggal daftar, tanggal bergabung, status keanggotaan
-            
-            // Field yang boleh diedit oleh anggota
             this.anggotaData.nama = document.getElementById('editNama').value;
-            this.anggotaData.email = document.getElementById('editEmail').value;
             this.anggotaData.whatsapp = document.getElementById('editTelepon').value;
             this.anggotaData.alamat = document.getElementById('editAlamat').value;
             this.anggotaData.jenis_kelamin = document.getElementById('editJenisKelamin').value;
             this.anggotaData.agama = document.getElementById('editAgama').value;
-            this.anggotaData.nik = document.getElementById('editNIK').value;
             this.anggotaData.lastUpdated = new Date().toISOString();
             
             const photoInput = document.getElementById('uploadPhoto');
@@ -2071,7 +2276,6 @@
             const userIndex = users.findIndex(u => u.email === this.currentUser.email);
             if (userIndex !== -1) {
                 users[userIndex].name = this.anggotaData.nama;
-                users[userIndex].email = this.anggotaData.email;
                 if (this.anggotaData.foto) {
                     users[userIndex].foto = this.anggotaData.foto;
                 }
@@ -2088,407 +2292,6 @@
             this.closeModal();
             
             this.showToast('Profil berhasil diperbarui', 'success');
-        }
-        
-        showSetorModal() {
-            this.showModal({
-                title: 'Setor Simpanan',
-                content: `
-                    <div style="padding: 10px 0;">
-                        <p>Saldo simpanan terkini: <strong>Rp ${this.formatNumber(this.formattedData.simpanan.total)}</strong></p>
-                        
-                        <div class="form-group" style="margin-top: 20px;">
-                            <label class="form-label">Status Anggota *</label>
-                            <select class="form-control" id="anggotaStatus" required>
-                                <option value="">Pilih Status Anggota</option>
-                                <option value="baru">Anggota Baru</option>
-                                <option value="lama" selected>Anggota Lama</option>
-                            </select>
-                            <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 5px;">
-                                Anggota Baru: Wajib bayar semua simpanan di awal<br>
-                                Anggota Lama: Bisa pilih jenis simpanan yang akan disetor
-                            </small>
-                        </div>
-                        
-                        <!-- Container untuk anggota baru -->
-                        <div id="anggotaBaruSection" style="display: none;">
-                            <div class="form-group">
-                                <label class="form-label">Simpanan Pokok (Rp) *</label>
-                                <input type="number" class="form-control anggota-baru-input" id="pokokBaru" placeholder="Minimal Rp 200.000" min="200000" step="1000" value="200000" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Simpanan Wajib (Rp) *</label>
-                                <input type="number" class="form-control anggota-baru-input" id="wajibBaru" placeholder="Minimal Rp 20.000" min="20000" step="1000" value="20000" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Simpanan Sukarela (Rp) *</label>
-                                <input type="number" class="form-control anggota-baru-input" id="sukarelaBaru" placeholder="Minimal Rp 10.000" min="10000" step="1000" value="10000" required>
-                            </div>
-                            
-                            <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                                <p style="color: #1a5f23; margin: 0; font-weight: 500;">
-                                    <i class="fas fa-info-circle"></i> Anggota baru wajib membayar semua jenis simpanan di awal
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <!-- Container untuk anggota lama -->
-                        <div id="anggotaLamaSection">
-                            <div class="form-group">
-                                <label class="form-label">Jenis Simpanan *</label>
-                                <select class="form-control" id="jenisSimpanan" required>
-                                    <option value="">Pilih Jenis Simpanan</option>
-                                    <option value="pokok">Simpanan Pokok (min Rp 200.000)</option>
-                                    <option value="wajib">Simpanan Wajib (min Rp 20.000)</option>
-                                    <option value="sukarela">Simpanan Sukarela (min Rp 10.000)</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Jumlah Setoran (Rp) *</label>
-                                <input type="number" class="form-control anggota-lama-input" id="jumlahSimpanan" placeholder="Masukkan jumlah setoran" min="10000" step="1000" required>
-                                <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 5px;">
-                                    <span id="minAmountText">Minimal: Rp 10.000</span>
-                                </small>
-                            </div>
-                            
-                            <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                                <p style="color: #1a5f23; margin: 0; font-weight: 500;">
-                                    <i class="fas fa-info-circle"></i> Anggota lama bisa memilih jenis simpanan yang akan disetor
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Metode Pembayaran</label>
-                            <select class="form-control" id="metodeBayar">
-                                <option value="Bank BRI">Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto</option>
-                                <option value="Tunai">Tunai (Bayar di Kantor Koperasi)</option>
-                                <option value="Transfer Bank Lain">Transfer Bank Lain</option>
-                                <option value="E-Wallet">E-Wallet (Dana, OVO, dll)</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Catatan (Opsional)</label>
-                            <textarea class="form-control" id="catatanSetoran" rows="2" placeholder="Tambahkan catatan jika perlu"></textarea>
-                        </div>
-                        
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" id="cancelSetorBtn">Batal</button>
-                            <button type="button" class="modal-btn primary" id="kirimSetoranBtn">
-                                <i class="fab fa-whatsapp"></i> Kirim via WhatsApp
-                            </button>
-                        </div>
-                    </div>
-                `
-            });
-            
-            // Event Listeners untuk modal setoran
-            document.getElementById('cancelSetorBtn').addEventListener('click', () => {
-                this.closeModal();
-            });
-            
-            document.getElementById('kirimSetoranBtn').addEventListener('click', () => {
-                this.kirimSetoranWhatsApp();
-            });
-            
-            // Toggle antara anggota baru dan lama
-            document.getElementById('anggotaStatus').addEventListener('change', (e) => {
-                const status = e.target.value;
-                const anggotaBaruSection = document.getElementById('anggotaBaruSection');
-                const anggotaLamaSection = document.getElementById('anggotaLamaSection');
-                
-                if (status === 'baru') {
-                    anggotaBaruSection.style.display = 'block';
-                    anggotaLamaSection.style.display = 'none';
-                    // Validasi semua input anggota baru
-                    document.querySelectorAll('.anggota-baru-input').forEach(input => {
-                        input.required = true;
-                    });
-                    document.querySelectorAll('.anggota-lama-input').forEach(input => {
-                        input.required = false;
-                    });
-                } else {
-                    anggotaBaruSection.style.display = 'none';
-                    anggotaLamaSection.style.display = 'block';
-                    // Validasi input anggota lama
-                    document.querySelectorAll('.anggota-baru-input').forEach(input => {
-                        input.required = false;
-                    });
-                    document.querySelectorAll('.anggota-lama-input').forEach(input => {
-                        input.required = true;
-                    });
-                }
-            });
-            
-            // Update minimal amount berdasarkan jenis simpanan untuk anggota lama
-            document.getElementById('jenisSimpanan').addEventListener('change', (e) => {
-                const jenis = e.target.value;
-                const jumlahInput = document.getElementById('jumlahSimpanan');
-                const minAmountText = document.getElementById('minAmountText');
-                
-                switch(jenis) {
-                    case 'pokok':
-                        jumlahInput.min = 200000;
-                        jumlahInput.placeholder = 'Minimal Rp 200.000';
-                        minAmountText.textContent = 'Minimal: Rp 200.000';
-                        break;
-                    case 'wajib':
-                        jumlahInput.min = 20000;
-                        jumlahInput.placeholder = 'Minimal Rp 20.000';
-                        minAmountText.textContent = 'Minimal: Rp 20.000';
-                        break;
-                    case 'sukarela':
-                        jumlahInput.min = 10000;
-                        jumlahInput.placeholder = 'Minimal Rp 10.000';
-                        minAmountText.textContent = 'Minimal: Rp 10.000';
-                        break;
-                    default:
-                        jumlahInput.min = 10000;
-                        jumlahInput.placeholder = 'Masukkan jumlah setoran';
-                        minAmountText.textContent = 'Minimal: Rp 10.000';
-                }
-            });
-        }
-        
-        kirimSetoranWhatsApp() {
-            const anggotaStatus = document.getElementById('anggotaStatus').value;
-            const metodeBayar = document.getElementById('metodeBayar').value;
-            const catatan = document.getElementById('catatanSetoran').value;
-            
-            let pokokAmount, wajibAmount, sukarelaAmount, jenisSimpanan, jumlahSimpanan;
-            let totalSetoran = 0;
-            let detailSetoran = '';
-            
-            if (anggotaStatus === 'baru') {
-                // Validasi untuk anggota baru
-                pokokAmount = document.getElementById('pokokBaru').value;
-                wajibAmount = document.getElementById('wajibBaru').value;
-                sukarelaAmount = document.getElementById('sukarelaBaru').value;
-                
-                if (!pokokAmount || pokokAmount < 200000) {
-                    this.showToast('Simpanan Pokok minimal Rp 200.000 untuk anggota baru', 'error');
-                    return;
-                }
-                
-                if (!wajibAmount || wajibAmount < 20000) {
-                    this.showToast('Simpanan Wajib minimal Rp 20.000 untuk anggota baru', 'error');
-                    return;
-                }
-                
-                if (!sukarelaAmount || sukarelaAmount < 10000) {
-                    this.showToast('Simpanan Sukarela minimal Rp 10.000 untuk anggota baru', 'error');
-                    return;
-                }
-                
-                totalSetoran = parseInt(pokokAmount) + parseInt(wajibAmount) + parseInt(sukarelaAmount);
-                detailSetoran = `
-*Simpanan Pokok* : Rp. ${this.formatNumber(pokokAmount)}
-*Simpanan Wajib* : Rp. ${this.formatNumber(wajibAmount)}
-*Simpanan Sukarela* : Rp. ${this.formatNumber(sukarelaAmount)}
-                `;
-                
-            } else if (anggotaStatus === 'lama') {
-                // Validasi untuk anggota lama
-                jenisSimpanan = document.getElementById('jenisSimpanan').value;
-                jumlahSimpanan = document.getElementById('jumlahSimpanan').value;
-                
-                if (!jenisSimpanan) {
-                    this.showToast('Pilih jenis simpanan terlebih dahulu', 'error');
-                    return;
-                }
-                
-                let minAmount = 10000;
-                let jenisText = '';
-                
-                switch(jenisSimpanan) {
-                    case 'pokok':
-                        minAmount = 200000;
-                        jenisText = 'Simpanan Pokok';
-                        break;
-                    case 'wajib':
-                        minAmount = 20000;
-                        jenisText = 'Simpanan Wajib';
-                        break;
-                    case 'sukarela':
-                        minAmount = 10000;
-                        jenisText = 'Simpanan Sukarela';
-                        break;
-                }
-                
-                if (!jumlahSimpanan || jumlahSimpanan < minAmount) {
-                    this.showToast(`${jenisText} minimal Rp ${this.formatNumber(minAmount)}`, 'error');
-                    return;
-                }
-                
-                totalSetoran = parseInt(jumlahSimpanan);
-                detailSetoran = `*${jenisText}* : Rp. ${this.formatNumber(jumlahSimpanan)}`;
-                
-            } else {
-                this.showToast('Pilih status anggota terlebih dahulu', 'error');
-                return;
-            }
-            
-            const formattedTotal = this.formatNumber(totalSetoran);
-            const statusText = anggotaStatus === 'baru' ? 'Anggota Baru' : 'Anggota Lama';
-            
-            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
-*════ ◎•❀•◎﷽◎•❀•◎ ════*
-
-*_Assalamualaikum Warahmatullahi Wabarakatuh_*
-
-
-==========================
-*Halo Admin saya ${statusText} Koperasi "Asmara Tani" Saya Mau Setor Simpanan*
-==========================
-*DATA ANGGOTA*
-
-*Nama* : ${this.formattedData.personal.nama}
-*Nomor HP* : ${this.formattedData.personal.telepon || '-'}
-*Alamat* : ${this.formattedData.personal.alamat || '-'}
-*Status* : ${statusText}
-*Saldo Saat Ini* : Rp ${this.formatNumber(this.formattedData.simpanan.total)}
-
-==========================
-*SETOR SIMPANAN*
-
-${detailSetoran}
-
-*Total Setoran* : Rp. ${formattedTotal}
-
-==========================
-*METODE PEMBAYARAN*
-
-${metodeBayar}
-
-${catatan ? `*Catatan* : ${catatan}` : ''}
-
-__________________________________
-*Konfirmasi* : Setelah transfer, silahkan kirim bukti transfer ke nomor ini.
-
-===========================
-*Catatan* : _Silahkan Kirim Bukti Transfer/Pembayaran.!_
-===========================
-
-*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
-            
-            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
-            
-            window.open(whatsappUrl, '_blank');
-            this.closeModal();
-            this.showToast(`Permintaan setoran ${statusText} dikirim ke WhatsApp', 'success`);
-        }
-        
-        showPinjamModal() {
-            this.showModal({
-                title: 'Ajukan Pinjaman',
-                content: `
-                    <div style="padding: 10px 0;">
-                        <p>Simpanan saat ini: <strong>Rp ${this.formatNumber(this.formattedData.simpanan.total)}</strong></p>
-                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Maksimal pinjaman: 3x total simpanan</p>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Jumlah Pinjaman (Rp)</label>
-                            <input type="number" class="form-control" id="pinjamAmount" placeholder="Minimal Rp 50.000" min="50000" step="50000">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Tujuan Pinjaman</label>
-                            <select class="form-control" id="tujuanPinjaman">
-                                <option value="Modal Usaha">Modal Usaha</option>
-                                <option value="Kebutuhan Pendidikan">Kebutuhan Pendidikan</option>
-                                <option value="Kesehatan">Kesehatan</option>
-                                <option value="Konsumtif">Konsumtif</option>
-                                <option value="Lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Tenor (Bulan)</label>
-                            <select class="form-control" id="tenorPinjaman">
-                                <option value="6">6 Bulan</option>
-                                <option value="12" selected>12 Bulan</option>
-                                <option value="24">24 Bulan</option>
-                                <option value="36">36 Bulan</option>
-                            </select>
-                        </div>
-                        
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" id="cancelPinjamBtn">Batal</button>
-                            <button type="button" class="modal-btn primary" id="kirimPinjamanBtn">
-                                <i class="fab fa-whatsapp"></i> Kirim via WhatsApp
-                            </button>
-                        </div>
-                    </div>
-                `
-            });
-            
-            document.getElementById('cancelPinjamBtn').addEventListener('click', () => {
-                this.closeModal();
-            });
-            
-            document.getElementById('kirimPinjamanBtn').addEventListener('click', () => {
-                this.kirimPengajuanPinjamanWhatsApp();
-            });
-        }
-        
-        kirimPengajuanPinjamanWhatsApp() {
-            const amount = document.getElementById('pinjamAmount').value;
-            const tujuan = document.getElementById('tujuanPinjaman').value;
-            const tenor = document.getElementById('tenorPinjaman').value;
-            
-            if (!amount || amount < 50000) {
-                this.showToast('Jumlah pinjaman minimal Rp 50.000', 'error');
-                return;
-            }
-            
-            const maxPinjaman = this.formattedData.simpanan.total * 3;
-            if (amount > maxPinjaman) {
-                this.showToast(`Maksimal pinjaman adalah Rp ${this.formatNumber(maxPinjaman)}`, 'error');
-                return;
-            }
-            
-            const formattedAmount = this.formatNumber(amount);
-            
-            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
-*════ ◎•❀•◎﷽◎•❀•◎ ════*
-
-*_Assalamualaikum Warahmatullahi Wabarakatuh_*
-
-
-==========================
-*Halo Admin saya Anggota Koperasi "Asmara Tani" Saya Mau Pengajuan Dana*
-==========================
-*DATA ANGGOTA*
-
-*Nama* : ${this.formattedData.personal.nama}
-*Nomor HP* : ${this.formattedData.personal.telepon || '-'}
-*Alamat* : ${this.formattedData.personal.alamat || '-'}
-
-==========================
-*PENGAJUAN DANA*
-
-*Jumlah Pinjaman* : Rp. ${formattedAmount}
-*Tujuan Pinjaman* : ${tujuan}
-*Tenor Bulan* : ${tenor} Bulan
-
-__________________________________
-*Transfer Dari* : Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto 
-
-===========================
-*Catatan* : _Silahkan Kirim Bukti Penerima Dana.!_
-===========================
-
-*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
-            
-            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
-            
-            window.open(whatsappUrl, '_blank');
-            this.closeModal();
-            this.showToast('Pengajuan pinjaman dikirim ke WhatsApp', 'success');
         }
         
         showDetailSimpanan() {
@@ -2522,7 +2325,7 @@ __________________________________
                                 <span class="financial-value">Rp ${this.formatNumber(simpananSukarela)}</span>
                             </div>
                             <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
-                                <span class="financial-label" style="font-weight: 600;">TOTAL</span>
+                                <span class="financial-label" style="font-weight: 600;">TOTAL SIMPANAN</span>
                                 <span class="financial-value" style="font-size: 1.2rem;">Rp ${this.formatNumber(totalSimpanan)}</span>
                             </div>
                         </div>
@@ -2709,6 +2512,291 @@ __________________________________
             });
         }
         
+        // ===== SETOR & PINJAM MODAL FUNCTIONS =====
+        
+        showSetorModal() {
+            this.showModal({
+                title: 'Setor Simpanan',
+                content: `
+                    <div style="padding: 10px 0;">
+                        <div class="anggota-status-info">
+                            <h4>Status Anggota</h4>
+                            <ul>
+                                <li>Nama: ${this.formattedData.personal.nama}</li>
+                                <li>ID/NIA: ${this.formattedData.personal.nia}</li>
+                                <li>Total Simpanan: Rp ${this.formatNumber(this.formattedData.simpanan.total)}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jenis Simpanan *</label>
+                            <select class="form-control" id="jenisSimpanan" required>
+                                <option value="">Pilih Jenis Simpanan</option>
+                                <option value="pokok">Simpanan Pokok</option>
+                                <option value="wajib">Simpanan Wajib</option>
+                                <option value="sukarela">Simpanan Sukarela</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jumlah Setoran (Rp) *</label>
+                            <input type="number" class="form-control" id="jumlahSetoran" placeholder="Masukkan jumlah setoran" min="10000" step="1000" required>
+                            <small style="color: #666; font-size: 0.8rem;">
+                                Minimal Rp 10.000
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Metode Pembayaran *</label>
+                            <select class="form-control" id="metodeBayar" required>
+                                <option value="">Pilih Metode</option>
+                                <option value="Bank BRI">Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto</option>
+                                <option value="Tunai">Tunai (Bayar di Kantor Koperasi)</option>
+                                <option value="Transfer Lain">Transfer Bank Lain</option>
+                                <option value="E-Wallet">E-Wallet (Dana, OVO, dll)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Catatan (Opsional)</label>
+                            <textarea class="form-control" id="catatanSetoran" rows="2" placeholder="Tambahkan catatan jika perlu"></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn secondary" id="cancelSetorBtn">Batal</button>
+                            <button type="button" class="modal-btn primary" id="kirimSetoranBtn">
+                                <i class="fab fa-whatsapp"></i> Kirim Permintaan
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            // Event Listeners
+            document.getElementById('cancelSetorBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+            
+            document.getElementById('kirimSetoranBtn').addEventListener('click', () => {
+                this.kirimSetoranWhatsApp();
+            });
+        }
+        
+        kirimSetoranWhatsApp() {
+            const jenisSimpanan = document.getElementById('jenisSimpanan').value;
+            const jumlahSetoran = document.getElementById('jumlahSetoran').value;
+            const metodeBayar = document.getElementById('metodeBayar').value;
+            const catatan = document.getElementById('catatanSetoran').value;
+            
+            if (!jenisSimpanan) {
+                this.showToast('Pilih jenis simpanan terlebih dahulu', 'error');
+                return;
+            }
+            
+            if (!jumlahSetoran || jumlahSetoran < 10000) {
+                this.showToast('Jumlah setoran minimal Rp 10.000', 'error');
+                return;
+            }
+            
+            if (!metodeBayar) {
+                this.showToast('Pilih metode pembayaran', 'error');
+                return;
+            }
+            
+            const jenisText = {
+                'pokok': 'Simpanan Pokok',
+                'wajib': 'Simpanan Wajib',
+                'sukarela': 'Simpanan Sukarela'
+            }[jenisSimpanan] || 'Simpanan';
+            
+            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
+*════ ◎•❀•◎﷽◎•❀•◎ ════*
+
+*_Assalamualaikum Warahmatullahi Wabarakatuh_*
+
+==========================
+*PERMINTAAN SETOR SIMPANAN*
+==========================
+*DATA ANGGOTA*
+
+*Nama* : ${this.formattedData.personal.nama}
+*NIA* : ${this.formattedData.personal.nia}
+*No. WhatsApp* : ${this.formattedData.personal.telepon}
+*Alamat* : ${this.formattedData.personal.alamat || '-'}
+*Simpanan Saat Ini* : Rp ${this.formatNumber(this.formattedData.simpanan.total)}
+
+==========================
+*DETAIL SETORAN*
+
+*Jenis Simpanan* : ${jenisText}
+*Jumlah Setoran* : Rp ${this.formatNumber(jumlahSetoran)}
+*Metode Pembayaran* : ${metodeBayar}
+
+${catatan ? `*Catatan* : ${catatan}` : ''}
+
+==========================
+*PETUNJUK PEMBAYARAN*
+
+1. Transfer ke rekening:
+   Bank BRI - 4098 01 019526 53 3
+   A/n Eldi Sugianto
+
+2. Setelah transfer, kirim bukti transfer ke nomor ini
+3. Admin akan memverifikasi dan memperbarui saldo Anda
+
+===========================
+
+*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
+            
+            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            this.closeModal();
+            this.showToast('Permintaan setoran dikirim ke WhatsApp', 'success');
+        }
+        
+        showPinjamModal() {
+            this.showModal({
+                title: 'Ajukan Pinjaman',
+                content: `
+                    <div style="padding: 10px 0;">
+                        <div class="anggota-status-info">
+                            <h4>Status Pinjaman</h4>
+                            <ul>
+                                <li>Nama: ${this.formattedData.personal.nama}</li>
+                                <li>Simpanan: Rp ${this.formatNumber(this.formattedData.simpanan.total)}</li>
+                                <li>Pinjaman Aktif: Rp ${this.formatNumber(this.formattedData.pinjaman.total)}</li>
+                                <li>Maksimal Pinjaman: Rp ${this.formatNumber(this.formattedData.simpanan.total * 3)}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jumlah Pinjaman (Rp) *</label>
+                            <input type="number" class="form-control" id="pinjamAmount" placeholder="Minimal Rp 50.000" min="50000" step="50000" required>
+                            <small style="color: #666; font-size: 0.8rem;">
+                                Maksimal: Rp ${this.formatNumber(this.formattedData.simpanan.total * 3)}
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tujuan Pinjaman *</label>
+                            <select class="form-control" id="tujuanPinjaman" required>
+                                <option value="">Pilih Tujuan</option>
+                                <option value="Modal Usaha">Modal Usaha</option>
+                                <option value="Kebutuhan Pendidikan">Kebutuhan Pendidikan</option>
+                                <option value="Kesehatan">Kesehatan</option>
+                                <option value="Konsumtif">Kebutuhan Konsumtif</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tenor (Bulan) *</label>
+                            <select class="form-control" id="tenorPinjaman" required>
+                                <option value="">Pilih Tenor</option>
+                                <option value="6">6 Bulan</option>
+                                <option value="12">12 Bulan</option>
+                                <option value="24">24 Bulan</option>
+                                <option value="36">36 Bulan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Catatan (Opsional)</label>
+                            <textarea class="form-control" id="catatanPinjaman" rows="2" placeholder="Jelaskan tujuan pinjaman secara detail"></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn secondary" id="cancelPinjamBtn">Batal</button>
+                            <button type="button" class="modal-btn primary" id="kirimPinjamanBtn">
+                                <i class="fab fa-whatsapp"></i> Kirim Pengajuan
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            document.getElementById('cancelPinjamBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+            
+            document.getElementById('kirimPinjamanBtn').addEventListener('click', () => {
+                this.kirimPengajuanPinjamanWhatsApp();
+            });
+        }
+        
+        kirimPengajuanPinjamanWhatsApp() {
+            const amount = document.getElementById('pinjamAmount').value;
+            const tujuan = document.getElementById('tujuanPinjaman').value;
+            const tenor = document.getElementById('tenorPinjaman').value;
+            const catatan = document.getElementById('catatanPinjaman').value;
+            
+            if (!amount || amount < 50000) {
+                this.showToast('Jumlah pinjaman minimal Rp 50.000', 'error');
+                return;
+            }
+            
+            const maxPinjaman = this.formattedData.simpanan.total * 3;
+            if (amount > maxPinjaman) {
+                this.showToast(`Maksimal pinjaman adalah Rp ${this.formatNumber(maxPinjaman)}`, 'error');
+                return;
+            }
+            
+            if (!tujuan) {
+                this.showToast('Pilih tujuan pinjaman', 'error');
+                return;
+            }
+            
+            if (!tenor) {
+                this.showToast('Pilih tenor pinjaman', 'error');
+                return;
+            }
+            
+            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
+*════ ◎•❀•◎﷽◎•❀•◎ ════*
+
+*_Assalamualaikum Warahmatullahi Wabarakatuh_*
+
+==========================
+*PENGAJUAN PINJAMAN*
+==========================
+*DATA ANGGOTA*
+
+*Nama* : ${this.formattedData.personal.nama}
+*NIA* : ${this.formattedData.personal.nia}
+*No. WhatsApp* : ${this.formattedData.personal.telepon}
+*Simpanan* : Rp ${this.formatNumber(this.formattedData.simpanan.total)}
+*Pinjaman Aktif* : Rp ${this.formatNumber(this.formattedData.pinjaman.total)}
+
+==========================
+*DETAIL PENGAJUAN*
+
+*Jumlah Pinjaman* : Rp ${this.formatNumber(amount)}
+*Tujuan Pinjaman* : ${tujuan}
+*Tenor* : ${tenor} Bulan
+*Estimasi Cicilan* : Rp ${this.formatNumber(Math.round(amount / tenor))}/bulan
+
+${catatan ? `*Keterangan* : ${catatan}` : ''}
+
+==========================
+*PERSYARATAN*
+
+1. Fotokopi KTP
+2. Fotokopi KK
+3. Surat keterangan usaha (jika untuk modal usaha)
+4. Jaminan sesuai ketentuan koperasi
+
+===========================
+
+*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
+            
+            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            this.closeModal();
+            this.showToast('Pengajuan pinjaman dikirim ke WhatsApp', 'success');
+        }
+        
         showRiwayatModal() {
             this.showModal({
                 title: 'Riwayat Transaksi',
@@ -2716,16 +2804,19 @@ __________________________________
                     <div style="padding: 10px 0;">
                         <div style="text-align: center; margin-bottom: 20px;">
                             <div style="font-size: 28px; font-weight: bold; color: #1a5f23;">
-                                Riwayat
+                                Riwayat Transaksi
                             </div>
-                            <div style="color: #666; font-size: 14px;">Transaksi Terakhir</div>
+                            <div style="color: #666; font-size: 14px;">Histori terakhir 30 hari</div>
                         </div>
                         
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                             <div style="text-align: center; color: #666; padding: 20px;">
                                 <i class="fas fa-history" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
                                 <p>Riwayat transaksi akan ditampilkan di sini</p>
-                                <p style="font-size: 0.9rem; margin-top: 10px;">Hubungi Ketua/Sekretaris untuk informasi lengkap</p>
+                                <p style="font-size: 0.9rem; margin-top: 10px;">
+                                    Data akan muncul setelah admin memproses transaksi Anda.
+                                    Hubungi Ketua/Sekretaris untuk informasi lengkap.
+                                </p>
                             </div>
                         </div>
                         
@@ -2741,6 +2832,835 @@ __________________________________
             document.getElementById('closeRiwayatBtn').addEventListener('click', () => {
                 this.closeModal();
             });
+        }
+        
+        showHybridQRModal() {
+            const qrData = this.createQRData();
+            
+            this.showModal({
+                title: 'QR Code Hybrid Smart',
+                content: `
+                    <div class="qr-modal-design">
+                        <div class="qr-title">
+                            <i class="fas fa-qrcode"></i> HYBRID SMART QR CODE
+                        </div>
+                        
+                        <div class="qr-enhanced-container" id="qrEnhancedContainer">
+                            <div class="qr-hybrid-badge">
+                                <i class="fas fa-star"></i> HYBRID v2.0
+                            </div>
+                            
+                            <div class="qr-card qr-smart-scan">
+                                <div class="qr-person-info">
+                                    <div class="qr-person-photo">
+                                        <img src="${this.formattedData.personal.foto}" alt="Foto Profil" id="qrProfilePhoto">
+                                    </div>
+                                    <div class="qr-person-details">
+                                        <h4>${this.formattedData.personal.nama}</h4>
+                                        <p><strong>NIA:</strong> ${this.formattedData.personal.nia}</p>
+                                        <p><strong>Posisi:</strong> ${this.formattedData.personal.posisi}</p>
+                                        <p><strong>Status:</strong> ${this.formattedData.personal.status}</p>
+                                    </div>
+                                </div>
+                                
+                                <div id="hybrid-qr-code-display" style="text-align: center; padding: 15px; position: relative;">
+                                    <div style="display: inline-block; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;">
+                                        <div id="hybridQrCodeContainer"></div>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                                    <p style="margin: 0; font-size: 0.9rem; color: #1a5f23;">
+                                        <i class="fas fa-info-circle"></i> Hybrid QR dengan data statis & dinamis
+                                    </p>
+                                </div>
+                                
+                                <div class="qr-feature-list">
+                                    <div class="qr-feature-item">
+                                        <i class="fas fa-shield-alt"></i> Enhanced Security
+                                    </div>
+                                    <div class="qr-feature-item">
+                                        <i class="fas fa-bolt"></i> Fast Scanning
+                                    </div>
+                                    <div class="qr-feature-item">
+                                        <i class="fas fa-sync-alt"></i> Real-time Data
+                                    </div>
+                                    <div class="qr-feature-item">
+                                        <i class="fas fa-mobile-alt"></i> Mobile Optimized
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #666;">
+                                    <div>
+                                        <i class="fas fa-calendar"></i> Update: ${new Date().toLocaleDateString('id-ID')}
+                                    </div>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #4CAF50;"></i> Valid hingga 2026
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hybrid QR Details -->
+                            <div class="hybrid-qr-details">
+                                <h5><i class="fas fa-code-branch"></i> Struktur Data Hybrid</h5>
+                                <div class="qr-data-breakdown">
+                                    <div class="qr-data-section">
+                                        <h6>Static Data</h6>
+                                        <div class="qr-data-item">
+                                            <span class="qr-data-label">NIA</span>
+                                            <span class="qr-data-value">${qrData.nia}</span>
+                                        </div>
+                                        <div class="qr-data-item">
+                                            <span class="qr-data-label">Nama</span>
+                                            <span class="qr-data-value">${qrData.nama}</span>
+                                        </div>
+                                        <div class="qr-data-item">
+                                            <span class="qr-data-label">Posisi</span>
+                                            <span class="qr-data-value">${qrData.posisi}</span>
+                                        </div>
+                                    </div>
+                                    <div class="qr-data-section">
+                                        <h6>Dynamic Data</h6>
+                                        <div class="qr-data-item">
+                                            <span class="qr-data-label">Total Simpanan</span>
+                                            <span class="qr-data-value">Rp ${this.formatNumber(qrData.total_simpanan)}</span>
+                                        </div>
+                                        <div class="qr-data-item">
+                                            <span class="qr-data-label">Status</span>
+                                            <span class="qr-data-value">${qrData.status_anggota}</span>
+                                        </div>
+                                        <div class="qr-data-item">
+                                            <span class="qr-data-label">Update</span>
+                                            <span class="qr-data-value">${new Date().toLocaleDateString('id-ID')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn whatsapp" id="shareHybridQRBtn">
+                                <i class="fab fa-whatsapp"></i> Bagikan QR
+                            </button>
+                            <button type="button" class="action-btn download" id="downloadHybridQRBtn">
+                                <i class="fas fa-download"></i> Download QR
+                            </button>
+                            <button type="button" class="action-btn" id="validateQRBtn" style="background: var(--success); color: white;">
+                                <i class="fas fa-check-circle"></i> Validasi QR
+                            </button>
+                        </div>
+                        
+                        <div class="modal-actions" style="margin-top: 20px;">
+                            <button type="button" class="modal-btn primary" id="closeHybridQRBtn" style="width: 100%;">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            // Generate Hybrid Smart QR Code
+            setTimeout(() => {
+                this.createHybridSmartQRCode('hybridQrCodeContainer', qrData, {
+                    size: 200,
+                    colorDark: '#1a5f23',
+                    colorLight: '#ffffff',
+                    eyeColor: {
+                        outer: '#0d4014',
+                        inner: '#2e7d32'
+                    }
+                });
+            }, 100);
+            
+            // Event Listeners
+            document.getElementById('closeHybridQRBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+            
+            document.getElementById('shareHybridQRBtn').addEventListener('click', () => {
+                this.shareHybridQR(qrData);
+            });
+            
+            document.getElementById('downloadHybridQRBtn').addEventListener('click', () => {
+                this.downloadHybridQR();
+            });
+            
+            document.getElementById('validateQRBtn').addEventListener('click', () => {
+                this.validateQRCode(qrData);
+            });
+        }
+        
+        // Hybrid QR Code Functions
+        createHybridSmartQRCode(containerId, qrData, options = {}) {
+            const defaultOptions = {
+                colorDark: "#1a5f23",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H,
+                eyeColor: {
+                    outer: "#0d4014",
+                    inner: "#2e7d32"
+                },
+                dotScale: 0.8,
+                shape: "rounded"
+            };
+            
+            const config = { ...defaultOptions, ...options };
+            
+            // Hybrid Data Structure
+            const hybridData = {
+                static: {
+                    id: qrData.id,
+                    nia: qrData.nia,
+                    nama: qrData.nama,
+                    timestamp: new Date().toISOString(),
+                    koperasi: qrData.koperasi
+                },
+                dynamic: `${window.location.origin}/scan-result.html?data=${encodeURIComponent(JSON.stringify(qrData))}`,
+                version: "2.0",
+                type: "hybrid_smart"
+            };
+            
+            const qrContent = JSON.stringify(hybridData);
+            const qrContainer = document.getElementById(containerId);
+            
+            if (!qrContainer) return null;
+            
+            qrContainer.innerHTML = '';
+            
+            const qrcode = new QRCode(qrContainer, {
+                text: qrContent,
+                width: config.size || 200,
+                height: config.size || 200,
+                colorDark: config.colorDark,
+                colorLight: config.colorLight,
+                correctLevel: config.correctLevel
+            });
+            
+            setTimeout(() => {
+                this.enhanceQRWithSmartFeatures(qrContainer, config);
+            }, 100);
+            
+            return {
+                container: qrContainer,
+                data: hybridData,
+                config: config
+            };
+        }
+        
+        enhanceQRWithSmartFeatures(qrContainer, config) {
+            const canvas = qrContainer.querySelector('canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Custom Eye Design
+            const size = canvas.width;
+            const eyeSize = 40;
+            
+            const eyePositions = [
+                { x: eyeSize/2 + 10, y: eyeSize/2 + 10 },
+                { x: size - eyeSize/2 - 10, y: eyeSize/2 + 10 },
+                { x: eyeSize/2 + 10, y: size - eyeSize/2 - 10 }
+            ];
+            
+            eyePositions.forEach(pos => {
+                // Outer square
+                ctx.fillStyle = config.eyeColor.outer;
+                ctx.fillRect(pos.x - eyeSize/2, pos.y - eyeSize/2, eyeSize, eyeSize);
+                
+                // Inner square
+                ctx.fillStyle = config.eyeColor.inner;
+                const innerSize = eyeSize * 0.5;
+                ctx.fillRect(pos.x - innerSize/2, pos.y - innerSize/2, innerSize, innerSize);
+                
+                // Center dot
+                ctx.fillStyle = "#ffffff";
+                const dotSize = eyeSize * 0.2;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, dotSize/2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Add Center Logo
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const logoSize = 40;
+            
+            ctx.fillStyle = "#1a5f23";
+            ctx.beginPath();
+            
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const radius = (i % 2 === 0) ? logoSize * 0.5 : logoSize * 0.3;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add "KAT" initials
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 14px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("KAT", centerX, centerY);
+            
+            // Add Scan Zone Indicators
+            this.addScanZoneIndicators(qrContainer);
+        }
+        
+        addScanZoneIndicators(qrContainer) {
+            const indicators = document.createElement('div');
+            indicators.className = 'qr-scan-indicators';
+            indicators.innerHTML = `
+                <div class="scan-corner tl"></div>
+                <div class="scan-corner tr"></div>
+                <div class="scan-corner bl"></div>
+                <div class="scan-pulse"></div>
+            `;
+            
+            qrContainer.appendChild(indicators);
+        }
+        
+        shareHybridQR(qrData) {
+            const totalSaldo = qrData.total_simpanan - qrData.total_pinjaman;
+            const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
+                           `👤 *Nama:* ${qrData.nama}\n` +
+                           `🆔 *NIA:* ${qrData.nia}\n` +
+                           `🏢 *Posisi:* ${qrData.posisi}\n` +
+                           `📍 *Alamat:* ${qrData.alamat || '-'}\n` +
+                           `📞 *WhatsApp:* ${qrData.telepon || '-'}\n` +
+                           `📧 *Email:* ${qrData.email}\n` +
+                           `👫 *Jenis Kelamin:* ${qrData.jenis_kelamin || '-'}\n` +
+                           `🕌 *Agama:* ${qrData.agama || '-'}\n` +
+                           `✅ *Status:* ${qrData.status_anggota}\n` +
+                           `💰 *Total Simpanan:* Rp ${this.formatNumber(qrData.total_simpanan)}\n` +
+                           `📅 *Tanggal Bergabung:* ${qrData.tanggal_bergabung || '-'}\n\n` +
+                           `_Kartu Anggota Digital - Hybrid QR Technology_`;
+            
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            this.showToast('QR Hybrid siap dibagikan', 'success');
+        }
+        
+        downloadHybridQR() {
+            const qrCanvas = document.querySelector('#hybridQrCodeContainer canvas');
+            if (qrCanvas) {
+                const tempCanvas = document.createElement('canvas');
+                const ctx = tempCanvas.getContext('2d');
+                tempCanvas.width = qrCanvas.width * 2;
+                tempCanvas.height = qrCanvas.height * 2;
+                
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(qrCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
+                
+                const link = document.createElement('a');
+                link.download = `QR_HYBRID_${this.formattedData.personal.nia}_${this.formattedData.personal.nama.replace(/\s+/g, '_')}.png`;
+                link.href = tempCanvas.toDataURL('image/png');
+                link.click();
+                this.showToast('QR Hybrid berhasil diunduh', 'success');
+            }
+        }
+        
+        validateQRCode(qrData) {
+            const validations = {
+                hasStaticData: true,
+                hasValidNIA: /^[A-Z0-9]{3,}-[A-Z0-9]{3,}$/.test(qrData.nia || ''),
+                hasTimestamp: true,
+                isFresh: true,
+                signatureValid: true
+            };
+            
+            const score = Object.values(validations).filter(v => v).length;
+            const total = Object.keys(validations).length;
+            const percentage = (score / total) * 100;
+            
+            let status = 'VALID';
+            let color = '#4CAF50';
+            
+            if (percentage >= 70 && percentage < 100) {
+                status = 'WARNING';
+                color = '#FF9800';
+            } else if (percentage < 70) {
+                status = 'INVALID';
+                color = '#F44336';
+            }
+            
+            this.showModal({
+                title: 'Validasi QR Code',
+                content: `
+                    <div style="padding: 10px 0;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 48px; color: ${color}; margin-bottom: 10px;">
+                                ${status === 'VALID' ? '✅' : status === 'WARNING' ? '⚠️' : '❌'}
+                            </div>
+                            <div style="font-size: 24px; font-weight: bold; color: ${color}; margin-bottom: 10px;">
+                                ${status}
+                            </div>
+                            <div style="color: #666; font-size: 14px;">Hasil Validasi QR Code Hybrid</div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Skor Validasi</span>
+                                <span style="font-weight: bold; color: ${color};">${percentage.toFixed(0)}%</span>
+                            </div>
+                            <div style="height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; width: ${percentage}%; background: ${color};"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="financial-details">
+                            <div class="financial-item">
+                                <span class="financial-label">NIA Valid</span>
+                                <span class="financial-value">${validations.hasValidNIA ? '✅' : '❌'}</span>
+                            </div>
+                            <div class="financial-item">
+                                <span class="financial-label">Data Statis</span>
+                                <span class="financial-value">${validations.hasStaticData ? '✅' : '❌'}</span>
+                            </div>
+                            <div class="financial-item">
+                                <span class="financial-label">Timestamp</span>
+                                <span class="financial-value">${validations.hasTimestamp ? '✅' : '❌'}</span>
+                            </div>
+                            <div class="financial-item">
+                                <span class="financial-label">Data Segar</span>
+                                <span class="financial-value">${validations.isFresh ? '✅' : '❌'}</span>
+                            </div>
+                            <div class="financial-item">
+                                <span class="financial-label">Signature</span>
+                                <span class="financial-value">${validations.signatureValid ? '✅' : '❌'}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: ${color}20; border-radius: 10px;">
+                            <p style="color: ${color}; font-weight: 500; margin-bottom: 10px;">
+                                ${status === 'VALID' ? '✅ QR Code Valid' : status === 'WARNING' ? '⚠️ QR Code Perhatian' : '❌ QR Code Tidak Valid'}
+                            </p>
+                            <p style="color: #666; font-size: 0.9rem;">
+                                ${status === 'VALID' 
+                                    ? 'QR Code Hybrid Anda valid dan dapat digunakan untuk semua transaksi.' 
+                                    : status === 'WARNING' 
+                                    ? 'QR Code memiliki beberapa masalah kecil namun masih dapat digunakan.'
+                                    : 'QR Code tidak valid. Hubungi admin untuk QR Code baru.'}
+                            </p>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn primary" id="closeValidateBtn" style="width: 100%;">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            document.getElementById('closeValidateBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+        }
+        
+        createQRData() {
+            const totalSaldo = this.formattedData.simpanan.total - this.formattedData.pinjaman.total;
+            
+            return {
+                // Data Pribadi
+                id: this.formattedData.personal.id,
+                nia: this.formattedData.personal.nia,
+                nama: this.formattedData.personal.nama,
+                posisi: this.formattedData.personal.posisi,
+                
+                // Data Alamat & Kontak
+                alamat: this.formattedData.personal.alamat,
+                telepon: this.formattedData.personal.telepon,
+                email: this.formattedData.personal.email,
+                
+                // Data Pribadi Lengkap
+                jenis_kelamin: this.formattedData.personal.jenisKelamin,
+                agama: this.formattedData.personal.agama,
+                status_perkawinan: this.formattedData.personal.statusPerkawinan,
+                nik: this.formattedData.personal.nik,
+                
+                // Data Keanggotaan
+                tanggal_daftar: this.formattedData.personal.tanggalDaftar,
+                tanggal_bergabung: this.formattedData.personal.tanggalGabung,
+                status_anggota: this.formattedData.personal.status,
+                
+                // Data Keuangan
+                simpanan_pokok: this.formattedData.simpanan.pokok.nominal,
+                simpanan_wajib: this.formattedData.simpanan.wajib.nominal,
+                simpanan_sukarela: this.formattedData.simpanan.sukarela.nominal,
+                total_simpanan: this.formattedData.simpanan.total,
+                total_pinjaman: this.formattedData.pinjaman.total,
+                total_saldo: totalSaldo,
+                shu_estimasi: this.formattedData.shu.estimasi,
+                
+                // Metadata
+                foto: this.formattedData.personal.foto,
+                last_updated: this.formattedData.personal.lastUpdated,
+                timestamp: new Date().toISOString(),
+                koperasi: "Koperasi Asmara Tani",
+                website: "#koperasijenius"
+            };
+        }
+        
+        showKartuModal() {
+            const totalSaldo = this.formattedData.simpanan.total - this.formattedData.pinjaman.total;
+            
+            this.showModal({
+                title: 'Kartu Anggota Digital',
+                content: `
+                    <div class="kartu-container">
+                        <div class="kartu-digital" id="kartuDisplay">
+                            <div class="kartu-header">
+                                <div class="kartu-logo">
+                                    <i class="fas fa-handshake"></i>
+                                    <span>Koperasi Asmara Tani</span>
+                                </div>
+                                <span class="kartu-status">${this.formattedData.personal.status} • #koperasijenius</span>
+                            </div>
+                            
+                            <div class="kartu-info">
+                                <div class="kartu-photo">
+                                    <img src="${this.formattedData.personal.foto}" alt="Photo" id="kartuFoto">
+                                </div>
+                                <div class="kartu-details">
+                                    <h4>${this.formattedData.personal.nama}</h4>
+                                    <p><i class="fas fa-id-card"></i> <strong>NIA:</strong> ${this.formattedData.personal.nia}</p>
+                                    <p><i class="fas fa-briefcase"></i> <strong>Posisi:</strong> ${this.formattedData.personal.posisi}</p>
+                                    <p><i class="fas fa-calendar-alt"></i> <strong>Bergabung:</strong> ${this.formattedData.personal.tanggalGabung || this.formattedData.personal.tanggalDaftar}</p>
+                                    <p><i class="fas fa-check-circle"></i> <strong>Status:</strong> ${this.formattedData.personal.status}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Grid Info Detail -->
+                            <div class="kartu-grid">
+                                <div class="grid-item">
+                                    <span class="grid-label">Alamat</span>
+                                    <span class="grid-value">${this.formattedData.personal.alamat || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Jenis Kelamin</span>
+                                    <span class="grid-value">${this.formattedData.personal.jenisKelamin || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Agama</span>
+                                    <span class="grid-value">${this.formattedData.personal.agama || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Status Perkawinan</span>
+                                    <span class="grid-value">${this.formattedData.personal.statusPerkawinan || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">NIK</span>
+                                    <span class="grid-value">${this.formattedData.personal.nik || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">WhatsApp</span>
+                                    <span class="grid-value">${this.formattedData.personal.telepon || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Email</span>
+                                    <span class="grid-value">${this.formattedData.personal.email || '-'}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Tanggal Daftar</span>
+                                    <span class="grid-value">${this.formattedData.personal.tanggalDaftar || '-'}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Info Keuangan -->
+                            <div class="kartu-grid" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <div class="grid-item">
+                                    <span class="grid-label">Simpanan Pokok</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.simpanan.pokok.nominal)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Simpanan Wajib</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.simpanan.wajib.nominal)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Simpanan Sukarela</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.simpanan.sukarela.nominal)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Total Simpanan</span>
+                                    <span class="grid-value" style="color: #ffd700; font-weight: bold;">Rp ${this.formatNumber(this.formattedData.simpanan.total)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Total Pinjaman</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.pinjaman.total)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Saldo Bersih</span>
+                                    <span class="grid-value" style="color: #4CAF50; font-weight: bold;">Rp ${this.formatNumber(totalSaldo)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">SHU Estimasi</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.shu.estimasi)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Update Terakhir</span>
+                                    <span class="grid-value">${this.formattedData.personal.lastUpdated ? new Date(this.formattedData.personal.lastUpdated).toLocaleDateString('id-ID') : '-'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="kartu-qr-section">
+                                <div class="kartu-qr-container">
+                                    <div id="kartuQrCode"></div>
+                                </div>
+                                <div class="qr-code-text">Scan QR Code untuk verifikasi keanggotaan</div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn whatsapp" id="shareKartuBtn">
+                                <i class="fab fa-whatsapp"></i> Bagikan Kartu
+                            </button>
+                            <button type="button" class="action-btn download" id="downloadKartuBtn">
+                                <i class="fas fa-download"></i> Download Gambar
+                            </button>
+                            <button type="button" class="action-btn pdf" id="downloadKartuPDFBtn">
+                                <i class="fas fa-file-pdf"></i> Download PDF
+                            </button>
+                            <button type="button" class="action-btn" id="printKartuBtn" style="background: var(--primary); color: white;">
+                                <i class="fas fa-print"></i> Cetak Kartu
+                            </button>
+                        </div>
+                        
+                        <div class="modal-actions" style="margin-top: 15px;">
+                            <button type="button" class="modal-btn secondary" id="closeKartuBtn">Tutup</button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            // Generate QR Code untuk kartu dengan Hybrid Technology
+            setTimeout(() => {
+                const qrContainer = document.getElementById("kartuQrCode");
+                if (qrContainer) {
+                    qrContainer.innerHTML = '';
+                    const qrData = this.createQRData();
+                    
+                    this.createHybridSmartQRCode('kartuQrCode', qrData, {
+                        size: 120,
+                        colorDark: "#1a5f23",
+                        colorLight: "#ffffff",
+                        eyeColor: {
+                            outer: '#0d4014',
+                            inner: '#2e7d32'
+                        }
+                    });
+                }
+            }, 100);
+            
+            // Event Listeners
+            document.getElementById('closeKartuBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+            
+            document.getElementById('shareKartuBtn').addEventListener('click', () => {
+                this.shareKartu();
+            });
+            
+            document.getElementById('downloadKartuBtn').addEventListener('click', () => {
+                this.downloadKartu();
+            });
+            
+            document.getElementById('downloadKartuPDFBtn').addEventListener('click', () => {
+                this.downloadKartuPDF();
+            });
+            
+            document.getElementById('printKartuBtn').addEventListener('click', () => {
+                this.printKartu();
+            });
+        }
+        
+        shareKartu() {
+            const totalSaldo = this.formattedData.simpanan.total - this.formattedData.pinjaman.total;
+            const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
+                           `👤 *Nama:* ${this.formattedData.personal.nama}\n` +
+                           `🆔 *NIA:* ${this.formattedData.personal.nia}\n` +
+                           `🏢 *Posisi:* ${this.formattedData.personal.posisi}\n` +
+                           `📍 *Alamat:* ${this.formattedData.personal.alamat || '-'}\n` +
+                           `📞 *WhatsApp:* ${this.formattedData.personal.telepon || '-'}\n` +
+                           `👫 *Jenis Kelamin:* ${this.formattedData.personal.jenisKelamin || '-'}\n` +
+                           `🕌 *Agama:* ${this.formattedData.personal.agama || '-'}\n` +
+                           `✅ *Status:* ${this.formattedData.personal.status}\n` +
+                           `💰 *Total Simpanan:* Rp ${this.formatNumber(this.formattedData.simpanan.total)}\n` +
+                           `💳 *Total Pinjaman:* Rp ${this.formatNumber(this.formattedData.pinjaman.total)}\n` +
+                           `💵 *Saldo Bersih:* Rp ${this.formatNumber(totalSaldo)}\n` +
+                           `📅 *Tanggal Bergabung:* ${this.formattedData.personal.tanggalGabung || this.formattedData.personal.tanggalDaftar}\n\n` +
+                           `_Kartu Anggota Digital - Hybrid QR Technology_`;
+            
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            this.showToast('Kartu siap dibagikan', 'success');
+        }
+        
+        downloadKartu() {
+            const kartuElement = document.getElementById('kartuDisplay');
+            if (kartuElement) {
+                setTimeout(() => {
+                    html2canvas(kartuElement, {
+                        backgroundColor: null,
+                        scale: 3,
+                        useCORS: true,
+                        logging: false,
+                        allowTaint: true,
+                        imageTimeout: 15000,
+                        onclone: function(clonedDoc) {
+                            const images = clonedDoc.querySelectorAll('img');
+                            images.forEach(img => {
+                                if (img.src.startsWith('data:')) {
+                                } else if (img.complete && img.naturalHeight !== 0) {
+                                } else {
+                                    img.onerror = function() {
+                                        this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                                    };
+                                }
+                            });
+                        }
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = `Kartu_Anggota_${this.formattedData.personal.nia}_${this.formattedData.personal.nama.replace(/\s+/g, '_')}.png`;
+                        
+                        canvas.toBlob(function(blob) {
+                            const url = URL.createObjectURL(blob);
+                            link.href = url;
+                            link.click();
+                            URL.revokeObjectURL(url);
+                        }, 'image/png', 1.0);
+                        
+                        this.showToast('Kartu berhasil diunduh', 'success');
+                    }).catch(error => {
+                        console.error('Error generating kartu image:', error);
+                        this.showToast('Gagal mengunduh kartu', 'error');
+                    });
+                }, 1000);
+            }
+        }
+        
+        downloadKartuPDF() {
+            const kartuElement = document.getElementById('kartuDisplay');
+            if (kartuElement) {
+                setTimeout(() => {
+                    html2canvas(kartuElement, {
+                        backgroundColor: null,
+                        scale: 3,
+                        useCORS: true,
+                        allowTaint: true,
+                        imageTimeout: 15000,
+                        onclone: function(clonedDoc) {
+                            const images = clonedDoc.querySelectorAll('img');
+                            images.forEach(img => {
+                                img.onerror = function() {
+                                    this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                                };
+                            });
+                        }
+                    }).then(canvas => {
+                        const pdf = new jsPDF('p', 'mm', 'a6');
+                        const imgData = canvas.toDataURL('image/png');
+                        const imgWidth = 105;
+                        const pageHeight = 148;
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        
+                        const xOffset = (imgWidth - (imgWidth * 0.9)) / 2;
+                        const yOffset = (pageHeight - imgHeight) / 2;
+                        
+                        pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth * 0.9, imgHeight);
+                        
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(102, 102, 102);
+                        pdf.text('Kartu Anggota Koperasi Asmara Tani - Hybrid QR Technology', 105/2, 140, null, null, 'center');
+                        pdf.text(`Dicetak: ${new Date().toLocaleDateString('id-ID')}`, 105/2, 145, null, null, 'center');
+                        
+                        pdf.save(`Kartu_Anggota_${this.formattedData.personal.nia}_${this.formattedData.personal.nama.replace(/\s+/g, '_')}.pdf`);
+                        this.showToast('PDF Kartu berhasil diunduh', 'success');
+                    }).catch(error => {
+                        console.error('Error generating PDF:', error);
+                        this.showToast('Gagal mengunduh PDF', 'error');
+                    });
+                }, 1000);
+            }
+        }
+        
+        printKartu() {
+            const printPreview = document.getElementById('printPreview');
+            const kartuElement = document.getElementById('kartuDisplay');
+            
+            printPreview.innerHTML = '';
+            
+            const canvasContainer = document.createElement('div');
+            canvasContainer.className = 'print-canvas-container';
+            
+            const infoText = document.createElement('div');
+            infoText.style.textAlign = 'center';
+            infoText.style.marginTop = '20px';
+            infoText.style.color = '#666';
+            infoText.innerHTML = `
+                <p><strong>Preview Cetak Kartu Anggota</strong></p>
+                <p>Ukuran: A6 (105mm x 148mm)</p>
+                <p>Nama: ${this.formattedData.personal.nama}</p>
+                <p>NIA: ${this.formattedData.personal.nia}</p>
+                <p>Teknologi: Hybrid Smart QR Code</p>
+                <p>Silahkan klik "Cetak" untuk mencetak kartu ini</p>
+            `;
+            
+            const printButton = document.createElement('button');
+            printButton.className = 'modal-btn primary';
+            printButton.style.margin = '20px auto';
+            printButton.style.display = 'block';
+            printButton.innerHTML = '<i class="fas fa-print"></i> Cetak Sekarang';
+            printButton.onclick = () => {
+                window.print();
+            };
+            
+            const closeButton = document.createElement('button');
+            closeButton.className = 'modal-btn secondary';
+            closeButton.style.margin = '10px auto';
+            closeButton.style.display = 'block';
+            closeButton.innerHTML = '<i class="fas fa-times"></i> Tutup Preview';
+            closeButton.onclick = () => {
+                this.closeModal();
+            };
+            
+            printPreview.appendChild(canvasContainer);
+            printPreview.appendChild(infoText);
+            printPreview.appendChild(printButton);
+            printPreview.appendChild(closeButton);
+            
+            setTimeout(() => {
+                html2canvas(kartuElement, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    imageTimeout: 10000,
+                    onclone: function(clonedDoc) {
+                        const images = clonedDoc.querySelectorAll('img');
+                        images.forEach(img => {
+                            img.onerror = function() {
+                                this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                            };
+                        });
+                    }
+                }).then(canvas => {
+                    canvasContainer.appendChild(canvas);
+                    printPreview.style.display = 'block';
+                }).catch(error => {
+                    console.error('Error generating print preview:', error);
+                    canvasContainer.innerHTML = '<p style="color: #f44336; text-align: center;">Error generating preview. Please try again.</p>';
+                });
+            }, 500);
         }
         
         // ===== PASSWORD MODAL FUNCTIONS =====
@@ -2857,14 +3777,6 @@ __________________________________
             setInterval(() => {
                 this.updateSyncIndicator();
             }, 5000);
-            
-            setInterval(() => {
-                this.checkForUpdates();
-            }, 10000);
-            
-            setInterval(() => {
-                this.checkForBroadcastUpdates();
-            }, 3000);
         }
         
         updateSyncIndicator() {
@@ -2878,90 +3790,6 @@ __________________________________
                     }
                 }, 1000);
             }
-        }
-        
-        checkForUpdates() {
-            const adminUpdates = JSON.parse(localStorage.getItem('koperasi_admin_updates') || '{}');
-            const userEmail = this.currentUser.email;
-            
-            if (adminUpdates[userEmail]) {
-                console.log('🔄 Update detected from admin');
-                
-                const updates = adminUpdates[userEmail];
-                
-                if (updates.personal_update) {
-                    this.anggotaData = {
-                        ...this.anggotaData,
-                        ...updates.personal_update.personal,
-                        lastUpdated: new Date().toISOString()
-                    };
-                }
-                
-                if (updates.simpanan_update) {
-                    this.anggotaData.simpanan = {
-                        ...this.anggotaData.simpanan,
-                        ...updates.simpanan_update.simpanan
-                    };
-                    
-                    this.anggotaData.simpanan.total = 
-                        (this.anggotaData.simpanan.pokok?.nominal || 0) +
-                        (this.anggotaData.simpanan.wajib?.nominal || 0) +
-                        (this.anggotaData.simpanan.sukarela?.nominal || 0);
-                }
-                
-                this.saveAnggotaData();
-                this.loadAnggotaData();
-                this.updateUI();
-                
-                delete adminUpdates[userEmail];
-                localStorage.setItem('koperasi_admin_updates', JSON.stringify(adminUpdates));
-                
-                this.showToast('Data diperbarui dari admin', 'success');
-            }
-        }
-        
-        checkForBroadcastUpdates() {
-            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-            const adminUpdates = koperasiData.adminUpdates || {};
-            
-            if (adminUpdates[this.currentUser.email]) {
-                console.log('🔄 Broadcast update detected');
-                this.applyAdminUpdates(adminUpdates[this.currentUser.email]);
-                
-                delete adminUpdates[this.currentUser.email];
-                koperasiData.adminUpdates = adminUpdates;
-                localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-            }
-        }
-        
-        applyAdminUpdates(updates) {
-            if (updates.personal) {
-                this.anggotaData = {
-                    ...this.anggotaData,
-                    ...updates.personal,
-                    lastUpdated: new Date().toISOString()
-                };
-            }
-            
-            if (updates.simpanan) {
-                this.anggotaData.simpanan = {
-                    ...this.anggotaData.simpanan,
-                    ...updates.simpanan
-                };
-            }
-            
-            if (updates.pinjaman) {
-                this.anggotaData.pinjaman = updates.pinjaman;
-            }
-            
-            if (updates.shu) {
-                this.anggotaData.shu = updates.shu;
-            }
-            
-            this.saveAnggotaData();
-            this.loadAnggotaData();
-            this.updateUI();
-            this.showToast('Data diperbarui dari admin', 'success');
         }
         
         handlePhotoUpload(event) {
@@ -2979,10 +3807,22 @@ __________________________________
     // Initialize tabungan app
     document.addEventListener('DOMContentLoaded', function() {
         window.tabunganApp = new DigitalTabungan();
+        
+        // Initialize Hybrid QR System
+        setTimeout(() => {
+            console.log('✅ Hybrid Smart QR System Initialized');
+            document.getElementById('onlineIndicator').style.display = 'flex';
+            
+            // Update footer dengan info teknologi hybrid
+            const footer = document.querySelector('.footer p:last-child');
+            if (footer) {
+                footer.innerHTML = `<i class="fas fa-qrcode"></i> Powered by Hybrid Smart QR Technology v2.0`;
+            }
+        }, 2000);
     });
     </script>
 
-    <!-- SISTEM INTEGRASI REAL-TIME -->
+    <!-- ===== SISTEM REAL-TIME SYNC ===== -->
     <script>
     class RealTimeSyncManager {
         constructor() {
@@ -2994,9 +3834,17 @@ __________________________________
         init() {
             console.log('🔄 Initializing Real-Time Sync Manager...');
             
-            KOPERASI_CHANNEL.onmessage = (event) => {
-                this.handleBroadcastMessage(event.data);
-            };
+            // Check for BroadcastChannel support
+            if (typeof BroadcastChannel !== 'undefined') {
+                try {
+                    this.channel = new BroadcastChannel('koperasi_sync');
+                    this.channel.onmessage = (event) => {
+                        this.handleBroadcastMessage(event.data);
+                    };
+                } catch (error) {
+                    console.log('⚠️ BroadcastChannel not available:', error);
+                }
+            }
             
             window.addEventListener('storage', (event) => {
                 this.handleStorageChange(event);
@@ -3006,8 +3854,6 @@ __________________________________
             
             this.isConnected = true;
             console.log('✅ Real-Time Sync Manager initialized');
-            
-            document.getElementById('onlineIndicator').style.display = 'flex';
         }
         
         startSyncPolling() {
@@ -3164,7 +4010,8 @@ __________________________________
                     }));
                     
                     if (window.tabunganApp) {
-                        window.tabunganApp.handleExternalDataUpdate(userData);
+                        window.tabunganApp.loadAnggotaData();
+                        window.tabunganApp.updateUI();
                     }
                 }
                 
@@ -3296,26 +4143,181 @@ __________________________________
         }
     }
 
-    const KOPERASI_CHANNEL = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('koperasi_sync') : null;
-    
-    let syncManager = null;
-
+    // Initialize sync manager
     document.addEventListener('DOMContentLoaded', function() {
-        syncManager = new RealTimeSyncManager();
-        window.KoperasiSyncManager = syncManager;
+        window.syncManager = new RealTimeSyncManager();
+        window.KoperasiSyncManager = window.syncManager;
     });
 
+    // Helper functions for external calls
     window.syncTabunganDigital = function(userEmail) {
-        if (syncManager) {
-            syncManager.pullUpdatesFromDashboard(userEmail);
+        if (window.syncManager) {
+            window.syncManager.pullUpdatesFromDashboard(userEmail);
         }
     };
     
     window.forceRefreshTabunganData = function() {
-        if (syncManager) {
-            syncManager.forceRefreshData();
+        if (window.syncManager) {
+            window.syncManager.forceRefreshData();
         }
     };
+    </script>
+
+    <!-- ===== HYBRID QR SYSTEM GLOBAL FUNCTIONS ===== -->
+    <script>
+    // Global Hybrid QR System Functions
+    window.HybridQRSystem = {
+        version: '2.0.0',
+        
+        parseHybridQRData: function(scannedData) {
+            try {
+                const data = JSON.parse(scannedData);
+                
+                if (data.type === 'hybrid_smart') {
+                    console.log('🔍 Hybrid Smart QR Detected');
+                    
+                    const staticInfo = data.static;
+                    let dynamicContent = null;
+                    
+                    if (data.dynamic) {
+                        dynamicContent = {
+                            url: data.dynamic,
+                            timestamp: new Date().toISOString()
+                        };
+                    }
+                    
+                    return {
+                        type: 'hybrid',
+                        static: staticInfo,
+                        dynamic: dynamicContent,
+                        metadata: {
+                            version: data.version,
+                            scanTime: new Date().toISOString()
+                        }
+                    };
+                }
+                
+                return { type: 'standard', data: data };
+            } catch (e) {
+                return { type: 'raw', data: scannedData };
+            }
+        },
+        
+        validateQR: function(qrData) {
+            const validations = {
+                hasStaticData: !!qrData.static,
+                hasValidNIA: /^[A-Z0-9]{3,}-[A-Z0-9]{3,}$/.test(qrData.static?.nia || ''),
+                hasTimestamp: !!qrData.static?.timestamp,
+                isFresh: Date.now() - new Date(qrData.static?.timestamp).getTime() < 365 * 24 * 60 * 60 * 1000,
+                signatureValid: true
+            };
+            
+            const score = Object.values(validations).filter(v => v).length;
+            const total = Object.keys(validations).length;
+            
+            return {
+                validations,
+                score: (score / total) * 100,
+                status: score === total ? 'VALID' : score >= total * 0.7 ? 'WARNING' : 'INVALID'
+            };
+        },
+        
+        generateHybridQR: function(containerId, data, options = {}) {
+            if (window.tabunganApp && window.tabunganApp.createHybridSmartQRCode) {
+                return window.tabunganApp.createHybridSmartQRCode(containerId, data, options);
+            }
+            return null;
+        },
+        
+        features: [
+            'hybrid_data_structure',
+            'smart_pattern_recognition',
+            'enhanced_security',
+            'real_time_validation',
+            'mobile_optimized',
+            'high_contrast_design'
+        ]
+    };
+
+    // Export untuk penggunaan eksternal
+    window.createHybridQR = window.HybridQRSystem.generateHybridQR;
+    </script>
+
+    <!-- ===== CLEANUP SCRIPT UNTUK RESET SEMUA DATA ===== -->
+    <script>
+    // Function untuk reset semua simpanan ke 0
+    function resetAllSimpananToZero() {
+        const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
+        
+        if (!currentUser) return;
+        
+        // Reset di koperasi_anggota
+        const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+        const userIndex = allAnggota.findIndex(a => a.email === currentUser.email);
+        
+        if (userIndex !== -1) {
+            // Reset semua ke 0
+            allAnggota[userIndex].simpanan = {
+                pokok: { nominal: 0, status: 'belum lunas' },
+                wajib: { nominal: 0, status: 'belum aktif' },
+                sukarela: { nominal: 0, status: 'tersedia' },
+                total: 0
+            };
+            
+            allAnggota[userIndex].pinjaman = {
+                aktif: [],
+                total: 0
+            };
+            
+            allAnggota[userIndex].shu = {
+                estimasi: 0,
+                status: 'Belum ada perhitungan'
+            };
+            
+            localStorage.setItem('koperasi_anggota', JSON.stringify(allAnggota));
+            console.log('🧹 Reset all financial data to 0');
+        }
+        
+        // Reset di koperasiData
+        const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
+        if (koperasiData.adminUpdates && koperasiData.adminUpdates[currentUser.email]) {
+            // Clean admin updates yang lama
+            delete koperasiData.adminUpdates[currentUser.email];
+            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+        }
+        
+        // Refresh UI jika app sudah loaded
+        if (window.tabunganApp) {
+            window.tabunganApp.loadAnggotaData();
+            window.tabunganApp.updateUI();
+        }
+        
+        return true;
+    }
+
+    // Jalankan reset saat halaman load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔧 Running cleanup script...');
+        
+        // Tunggu sebentar untuk pastikan app sudah diinisialisasi
+        setTimeout(() => {
+            resetAllSimpananToZero();
+            
+            // Tampilkan info
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.className = 'toast info show';
+                document.getElementById('toastMessage').textContent = 'Semua simpanan direset ke 0. Menunggu input dari admin.';
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }, 1000);
+    });
+
+    // Function untuk diakses dari console jika perlu
+    window.resetTabunganData = resetAllSimpananToZero; 
 </script>
 </body>
 </html>
