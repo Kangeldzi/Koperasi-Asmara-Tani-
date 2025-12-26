@@ -3272,7 +3272,7 @@
         
         if (lihatSemuaNotifBtn) {
             lihatSemuaNotifBtn.addEventListener('click', () => {
-                showNotification('Fitur "Lihat Semua Notifikasi" akan segera tersedia', 'info');
+                bukaModalNotifikasiLengkap();
             });
         }
         
@@ -3349,6 +3349,59 @@
                 pinjaman: pinjamanData.length,
                 barang: barangData.length
             });
+            
+            // Jika pinjamanData masih kosong, tambahkan contoh data
+            if (pinjamanData.length === 0) {
+                pinjamanData = [
+                    {
+                        id: 'PINJ-001',
+                        idAnggota: 'NIA-001',
+                        namaAnggota: 'Ahmad Budiman',
+                        jumlahPinjaman: 5000000,
+                        tanggalPinjam: '2023-03-15',
+                        jangkaWaktu: '12 Bulan',
+                        bunga: 1.5,
+                        sisaHutang: 4500000,
+                        cicilanPerBulan: 458333,
+                        status: 'Aktif',
+                        historyAngsuran: [
+                            { tanggal: '2023-04-15', jumlah: 458333 },
+                            { tanggal: '2023-05-15', jumlah: 458333 }
+                        ],
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
+            }
+            
+            // Jika barangData masih kosong, tambahkan contoh data
+            if (barangData.length === 0) {
+                barangData = [
+                    {
+                        id: 'BRG-001',
+                        namaBarang: 'Beras Premium 5kg',
+                        stok: 50,
+                        hargaBeli: 60000,
+                        hargaJual: 65000,
+                        laba: 5000,
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString()
+                    },
+                    {
+                        id: 'BRG-002',
+                        namaBarang: 'Minyak Goreng 2L',
+                        stok: 30,
+                        hargaBeli: 35000,
+                        hargaJual: 38000,
+                        laba: 3000,
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('barangData', JSON.stringify(barangData));
+            }
+            
         } catch (error) {
             console.error('Error loading localStorage data:', error);
         }
@@ -3606,23 +3659,29 @@
             row.innerHTML = `
                 <td>${barang.id}</td>
                 <td>${barang.namaBarang}</td>
-                <td>${barang.stok}</td>
+                <td>
+                    <span class="badge ${barang.stok > 10 ? 'badge-success' : barang.stok > 0 ? 'badge-warning' : 'badge-danger'} badge-responsive">
+                        ${barang.stok} unit
+                    </span>
+                </td>
                 <td>Rp ${barang.hargaBeli.toLocaleString('id-ID')}</td>
                 <td>Rp ${barang.hargaJual.toLocaleString('id-ID')}</td>
                 <td>Rp ${barang.laba.toLocaleString('id-ID')}</td>
                 <td>
-                    <button class="btn btn-outline btn-sm edit-barang" data-id="${barang.id}">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-outline btn-sm delete-barang" data-id="${barang.id}">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline btn-sm edit-barang" data-id="${barang.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline btn-sm delete-barang" data-id="${barang.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             `;
             tableBody.appendChild(row);
         });
         
-        // Attach event listeners
+        // Attach event listeners untuk edit barang
         document.querySelectorAll('.edit-barang').forEach(btn => {
             btn.addEventListener('click', function() {
                 const barangId = this.getAttribute('data-id');
@@ -3630,6 +3689,7 @@
             });
         });
         
+        // Attach event listeners untuk delete barang
         document.querySelectorAll('.delete-barang').forEach(btn => {
             btn.addEventListener('click', function() {
                 const barangId = this.getAttribute('data-id');
@@ -4725,7 +4785,21 @@
     }
 
     function editBarang(barangId) {
-        showNotification('Fitur edit barang akan segera tersedia!', 'info');
+        const barang = barangData.find(b => b.id === barangId);
+        if (!barang) return;
+        
+        // Set judul modal
+        document.getElementById('barangModalTitle').textContent = 'Edit Data Barang';
+        
+        // Isi form dengan data barang
+        document.getElementById('barangId').value = barang.id;
+        document.getElementById('namaBarang').value = barang.namaBarang;
+        document.getElementById('stokBarang').value = barang.stok;
+        document.getElementById('hargaBeli').value = barang.hargaBeli;
+        document.getElementById('hargaJual').value = barang.hargaJual;
+        
+        // Tampilkan modal
+        document.getElementById('addBarangModal').style.display = 'flex';
     }
 
     // ===== FIX 17: SETUP TOMBOL LAINNYA =====
@@ -4781,17 +4855,27 @@
         // Setup tombol lainnya
         const buttons = [
             { id: 'addSimpananBtn', message: 'Fitur tambah simpanan akan segera tersedia!' },
-            { id: 'addPinjamanBtn', message: 'Fitur tambah pinjaman akan segera tersedia!' },
-            { id: 'addBarangBtn', message: 'Fitur tambah barang akan segera tersedia!' },
-            { id: 'cetakLaporanBtn', message: 'Fitur cetak laporan akan segera tersedia!' },
-            { id: 'cetakSHUBtn', message: 'Fitur cetak SHU akan segera tersedia!' }
+            { id: 'addPinjamanBtn', message: 'Tambah Pinjaman' },
+            { id: 'addBarangBtn', message: 'Tambah Barang' },
+            { id: 'cetakLaporanBtn', message: 'Cetak Laporan Keuangan' },
+            { id: 'cetakSHUBtn', message: 'Cetak Laporan SHU' }
         ];
         
         buttons.forEach(button => {
             const btn = document.getElementById(button.id);
             if (btn) {
                 btn.addEventListener('click', () => {
-                    showNotification(button.message, 'info');
+                    if (button.id === 'addPinjamanBtn') {
+                        bukaModalTambahPinjaman();
+                    } else if (button.id === 'addBarangBtn') {
+                        bukaModalTambahBarang();
+                    } else if (button.id === 'cetakLaporanBtn') {
+                        bukaModalCetakLaporan('keuangan');
+                    } else if (button.id === 'cetakSHUBtn') {
+                        bukaModalCetakLaporan('shu');
+                    } else {
+                        showNotification(button.message, 'info');
+                    }
                 });
             }
         });
@@ -5041,7 +5125,879 @@
         }
     }
 
-    // ===== FIX 18: INITIALIZE FIXED SYSTEM =====
+    // ===== PERBAIKAN 1: FITUR "LIHAT SEMUA" NOTIFIKASI =====
+    function setupLihatSemuaNotifikasi() {
+        const lihatSemuaNotifBtn = document.getElementById('lihatSemuaNotif');
+        if (!lihatSemuaNotifBtn) return;
+        
+        // Hapus event listener lama jika ada
+        const newBtn = lihatSemuaNotifBtn.cloneNode(true);
+        lihatSemuaNotifBtn.parentNode.replaceChild(newBtn, lihatSemuaNotifBtn);
+        
+        // Setup event listener baru
+        newBtn.addEventListener('click', function() {
+            bukaModalNotifikasiLengkap();
+        });
+        
+        console.log('✅ Tombol "Lihat Semua Notifikasi" sudah aktif');
+    }
+
+    // Fungsi untuk buka modal notifikasi lengkap
+    function bukaModalNotifikasiLengkap() {
+        // Buat modal jika belum ada
+        let modal = document.getElementById('notifikasiLengkapModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'notifikasiLengkapModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>Semua Notifikasi</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                        <div id="notifikasiLengkapContent">
+                            <!-- Notifikasi akan diisi di sini -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="tutupModalNotifikasi()">
+                            <i class="fas fa-times"></i> Tutup
+                        </button>
+                        <button class="btn btn-primary" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double"></i> Tandai Semua Sudah Dibaca
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Isi konten notifikasi
+        isiNotifikasiLengkap();
+        
+        // Tampilkan modal
+        modal.style.display = 'flex';
+        
+        // Setup close button
+        const closeBtn = modal.querySelector('.modal-close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+    }
+
+    function isiNotifikasiLengkap() {
+        const content = document.getElementById('notifikasiLengkapContent');
+        if (!content) return;
+        
+        // Buat notifikasi lengkap dari berbagai sumber data
+        let notifikasiHTML = '';
+        
+        // 1. Notifikasi dari anggota baru
+        const anggotaBaru = [...anggotaData]
+            .sort((a, b) => new Date(b.tanggalDaftar) - new Date(a.tanggalDaftar))
+            .slice(0, 10);
+        
+        if (anggotaBaru.length > 0) {
+            notifikasiHTML += `
+                <div class="notifikasi-section">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light);">
+                        <i class="fas fa-users"></i> Anggota Baru (${anggotaBaru.length})
+                    </h4>
+                    <div class="notifikasi-list">
+            `;
+            
+            anggotaBaru.forEach(anggota => {
+                notifikasiHTML += `
+                    <div class="notifikasi-item" style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid var(--gray-light);">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-user-plus" style="color: white;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--dark);">${anggota.nama}</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">
+                                Bergabung pada ${anggota.tanggalDaftar} • ${anggota.posisi}
+                            </div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">
+                            ${formatRelativeTime(anggota.tanggalDaftar)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            notifikasiHTML += `</div></div>`;
+        }
+        
+        // 2. Notifikasi dari simpanan terbaru
+        const simpananBaru = [...simpananData]
+            .sort((a, b) => new Date(b.tanggalSetor) - new Date(a.tanggalSetor))
+            .slice(0, 10);
+        
+        if (simpananBaru.length > 0) {
+            notifikasiHTML += `
+                <div class="notifikasi-section">
+                    <h4 style="color: var(--secondary); margin: 25px 0 15px; padding-bottom: 10px; border-bottom: 2px solid var(--secondary);">
+                        <i class="fas fa-hand-holding-usd"></i> Transaksi Simpanan (${simpananBaru.length})
+                    </h4>
+                    <div class="notifikasi-list">
+            `;
+            
+            simpananBaru.forEach(simpanan => {
+                notifikasiHTML += `
+                    <div class="notifikasi-item" style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid var(--gray-light);">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-money-bill-wave" style="color: white;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--dark);">${simpanan.nama}</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">
+                                ${simpanan.jenisSimpanan} • Rp ${simpanan.nominal.toLocaleString('id-ID')}
+                            </div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">
+                            ${formatRelativeTime(simpanan.tanggalSetor)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            notifikasiHTML += `</div></div>`;
+        }
+        
+        // 3. Notifikasi dari pinjaman terbaru
+        const pinjamanBaru = [...pinjamanData]
+            .sort((a, b) => new Date(b.tanggalPinjam) - new Date(a.tanggalPinjam))
+            .slice(0, 10);
+        
+        if (pinjamanBaru.length > 0) {
+            notifikasiHTML += `
+                <div class="notifikasi-section">
+                    <h4 style="color: var(--accent); margin: 25px 0 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent);">
+                        <i class="fas fa-file-invoice-dollar"></i> Pinjaman Baru (${pinjamanBaru.length})
+                    </h4>
+                    <div class="notifikasi-list">
+            `;
+            
+            pinjamanBaru.forEach(pinjaman => {
+                notifikasiHTML += `
+                    <div class="notifikasi-item" style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid var(--gray-light);">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-hand-holding-usd" style="color: white;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--dark);">${pinjaman.namaAnggota}</div>
+                            <div style="font-size: 0.85rem; color: var(--gray);">
+                                Pinjaman • Rp ${pinjaman.jumlahPinjaman.toLocaleString('id-ID')}
+                            </div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">
+                            ${formatRelativeTime(pinjaman.tanggalPinjam)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            notifikasiHTML += `</div></div>`;
+        }
+        
+        // Jika tidak ada notifikasi
+        if (notifikasiHTML === '') {
+            notifikasiHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                    <i class="fas fa-bell-slash" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;"></i>
+                    <h4 style="color: var(--gray); margin-bottom: 10px;">Belum ada notifikasi</h4>
+                    <p>Semua aktivitas akan muncul di sini</p>
+                </div>
+            `;
+        }
+        
+        content.innerHTML = notifikasiHTML;
+    }
+
+    function formatRelativeTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffMins < 1) return 'Baru saja';
+        if (diffMins < 60) return `${diffMins} menit lalu`;
+        if (diffHours < 24) return `${diffHours} jam lalu`;
+        if (diffDays < 7) return `${diffDays} hari lalu`;
+        
+        return date.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function tutupModalNotifikasi() {
+        const modal = document.getElementById('notifikasiLengkapModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function markAllAsRead() {
+        showNotification('Semua notifikasi telah ditandai sebagai sudah dibaca', 'success');
+    }
+
+    // ===== PERBAIKAN 2: MODAL TAMBAH PINJAMAN YANG FUNGSIONAL =====
+    function setupTambahPinjamanModal() {
+        const addPinjamanBtn = document.getElementById('addPinjamanBtn');
+        if (!addPinjamanBtn) return;
+        
+        // Hapus event listener lama jika ada
+        const newBtn = addPinjamanBtn.cloneNode(true);
+        addPinjamanBtn.parentNode.replaceChild(newBtn, addPinjamanBtn);
+        
+        // Setup event listener baru
+        newBtn.addEventListener('click', function() {
+            bukaModalTambahPinjaman();
+        });
+        
+        console.log('✅ Tombol "Tambah Pinjaman" sudah aktif');
+    }
+
+    function bukaModalTambahPinjaman() {
+        const modal = document.getElementById('addPinjamanModal');
+        if (!modal) return;
+        
+        // Reset form
+        const form = document.getElementById('pinjamanForm');
+        if (form) form.reset();
+        
+        // Isi dropdown anggota
+        isiDropdownAnggotaPinjaman();
+        
+        // Set tanggal default hari ini
+        document.getElementById('tanggalPinjaman').value = new Date().toISOString().split('T')[0];
+        
+        // Set default bunga
+        document.getElementById('bungaPinjaman').value = '1.5';
+        
+        // Update judul modal
+        document.getElementById('pinjamanModalTitle').textContent = 'Tambah Pinjaman Baru';
+        
+        // Tampilkan modal
+        modal.style.display = 'flex';
+    }
+
+    function isiDropdownAnggotaPinjaman() {
+        const dropdown = document.getElementById('idAnggotaPinjaman');
+        if (!dropdown) return;
+        
+        // Simpan nilai yang dipilih
+        const selectedValue = dropdown.value;
+        
+        // Clear existing options except the first one
+        while (dropdown.options.length > 1) {
+            dropdown.remove(1);
+        }
+        
+        // Add options from anggotaData
+        anggotaData.forEach(anggota => {
+            if (anggota.statusAktif === 'Aktif') {
+                const option = document.createElement('option');
+                option.value = anggota.id;
+                option.textContent = `${anggota.id} - ${anggota.nama} (${anggota.posisi})`;
+                dropdown.appendChild(option);
+            }
+        });
+        
+        // Restore selected value if exists
+        if (selectedValue) {
+            dropdown.value = selectedValue;
+        }
+    }
+
+    // Setup save pinjaman button
+    function setupSavePinjamanButton() {
+        const saveBtn = document.getElementById('savePinjamanBtn');
+        if (!saveBtn) return;
+        
+        // Hapus event listener lama jika ada
+        const newBtn = saveBtn.cloneNode(true);
+        saveBtn.parentNode.replaceChild(newBtn, saveBtn);
+        
+        // Setup event listener baru
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            simpanDataPinjaman();
+        });
+        
+        console.log('✅ Tombol "Simpan Pinjaman" sudah aktif');
+    }
+
+    function simpanDataPinjaman() {
+        // Validasi form
+        const idAnggota = document.getElementById('idAnggotaPinjaman').value;
+        const jumlahPinjaman = document.getElementById('jumlahPinjaman').value;
+        const tanggalPinjam = document.getElementById('tanggalPinjaman').value;
+        const jangkaWaktu = document.getElementById('jangkaWaktu').value;
+        const bunga = document.getElementById('bungaPinjaman').value;
+        
+        if (!idAnggota || !jumlahPinjaman || !tanggalPinjam || !jangkaWaktu || !bunga) {
+            showNotification('Harap lengkapi semua field!', 'error');
+            return;
+        }
+        
+        // Cari data anggota
+        const anggota = anggotaData.find(a => a.id === idAnggota);
+        if (!anggota) {
+            showNotification('Anggota tidak ditemukan!', 'error');
+            return;
+        }
+        
+        // Generate ID pinjaman
+        const pinjamanId = 'PINJ-' + Date.now();
+        
+        // Parse angka
+        const jumlah = parseInt(jumlahPinjaman);
+        const bungaPersen = parseFloat(bunga);
+        
+        // Hitung cicilan per bulan
+        let jumlahBulan = 6;
+        if (jangkaWaktu === '12 Bulan') jumlahBulan = 12;
+        else if (jangkaWaktu === '24 Bulan') jumlahBulan = 24;
+        else if (jangkaWaktu === '36 Bulan') jumlahBulan = 36;
+        
+        const bungaPerBulan = (jumlah * bungaPersen / 100) / jumlahBulan;
+        const cicilanPerBulan = Math.round((jumlah / jumlahBulan) + bungaPerBulan);
+        
+        // Buat objek pinjaman baru
+        const pinjamanBaru = {
+            id: pinjamanId,
+            idAnggota: idAnggota,
+            namaAnggota: anggota.nama,
+            jumlahPinjaman: jumlah,
+            tanggalPinjam: tanggalPinjam,
+            jangkaWaktu: jangkaWaktu,
+            bunga: bungaPersen,
+            sisaHutang: jumlah,
+            cicilanPerBulan: cicilanPerBulan,
+            status: 'Aktif',
+            historyAngsuran: [],
+            createdAt: new Date().toISOString(),
+            lastUpdated: new Date().toISOString()
+        };
+        
+        // Tambahkan ke array pinjamanData
+        pinjamanData.push(pinjamanBaru);
+        
+        // Simpan ke localStorage
+        localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
+        
+        // Update UI
+        refreshPinjamanTable();
+        updateDashboardStats();
+        
+        // Tampilkan notifikasi sukses
+        showNotification(`Pinjaman berhasil ditambahkan untuk ${anggota.nama}`, 'success');
+        
+        // Tutup modal
+        document.getElementById('addPinjamanModal').style.display = 'none';
+        
+        // Tambahkan notifikasi
+        tambahNotifikasiPinjamanBaru(pinjamanBaru);
+    }
+
+    function tambahNotifikasiPinjamanBaru(pinjaman) {
+        // Tambahkan ke activity list di dashboard
+        const activityList = document.getElementById('activityList');
+        if (activityList) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const activityItem = document.createElement('li');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-icon bg-accent">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Pinjaman Baru</h4>
+                    <p>${pinjaman.namaAnggota} - Rp ${pinjaman.jumlahPinjaman.toLocaleString('id-ID')}</p>
+                </div>
+                <div class="activity-time">${timeString}</div>
+            `;
+            
+            // Tambahkan di posisi pertama
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            // Batasi hanya 4 item
+            if (activityList.children.length > 4) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+    }
+
+    // ===== PERBAIKAN 3: FITUR CETAK LAPORAN =====
+    function setupCetakLaporanButtons() {
+        // Tombol Cetak Laporan Keuangan
+        const cetakLaporanBtn = document.getElementById('cetakLaporanBtn');
+        if (cetakLaporanBtn) {
+            // Hapus event listener lama jika ada
+            const newBtn = cetakLaporanBtn.cloneNode(true);
+            cetakLaporanBtn.parentNode.replaceChild(newBtn, cetakLaporanBtn);
+            
+            // Setup event listener baru
+            newBtn.addEventListener('click', function() {
+                bukaModalCetakLaporan('keuangan');
+            });
+        }
+        
+        // Tombol Cetak Laporan SHU
+        const cetakSHUBtn = document.getElementById('cetakSHUBtn');
+        if (cetakSHUBtn) {
+            // Hapus event listener lama jika ada
+            const newBtn = cetakSHUBtn.cloneNode(true);
+            cetakSHUBtn.parentNode.replaceChild(newBtn, cetakSHUBtn);
+            
+            // Setup event listener baru
+            newBtn.addEventListener('click', function() {
+                bukaModalCetakLaporan('shu');
+            });
+        }
+        
+        console.log('✅ Tombol "Cetak Laporan" sudah aktif');
+    }
+
+    function bukaModalCetakLaporan(jenis) {
+        // Buat modal preview cetak
+        let modal = document.getElementById('printPreviewModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'printPreviewModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h3>Preview Cetak Laporan</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body" id="printPreviewContent" style="max-height: 70vh; overflow-y: auto;">
+                        <!-- Preview cetak akan diisi di sini -->
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" onclick="tutupModalPrint()">
+                            <i class="fas fa-times"></i> Tutup
+                        </button>
+                        <button class="btn btn-primary" onclick="cetakLaporanSekarang()">
+                            <i class="fas fa-print"></i> Cetak Laporan
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Setup close button
+            const closeBtn = modal.querySelector('.modal-close');
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+        }
+        
+        // Isi konten berdasarkan jenis laporan
+        isiPreviewLaporan(jenis);
+        
+        // Tampilkan modal
+        modal.style.display = 'flex';
+    }
+
+    function isiPreviewLaporan(jenis) {
+        const content = document.getElementById('printPreviewContent');
+        if (!content) return;
+        
+        let htmlContent = '';
+        const now = new Date();
+        const tanggalCetak = now.toLocaleDateString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const jamCetak = now.toLocaleTimeString('id-ID');
+        
+        if (jenis === 'keuangan') {
+            // Hitung total untuk laporan keuangan
+            const totalSimpanan = simpananData.reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
+            const totalPinjaman = pinjamanData.reduce((sum, p) => sum + (parseInt(p.jumlahPinjaman) || 0), 0);
+            const totalSHU = totalSimpanan * 0.1;
+            const totalKas = Math.max(0, totalSimpanan - totalPinjaman);
+            
+            htmlContent = `
+                <div id="printContent" style="padding: 20px; background: white; font-family: 'Times New Roman', Times, serif;">
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px;">
+                        <h1 style="color: #2e7d32; margin-bottom: 5px;">KOPERASI ASMARA TANI</h1>
+                        <h3 style="color: #666; margin-bottom: 10px;">#koperasijenius</h3>
+                        <p style="color: #333;">Laporan Keuangan Bulanan</p>
+                        <p style="color: #666; font-size: 14px;">${tanggalCetak} - ${jamCetak}</p>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <thead>
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding: 15px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Keterangan</th>
+                                <th style="padding: 15px; text-align: right; border: 1px solid #ddd; font-weight: bold;">Jumlah (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Total Simpanan Anggota</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${totalSimpanan.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Total Pinjaman Aktif</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${totalPinjaman.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Total SHU (Sisa Hasil Usaha)</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${totalSHU.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr style="background: #e8f5e8;">
+                                <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Total Kas Koperasi</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right; font-weight: bold; color: #2e7d32;">${totalKas.toLocaleString('id-ID')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="text-align: center;">
+                                <p style="margin-bottom: 60px;">Mengetahui,</p>
+                                <p style="font-weight: bold; border-top: 1px solid #000; padding-top: 5px; width: 200px;">Ketua Koperasi</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <p style="margin-bottom: 60px;">Bendahara,</p>
+                                <p style="font-weight: bold; border-top: 1px solid #000; padding-top: 5px; width: 200px;">Bendahara Koperasi</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 50px; font-size: 12px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
+                        <p>Dicetak dari Sistem Administrasi Koperasi Asmara Tani</p>
+                    </div>
+                </div>
+            `;
+        } else if (jenis === 'shu') {
+            // Hitung SHU untuk laporan
+            const totalSimpanan = simpananData.reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
+            const totalSHU = totalSimpanan * 0.1;
+            
+            const cadangan = totalSHU * 0.2;
+            const danaSosial = totalSHU * 0.1;
+            const danaPengurus = totalSHU * 0.1;
+            const danaKaryawan = totalSHU * 0.1;
+            const danaPembangunan = totalSHU * 0.1;
+            const danaAnggota = totalSHU * 0.4;
+            
+            htmlContent = `
+                <div id="printContent" style="padding: 20px; background: white; font-family: 'Times New Roman', Times, serif;">
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 20px;">
+                        <h1 style="color: #2e7d32; margin-bottom: 5px;">KOPERASI ASMARA TANI</h1>
+                        <h3 style="color: #666; margin-bottom: 10px;">#koperasijenius</h3>
+                        <h2 style="color: #333; margin-bottom: 10px;">Laporan Pembagian SHU</h2>
+                        <h3 style="color: #666; margin-bottom: 10px;">Tahun ${now.getFullYear()}</h3>
+                        <p style="color: #666; font-size: 14px;">${tanggalCetak} - ${jamCetak}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #2e7d32;">
+                        <p style="margin: 0; font-weight: bold;">Total SHU Tahun ${now.getFullYear()}</p>
+                        <h2 style="margin: 5px 0; color: #2e7d32;">Rp ${totalSHU.toLocaleString('id-ID')}</h2>
+                        <p style="margin: 0; font-size: 14px; color: #666;">Dihitung dari total simpanan anggota</p>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <thead>
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding: 15px; text-align: left; border: 1px solid #ddd; font-weight: bold;">Keterangan</th>
+                                <th style="padding: 15px; text-align: center; border: 1px solid #ddd; font-weight: bold;">Persentase</th>
+                                <th style="padding: 15px; text-align: right; border: 1px solid #ddd; font-weight: bold;">Jumlah (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Cadangan Koperasi</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">20%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${cadangan.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Dana Sosial</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">10%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${danaSosial.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Dana Pengurus</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">10%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${danaPengurus.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Dana Karyawan</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">10%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${danaKaryawan.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Dana Pembangunan</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">10%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${danaPembangunan.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border: 1px solid #ddd;">Dana Anggota</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">40%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right;">${danaAnggota.toLocaleString('id-ID')}</td>
+                            </tr>
+                            <tr style="background: #e8f5e8; font-weight: bold;">
+                                <td style="padding: 12px; border: 1px solid #ddd;">TOTAL SHU</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">100%</td>
+                                <td style="padding: 12px; border: 1px solid #ddd; text-align: right; color: #2e7d32;">${totalSHU.toLocaleString('id-ID')}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 5px; border: 1px solid #ddd;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">Catatan:</h4>
+                        <ul style="margin: 0; padding-left: 20px; color: #666;">
+                            <li>SHU dihitung berdasarkan total simpanan anggota selama satu tahun</li>
+                            <li>Pembagian dilakukan sesuai AD/ART Koperasi Asmara Tani</li>
+                            <li>Dana anggota akan dibagikan berdasarkan besar simpanan masing-masing anggota</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="text-align: center;">
+                                <p style="margin-bottom: 60px;">Mengetahui,</p>
+                                <p style="font-weight: bold; border-top: 1px solid #000; padding-top: 5px; width: 200px;">Ketua Koperasi</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <p style="margin-bottom: 60px;">Bendahara,</p>
+                                <p style="font-weight: bold; border-top: 1px solid #000; padding-top: 5px; width: 200px;">Bendahara Koperasi</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 50px; font-size: 12px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
+                        <p>Dicetak dari Sistem Administrasi Koperasi Asmara Tani</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        content.innerHTML = htmlContent;
+    }
+
+    function tutupModalPrint() {
+        const modal = document.getElementById('printPreviewModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function cetakLaporanSekarang() {
+        // Ambil konten yang akan dicetak
+        const printContent = document.getElementById('printContent');
+        if (!printContent) {
+            showNotification('Tidak ada konten untuk dicetak', 'error');
+            return;
+        }
+        
+        // Simpan HTML asli
+        const originalContent = document.body.innerHTML;
+        
+        // Ganti body dengan konten cetak
+        document.body.innerHTML = printContent.outerHTML;
+        
+        // Cetak
+        window.print();
+        
+        // Kembalikan konten asli
+        document.body.innerHTML = originalContent;
+        
+        // Tutup modal
+        tutupModalPrint();
+        
+        // Refresh event listeners
+        initializeFixedSystem();
+        
+        showNotification('Laporan berhasil dicetak', 'success');
+    }
+
+    // ===== PERBAIKAN 4: MODAL TAMBAH BARANG FUNGSIONAL =====
+    function setupTambahBarangModal() {
+        const addBarangBtn = document.getElementById('addBarangBtn');
+        if (!addBarangBtn) return;
+        
+        // Hapus event listener lama jika ada
+        const newBtn = addBarangBtn.cloneNode(true);
+        addBarangBtn.parentNode.replaceChild(newBtn, addBarangBtn);
+        
+        // Setup event listener baru
+        newBtn.addEventListener('click', function() {
+            bukaModalTambahBarang();
+        });
+        
+        console.log('✅ Tombol "Tambah Barang" sudah aktif');
+    }
+
+    function bukaModalTambahBarang() {
+        const modal = document.getElementById('addBarangModal');
+        if (!modal) return;
+        
+        // Reset form
+        const form = document.getElementById('barangForm');
+        if (form) form.reset();
+        
+        // Set judul modal
+        document.getElementById('barangModalTitle').textContent = 'Tambah Barang Baru';
+        
+        // Clear hidden ID
+        document.getElementById('barangId').value = '';
+        
+        // Tampilkan modal
+        modal.style.display = 'flex';
+    }
+
+    // Setup save barang button
+    function setupSaveBarangButton() {
+        const saveBtn = document.getElementById('saveBarangBtn');
+        if (!saveBtn) return;
+        
+        // Hapus event listener lama jika ada
+        const newBtn = saveBtn.cloneNode(true);
+        saveBtn.parentNode.replaceChild(newBtn, saveBtn);
+        
+        // Setup event listener baru
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            simpanDataBarang();
+        });
+        
+        console.log('✅ Tombol "Simpan Barang" sudah aktif');
+    }
+
+    function simpanDataBarang() {
+        // Validasi form
+        const namaBarang = document.getElementById('namaBarang').value;
+        const stokBarang = document.getElementById('stokBarang').value;
+        const hargaBeli = document.getElementById('hargaBeli').value;
+        const hargaJual = document.getElementById('hargaJual').value;
+        
+        if (!namaBarang || !stokBarang || !hargaBeli || !hargaJual) {
+            showNotification('Harap lengkapi semua field!', 'error');
+            return;
+        }
+        
+        // Parse angka
+        const stok = parseInt(stokBarang);
+        const beli = parseInt(hargaBeli);
+        const jual = parseInt(hargaJual);
+        
+        // Validasi angka positif
+        if (stok < 0 || beli < 0 || jual < 0) {
+            showNotification('Nilai tidak boleh negatif!', 'error');
+            return;
+        }
+        
+        // Validasi harga jual harus >= harga beli
+        if (jual < beli) {
+            showNotification('Harga jual harus lebih besar atau sama dengan harga beli!', 'error');
+            return;
+        }
+        
+        // Cek apakah edit atau tambah baru
+        const barangId = document.getElementById('barangId').value;
+        
+        if (barangId) {
+            // EDIT barang yang sudah ada
+            const index = barangData.findIndex(b => b.id === barangId);
+            if (index !== -1) {
+                barangData[index] = {
+                    ...barangData[index],
+                    namaBarang: namaBarang,
+                    stok: stok,
+                    hargaBeli: beli,
+                    hargaJual: jual,
+                    laba: jual - beli,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                showNotification(`Barang "${namaBarang}" berhasil diperbarui!`, 'success');
+            }
+        } else {
+            // TAMBAH barang baru
+            const newId = 'BRG-' + Date.now();
+            
+            const barangBaru = {
+                id: newId,
+                namaBarang: namaBarang,
+                stok: stok,
+                hargaBeli: beli,
+                hargaJual: jual,
+                laba: jual - beli,
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
+            };
+            
+            barangData.push(barangBaru);
+            showNotification(`Barang "${namaBarang}" berhasil ditambahkan!`, 'success');
+        }
+        
+        // Simpan ke localStorage
+        localStorage.setItem('barangData', JSON.stringify(barangData));
+        
+        // Update UI
+        refreshBarangTable();
+        
+        // Tutup modal
+        document.getElementById('addBarangModal').style.display = 'none';
+        
+        // Tambahkan notifikasi
+        tambahNotifikasiBarangBaru(namaBarang, stok);
+    }
+
+    function tambahNotifikasiBarangBaru(namaBarang, stok) {
+        // Tambahkan ke activity list di dashboard
+        const activityList = document.getElementById('activityList');
+        if (activityList) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const activityItem = document.createElement('li');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-icon bg-info">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="activity-content">
+                    <h4>Stok Barang Baru</h4>
+                    <p>${namaBarang} - ${stok} unit tersedia</p>
+                </div>
+                <div class="activity-time">${timeString}</div>
+            `;
+            
+            // Tambahkan di posisi pertama
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            // Batasi hanya 4 item
+            if (activityList.children.length > 4) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+    }
+
+    // ===== UPDATE FUNGSI initializeFixedSystem =====
     function initializeFixedSystem() {
         console.log('=== STARTING FIXED SYSTEM INITIALIZATION ===');
         
@@ -5080,11 +6036,26 @@
         document.getElementById('currentYear').textContent = currentYear;
         document.getElementById('currentYearFooter').textContent = currentYear;
         
+        // ===== PERBAIKAN BARU =====
+        // 12. Setup Lihat Semua Notifikasi
+        setupLihatSemuaNotifikasi();
+        
+        // 13. Setup Tambah Pinjaman Modal
+        setupTambahPinjamanModal();
+        setupSavePinjamanButton();
+        
+        // 14. Setup Cetak Laporan
+        setupCetakLaporanButtons();
+        
+        // 15. Setup Tambah Barang Modal
+        setupTambahBarangModal();
+        setupSaveBarangButton();
+        
         console.log('=== FIXED SYSTEM INITIALIZATION COMPLETED ===');
-        showNotification('Dashboard Admin siap digunakan!', 'success');
+        showNotification('Dashboard Admin siap digunakan! Semua fitur sudah aktif.', 'success');
     }
 
-    // ===== FIX 19: INITIALIZE ON DOM LOADED =====
+    // ===== INISIALISASI ULANG SAAT DOM LOADED =====
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM fully loaded - Starting fixed initialization...');
         
@@ -5114,10 +6085,15 @@
             loadLocalStorageData();
             updateDashboardStats();
             fixFinanceChart();
+            
+            // Setup initial data jika kosong
+            if (anggotaData.length === 0) {
+                loadInitialData();
+            }
         }, 1000);
     });
 
-    // ===== FIX 20: LOAD INITIAL DATA =====
+    // ===== FUNGSI LOAD INITIAL DATA =====
     function loadInitialData() {
         // Jika data kosong, tambahkan data contoh
         if (anggotaData.length === 0) {
@@ -5203,6 +6179,6 @@
         refreshAnggotaTable();
         refreshSimpananTable();
     }
-    </script>
+</script>
 </body>
 </html>
