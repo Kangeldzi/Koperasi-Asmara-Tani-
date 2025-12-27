@@ -1283,6 +1283,121 @@
     <div id="printPreview" class="print-preview"></div>
 
     <!-- ===== ENHANCED SYNC SYSTEM (STANDALONE) ===== -->
+    // ===== ENHANCED SYNC SYSTEM UPDATES =====
+// Add this method to the EnhancedSyncSystem class in Tabungan Digital
+
+checkAdminUpdatesEnhanced() {
+    try {
+        // Check for admin updates from Dashboard
+        const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+        const userData = allAnggota.find(a => a.email === this.userEmail);
+        
+        if (!userData) return false;
+        
+        // Check if we need to update local data
+        const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+        const userIndex = tabunganUsers.findIndex(u => u.email === this.userEmail);
+        
+        if (userIndex !== -1) {
+            const currentUser = tabunganUsers[userIndex];
+            let needsUpdate = false;
+            
+            // Check for changes in simpanan
+            if (userData.simpananPokok !== undefined && 
+                currentUser.simpananPokok !== userData.simpananPokok) {
+                currentUser.simpananPokok = userData.simpananPokok;
+                needsUpdate = true;
+            }
+            
+            if (userData.simpananWajib !== undefined && 
+                currentUser.simpananWajib !== userData.simpananWajib) {
+                currentUser.simpananWajib = userData.simpananWajib;
+                needsUpdate = true;
+            }
+            
+            if (userData.simpananSukarela !== undefined && 
+                currentUser.simpananSukarela !== userData.simpananSukarela) {
+                currentUser.simpananSukarela = userData.simpananSukarela;
+                needsUpdate = true;
+            }
+            
+            if (userData.totalSimpanan !== undefined && 
+                currentUser.saldo !== userData.totalSimpanan) {
+                currentUser.saldo = userData.totalSimpanan;
+                needsUpdate = true;
+            }
+            
+            // Update other personal data if changed
+            const fieldsToCheck = ['nama', 'alamat', 'whatsapp', 'nik', 'statusAktif', 'foto'];
+            fieldsToCheck.forEach(field => {
+                if (userData[field] && currentUser[field] !== userData[field]) {
+                    currentUser[field] = userData[field];
+                    needsUpdate = true;
+                }
+            });
+            
+            if (needsUpdate) {
+                tabunganUsers[userIndex] = currentUser;
+                localStorage.setItem('tabunganDigitalUsers', JSON.stringify(tabunganUsers));
+                
+                // Update current user in localStorage
+                const users = JSON.parse(localStorage.getItem('koperasi_users') || '[]');
+                const userIdx = users.findIndex(u => u.email === this.userEmail);
+                if (userIdx !== -1) {
+                    users[userIdx] = { ...users[userIdx], ...currentUser };
+                    localStorage.setItem('koperasi_users', JSON.stringify(users));
+                    
+                    // Update current user
+                    localStorage.setItem('koperasi_current_user', JSON.stringify(users[userIdx]));
+                }
+                
+                console.log('✅ Admin updates applied to Tabungan Digital');
+                return true;
+            }
+        }
+        
+        return false;
+        
+    } catch (error) {
+        console.error('❌ Error checking admin updates:', error);
+        return false;
+    }
+}
+
+// ===== FUNGSI UNTUK MENGIRIM TRANSAKSI KE DASHBOARD =====
+function sendTransactionToDashboard(transaksi) {
+    try {
+        // Save transaction to local storage first
+        const userTransaksi = JSON.parse(localStorage.getItem('userTransaksi') || '[]');
+        userTransaksi.push({
+            ...transaksi,
+            timestamp: new Date().toISOString(),
+            synced: false
+        });
+        
+        localStorage.setItem('userTransaksi', JSON.stringify(userTransaksi));
+        
+        // Create koperasiData update for Dashboard
+        const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
+        if (!koperasiData.userUpdates) {
+            koperasiData.userUpdates = {};
+        }
+        
+        koperasiData.userUpdates[transaksi.email] = {
+            transaksi: transaksi,
+            timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+        
+        console.log('📤 Transaction sent to Dashboard:', transaksi);
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Error sending transaction to Dashboard:', error);
+        return false;
+    }
+}
     <script>
     // ENHANCED SYNC SYSTEM - Standalone version
     class EnhancedSyncSystem {
