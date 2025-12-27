@@ -6398,6 +6398,1123 @@ function initializeFixedSystemEnhanced() {
     
     console.log('🔧 Enhanced Sync System initialized');
 }
+        // ================================================
+// ENHANCED REAL-TIME SYNC BRIDGE
+// Sistem ini MENG-HUBUNGKAN Dashboard Admin dan Tabungan Digital
+// ================================================
+
+class DashboardTabunganBridge {
+    constructor() {
+        this.isSyncing = false;
+        this.syncInterval = null;
+        this.lastSyncTime = null;
+        this.connectedUsers = {};
+        this.init();
+    }
+    
+    init() {
+        console.log('🔗 Initializing Dashboard-Tabungan Bridge...');
+        this.setupBridgeUI();
+        this.setupDataWatchers();
+        this.setupStorageSync();
+        this.startAutoSync();
+        this.setupSyncTriggers();
+        console.log('✅ Dashboard-Tabungan Bridge Ready');
+    }
+    
+    setupBridgeUI() {
+        // Add sync status to admin panel
+        const adminProfile = document.getElementById('adminProfileSection');
+        if (adminProfile) {
+            const syncStatus = document.createElement('div');
+            syncStatus.style.cssText = `
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 10px;
+                padding: 8px 12px;
+                background: rgba(33, 150, 243, 0.1);
+                border-radius: 8px;
+                font-size: 12px;
+                color: #2196f3;
+                border: 1px solid rgba(33, 150, 243, 0.2);
+            `;
+            syncStatus.innerHTML = `
+                <i class="fas fa-link" id="bridgeIcon"></i>
+                <span id="bridgeStatus">Connecting to Tabungan Digital...</span>
+                <span id="bridgeCount" style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px;">0</span>
+            `;
+            adminProfile.appendChild(syncStatus);
+        }
+        
+        // Add sync button to admin
+        const syncBtn = document.createElement('button');
+        syncBtn.className = 'btn btn-primary btn-sm';
+        syncBtn.id = 'adminSyncBridge';
+        syncBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> Sync All';
+        syncBtn.style.marginLeft = '10px';
+        
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        if (exportExcelBtn) {
+            exportExcelBtn.parentNode.insertBefore(syncBtn, exportExcelBtn.nextSibling);
+        }
+    }
+    
+    setupDataWatchers() {
+        // Watch for changes in anggotaData
+        let lastAnggotaHash = '';
+        let lastSimpananHash = '';
+        
+        setInterval(() => {
+            const currentAnggotaHash = JSON.stringify(anggotaData).length + '_' + anggotaData.length;
+            const currentSimpananHash = JSON.stringify(simpananData).length + '_' + simpananData.length;
+            
+            if (lastAnggotaHash !== '' && 
+                (currentAnggotaHash !== lastAnggotaHash || 
+                 currentSimpananHash !== lastSimpananHash)) {
+                
+                console.log('📊 Data changed in Admin, auto-syncing...');
+                this.syncToTabunganDigital();
+            }
+            
+            lastAnggotaHash = currentAnggotaHash;
+            lastSimpananHash = currentSimpananHash;
+        }, 3000);
+    }
+    
+    setupStorageSync() {
+        // Listen for changes from Tabungan Digital
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'tabunganDigitalUsers' || e.key === 'koperasiData') {
+                console.log('📦 Storage event from Tabungan Digital:', e.key);
+                setTimeout(() => this.syncFromTabunganDigital(), 500);
+            }
+        });
+        
+        // Also listen for custom events
+        window.addEventListener('tabungan-data-updated', () => {
+            this.syncFromTabunganDigital();
+        });
+    }
+    
+    setupSyncTriggers() {
+        // Sync button
+        document.getElementById('adminSyncBridge')?.addEventListener('click', () => {
+            this.manualSync();
+        });
+        
+        // Override save functions to trigger sync
+        const originalSaveMember = window.saveMemberData;
+        if (originalSaveMember) {
+            window.saveMemberData = async function() {
+                const result = await originalSaveMember.apply(this, arguments);
+                if (result) {
+                    setTimeout(() => window.dashboardBridge?.syncToTabunganDigital(), 500);
+                }
+                return result;
+            };
+        }
+    }
+    
+    startAutoSync() {
+        // Sync every 10 seconds
+        this.syncInterval = setInterval(() => {
+            this.syncFromTabunganDigital();
+        }, 10000);
+        
+        // Initial sync
+        setTimeout(() => this.syncFromTabunganDigital(), 2000);
+        setTimeout(() => this.syncToTabunganDigital(), 3000);
+    }
+    
+    manualSync() {
+        console.log('🔄 Manual sync triggered');
+        this.showBridgeNotification('Sinkronisasi dua arah dimulai...', 'info');
+        
+        setTimeout(() => {
+            this.syncFromTabunganDigital();
+            setTimeout(() => this.syncToTabunganDigital(), 500);
+        }, 300);
+    }
+    
+    syncFromTabunganDigital() {
+        if (this.isSyncing) return;
+        this.isSyncing = true;
+        
+        try {
+            console.log('📥 Syncing FROM Tabungan Digital...');
+            
+            // Get data from Tabungan Digital
+            const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+            const userTransaksi = JSON.parse(localStorage.getItem('userTransaksi') || '[]');
+            
+            console.log('📊 Data from Tabungan:', {
+                users: tabunganUsers.length,
+                transaksi: userTransaksi.length
+            });
+            
+            if (tabunganUsers.length === 0) {
+                console.log('📭 No data from Tabungan Digital');
+                return;
+            }
+            
+            let updatedCount = 0;
+            let newMembersCount = 0;
+            let newTransactionsCount = 0;
+            
+            // Process each user from Tabungan Digital
+            tabunganUsers.forEach(user => {
+                // Try to find existing member
+                let existingIndex = -1;
+                
+                // Multiple ways to identify user
+                if (user.email) {
+                    existingIndex = anggotaData.findIndex(m => m.email === user.email);
+                }
+                if (existingIndex === -1 && user.telepon) {
+                    existingIndex = anggotaData.findIndex(m => m.whatsapp === user.telepon);
+                }
+                if (existingIndex === -1 && user.whatsapp) {
+                    existingIndex = anggotaData.findIndex(m => m.whatsapp === user.whatsapp);
+                }
+                if (existingIndex === -1 && user.nik) {
+                    existingIndex = anggotaData.findIndex(m => m.nik === user.nik);
+                }
+                
+                if (existingIndex >= 0) {
+                    // Update existing member
+                    const updated = this.updateAnggotaFromTabungan(anggotaData[existingIndex], user);
+                    if (updated) updatedCount++;
+                } else {
+                    // Add new member from Tabungan Digital
+                    const newMember = this.createAnggotaFromTabungan(user);
+                    if (newMember) {
+                        anggotaData.push(newMember);
+                        newMembersCount++;
+                    }
+                }
+            });
+            
+            // Process transactions
+            if (userTransaksi.length > 0) {
+                newTransactionsCount = this.processTabunganTransactions(userTransaksi);
+            }
+            
+            // Save changes
+            if (updatedCount > 0 || newMembersCount > 0) {
+                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+                
+                // Update UI
+                refreshAnggotaTable();
+                updateDashboardStats();
+            }
+            
+            // Update sync count
+            this.updateBridgeCount(tabunganUsers.length);
+            
+            // Show summary
+            if (updatedCount > 0 || newMembersCount > 0 || newTransactionsCount > 0) {
+                const summary = [];
+                if (newMembersCount > 0) summary.push(`${newMembersCount} anggota baru`);
+                if (updatedCount > 0) summary.push(`${updatedCount} anggota diperbarui`);
+                if (newTransactionsCount > 0) summary.push(`${newTransactionsCount} transaksi`);
+                
+                this.showBridgeNotification(`Disinkron dari Tabungan Digital: ${summary.join(', ')}`, 'success');
+            }
+            
+            this.updateLastSyncTime();
+            
+        } catch (error) {
+            console.error('❌ Error syncing from Tabungan Digital:', error);
+            this.showBridgeNotification('Gagal sinkronisasi: ' + error.message, 'error');
+        } finally {
+            this.isSyncing = false;
+        }
+    }
+    
+    updateAnggotaFromTabungan(anggota, tabunganUser) {
+        let changed = false;
+        
+        // Update personal info
+        const personalFields = [
+            { field: 'nama', tabungan: 'nama' },
+            { field: 'nama', tabungan: 'fullName' },
+            { field: 'whatsapp', tabungan: 'telepon' },
+            { field: 'whatsapp', tabungan: 'whatsapp' },
+            { field: 'alamat', tabungan: 'alamat' },
+            { field: 'jenisKelamin', tabungan: 'jenisKelamin' },
+            { field: 'agama', tabungan: 'agama' },
+            { field: 'nik', tabungan: 'nik' },
+            { field: 'status', tabungan: 'statusPernikahan' }
+        ];
+        
+        personalFields.forEach(({ field, tabungan }) => {
+            if (tabunganUser[tabungan] && anggota[field] !== tabunganUser[tabungan]) {
+                anggota[field] = tabunganUser[tabungan];
+                changed = true;
+            }
+        });
+        
+        // Update simpanan data
+        if (tabunganUser.simpananPokok !== undefined) {
+            const pokok = parseInt(tabunganUser.simpananPokok) || 0;
+            if (anggota.simpananPokok !== pokok) {
+                anggota.simpananPokok = pokok;
+                changed = true;
+            }
+        }
+        
+        if (tabunganUser.simpananWajib !== undefined) {
+            const wajib = parseInt(tabunganUser.simpananWajib) || 0;
+            if (anggota.simpananWajib !== wajib) {
+                anggota.simpananWajib = wajib;
+                changed = true;
+            }
+        }
+        
+        if (tabunganUser.simpananSukarela !== undefined) {
+            const sukarela = parseInt(tabunganUser.simpananSukarela) || 0;
+            if (anggota.simpananSukarela !== sukarela) {
+                anggota.simpananSukarela = sukarela;
+                changed = true;
+            }
+        }
+        
+        // Update totals
+        if (changed) {
+            anggota.totalSimpanan = 
+                (anggota.simpananPokok || 0) + 
+                (anggota.simpananWajib || 0) + 
+                (anggota.simpananSukarela || 0);
+            
+            anggota.lastUpdated = new Date().toISOString();
+            anggota.updatedBy = 'Tabungan Digital';
+            anggota.updatedSource = 'tabungan-digital';
+        }
+        
+        return changed;
+    }
+    
+    createAnggotaFromTabungan(tabunganUser) {
+        if (!tabunganUser.email && !tabunganUser.telepon) {
+            console.warn('⚠️ User without email or phone:', tabunganUser);
+            return null;
+        }
+        
+        const newNIA = generateNIA();
+        
+        const newAnggota = {
+            id: newNIA,
+            nia: newNIA,
+            posisi: 'Anggota',
+            nama: tabunganUser.nama || tabunganUser.fullName || 'Anggota Baru',
+            alamat: tabunganUser.alamat || '',
+            jenisKelamin: tabunganUser.jenisKelamin || 'Laki-laki',
+            agama: tabunganUser.agama || 'Islam',
+            status: tabunganUser.statusPernikahan || 'Belum Menikah',
+            email: tabunganUser.email || '',
+            whatsapp: tabunganUser.telepon || tabunganUser.whatsapp || '',
+            nik: tabunganUser.nik || '',
+            tanggalDaftar: tabunganUser.tanggalDaftar || new Date().toLocaleDateString('id-ID'),
+            statusAktif: tabunganUser.statusAktif || 'Aktif',
+            foto: tabunganUser.foto || tabunganUser.profilePicture || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+            simpananPokok: parseInt(tabunganUser.simpananPokok) || 0,
+            simpananWajib: parseInt(tabunganUser.simpananWajib) || 0,
+            simpananSukarela: parseInt(tabunganUser.simpananSukarela) || 0,
+            totalSimpanan: (parseInt(tabunganUser.simpananPokok) || 0) + 
+                          (parseInt(tabunganUser.simpananWajib) || 0) + 
+                          (parseInt(tabunganUser.simpananSukarela) || 0),
+            totalPinjaman: 0,
+            saldo: 0,
+            password: tabunganUser.password || '123456',
+            createdAt: tabunganUser.createdAt || new Date().toISOString(),
+            lastUpdated: new Date().toISOString(),
+            sumber: 'Tabungan Digital',
+            syncStatus: 'active'
+        };
+        
+        console.log('➕ Created new anggota from Tabungan Digital:', newAnggota.nama);
+        return newAnggota;
+    }
+    
+    processTabunganTransactions(transactions) {
+        let newCount = 0;
+        
+        transactions.forEach(transaksi => {
+            if (transaksi.jenis === 'simpanan' || transaksi.jenis === 'setor') {
+                // Find anggota
+                const anggota = anggotaData.find(a => 
+                    a.email === transaksi.email || 
+                    a.whatsapp === transaksi.telepon
+                );
+                
+                if (!anggota) return;
+                
+                // Determine jenis simpanan
+                let jenisSimpanan = 'Sukarela';
+                if (transaksi.keterangan) {
+                    const ket = transaksi.keterangan.toLowerCase();
+                    if (ket.includes('pokok')) jenisSimpanan = 'Pokok';
+                    else if (ket.includes('wajib')) jenisSimpanan = 'Wajib';
+                }
+                
+                // Check if already exists
+                const exists = simpananData.find(s => 
+                    s.idAnggota === anggota.id && 
+                    s.tanggalSetor === transaksi.tanggal &&
+                    s.nominal === parseInt(transaksi.nominal || transaksi.jumlah)
+                );
+                
+                if (!exists) {
+                    const newSimpanan = {
+                        id: 'TD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+                        idAnggota: anggota.id,
+                        nama: anggota.nama,
+                        jenisSimpanan: jenisSimpanan,
+                        tanggalSetor: transaksi.tanggal || new Date().toLocaleDateString('id-ID'),
+                        nominal: parseInt(transaksi.nominal || transaksi.jumlah || 0),
+                        keterangan: transaksi.keterangan || 'Setoran dari Tabungan Digital',
+                        sumber: 'Tabungan Digital',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    simpananData.push(newSimpanan);
+                    newCount++;
+                    
+                    // Update anggota's simpanan
+                    this.updateAnggotaSimpanan(anggota, jenisSimpanan, newSimpanan.nominal);
+                }
+            }
+        });
+        
+        if (newCount > 0) {
+            localStorage.setItem('simpananData', JSON.stringify(simpananData));
+            refreshSimpananTable();
+            updateDashboardStats();
+        }
+        
+        return newCount;
+    }
+    
+    updateAnggotaSimpanan(anggota, jenis, nominal) {
+        switch(jenis) {
+            case 'Pokok':
+                anggota.simpananPokok = (anggota.simpananPokok || 0) + nominal;
+                break;
+            case 'Wajib':
+                anggota.simpananWajib = (anggota.simpananWajib || 0) + nominal;
+                break;
+            case 'Sukarela':
+                anggota.simpananSukarela = (anggota.simpananSukarela || 0) + nominal;
+                break;
+        }
+        
+        // Update total
+        anggota.totalSimpanan = 
+            (anggota.simpananPokok || 0) + 
+            (anggota.simpananWajib || 0) + 
+            (anggota.simpananSukarela || 0);
+        
+        anggota.lastUpdated = new Date().toISOString();
+    }
+    
+    syncToTabunganDigital() {
+        try {
+            console.log('📤 Syncing TO Tabungan Digital...');
+            
+            // Prepare data for Tabungan Digital
+            const tabunganDigitalUsers = [];
+            
+            anggotaData.forEach(anggota => {
+                const userData = {
+                    email: anggota.email,
+                    nama: anggota.nama,
+                    fullName: anggota.nama,
+                    alamat: anggota.alamat,
+                    jenisKelamin: anggota.jenisKelamin,
+                    agama: anggota.agama,
+                    telepon: anggota.whatsapp,
+                    whatsapp: anggota.whatsapp,
+                    nik: anggota.nik,
+                    tanggalDaftar: anggota.tanggalDaftar,
+                    foto: anggota.foto,
+                    profilePicture: anggota.foto,
+                    simpananPokok: anggota.simpananPokok || 0,
+                    simpananWajib: anggota.simpananWajib || 0,
+                    simpananSukarela: anggota.simpananSukarela || 0,
+                    password: anggota.password || '123456',
+                    saldo: anggota.totalSimpanan || 0,
+                    statusAktif: anggota.statusAktif || 'Aktif',
+                    createdAt: anggota.createdAt || new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    noRekening: anggota.noRekening || '',
+                    namaBank: anggota.namaBank || 'BRI',
+                    lastSync: new Date().toISOString()
+                };
+                
+                tabunganDigitalUsers.push(userData);
+            });
+            
+            // Save to localStorage for Tabungan Digital
+            localStorage.setItem('tabunganDigitalUsers', JSON.stringify(tabunganDigitalUsers));
+            
+            // Create koperasiData structure
+            const koperasiData = {
+                lastSync: new Date().toISOString(),
+                adminUpdates: {},
+                userUpdates: {},
+                anggota: anggotaData.map(a => ({
+                    id: a.id,
+                    nia: a.nia,
+                    nama: a.nama,
+                    email: a.email,
+                    whatsapp: a.whatsapp,
+                    statusAktif: a.statusAktif,
+                    totalSimpanan: a.totalSimpanan,
+                    lastUpdated: a.lastUpdated
+                })),
+                lastUpdateBy: 'Dashboard Admin'
+            };
+            
+            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+            
+            // Update simpanan transactions
+            const userTransaksi = JSON.parse(localStorage.getItem('userTransaksi') || '[]');
+            
+            // Add admin updates to transactions
+            const adminTransaksi = simpananData.map(s => ({
+                jenis: 'simpanan',
+                tanggal: s.tanggalSetor,
+                nominal: s.nominal,
+                keterangan: `${s.jenisSimpanan} - Admin update`,
+                status: 'confirmed',
+                adminUpdate: true
+            }));
+            
+            const allTransaksi = [...userTransaksi, ...adminTransaksi];
+            localStorage.setItem('userTransaksi', JSON.stringify(allTransaksi));
+            
+            console.log('✅ Synced to Tabungan Digital:', {
+                users: tabunganDigitalUsers.length,
+                transaksi: allTransaksi.length
+            });
+            
+            this.showBridgeNotification(`${tabunganDigitalUsers.length} anggota & ${allTransaksi.length} transaksi tersinkron`, 'success');
+            
+            // Dispatch event for Tabungan Digital
+            window.dispatchEvent(new CustomEvent('dashboard-data-updated', {
+                detail: { 
+                    timestamp: new Date().toISOString(),
+                    userCount: tabunganDigitalUsers.length 
+                }
+            }));
+            
+        } catch (error) {
+            console.error('❌ Error syncing to Tabungan Digital:', error);
+            this.showBridgeNotification('Gagal mengirim data ke Tabungan Digital', 'error');
+        }
+    }
+    
+    updateBridgeCount(count) {
+        const bridgeCount = document.getElementById('bridgeCount');
+        if (bridgeCount) {
+            bridgeCount.textContent = count;
+        }
+        
+        const bridgeStatus = document.getElementById('bridgeStatus');
+        const bridgeIcon = document.getElementById('bridgeIcon');
+        
+        if (bridgeStatus && bridgeIcon) {
+            bridgeStatus.textContent = `Terhubung ke ${count} anggota`;
+            bridgeIcon.style.color = count > 0 ? '#4CAF50' : '#2196f3';
+        }
+    }
+    
+    updateLastSyncTime() {
+        const now = new Date();
+        this.lastSyncTime = now;
+        
+        // Update admin profile sync time
+        const lastSyncElement = document.getElementById('lastSyncTime');
+        if (lastSyncElement) {
+            lastSyncElement.textContent = `Terakhir update: ${now.toLocaleTimeString('id-ID')}`;
+        }
+    }
+    
+    showBridgeNotification(message, type = 'info') {
+        try {
+            // Use existing notification system
+            if (typeof showNotification === 'function') {
+                showNotification(message, type);
+            } else {
+                console.log(`[BRIDGE ${type.toUpperCase()}] ${message}`);
+                
+                // Fallback notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196f3'};
+                    color: white;
+                    border-radius: 8px;
+                    z-index: 9999;
+                    animation: slideIn 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                `;
+                notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        } catch (error) {
+            console.error('Notification error:', error);
+        }
+    }
+}
+
+// ================================================
+// ENHANCED TABUNGAN DIGITAL BRIDGE
+// Script ini HARUS DITAMBAHKAN ke Tabungan Digital
+// ================================================
+
+class TabunganDashboardBridge {
+    constructor() {
+        this.isSyncing = false;
+        this.lastSyncTime = null;
+        this.userEmail = null;
+        this.init();
+    }
+    
+    init() {
+        console.log('🔗 Initializing Tabungan-Dashboard Bridge...');
+        
+        // Get current user
+        const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
+        if (!currentUser) {
+            console.error('❌ No user logged in');
+            return;
+        }
+        
+        this.userEmail = currentUser.email;
+        this.userName = currentUser.name;
+        
+        this.setupBridgeUI();
+        this.setupDashboardListeners();
+        this.startBridgeSync();
+        
+        console.log('✅ Tabungan-Dashboard Bridge Ready');
+    }
+    
+    setupBridgeUI() {
+        // Add bridge indicator
+        const profileContainer = document.querySelector('.profile-container');
+        if (profileContainer) {
+            const bridgeInfo = document.createElement('div');
+            bridgeInfo.id = 'dashboardBridgeInfo';
+            bridgeInfo.style.cssText = `
+                margin-top: 10px;
+                padding: 8px;
+                background: rgba(33, 150, 243, 0.1);
+                border-radius: 8px;
+                font-size: 11px;
+                color: #2196f3;
+                border: 1px solid rgba(33, 150, 243, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            `;
+            bridgeInfo.innerHTML = `
+                <span><i class="fas fa-link"></i> Dashboard: <span id="bridgeStatus">Disconnected</span></span>
+                <button id="refreshBridgeBtn" style="background: none; border: none; color: #2196f3; cursor: pointer;">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            `;
+            
+            profileContainer.appendChild(bridgeInfo);
+            
+            // Refresh button
+            document.getElementById('refreshBridgeBtn').addEventListener('click', () => {
+                this.manualSync();
+            });
+        }
+        
+        // Update sync button text
+        const manualSyncBtn = document.getElementById('manualSyncButton');
+        if (manualSyncBtn) {
+            manualSyncBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> Sync Dashboard';
+        }
+    }
+    
+    setupDashboardListeners() {
+        // Listen for updates from Dashboard
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'koperasiData' || e.key === 'koperasi_anggota') {
+                console.log('📥 Update from Dashboard:', e.key);
+                this.checkDashboardUpdates();
+            }
+        });
+        
+        // Listen for custom events
+        window.addEventListener('dashboard-data-updated', () => {
+            this.checkDashboardUpdates();
+        });
+        
+        // Page visibility
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.checkDashboardUpdates();
+            }
+        });
+    }
+    
+    startBridgeSync() {
+        // Initial sync
+        setTimeout(() => this.checkDashboardUpdates(), 1500);
+        
+        // Periodic sync every 8 seconds
+        setInterval(() => this.checkDashboardUpdates(), 8000);
+    }
+    
+    checkDashboardUpdates() {
+        if (this.isSyncing) return;
+        this.isSyncing = true;
+        
+        try {
+            console.log('🔍 Checking Dashboard updates...');
+            
+            // Check koperasiData for admin updates
+            const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
+            const adminUpdates = koperasiData.adminUpdates || {};
+            
+            // Check koperasi_anggota for member data
+            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            const currentUserData = allAnggota.find(a => a.email === this.userEmail);
+            
+            let hasUpdates = false;
+            
+            // Process admin updates
+            if (adminUpdates[this.userEmail]) {
+                console.log('📥 Admin update found');
+                this.processAdminUpdate(adminUpdates[this.userEmail]);
+                hasUpdates = true;
+                
+                // Clear the update
+                delete adminUpdates[this.userEmail];
+                koperasiData.adminUpdates = adminUpdates;
+                localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+            }
+            
+            // Process member data sync
+            if (currentUserData) {
+                console.log('📥 Member data sync');
+                this.syncMemberData(currentUserData);
+                hasUpdates = true;
+            }
+            
+            // Check for simpanan updates
+            if (this.checkSimpananUpdates(allAnggota)) {
+                hasUpdates = true;
+            }
+            
+            if (hasUpdates) {
+                this.updateBridgeStatus('connected');
+                this.showBridgeNotification('Data diperbarui dari Dashboard', 'success');
+                
+                // Trigger app refresh
+                if (window.tabunganApp) {
+                    window.tabunganApp.loadAnggotaData();
+                    window.tabunganApp.updateUI();
+                }
+                
+                // Also trigger EnhancedSyncSystem
+                if (window.enhancedSync) {
+                    window.enhancedSync.triggerRefresh();
+                }
+            }
+            
+            this.updateLastSyncTime();
+            
+        } catch (error) {
+            console.error('❌ Error checking dashboard updates:', error);
+            this.updateBridgeStatus('error');
+        } finally {
+            this.isSyncing = false;
+        }
+    }
+    
+    processAdminUpdate(updateData) {
+        try {
+            // Get current tabungan users
+            const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+            const userIndex = tabunganUsers.findIndex(u => u.email === this.userEmail);
+            
+            if (userIndex === -1) return false;
+            
+            let userData = tabunganUsers[userIndex];
+            
+            // Apply personal updates
+            if (updateData.personal) {
+                userData = { ...userData, ...updateData.personal };
+            }
+            
+            // Apply simpanan updates
+            if (updateData.simpanan) {
+                userData.simpananPokok = updateData.simpanan.pokok || userData.simpananPokok;
+                userData.simpananWajib = updateData.simpanan.wajib || userData.simpananWajib;
+                userData.simpananSukarela = updateData.simpanan.sukarela || userData.simpananSukarela;
+                
+                // Calculate total
+                userData.saldo = 
+                    (parseInt(userData.simpananPokok) || 0) +
+                    (parseInt(userData.simpananWajib) || 0) +
+                    (parseInt(userData.simpananSukarela) || 0);
+            }
+            
+            userData.lastUpdated = new Date().toISOString();
+            userData.lastUpdatedBy = 'admin';
+            
+            tabunganUsers[userIndex] = userData;
+            localStorage.setItem('tabunganDigitalUsers', JSON.stringify(tabunganUsers));
+            
+            console.log('✅ Admin update processed');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Error processing admin update:', error);
+            return false;
+        }
+    }
+    
+    syncMemberData(anggotaData) {
+        try {
+            const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+            const userIndex = tabunganUsers.findIndex(u => u.email === this.userEmail);
+            
+            if (userIndex === -1) {
+                // Add new user from dashboard
+                tabunganUsers.push(this.convertToTabunganFormat(anggotaData));
+            } else {
+                // Update existing user
+                tabunganUsers[userIndex] = {
+                    ...tabunganUsers[userIndex],
+                    ...this.convertToTabunganFormat(anggotaData)
+                };
+            }
+            
+            localStorage.setItem('tabunganDigitalUsers', JSON.stringify(tabunganUsers));
+            
+            console.log('✅ Member data synced from dashboard');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Error syncing member data:', error);
+            return false;
+        }
+    }
+    
+    convertToTabunganFormat(anggotaData) {
+        return {
+            email: anggotaData.email,
+            nama: anggotaData.nama,
+            fullName: anggotaData.nama,
+            alamat: anggotaData.alamat,
+            jenisKelamin: anggotaData.jenisKelamin,
+            agama: anggotaData.agama,
+            telepon: anggotaData.whatsapp,
+            whatsapp: anggotaData.whatsapp,
+            nik: anggotaData.nik,
+            tanggalDaftar: anggotaData.tanggalDaftar,
+            foto: anggotaData.foto,
+            profilePicture: anggotaData.foto,
+            simpananPokok: anggotaData.simpananPokok || 0,
+            simpananWajib: anggotaData.simpananWajib || 0,
+            simpananSukarela: anggotaData.simpananSukarela || 0,
+            password: anggotaData.password || '123456',
+            saldo: anggotaData.totalSimpanan || 0,
+            statusAktif: anggotaData.statusAktif || 'Aktif',
+            createdAt: anggotaData.createdAt || new Date().toISOString(),
+            lastUpdated: new Date().toISOString()
+        };
+    }
+    
+    checkSimpananUpdates(allAnggota) {
+        try {
+            const currentUserData = allAnggota.find(a => a.email === this.userEmail);
+            if (!currentUserData) return false;
+            
+            // Check if simpanan data exists
+            const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+            const userIndex = tabunganUsers.findIndex(u => u.email === this.userEmail);
+            
+            if (userIndex === -1) return false;
+            
+            const userData = tabunganUsers[userIndex];
+            let hasChanges = false;
+            
+            // Check simpanan values
+            const simpananFields = ['simpananPokok', 'simpananWajib', 'simpananSukarela'];
+            
+            simpananFields.forEach(field => {
+                const dashboardValue = currentUserData[field] || 0;
+                const tabunganValue = parseInt(userData[field]) || 0;
+                
+                if (dashboardValue !== tabunganValue) {
+                    userData[field] = dashboardValue;
+                    hasChanges = true;
+                }
+            });
+            
+            // Update total
+            if (hasChanges) {
+                userData.saldo = 
+                    (parseInt(userData.simpananPokok) || 0) +
+                    (parseInt(userData.simpananWajib) || 0) +
+                    (parseInt(userData.simpananSukarela) || 0);
+                
+                userData.lastUpdated = new Date().toISOString();
+                
+                tabunganUsers[userIndex] = userData;
+                localStorage.setItem('tabunganDigitalUsers', JSON.stringify(tabunganUsers));
+                
+                console.log('✅ Simpanan data updated from dashboard');
+            }
+            
+            return hasChanges;
+            
+        } catch (error) {
+            console.error('❌ Error checking simpanan updates:', error);
+            return false;
+        }
+    }
+    
+    manualSync() {
+        console.log('👆 Manual bridge sync');
+        
+        // Update button state
+        const refreshBtn = document.getElementById('refreshBridgeBtn');
+        if (refreshBtn) {
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            refreshBtn.disabled = true;
+        }
+        
+        this.showBridgeNotification('Menyinkronkan dengan Dashboard...', 'info');
+        
+        setTimeout(() => {
+            this.checkDashboardUpdates();
+            
+            if (refreshBtn) {
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                refreshBtn.disabled = false;
+            }
+        }, 500);
+    }
+    
+    updateBridgeStatus(status) {
+        const bridgeStatus = document.getElementById('bridgeStatus');
+        if (!bridgeStatus) return;
+        
+        const statusText = {
+            'connected': 'Terhubung',
+            'disconnected': 'Terputus',
+            'syncing': 'Menyinkron...',
+            'error': 'Error'
+        }[status] || status;
+        
+        const statusColor = {
+            'connected': '#4CAF50',
+            'disconnected': '#f44336',
+            'syncing': '#FF9800',
+            'error': '#f44336'
+        }[status] || '#666';
+        
+        bridgeStatus.textContent = statusText;
+        bridgeStatus.style.color = statusColor;
+    }
+    
+    updateLastSyncTime() {
+        this.lastSyncTime = new Date();
+        
+        // Update UI
+        const lastSyncElement = document.getElementById('lastSyncTime');
+        if (lastSyncElement) {
+            lastSyncElement.textContent = `Terakhir sync: ${this.lastSyncTime.toLocaleTimeString('id-ID')}`;
+        }
+        
+        // Also update admin update time
+        const lastAdminUpdate = document.getElementById('lastAdminUpdate');
+        if (lastAdminUpdate) {
+            lastAdminUpdate.textContent = `Update admin: ${this.lastSyncTime.toLocaleTimeString('id-ID')}`;
+        }
+    }
+    
+    showBridgeNotification(message, type = 'info') {
+        try {
+            // Use existing toast system
+            if (window.tabunganApp && typeof window.tabunganApp.showToast === 'function') {
+                window.tabunganApp.showToast(message, type);
+            } else {
+                console.log(`[BRIDGE ${type.toUpperCase()}] ${message}`);
+                
+                // Fallback toast
+                const toast = document.getElementById('toast');
+                if (toast) {
+                    const toastMessage = document.getElementById('toastMessage');
+                    if (toastMessage) {
+                        toastMessage.textContent = message;
+                    }
+                    
+                    toast.className = `toast ${type} show`;
+                    
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 3000);
+                }
+            }
+        } catch (error) {
+            console.error('Notification error:', error);
+        }
+    }
+}
+
+// ================================================
+// INTEGRATION INITIALIZATION
+// HARUS DI TAMBAHKAN di KEDUA HALAMAN
+// ================================================
+
+// For DASHBOARD ADMIN: Initialize bridge
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for anggotaData to be loaded
+    setTimeout(() => {
+        if (typeof anggotaData !== 'undefined') {
+            window.dashboardBridge = new DashboardTabunganBridge();
+            console.log('🎯 Dashboard Bridge activated');
+            
+            // Create sync data structure
+            window.createSyncDataStructure = function() {
+                const syncData = {
+                    dashboard: {
+                        anggotaCount: anggotaData.length,
+                        simpananCount: simpananData.length,
+                        lastSync: new Date().toISOString()
+                    },
+                    tabungan: {
+                        users: JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]').length,
+                        transaksi: JSON.parse(localStorage.getItem('userTransaksi') || '[]').length
+                    },
+                    bridge: {
+                        active: true,
+                        version: '2.0',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                localStorage.setItem('syncBridgeData', JSON.stringify(syncData));
+                return syncData;
+            };
+            
+            // Initial sync
+            setTimeout(() => {
+                if (window.dashboardBridge) {
+                    window.dashboardBridge.syncToTabunganDigital();
+                }
+            }, 2000);
+        }
+    }, 2000);
+});
+
+// For TABUNGAN DIGITAL: Initialize bridge
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for main app to initialize
+    setTimeout(() => {
+        const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
+        if (currentUser) {
+            window.tabunganBridge = new TabunganDashboardBridge();
+            console.log('🎯 Tabungan Bridge activated');
+            
+            // Create sync data structure
+            setTimeout(() => {
+                const syncData = JSON.parse(localStorage.getItem('syncBridgeData') || '{}');
+                syncData.tabungan = {
+                    user: currentUser.email,
+                    lastSync: new Date().toISOString(),
+                    bridgeActive: true
+                };
+                localStorage.setItem('syncBridgeData', JSON.stringify(syncData));
+            }, 1000);
+        }
+    }, 1500);
+});
+
+// ================================================
+// UNIVERSAL SYNC UTILITIES
+// Bisa digunakan di kedua halaman
+// ================================================
+
+window.SyncUtilities = {
+    // Check if data is in sync
+    checkDataSync() {
+        try {
+            const dashboardAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+            
+            return {
+                dashboardCount: dashboardAnggota.length,
+                tabunganCount: tabunganUsers.length,
+                inSync: dashboardAnggota.length === tabunganUsers.length,
+                lastCheck: new Date().toISOString()
+            };
+        } catch (error) {
+            console.error('Sync check error:', error);
+            return { error: error.message };
+        }
+    },
+    
+    // Force sync all data
+    forceFullSync() {
+        console.log('🔄 Forcing full sync...');
+        
+        if (window.dashboardBridge) {
+            window.dashboardBridge.syncToTabunganDigital();
+        }
+        
+        if (window.tabunganBridge) {
+            setTimeout(() => window.tabunganBridge.checkDashboardUpdates(), 500);
+        }
+        
+        // Trigger storage event
+        localStorage.setItem('forceSyncTrigger', Date.now().toString());
+        
+        return 'Full sync triggered';
+    },
+    
+    // Get sync status
+    getSyncStatus() {
+        const syncData = JSON.parse(localStorage.getItem('syncBridgeData') || '{}');
+        const bridgeStatus = {
+            dashboardBridge: !!window.dashboardBridge,
+            tabunganBridge: !!window.tabunganBridge,
+            bridgeData: syncData,
+            timestamp: new Date().toISOString()
+        };
+        
+        console.log('🔍 Sync Status:', bridgeStatus);
+        return bridgeStatus;
+    }
+};
+
+console.log('🌉 Dashboard-Tabungan Integration Bridge Loaded Successfully!');
 </script>
 </body>
 </html>
