@@ -32,61 +32,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        /* ===== SYNC BUTTON STYLES ===== */
-.sync-button {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    padding: 10px 15px;
-    background: linear-gradient(135deg, #2196f3, #21cbf3);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 600;
-    z-index: 9998;
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3); }
-    50% { box-shadow: 0 4px 20px rgba(33, 150, 243, 0.6); }
-    100% { box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3); }
-}
-
-.sync-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-}
-
-.sync-button:active {
-    transform: translateY(0);
-}
-
-.sync-button.syncing {
-    background: linear-gradient(135deg, #ff9800, #ffb74d);
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.sync-button.success {
-    background: linear-gradient(135deg, #4caf50, #81c784);
-    animation: none;
-}
-
-.sync-button.error {
-    background: linear-gradient(135deg, #f44336, #e57373);
-    animation: none;
-}
         body {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             color: var(--dark);
