@@ -1609,7 +1609,130 @@
             this.setupEventListeners();
             this.updateUI();
             this.startSync();
+           // ================================================
+          // EMERGENCY FIX FOR SIMPANAN SYNC
+         // ================================================
+
+function emergencySimpananFix() {
+    console.log('🚨 EMERGENCY SIMPANAN FIX...');
+    
+    // Get data from both sides
+    const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+    let tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+    
+    if (allAnggota.length === 0) {
+        console.error('❌ No data in koperasi_anggota');
+        return false;
+    }
+    
+    let fixedCount = 0;
+    
+    // Sync all anggota to tabungan
+    allAnggota.forEach(anggota => {
+        if (!anggota.email) return;
+        
+        let userIndex = tabunganUsers.findIndex(u => u.email === anggota.email);
+        
+        if (userIndex === -1) {
+            // Create new tabungan user
+            const newUser = {
+                email: anggota.email,
+                nama: anggota.nama,
+                fullName: anggota.nama,
+                alamat: anggota.alamat || '',
+                jenisKelamin: anggota.jenisKelamin || '',
+                agama: anggota.agama || '',
+                telepon: anggota.whatsapp || '',
+                whatsapp: anggota.whatsapp || '',
+                nik: anggota.nik || '',
+                tanggalDaftar: anggota.tanggalDaftar || '',
+                foto: anggota.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                profilePicture: anggota.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                simpananPokok: anggota.simpananPokok || 0,
+                simpananWajib: anggota.simpananWajib || 0,
+                simpananSukarela: anggota.simpananSukarela || 0,
+                password: anggota.password || '123456',
+                saldo: anggota.totalSimpanan || 0,
+                statusAktif: anggota.statusAktif || 'Aktif',
+                createdAt: anggota.createdAt || new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
+            };
             
+            tabunganUsers.push(newUser);
+            fixedCount++;
+            console.log('➕ Created tabungan user for:', anggota.nama);
+            
+        } else {
+            // Update existing user
+            const user = tabunganUsers[userIndex];
+            let updated = false;
+            
+            // Update simpanan values
+            if (user.simpananPokok !== anggota.simpananPokok) {
+                user.simpananPokok = anggota.simpananPokok || 0;
+                updated = true;
+            }
+            
+            if (user.simpananWajib !== anggota.simpananWajib) {
+                user.simpananWajib = anggota.simpananWajib || 0;
+                updated = true;
+            }
+            
+            if (user.simpananSukarela !== anggota.simpananSukarela) {
+                user.simpananSukarela = anggota.simpananSukarela || 0;
+                updated = true;
+            }
+            
+            // Update total saldo
+            const newSaldo = 
+                (parseInt(user.simpananPokok) || 0) + 
+                (parseInt(user.simpananWajib) || 0) + 
+                (parseInt(user.simpananSukarela) || 0);
+            
+            if (user.saldo !== newSaldo) {
+                user.saldo = newSaldo;
+                updated = true;
+            }
+            
+            if (updated) {
+                user.lastUpdated = new Date().toISOString();
+                tabunganUsers[userIndex] = user;
+                fixedCount++;
+                console.log('🔄 Updated tabungan user:', user.nama);
+            }
+        }
+    });
+    
+    // Save back to localStorage
+    if (fixedCount > 0) {
+        localStorage.setItem('tabunganDigitalUsers', JSON.stringify(tabunganUsers));
+        
+        // Create koperasiData for sync
+        const koperasiData = {
+            lastSync: new Date().toISOString(),
+            emergencyFix: true,
+            fixedCount: fixedCount,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+        
+        console.log(`✅ EMERGENCY FIX COMPLETE: ${fixedCount} users fixed`);
+        
+        // Show notification
+        alert(`🚨 Emergency Fix Applied!\n${fixedCount} data simpanan telah disinkronkan.\nSilakan refresh Tabungan Digital.`);
+        
+        return true;
+    }
+    
+    console.log('✅ No fixes needed');
+    return false;
+}
+
+// Run emergency fix automatically
+setTimeout(() => {
+    console.log('🔧 Auto-running emergency check...');
+    emergencySimpananFix();
+}, 2000); 
             // Initialize enhanced sync system
             setTimeout(() => {
                 window.enhancedSync = new EnhancedSyncSystem();
