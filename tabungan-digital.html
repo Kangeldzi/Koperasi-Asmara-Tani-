@@ -2366,68 +2366,7 @@ const ringkasanStyle = `
             margin-top: 5px;
         }
     </style>
-`;
 
-// Inject styles
-document.head.insertAdjacentHTML('beforeend', ringkasanStyle);
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Initializing Ringkasan Keuangan System...');
-    
-    // Tunggu main app initialize
-    setTimeout(() => {
-        window.ringkasanIntegrator = new RingkasanKeuanganIntegrator();
-        
-        // Integrasi dengan main app
-        if (window.tabunganApp) {
-            window.ringkasanIntegrator.integrateWithMainApp();
-        }
-        
-        // Tambah enhanced hover class
-        document.querySelectorAll('.stat-item').forEach(item => {
-            item.classList.add('enhanced-hover');
-        });
-        
-        // Add sync status to cards
-        const cards = document.querySelectorAll('.stat-value');
-        cards.forEach(card => {
-            const syncSpan = document.createElement('span');
-            syncSpan.className = 'sync-status success';
-            syncSpan.innerHTML = '<i class="fas fa-sync-alt"></i> live';
-            syncSpan.style.display = 'none';
-            card.parentNode.insertBefore(syncSpan, card.nextSibling);
-        });
-        
-        console.log('✅ Ringkasan Keuangan System Ready');
-    }, 1500);
-});
-
-// ==================== FUNGSI UNTUK ADMIN DASHBOARD ====================
-/*
-// Di halaman admin dashboard, tambahkan kode berikut untuk update ringkasan:
-function updateAnggotaAndNotify(email, data) {
-    // ... update logic ...
-    
-    // Trigger update ke tabungan digital
-    document.dispatchEvent(new CustomEvent('adminDashboardUpdate', {
-        detail: {
-            type: 'simpanan',
-            data: data,
-            timestamp: new Date().toISOString(),
-            targetUser: email
-        }
-    }));
-    
-    // Atau simpan ke localStorage (akan auto-sync)
-    localStorage.setItem('koperasi_anggota', JSON.stringify(updatedAnggota));
-}
-
-// Contoh trigger manual dari admin:
-if (window.ringkasanIntegrator) {
-    window.ringkasanIntegrator.loadFromAdminDashboard();
-}
-*/
     <!-- ===== MAIN TABUNGAN APP ===== -->
     <script>
     const { jsPDF } = window.jspdf;
