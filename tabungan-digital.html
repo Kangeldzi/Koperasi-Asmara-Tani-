@@ -1978,40 +1978,7 @@ class RingkasanKeuanganIntegrator {
     }
     
     updateLastAdminUpdateTime() {
-        const element = document.getElementById('lastAdminUpdate');
-        if (element && this.lastAdminUpdate) {
-            const time = new Date(this.lastAdminUpdate);
-            element.textContent = `Update admin: ${time.toLocaleTimeString('id-ID')}`;
-        }
-    }
-    
-    // ==================== DETAIL MODAL ====================
-    
-    showDetailModal(cardId) {
-        const currentUser = this.getCurrentUser();
-        if (!currentUser) return;
-        
-        const data = this.getCurrentData();
-        
-        switch(cardId) {
-            case 'totalSimpananBtn':
-                this.showSimpananDetailModal(data);
-                break;
-                
-            case 'totalPinjamanBtn':
-                this.showPinjamanDetailModal(data);
-                break;
-                
-            case 'shuEstimasiBtn':
-                this.showSHUDetailModal(data);
-                break;
-                
-            case 'statusAnggotaBtn':
-                this.showStatusDetailModal(data);
-                break;
-        }
-    }
-    
+
     showSimpananDetailModal(data) {
         const modalContent = `
             <div style="padding: 10px 0;">
