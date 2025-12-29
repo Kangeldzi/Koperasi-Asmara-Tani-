@@ -1573,7 +1573,861 @@
         }
     }
     </script>
+// ====================================================
+// SISTEM INTEGRASI RINGKASAN KEUANGAN LENGKAP
+// Ditempatkan SEBELUM kode DigitalTabungan (setelah EnhancedSyncSystem)
+// ====================================================
 
+class RingkasanKeuanganIntegrator {
+    constructor() {
+        console.log('💰 Initializing Ringkasan Keuangan Integrator...');
+        this.isSyncing = false;
+        this.lastAdminUpdate = null;
+        this.currentUser = null;
+        this.setupIntegration();
+    }
+    
+    setupIntegration() {
+        this.getCurrentUser();
+        this.setupEventListeners();
+        this.loadFromAdminDashboard();
+        this.setupAutoSync();
+        this.updateLastAdminUpdateTime();
+    }
+    
+    getCurrentUser() {
+        try {
+            this.currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
+            return this.currentUser;
+        } catch (error) {
+            console.error('❌ Error getting current user:', error);
+            return null;
+        }
+    }
+    
+    // ==================== INTEGRASI DENGAN ADMIN DASHBOARD ====================
+    
+    loadFromAdminDashboard() {
+        console.log('📊 Loading data from admin dashboard...');
+        
+        if (!this.currentUser) {
+            console.error('❌ No current user found');
+            return;
+        }
+        
+        try {
+            // 1. Cek data dari localStorage (shared dengan admin dashboard)
+            const adminData = JSON.parse(localStorage.getItem('koperasiDatabase'));
+            const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            
+            // 2. Cari data user di database admin
+            const userAnggota = anggotaData.find(a => a.email === this.currentUser.email);
+            
+            if (userAnggota) {
+                console.log('✅ User data found in admin system:', userAnggota.nama);
+                this.updateRingkasanFromAdmin(userAnggota);
+                this.lastAdminUpdate = userAnggota.lastUpdated || new Date().toISOString();
+                this.updateLastAdminUpdateTime();
+                this.updateSyncStatus('success');
+                this.showNotification('Data keuangan terbaru dimuat', 'success');
+            } else {
+                console.log('⚠️ User not found in admin data, using local data');
+                this.updateRingkasanFromLocal();
+            }
+            
+        } catch (error) {
+            console.error('❌ Error loading from admin dashboard:', error);
+            this.updateRingkasanFromLocal();
+        }
+    }
+    
+    updateRingkasanFromAdmin(adminData) {
+        console.log('🔄 Updating ringkasan from admin data...');
+        
+        // Ambil data simpanan dari admin
+        const simpananPokok = this.getNumericValue(adminData.simpanan?.pokok?.nominal) || 
+                              this.getNumericValue(adminData.simpananPokok) || 0;
+        
+        const simpananWajib = this.getNumericValue(adminData.simpanan?.wajib?.nominal) || 
+                              this.getNumericValue(adminData.simpananWajib) || 0;
+        
+        const simpananSukarela = this.getNumericValue(adminData.simpanan?.sukarela?.nominal) || 
+                                 this.getNumericValue(adminData.simpananSukarela) || 0;
+        
+        const totalSimpanan = simpananPokok + simpananWajib + simpananSukarela;
+        
+        // Ambil data pinjaman dari admin
+        let totalPinjaman = 0;
+        if (adminData.pinjaman) {
+            if (Array.isArray(adminData.pinjaman.aktif)) {
+                totalPinjaman = adminData.pinjaman.aktif.reduce((sum, p) => sum + this.getNumericValue(p.jumlah), 0);
+            } else {
+                totalPinjaman = this.getNumericValue(adminData.pinjaman.total) || 0;
+            }
+        }
+        
+        // Hitung SHU (20% dari total simpanan)
+        const shuEstimasi = Math.round(totalSimpanan * 0.2);
+        
+        // Status anggota
+        const statusAnggota = adminData.statusAktif || adminData.status || 'Aktif';
+        
+        // Update UI Ringkasan Keuangan
+        this.updateRingkasanUI({
+            totalSimpanan,
+            simpananPokok,
+            simpananWajib,
+            simpananSukarela,
+            totalPinjaman,
+            shuEstimasi,
+            statusAnggota
+        });
+        
+        // Update card UI
+        this.updateCardUI(totalSimpanan, totalPinjaman, shuEstimasi, statusAnggota);
+        
+        console.log('✅ Ringkasan updated from admin:', {
+            totalSimpanan,
+            totalPinjaman,
+            shuEstimasi,
+            statusAnggota
+        });
+        
+        // Simpan data terakhir untuk referensi
+        this.saveLastData({
+            totalSimpanan,
+            totalPinjaman,
+            shuEstimasi,
+            statusAnggota,
+            timestamp: new Date().toISOString()
+        });
+    }
+    
+    updateRingkasanFromLocal() {
+        console.log('🔄 Updating ringkasan from local data...');
+        
+        // Cek data terakhir yang disimpan
+        const lastData = this.getLastData();
+        
+        if (lastData) {
+            this.updateRingkasanUI(lastData);
+            this.updateCardUI(
+                lastData.totalSimpanan,
+                lastData.totalPinjaman,
+                lastData.shuEstimasi,
+                lastData.statusAnggota
+            );
+        } else {
+            // Gunakan data default/placeholder
+            const defaultData = {
+                totalSimpanan: 0,
+                simpananPokok: 0,
+                simpananWajib: 0,
+                simpananSukarela: 0,
+                totalPinjaman: 0,
+                shuEstimasi: 0,
+                statusAnggota: 'Memuat...'
+            };
+            
+            this.updateRingkasanUI(defaultData);
+            this.updateCardUI(0, 0, 0, 'Memuat...');
+        }
+    }
+    
+    updateRingkasanUI(data) {
+        // Update modal detail simpanan jika ada perubahan
+        this.updateModalDetails(data);
+    }
+    
+    updateCardUI(totalSimpanan, totalPinjaman, shuEstimasi, statusAnggota) {
+        console.log('🔄 Updating card UI...');
+        
+        // Update kartu utama
+        this.updateCardValue('#totalSimpanan', totalSimpanan, 'Rp');
+        this.updateCardValue('#totalPinjaman', totalPinjaman, 'Rp');
+        this.updateCardValue('#shuEstimasi', shuEstimasi, 'Rp');
+        this.updateCardValue('#statusAnggota', statusAnggota, '');
+        
+        // Update tabungan status
+        this.updateTabunganStatus(totalSimpanan, statusAnggota);
+        
+        // Update sync indicator
+        this.updateSyncIndicator('success');
+    }
+    
+    updateCardValue(selector, value, prefix = '') {
+        const element = document.querySelector(selector);
+        if (element) {
+            if (prefix === 'Rp') {
+                element.textContent = `${prefix} ${this.formatNumber(value)}`;
+            } else {
+                element.textContent = value;
+            }
+            
+            // Tambah efek visual
+            element.classList.add('updated');
+            setTimeout(() => element.classList.remove('updated'), 1000);
+        }
+    }
+    
+    updateTabunganStatus(totalSimpanan, status) {
+        const statusElement = document.getElementById('tabunganStatus');
+        if (statusElement) {
+            statusElement.innerHTML = `
+                ${status} • 
+                <span style="color: var(--primary); font-weight: 600;">
+                    Rp ${this.formatNumber(totalSimpanan)}
+                </span>
+            `;
+        }
+    }
+    
+    updateModalDetails(data) {
+        // Update modal detail simpanan (jika modal terbuka)
+        const modalSimpanan = document.querySelector('.modal-content');
+        if (modalSimpanan && modalSimpanan.querySelector('#modalSimpananTotal')) {
+            this.updateModalSimpanan(data);
+        }
+    }
+    
+    updateModalSimpanan(data) {
+        // Update detail simpanan di modal
+        const elements = {
+            '#modalSimpananTotal': data.totalSimpanan,
+            '#simpananPokok': data.simpananPokok,
+            '#simpananWajib': data.simpananWajib,
+            '#simpananSukarela': data.simpananSukarela,
+            '#totalSimpananModal': data.totalSimpanan
+        };
+        
+        Object.entries(elements).forEach(([selector, value]) => {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.textContent = `Rp ${this.formatNumber(value)}`;
+            }
+        });
+    }
+    
+    // ==================== EVENT LISTENERS ====================
+    
+    setupEventListeners() {
+        // Listen untuk update dari admin dashboard
+        document.addEventListener('adminDashboardUpdate', (e) => {
+            console.log('📢 Admin update event received:', e.detail);
+            this.handleAdminUpdate(e.detail);
+        });
+        
+        // Listen untuk perubahan localStorage (cross-tab sync)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'koperasi_anggota' || e.key === 'koperasiDatabase') {
+                console.log('🔄 Storage change detected:', e.key);
+                setTimeout(() => this.loadFromAdminDashboard(), 500);
+            }
+        });
+        
+        // Listen untuk manual sync button
+        const manualSyncBtn = document.getElementById('manualSyncButton');
+        if (manualSyncBtn) {
+            manualSyncBtn.addEventListener('click', () => this.manualSync());
+        }
+        
+        // Listen untuk refresh dari sistem utama
+        window.addEventListener('sync-data-updated', () => {
+            console.log('🔄 Sync update from main system');
+            this.loadFromAdminDashboard();
+        });
+        
+        // Listen untuk klik pada kartu ringkasan
+        this.setupCardListeners();
+    }
+    
+    setupCardListeners() {
+        // Override click handlers untuk kartu ringkasan
+        const cards = ['totalSimpananBtn', 'totalPinjamanBtn', 'shuEstimasiBtn', 'statusAnggotaBtn'];
+        
+        cards.forEach(cardId => {
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showDetailModal(cardId);
+                });
+            }
+        });
+    }
+    
+    handleAdminUpdate(detail) {
+        console.log('🔄 Processing admin update:', detail);
+        
+        if (detail.type === 'simpanan' || detail.type === 'all') {
+            this.loadFromAdminDashboard();
+            this.showNotification('Data keuangan diperbarui dari admin', 'success');
+        }
+    }
+    
+    // ==================== MANUAL SYNC & AUTO SYNC ====================
+    
+    manualSync() {
+        if (this.isSyncing) return;
+        
+        console.log('👆 Manual sync triggered');
+        this.isSyncing = true;
+        
+        this.updateSyncButton('syncing');
+        this.showNotification('Menyinkronkan data keuangan...', 'info');
+        
+        setTimeout(() => {
+            this.loadFromAdminDashboard();
+            this.showNotification('Data keuangan tersinkron', 'success');
+            this.updateSyncButton('success');
+            
+            setTimeout(() => {
+                this.updateSyncButton('normal');
+                this.isSyncing = false;
+            }, 2000);
+        }, 1000);
+    }
+    
+    setupAutoSync() {
+        // Auto sync setiap 30 detik
+        setInterval(() => {
+            if (!this.isSyncing && document.visibilityState === 'visible') {
+                this.autoSync();
+            }
+        }, 30000);
+        
+        // Sync saat tab aktif kembali
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                this.autoSync();
+            }
+        });
+    }
+    
+    autoSync() {
+        console.log('🤖 Auto-sync checking for updates...');
+        this.loadFromAdminDashboard();
+    }
+    
+    // ==================== UI UPDATES ====================
+    
+    updateSyncButton(state) {
+        const syncBtn = document.getElementById('manualSyncButton');
+        if (!syncBtn) return;
+        
+        syncBtn.className = 'sync-button';
+        
+        switch(state) {
+            case 'normal':
+                syncBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync Now';
+                break;
+                
+            case 'syncing':
+                syncBtn.classList.add('syncing');
+                syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                break;
+                
+            case 'success':
+                syncBtn.classList.add('success');
+                syncBtn.innerHTML = '<i class="fas fa-check"></i> Synced!';
+                break;
+        }
+    }
+    
+    updateSyncStatus(state) {
+        const syncStatus = document.getElementById('syncStatusText');
+        if (!syncStatus) return;
+        
+        switch(state) {
+            case 'success':
+                syncStatus.textContent = 'Tersinkron';
+                syncStatus.style.color = '#4CAF50';
+                break;
+                
+            case 'warning':
+                syncStatus.textContent = 'Periksa koneksi';
+                syncStatus.style.color = '#FF9800';
+                break;
+                
+            case 'error':
+                syncStatus.textContent = 'Gagal sinkron';
+                syncStatus.style.color = '#f44336';
+                break;
+        }
+    }
+    
+    updateSyncIndicator(state) {
+        const indicator = document.getElementById('dataSyncIndicator');
+        if (!indicator) return;
+        
+        indicator.className = 'sync-indicator';
+        
+        switch(state) {
+            case 'success':
+                indicator.classList.add('success');
+                break;
+                
+            case 'warning':
+                indicator.classList.add('warning');
+                break;
+                
+            case 'error':
+                indicator.classList.add('error');
+                break;
+        }
+    }
+    
+    updateLastAdminUpdateTime() {
+        const element = document.getElementById('lastAdminUpdate');
+        if (element && this.lastAdminUpdate) {
+            const time = new Date(this.lastAdminUpdate);
+            element.textContent = `Update admin: ${time.toLocaleTimeString('id-ID')}`;
+        }
+    }
+    
+    // ==================== DETAIL MODAL ====================
+    
+    showDetailModal(cardId) {
+        const currentUser = this.getCurrentUser();
+        if (!currentUser) return;
+        
+        const data = this.getCurrentData();
+        
+        switch(cardId) {
+            case 'totalSimpananBtn':
+                this.showSimpananDetailModal(data);
+                break;
+                
+            case 'totalPinjamanBtn':
+                this.showPinjamanDetailModal(data);
+                break;
+                
+            case 'shuEstimasiBtn':
+                this.showSHUDetailModal(data);
+                break;
+                
+            case 'statusAnggotaBtn':
+                this.showStatusDetailModal(data);
+                break;
+        }
+    }
+    
+    showSimpananDetailModal(data) {
+        const modalContent = `
+            <div style="padding: 10px 0;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #1a5f23;">
+                        Rp ${this.formatNumber(data.totalSimpanan || 0)}
+                    </div>
+                    <div style="color: #666; font-size: 14px;">Total Simpanan</div>
+                </div>
+                
+                <div class="financial-details">
+                    <div class="financial-item">
+                        <span class="financial-label">Simpanan Pokok</span>
+                        <span class="financial-value">Rp ${this.formatNumber(data.simpananPokok || 0)}</span>
+                    </div>
+                    <div class="financial-item">
+                        <span class="financial-label">Simpanan Wajib</span>
+                        <span class="financial-value">Rp ${this.formatNumber(data.simpananWajib || 0)}</span>
+                    </div>
+                    <div class="financial-item">
+                        <span class="financial-label">Simpanan Sukarela</span>
+                        <span class="financial-value">Rp ${this.formatNumber(data.simpananSukarela || 0)}</span>
+                    </div>
+                    <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
+                        <span class="financial-label" style="font-weight: 600;">TOTAL SIMPANAN</span>
+                        <span class="financial-value" style="font-size: 1.2rem; color: #1a5f23;">Rp ${this.formatNumber(data.totalSimpanan || 0)}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 10px;">
+                    <p style="color: #1a5f23; font-weight: 500; margin-bottom: 10px;">ℹ️ Sumber Data</p>
+                    <p style="color: #666; font-size: 0.9rem;">
+                        Data ini diambil langsung dari Dashboard Admin Koperasi.
+                        ${this.lastAdminUpdate ? `Terakhir diperbarui: ${new Date(this.lastAdminUpdate).toLocaleString('id-ID')}` : ''}
+                    </p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn primary" id="closeDetailBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.showCustomModal('Detail Simpanan', modalContent);
+    }
+    
+    showPinjamanDetailModal(data) {
+        const modalContent = `
+            <div style="padding: 10px 0;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #1a5f23;">
+                        Rp ${this.formatNumber(data.totalPinjaman || 0)}
+                    </div>
+                    <div style="color: #666; font-size: 14px;">Total Pinjaman</div>
+                </div>
+                
+                <div class="financial-details">
+                    ${data.totalPinjaman > 0 ? 
+                        `<div class="financial-item">
+                            <span class="financial-label">Pinjaman Aktif</span>
+                            <span class="financial-value">Rp ${this.formatNumber(data.totalPinjaman)}</span>
+                        </div>` 
+                        : 
+                        '<div style="text-align: center; padding: 20px; color: #666;">Tidak ada pinjaman aktif</div>'
+                    }
+                    
+                    <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
+                        <span class="financial-label" style="font-weight: 600;">TOTAL PINJAMAN</span>
+                        <span class="financial-value" style="font-size: 1.2rem; color: #1a5f23;">Rp ${this.formatNumber(data.totalPinjaman || 0)}</span>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn primary" id="closeDetailBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.showCustomModal('Detail Pinjaman', modalContent);
+    }
+    
+    showSHUDetailModal(data) {
+        const modalContent = `
+            <div style="padding: 10px 0;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #1a5f23;">
+                        Rp ${this.formatNumber(data.shuEstimasi || 0)}
+                    </div>
+                    <div style="color: #666; font-size: 14px;">Estimasi SHU</div>
+                </div>
+                
+                <div class="financial-details">
+                    <div class="financial-item">
+                        <span class="financial-label">Status Perhitungan</span>
+                        <span class="financial-value">${data.shuEstimasi > 0 ? 'Estimasi' : 'Belum ada'}</span>
+                    </div>
+                    <div class="financial-item">
+                        <span class="financial-label">Periode</span>
+                        <span class="financial-value">Tahun ${new Date().getFullYear()}</span>
+                    </div>
+                    <div class="financial-item">
+                        <span class="financial-label">Basis Perhitungan</span>
+                        <span class="financial-value">20% dari Simpanan</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 10px;">
+                    <p style="color: #1a5f23; font-weight: 500; margin-bottom: 10px;">💡 Informasi SHU</p>
+                    <p style="color: #666; font-size: 0.9rem;">
+                        SHU (Sisa Hasil Usaha) adalah keuntungan koperasi yang akan dibagikan kepada anggota 
+                        berdasarkan partisipasi modal dan transaksi. Perhitungan final akan dilakukan di akhir tahun.
+                    </p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn primary" id="closeDetailBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.showCustomModal('Detail SHU Estimasi', modalContent);
+    }
+    
+    showStatusDetailModal(data) {
+        const modalContent = `
+            <div style="padding: 10px 0;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">
+                        ${data.statusAnggota === 'Aktif' ? '✅' : '⚠️'}
+                    </div>
+                    <div style="font-size: 24px; font-weight: bold; color: ${data.statusAnggota === 'Aktif' ? '#2e7d32' : '#c62828'}; margin-bottom: 10px;">
+                        ${data.statusAnggota || 'Aktif'}
+                    </div>
+                    <div style="color: #666; font-size: 14px;">Status Keanggotaan</div>
+                </div>
+                
+                <div class="financial-details">
+                    <div class="financial-item">
+                        <span class="financial-label">Simpanan Total</span>
+                        <span class="financial-value">Rp ${this.formatNumber(data.totalSimpanan || 0)}</span>
+                    </div>
+                    <div class="financial-item">
+                        <span class="financial-label">Pinjaman Total</span>
+                        <span class="financial-value">Rp ${this.formatNumber(data.totalPinjaman || 0)}</span>
+                    </div>
+                    <div class="financial-item">
+                        <span class="financial-label">SHU Estimasi</span>
+                        <span class="financial-value">Rp ${this.formatNumber(data.shuEstimasi || 0)}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: ${data.statusAnggota === 'Aktif' ? '#e8f5e9' : '#ffebee'}; border-radius: 10px;">
+                    <p style="color: ${data.statusAnggota === 'Aktif' ? '#2e7d32' : '#c62828'}; font-weight: 500; margin-bottom: 10px;">
+                        ${data.statusAnggota === 'Aktif' ? '✅ Status Aktif' : '⚠️ Status Tidak Aktif'}
+                    </p>
+                    <p style="color: #666; font-size: 0.9rem;">
+                        ${data.statusAnggota === 'Aktif' 
+                            ? 'Anda memiliki akses penuh ke semua layanan koperasi termasuk simpanan, pinjaman, dan pembagian SHU.' 
+                            : 'Status keanggotaan mempengaruhi akses layanan. Hubungi pengurus untuk informasi lebih lanjut.'}
+                    </p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn primary" id="closeDetailBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.showCustomModal('Status Anggota', modalContent);
+    }
+    
+    showCustomModal(title, content) {
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        
+        if (modalOverlay && modalTitle && modalBody) {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            modalOverlay.classList.add('active');
+            
+            // Setup close button
+            const closeBtn = document.getElementById('closeDetailBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    modalOverlay.classList.remove('active');
+                });
+            }
+        }
+    }
+    
+    // ==================== UTILITY FUNCTIONS ====================
+    
+    getNumericValue(value) {
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            const num = parseInt(value.replace(/\D/g, ''), 10);
+            return isNaN(num) ? 0 : num;
+        }
+        return 0;
+    }
+    
+    formatNumber(amount) {
+        if (!amount && amount !== 0) return '0';
+        return new Intl.NumberFormat('id-ID').format(amount);
+    }
+    
+    showNotification(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        if (toast) {
+            const toastMessage = document.getElementById('toastMessage');
+            if (toastMessage) {
+                toastMessage.textContent = message;
+            }
+            
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    }
+    
+    getCurrentData() {
+        try {
+            return JSON.parse(localStorage.getItem('ringkasan_terakhir')) || {
+                totalSimpanan: 0,
+                simpananPokok: 0,
+                simpananWajib: 0,
+                simpananSukarela: 0,
+                totalPinjaman: 0,
+                shuEstimasi: 0,
+                statusAnggota: 'Memuat...'
+            };
+        } catch (error) {
+            return {
+                totalSimpanan: 0,
+                simpananPokok: 0,
+                simpananWajib: 0,
+                simpananSukarela: 0,
+                totalPinjaman: 0,
+                shuEstimasi: 0,
+                statusAnggota: 'Memuat...'
+            };
+        }
+    }
+    
+    saveLastData(data) {
+        try {
+            localStorage.setItem('ringkasan_terakhir', JSON.stringify(data));
+        } catch (error) {
+            console.error('Error saving last data:', error);
+        }
+    }
+    
+    getLastData() {
+        try {
+            return JSON.parse(localStorage.getItem('ringkasan_terakhir'));
+        } catch (error) {
+            return null;
+        }
+    }
+    
+    // ==================== INTEGRATION WITH MAIN APP ====================
+    
+    integrateWithMainApp() {
+        // Override fungsi updateUI di main app
+        const originalUpdateUI = window.tabunganApp?.updateUI;
+        if (originalUpdateUI && typeof originalUpdateUI === 'function') {
+            window.tabunganApp.updateUI = function() {
+                originalUpdateUI.call(this);
+                
+                // Update ringkasan keuangan juga
+                if (window.ringkasanIntegrator) {
+                    window.ringkasanIntegrator.loadFromAdminDashboard();
+                }
+            };
+        }
+        
+        // Expose fungsi untuk akses global
+        window.updateRingkasanKeuangan = () => this.loadFromAdminDashboard();
+        window.getRingkasanData = () => this.getCurrentData();
+        
+        console.log('✅ Ringkasan Keuangan integrated with main app');
+    }
+}
+
+// ==================== INISIALISASI DAN STYLE ====================
+
+// Tambah style untuk update animation
+const ringkasanStyle = `
+    <style>
+        /* Animation for updated values */
+        .stat-value.updated {
+            animation: valueUpdate 0.5s ease;
+        }
+        
+        @keyframes valueUpdate {
+            0% { transform: scale(1); color: var(--primary); }
+            50% { transform: scale(1.05); color: #2e7d32; }
+            100% { transform: scale(1); color: var(--primary); }
+        }
+        
+        /* Enhanced card hover */
+        .stat-item.enhanced-hover:hover {
+            background: linear-gradient(135deg, #f0f7f0, #e8f5e9);
+            border-left: 4px solid var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        /* Sync status indicator */
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .sync-status.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2e7d32;
+        }
+        
+        .sync-status.warning {
+            background: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+        }
+        
+        .sync-status.error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+        
+        /* Last update indicator */
+        .last-update {
+            font-size: 0.75rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 5px;
+        }
+    </style>
+`;
+
+// Inject styles
+document.head.insertAdjacentHTML('beforeend', ringkasanStyle);
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing Ringkasan Keuangan System...');
+    
+    // Tunggu main app initialize
+    setTimeout(() => {
+        window.ringkasanIntegrator = new RingkasanKeuanganIntegrator();
+        
+        // Integrasi dengan main app
+        if (window.tabunganApp) {
+            window.ringkasanIntegrator.integrateWithMainApp();
+        }
+        
+        // Tambah enhanced hover class
+        document.querySelectorAll('.stat-item').forEach(item => {
+            item.classList.add('enhanced-hover');
+        });
+        
+        // Add sync status to cards
+        const cards = document.querySelectorAll('.stat-value');
+        cards.forEach(card => {
+            const syncSpan = document.createElement('span');
+            syncSpan.className = 'sync-status success';
+            syncSpan.innerHTML = '<i class="fas fa-sync-alt"></i> live';
+            syncSpan.style.display = 'none';
+            card.parentNode.insertBefore(syncSpan, card.nextSibling);
+        });
+        
+        console.log('✅ Ringkasan Keuangan System Ready');
+    }, 1500);
+});
+
+// ==================== FUNGSI UNTUK ADMIN DASHBOARD ====================
+/*
+// Di halaman admin dashboard, tambahkan kode berikut untuk update ringkasan:
+function updateAnggotaAndNotify(email, data) {
+    // ... update logic ...
+    
+    // Trigger update ke tabungan digital
+    document.dispatchEvent(new CustomEvent('adminDashboardUpdate', {
+        detail: {
+            type: 'simpanan',
+            data: data,
+            timestamp: new Date().toISOString(),
+            targetUser: email
+        }
+    }));
+    
+    // Atau simpan ke localStorage (akan auto-sync)
+    localStorage.setItem('koperasi_anggota', JSON.stringify(updatedAnggota));
+}
+
+// Contoh trigger manual dari admin:
+if (window.ringkasanIntegrator) {
+    window.ringkasanIntegrator.loadFromAdminDashboard();
+}
+*/
     <!-- ===== MAIN TABUNGAN APP ===== -->
     <script>
     const { jsPDF } = window.jspdf;
