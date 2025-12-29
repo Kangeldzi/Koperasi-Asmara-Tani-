@@ -115,6 +115,45 @@
             display: none;
         }
 
+        /* Sync Button Styles */
+        .sync-button {
+            position: fixed;
+            top: 15px;
+            right: 180px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 9999;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .sync-button:hover {
+            background: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+        
+        .sync-button.syncing {
+            background: var(--warning);
+            animation: pulse 1s infinite;
+        }
+        
+        .sync-button.success {
+            background: var(--success);
+        }
+        
+        .sync-button.error {
+            background: var(--danger);
+        }
+
         .profile-container {
             background: white;
             border-radius: 20px;
@@ -276,6 +315,16 @@
             background: var(--success);
             animation: pulse 1.5s infinite;
         }
+        
+        .sync-indicator.warning {
+            background: var(--warning);
+            animation: pulse 1s infinite;
+        }
+        
+        .sync-indicator.error {
+            background: var(--danger);
+            animation: pulse 0.5s infinite;
+        }
 
         .stats-grid {
             display: grid;
@@ -370,7 +419,7 @@
             font-size: 0.9rem;
         }
 
-        /* Modal Styles */
+        /* ===== MODAL STYLES ENHANCEMENT ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -396,6 +445,18 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: var(--shadow-dark);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal-header {
@@ -461,9 +522,11 @@
         }
 
         .readonly-field {
-            background-color: #f8f9fa;
-            color: #666;
-            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa !important;
+            color: #666 !important;
+            border: 1px solid #e0e0e0 !important;
+            cursor: not-allowed !important;
+            opacity: 0.8;
         }
 
         /* Password field with eye toggle */
@@ -528,6 +591,350 @@
             transform: translateY(0);
         }
 
+        /* QR Modal Design */
+        .qr-modal-design {
+            padding: 10px;
+        }
+
+        .qr-title {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .qr-card {
+            background: linear-gradient(135deg, #1a5f23 0%, #2e7d32 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .qr-person-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .qr-person-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid white;
+        }
+
+        .qr-person-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .qr-person-details h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .qr-person-details p {
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            opacity: 0.9;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.whatsapp {
+            background: #25D366;
+            color: white;
+        }
+
+        .action-btn.download {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .action-btn.pdf {
+            background: #f44336;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Photo Upload Container */
+        .photo-upload-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .photo-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 15px;
+            border: 4px solid var(--primary-light);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Anggota Status Info */
+        .anggota-status-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .anggota-status-info h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .anggota-status-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .anggota-status-info li {
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .anggota-status-info li:last-child {
+            border-bottom: none;
+        }
+
+        /* Financial Details */
+        .financial-details {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .financial-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .financial-item:last-child {
+            border-bottom: none;
+        }
+
+        .financial-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .financial-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Kartu Container */
+        .kartu-container {
+            padding: 10px;
+        }
+
+        .kartu-digital {
+            background: linear-gradient(135deg, #1a5f23 0%, #2e7d32 100%);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kartu-digital::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .kartu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .kartu-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .kartu-status {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .kartu-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kartu-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid white;
+        }
+
+        .kartu-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .kartu-details h4 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .kartu-details p {
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+            opacity: 0.9;
+        }
+
+        .kartu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 3px;
+        }
+
+        .grid-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .kartu-qr-section {
+            text-align: center;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .kartu-qr-container {
+            display: inline-block;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .qr-code-text {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Password Section */
+        .password-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .password-toggle-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .password-toggle-link:hover {
+            text-decoration: underline;
+        }
+
         /* Password Modal */
         .password-modal {
             position: fixed;
@@ -582,622 +989,69 @@
             background: var(--info);
         }
 
-        /* Kartu Digital - Desain Baru Estetik */
-        .kartu-container {
-            padding: 10px 0;
-        }
-
-        .kartu-digital {
-            background: linear-gradient(135deg, #1a5f23 0%, #2e7d32 50%, #0d4014 100%);
-            color: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 15px 35px rgba(26, 95, 35, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kartu-digital::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: float 20s linear infinite;
-        }
-
-        @keyframes float {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .kartu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .kartu-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .kartu-logo i {
-            font-size: 1.8rem;
-            color: #ffd700;
-        }
-
-        .kartu-status {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.15);
-            padding: 4px 10px;
-            border-radius: 12px;
-            backdrop-filter: blur(5px);
-        }
-
-        .kartu-info {
-            display: flex;
-            gap: 25px;
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .kartu-photo {
-            width: 100px;
-            height: 120px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 3px solid white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0;
-        }
-
-        .kartu-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .kartu-details {
-            flex: 1;
-        }
-
-        .kartu-details h4 {
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-            color: white;
-            font-weight: 600;
-        }
-
-        .kartu-details p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .kartu-details p i {
-            width: 16px;
-            color: #ffd700;
-        }
-
-        /* Grid Info Detail */
-        .kartu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 18px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 25px;
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .grid-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .grid-label {
-            font-size: 0.75rem;
-            opacity: 0.7;
-            margin-bottom: 4px;
-        }
-
-        .grid-value {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .kartu-qr-section {
-            text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            position: relative;
-            z-index: 1;
-        }
-
-        .kartu-qr-container {
-            display: inline-block;
-            background: white;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .qr-code-text {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            margin-top: 10px;
-        }
-
-        /* QR Code Modal Styling */
-        .qr-modal-design {
-            background: linear-gradient(135deg, #f8fff8 0%, #e8f5e9 100%);
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(26, 95, 35, 0.1);
-        }
-
-        .qr-title {
-            color: #1a5f23;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .qr-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-
-        .qr-person-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .qr-person-photo {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 3px solid #1a5f23;
-        }
-
-        .qr-person-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .qr-person-details h4 {
-            color: #1a5f23;
-            margin-bottom: 5px;
-            text-align: left;
-        }
-
-        .qr-person-details p {
-            color: #666;
-            font-size: 0.9rem;
-            text-align: left;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .action-btn.whatsapp {
-            background: #25D366;
-            color: white;
-        }
-
-        .action-btn.email {
-            background: #EA4335;
-            color: white;
-        }
-
-        .action-btn.media {
-            background: var(--accent-purple);
-            color: white;
-        }
-
-        .action-btn.download {
-            background: var(--accent-blue);
-            color: white;
-        }
-
-        .action-btn.pdf {
-            background: #F44336;
-            color: white;
-        }
-
-        .action-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
         /* Print Preview */
         .print-preview {
             display: none;
-            background: white;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-preview, .print-preview * {
-                visibility: visible;
-            }
-            .print-preview {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                padding: 20px;
-                background: white;
-            }
-            
-            /* Ensure images print correctly */
-            .print-preview img {
-                max-width: 100% !important;
-                height: auto !important;
-            }
-        }
-
-        /* Print Preview Canvas */
-        .print-canvas-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 500px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .print-canvas-container canvas {
-            max-width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        /* Share Modal */
-        .share-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1001;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .share-modal.active {
-            display: flex;
-        }
-
-        .share-content {
             background: white;
-            border-radius: 20px;
-            padding: 30px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: var(--shadow-dark);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
         }
 
-        .share-options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .print-canvas-container {
+            text-align: center;
             margin: 20px 0;
         }
 
-        .share-option {
-            padding: 15px;
-            border: 2px solid var(--border-color);
+        .print-canvas-container canvas {
+            max-width: 100%;
+            border: 1px solid #ddd;
             border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .share-option:hover {
-            border-color: var(--primary);
-            background: #f8f9fa;
-        }
-
-        .share-option i {
-            font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-        }
-
-        .share-option.whatsapp i {
-            background: #25D366;
-            color: white;
-        }
-
-        .share-option.email i {
-            background: #EA4335;
-            color: white;
-        }
-
-        .share-option.facebook i {
-            background: #1877F2;
-            color: white;
-        }
-
-        .share-option.twitter i {
-            background: #1DA1F2;
-            color: white;
-        }
-
-        .share-option.instagram i {
-            background: #E4405F;
-            color: white;
-        }
-
-        /* Upload Foto */
-        .photo-upload-container {
-            text-align: center;
-            margin: 0 0 20px 0;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .photo-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            overflow: hidden;
-            border: 3px solid var(--primary-light);
-            position: relative;
-        }
-
-        .photo-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .upload-btn {
-            background: var(--primary);
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .upload-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .photo-upload-input {
-            display: none;
-        }
-
-        /* Password Section */
-        .password-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .password-toggle-link {
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: color 0.3s ease;
-        }
-
-        .password-toggle-link:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        /* Financial Detail Modal */
-        .financial-details {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .financial-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .financial-item:last-child {
-            border-bottom: none;
-        }
-
-        .financial-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .financial-value {
-            font-weight: 600;
-            color: #1a5f23;
-            font-size: 1rem;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-aktif {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-tidak-aktif {
-            background: #ffebee;
-            color: #c62828;
+            box-shadow: var(--shadow-medium);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            
-            .profile-container,
-            .plan-card,
-            .stats-card,
-            .menu-section {
-                max-width: 100%;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-            
-            .btn-area {
-                flex-direction: column;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 10px;
-            }
-            
-            .real-time-indicator {
-                right: 15px;
-                top: 15px;
+            .sync-button {
+                right: 100px;
+                top: 60px;
             }
             
             .online-indicator {
                 right: 15px;
                 top: 45px;
             }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .action-btn {
-                width: 100%;
-            }
-            
-            .kartu-info {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .kartu-photo {
-                width: 100px;
-                height: 120px;
-                margin: 0 auto;
+
+            .modal-content {
+                width: 95%;
+                max-height: 85vh;
             }
             
             .kartu-grid {
                 grid-template-columns: 1fr;
             }
             
-            .qr-scan-details {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .kartu-details h4 {
-                font-size: 1.1rem;
+            .kartu-info {
+                flex-direction: column;
+                text-align: center;
             }
             
-            .kartu-details p {
-                font-size: 0.85rem;
+            .action-buttons {
+                flex-direction: column;
             }
             
-            .qr-scan-card {
-                padding: 20px;
+            .qr-person-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -1218,6 +1072,11 @@
         <i class="fas fa-wifi"></i>
         <span>Online Sync</span>
     </div>
+    
+    <!-- MANUAL SYNC BUTTON -->
+    <button class="sync-button" id="manualSyncButton" title="Klik untuk sinkronisasi manual">
+        <i class="fas fa-sync-alt"></i> Sync Now
+    </button>
 
     <!-- ===== PROFILE HEADER ===== -->
     <div class="profile-container">
@@ -1229,12 +1088,13 @@
                 <h2 id="profileName">Loading... <span class="badge" id="statusBadge">🔄</span></h2>
                 <div class="username" id="profileRole">@loading</div>
                 <div class="last-sync-time" id="lastSyncTime">Terakhir update: -</div>
+                <div class="last-sync-time" id="lastAdminUpdate">Update admin: -</div>
             </div>
         </div>
 
         <div class="btn-area">
             <button class="btn qr" id="qrButton">
-                <i class="fas fa-qrcode"></i> QR Code
+                <i class="fas fa-qrcode"></i> QR Code Hybrid
             </button>
             <button class="btn pro" id="editProfileButton">
                 <i class="fas fa-edit"></i> Edit Profil
@@ -1251,6 +1111,7 @@
             <div class="plan-text">
                 <h3 id="tabunganTitle">Tabungan Digital</h3>
                 <p id="tabunganStatus" class="real-time-status">Memuat data real-time...</p>
+                <p id="syncStatus" style="font-size: 0.8rem; color: #666;">Status sinkronisasi: <span id="syncStatusText">Memeriksa...</span></p>
             </div>
         </div>
     </div>
@@ -1346,6 +1207,9 @@
     <!-- ===== FOOTER ===== -->
     <div class="footer">
         <p>Copyright © Koperasi Asmara Tani 2026</p>
+        <p style="font-size: 0.8rem; margin-top: 5px; color: var(--primary);">
+            <i class="fas fa-sync-alt"></i> Enhanced Sync System v2.0
+        </p>
     </div>
 
     <!-- ===== MODAL CONTAINER ===== -->
@@ -1418,7 +1282,299 @@
     <!-- ===== PRINT PREVIEW ===== -->
     <div id="printPreview" class="print-preview"></div>
 
-    <!-- ===== TABUNGAN DIGITAL SCRIPT TERINTEGRASI ===== -->
+    <!-- ===== ENHANCED SYNC SYSTEM (STANDALONE) ===== -->
+    <script>
+    // ENHANCED SYNC SYSTEM - Standalone version
+    class EnhancedSyncSystem {
+        constructor() {
+            this.userEmail = null;
+            this.userName = null;
+            this.isSyncing = false;
+            this.init();
+        }
+        
+        init() {
+            console.log('🔧 Initializing Enhanced Sync System...');
+            
+            // Get current user
+            const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
+            if (!currentUser) {
+                console.error('❌ No current user found');
+                return;
+            }
+            
+            this.userEmail = currentUser.email;
+            this.userName = currentUser.name || currentUser.email;
+            
+            console.log('👤 User identified:', this.userEmail);
+            
+            // Setup UI elements
+            this.setupUI();
+            
+            // Setup listeners
+            this.setupListeners();
+            
+            // Initial sync
+            setTimeout(() => this.checkForUpdates(), 1000);
+            
+            // Periodic sync every 5 seconds
+            setInterval(() => this.checkForUpdates(), 5000);
+            
+            console.log('✅ Enhanced Sync System Ready');
+        }
+        
+        setupUI() {
+            // Update sync status text
+            const syncStatusText = document.getElementById('syncStatusText');
+            if (syncStatusText) {
+                syncStatusText.textContent = 'Aktif';
+                syncStatusText.style.color = '#4CAF50';
+            }
+            
+            // Setup manual sync button
+            const manualSyncBtn = document.getElementById('manualSyncButton');
+            if (manualSyncBtn) {
+                manualSyncBtn.addEventListener('click', () => this.manualSync());
+            }
+            
+            // Show online indicator
+            const onlineIndicator = document.getElementById('onlineIndicator');
+            if (onlineIndicator) {
+                onlineIndicator.style.display = 'flex';
+            }
+        }
+        
+        setupListeners() {
+            // Storage event listener
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'koperasi_anggota' || e.key === 'koperasiData') {
+                    console.log('📦 Storage Event:', e.key);
+                    this.checkForUpdates();
+                }
+            });
+            
+            // Page visibility
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    console.log('👁️ Page visible, checking updates');
+                    this.checkForUpdates();
+                }
+            });
+        }
+        
+        checkForUpdates() {
+            if (this.isSyncing) return;
+            
+            this.isSyncing = true;
+            console.log('🔍 Checking for updates...');
+            
+            // Check admin updates
+            const hasAdminUpdates = this.checkAdminUpdates();
+            
+            // Check anggota updates
+            const hasAnggotaUpdates = this.checkAnggotaUpdates();
+            
+            if (hasAdminUpdates || hasAnggotaUpdates) {
+                this.updateSyncIndicator('success');
+                this.showNotification('Data diperbarui', 'success');
+            }
+            
+            this.isSyncing = false;
+        }
+        
+        checkAdminUpdates() {
+            try {
+                const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
+                const adminUpdates = koperasiData.adminUpdates || {};
+                
+                if (adminUpdates[this.userEmail]) {
+                    console.log('📥 Admin update found');
+                    this.processAdminUpdate(adminUpdates[this.userEmail]);
+                    
+                    // Clear update
+                    delete adminUpdates[this.userEmail];
+                    koperasiData.adminUpdates = adminUpdates;
+                    localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+                    
+                    return true;
+                }
+                return false;
+                
+            } catch (error) {
+                console.error('❌ Error checking admin updates:', error);
+                return false;
+            }
+        }
+        
+        processAdminUpdate(updateData) {
+            try {
+                const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                const userIndex = allAnggota.findIndex(a => a.email === this.userEmail);
+                
+                if (userIndex === -1) return false;
+                
+                let userData = allAnggota[userIndex];
+                
+                // Apply updates
+                if (updateData.personal) {
+                    userData = { ...userData, ...updateData.personal };
+                }
+                
+                if (updateData.simpanan) {
+                    if (!userData.simpanan) {
+                        userData.simpanan = {
+                            pokok: { nominal: 0, status: 'belum lunas' },
+                            wajib: { nominal: 0, status: 'belum aktif' },
+                            sukarela: { nominal: 0, status: 'tersedia' },
+                            total: 0
+                        };
+                    }
+                    
+                    Object.keys(updateData.simpanan).forEach(key => {
+                        if (userData.simpanan[key]) {
+                            userData.simpanan[key] = {
+                                ...userData.simpanan[key],
+                                ...updateData.simpanan[key]
+                            };
+                        }
+                    });
+                    
+                    userData.simpanan.total = 0;
+                }
+                
+                userData.lastUpdated = new Date().toISOString();
+                userData.lastUpdatedBy = 'admin';
+                
+                allAnggota[userIndex] = userData;
+                localStorage.setItem('koperasi_anggota', JSON.stringify(allAnggota));
+                
+                console.log('✅ Admin update processed');
+                
+                // Trigger refresh
+                this.triggerRefresh();
+                
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error processing admin update:', error);
+                return false;
+            }
+        }
+        
+        checkAnggotaUpdates() {
+            try {
+                const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                const userData = allAnggota.find(a => a.email === this.userEmail);
+                
+                if (userData) {
+                    // Just trigger refresh if data exists
+                    this.triggerRefresh();
+                    return true;
+                }
+                return false;
+                
+            } catch (error) {
+                console.error('❌ Error checking anggota updates:', error);
+                return false;
+            }
+        }
+        
+        triggerRefresh() {
+            // Dispatch event for main app
+            window.dispatchEvent(new CustomEvent('sync-data-updated', {
+                detail: { timestamp: new Date().toISOString() }
+            }));
+            
+            // Update UI time
+            this.updateLastSyncTime();
+        }
+        
+        manualSync() {
+            console.log('👆 Manual sync triggered');
+            
+            this.updateSyncButton('syncing');
+            this.showNotification('Sinkronisasi manual dimulai...', 'info');
+            
+            setTimeout(() => {
+                this.checkForUpdates();
+                this.showNotification('Sinkronisasi selesai', 'success');
+                this.updateSyncButton('success');
+                
+                setTimeout(() => this.updateSyncButton('normal'), 2000);
+            }, 500);
+        }
+        
+        updateSyncButton(state) {
+            const syncBtn = document.getElementById('manualSyncButton');
+            if (!syncBtn) return;
+            
+            syncBtn.className = 'sync-button';
+            
+            switch(state) {
+                case 'normal':
+                    syncBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync Now';
+                    break;
+                    
+                case 'syncing':
+                    syncBtn.classList.add('syncing');
+                    syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                    break;
+                    
+                case 'success':
+                    syncBtn.classList.add('success');
+                    syncBtn.innerHTML = '<i class="fas fa-check"></i> Synced!';
+                    break;
+            }
+        }
+        
+        updateSyncIndicator(state) {
+            const indicator = document.getElementById('dataSyncIndicator');
+            if (!indicator) return;
+            
+            indicator.className = 'sync-indicator';
+            
+            switch(state) {
+                case 'success':
+                    indicator.classList.add('success');
+                    break;
+                    
+                case 'warning':
+                    indicator.classList.add('warning');
+                    break;
+                    
+                case 'error':
+                    indicator.classList.add('error');
+                    break;
+            }
+        }
+        
+        updateLastSyncTime() {
+            const timeElement = document.getElementById('lastSyncTime');
+            if (timeElement) {
+                const now = new Date();
+                timeElement.textContent = `Terakhir sync: ${now.toLocaleTimeString('id-ID')}`;
+            }
+        }
+        
+        showNotification(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                const toastMessage = document.getElementById('toastMessage');
+                if (toastMessage) {
+                    toastMessage.textContent = message;
+                }
+                
+                toast.className = `toast ${type} show`;
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+    }
+    </script>
+
+    <!-- ===== MAIN TABUNGAN APP ===== -->
     <script>
     const { jsPDF } = window.jspdf;
 
@@ -1450,7 +1606,11 @@
             this.setupEventListeners();
             this.updateUI();
             this.startSync();
-            this.setupRealTimeListeners();
+            
+            // Initialize enhanced sync system
+            setTimeout(() => {
+                window.enhancedSync = new EnhancedSyncSystem();
+            }, 1500);
             
             console.log('✅ Tabungan Digital Ready');
         }
@@ -1476,7 +1636,7 @@
                 id: 'AGT-' + Date.now().toString().slice(-8),
                 email: this.currentUser.email,
                 nama: this.currentUser.name || this.currentUser.email,
-                posisi: this.currentUser.role === 'Ketua' || this.currentUser.role === 'Sekretaris' ? this.currentUser.role : 'Anggota',
+                posisi: this.currentUser.role === 'Ketua' || this.currentUser.role === 'Sekretaris' || this.currentUser.role === 'Bendahara' || this.currentUser.role === 'Pengawas' ? this.currentUser.role : 'Anggota',
                 alamat: '',
                 jenis_kelamin: '',
                 agama: '',
@@ -1487,10 +1647,10 @@
                 foto: this.currentUser.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
                 statusAktif: 'Aktif',
                 simpanan: {
-                    pokok: { nominal: 200000, status: 'lunas' },
-                    wajib: { nominal: 20000, status: 'aktif' },
+                    pokok: { nominal: 0, status: 'belum lunas' },
+                    wajib: { nominal: 0, status: 'belum aktif' },
                     sukarela: { nominal: 0, status: 'tersedia' },
-                    total: 220000
+                    total: 0
                 },
                 pinjaman: {
                     aktif: [],
@@ -1498,7 +1658,7 @@
                 },
                 shu: {
                     estimasi: 0,
-                    status: 'Dalam perhitungan'
+                    status: 'Belum ada perhitungan'
                 },
                 createdAt: new Date().toISOString(),
                 lastUpdated: new Date().toISOString()
@@ -1517,7 +1677,6 @@
                 }
                 
                 localStorage.setItem('koperasi_anggota', JSON.stringify(allAnggota));
-                console.log('💾 Saved anggota data');
                 
                 this.saveToKoperasiData();
             } catch (error) {
@@ -1548,17 +1707,20 @@
                 };
                 
                 localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-                console.log('💾 Saved to koperasiData for sync');
             } catch (error) {
                 console.error('Error saving to koperasiData:', error);
             }
         }
         
         formatDataForUI() {
-            const simpananPokok = this.anggotaData.simpanan?.pokok?.nominal || 0;
-            const simpananWajib = this.anggotaData.simpanan?.wajib?.nominal || 0;
-            const simpananSukarela = this.anggotaData.simpanan?.sukarela?.nominal || 0;
-            const totalSimpanan = simpananPokok + simpananWajib + simpananSukarela;
+            const simpananPokok = 0;
+            const simpananWajib = 0;
+            const simpananSukarela = 0;
+            const totalSimpanan = 0;
+            
+            if (this.anggotaData.simpanan) {
+                this.anggotaData.simpanan.total = totalSimpanan;
+            }
             
             this.formattedData = {
                 personal: {
@@ -1581,9 +1743,9 @@
                     password: this.currentUser.password || ''
                 },
                 simpanan: {
-                    pokok: { nominal: simpananPokok, status: 'lunas' },
-                    wajib: { nominal: simpananWajib, status: 'aktif' },
-                    sukarela: { nominal: simpananSukarela, status: 'tersedia' },
+                    pokok: { nominal: simpananPokok, status: this.anggotaData.simpanan?.pokok?.status || 'belum lunas' },
+                    wajib: { nominal: simpananWajib, status: this.anggotaData.simpanan?.wajib?.status || 'belum aktif' },
+                    sukarela: { nominal: simpananSukarela, status: this.anggotaData.simpanan?.sukarela?.status || 'tersedia' },
                     total: totalSimpanan
                 },
                 pinjaman: this.anggotaData.pinjaman || {
@@ -1599,8 +1761,8 @@
         
         setupEventListeners() {
             // Button listeners
-            document.getElementById('qrButton').addEventListener('click', () => this.showQRModal());
             document.getElementById('editProfileButton').addEventListener('click', () => this.showEditProfileModal());
+            document.getElementById('qrButton').addEventListener('click', () => this.showQRModal());
             
             // Menu item listeners
             document.querySelectorAll('.menu-item').forEach(item => {
@@ -1625,105 +1787,31 @@
             });
             
             // Password modal listeners
-            document.getElementById('closePasswordModal').addEventListener('click', () => {
-                document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('closePasswordModal')?.addEventListener('click', () => {
+                this.closePasswordModal();
             });
             
-            document.getElementById('cancelPasswordBtn').addEventListener('click', () => {
-                document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('cancelPasswordBtn')?.addEventListener('click', () => {
+                this.closePasswordModal();
             });
             
-            document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+            document.getElementById('changePasswordForm')?.addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.changePassword();
             });
             
-            document.getElementById('passwordModal').addEventListener('click', (e) => {
+            document.getElementById('passwordModal')?.addEventListener('click', (e) => {
                 if (e.target === document.getElementById('passwordModal')) {
-                    document.getElementById('passwordModal').classList.remove('active');
-                }
-            });
-        }
-        
-        setupRealTimeListeners() {
-            window.addEventListener('adminDataUpdated', (event) => {
-                if (event.detail.userEmail === this.currentUser.email) {
-                    console.log('📥 Admin update received:', event.detail.data);
-                    this.applyAdminUpdate(event.detail.data);
+                    this.closePasswordModal();
                 }
             });
             
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'koperasiData') {
-                    this.checkForAdminUpdates();
-                }
+            // Listen for sync updates
+            window.addEventListener('sync-data-updated', () => {
+                console.log('🔄 Sync update received, refreshing data...');
+                this.loadAnggotaData();
+                this.updateUI();
             });
-            
-            setInterval(() => {
-                this.checkForAdminUpdates();
-            }, 3000);
-        }
-        
-        checkForAdminUpdates() {
-            try {
-                const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-                const adminUpdates = koperasiData.adminUpdates || {};
-                
-                if (adminUpdates[this.currentUser.email]) {
-                    const updates = adminUpdates[this.currentUser.email];
-                    console.log('🔄 Admin updates found:', updates);
-                    
-                    this.applyAdminUpdate(updates);
-                    
-                    delete adminUpdates[this.currentUser.email];
-                    koperasiData.adminUpdates = adminUpdates;
-                    localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-                }
-            } catch (error) {
-                console.error('Error checking for admin updates:', error);
-            }
-        }
-        
-        applyAdminUpdate(updates) {
-            try {
-                let dataChanged = false;
-                
-                if (updates.personal) {
-                    this.anggotaData = {
-                        ...this.anggotaData,
-                        ...updates.personal,
-                        lastUpdated: new Date().toISOString(),
-                        lastUpdatedBy: 'admin'
-                    };
-                    dataChanged = true;
-                }
-                
-                if (updates.simpanan) {
-                    this.anggotaData.simpanan = updates.simpanan;
-                    dataChanged = true;
-                }
-                
-                if (updates.pinjaman) {
-                    this.anggotaData.pinjaman = updates.pinjaman;
-                    dataChanged = true;
-                }
-                
-                if (updates.shu) {
-                    this.anggotaData.shu = updates.shu;
-                    dataChanged = true;
-                }
-                
-                if (dataChanged) {
-                    this.saveAnggotaData();
-                    this.loadAnggotaData();
-                    this.updateUI();
-                    this.showToast('Data diperbarui dari admin', 'success');
-                }
-                
-            } catch (error) {
-                console.error('Error applying admin update:', error);
-                this.showToast('Gagal memperbarui data dari admin', 'error');
-            }
         }
         
         handleMenuAction(action) {
@@ -1743,6 +1831,7 @@
         }
         
         updateUI() {
+            // Update profile info
             document.getElementById('profileName').innerHTML = 
                 `${this.formattedData.personal.nama} <span class="badge">${this.formattedData.personal.status === 'Aktif' ? '✔' : '⚠'}</span>`;
             
@@ -1751,10 +1840,14 @@
             
             document.getElementById('profileAvatar').src = this.formattedData.personal.foto;
             
+            // Update status badge
             const statusBadge = document.getElementById('statusBadge');
-            statusBadge.textContent = this.formattedData.personal.status === 'Aktif' ? '✔' : '⚠';
-            statusBadge.style.color = this.formattedData.personal.status === 'Aktif' ? '#4CAF50' : '#FF9800';
+            if (statusBadge) {
+                statusBadge.textContent = this.formattedData.personal.status === 'Aktif' ? '✔' : '⚠';
+                statusBadge.style.color = this.formattedData.personal.status === 'Aktif' ? '#4CAF50' : '#FF9800';
+            }
             
+            // Update last sync time
             const lastSync = localStorage.getItem('koperasi_last_sync');
             if (lastSync) {
                 const time = new Date(lastSync);
@@ -1765,28 +1858,23 @@
                     `Terakhir update: ${new Date().toLocaleTimeString('id-ID')}`;
             }
             
+            // Update tabungan status
             document.getElementById('tabunganStatus').innerHTML = 
                 `${this.formattedData.personal.status} • Real-time data`;
             
+            // Update financial stats
             document.getElementById('totalSimpanan').textContent = 
-                `Rp ${this.formatNumber(this.formattedData.simpanan.total)}`;
+                `Rp ${this.formatNumber(0)}`;
             
             document.getElementById('totalPinjaman').textContent = 
-                `Rp ${this.formatNumber(this.formattedData.pinjaman.total)}`;
+                `Rp ${this.formatNumber(0)}`;
             
             document.getElementById('shuEstimasi').textContent = 
-                `Rp ${this.formatNumber(this.formattedData.shu.estimasi)}`;
+                `Rp ${this.formatNumber(0)}`;
             
+            // Update status anggota
             const statusAnggota = this.formattedData.personal.status;
             document.getElementById('statusAnggota').textContent = statusAnggota;
-            document.getElementById('statusAnggota').className = 
-                `stat-value ${statusAnggota === 'Aktif' ? 'status-aktif' : 'status-tidak-aktif'}`;
-            
-            const syncIndicator = document.getElementById('dataSyncIndicator');
-            if (syncIndicator) {
-                syncIndicator.className = 'sync-indicator success';
-                syncIndicator.title = 'Data tersinkron ' + new Date().toLocaleTimeString();
-            }
         }
         
         // ===== MODAL FUNCTIONS =====
@@ -1802,19 +1890,21 @@
                                     <img id="photoPreview" src="${this.formattedData.personal.foto}" alt="Foto Profil">
                                 </div>
                                 <label class="upload-btn">
-                                    <i class="fas fa-camera"></i> Upload Foto Baru
+                                    <i class="fas fa-camera"></i> Upload Foto Profil
                                     <input type="file" class="photo-upload-input" id="uploadPhoto" accept="image/*" style="display: none;">
                                 </label>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">ID / NIA</label>
-                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.nia}" readonly>
+                                <label class="form-label">ID / NIA (Nomor Induk Anggota)</label>
+                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.nia || '-'}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah NIA</small>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">Posisi</label>
-                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.posisi}" readonly>
+                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.posisi || 'Anggota'}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah posisi</small>
                             </div>
                             
                             <div class="form-group">
@@ -1824,7 +1914,7 @@
                             
                             <div class="form-group">
                                 <label class="form-label">Alamat Lengkap</label>
-                                <textarea class="form-control" id="editAlamat" rows="3">${this.formattedData.personal.alamat}</textarea>
+                                <textarea class="form-control" id="editAlamat" rows="3" placeholder="Masukkan alamat lengkap">${this.formattedData.personal.alamat || ''}</textarea>
                             </div>
                             
                             <div class="form-group">
@@ -1851,71 +1941,110 @@
                             
                             <div class="form-group">
                                 <label class="form-label">Status Perkawinan</label>
-                                <input type="text" class="form-control" id="editStatus" value="${this.formattedData.personal.statusPerkawinan || ''}">
+                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.statusPerkawinan || '-'}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah status</small>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">Tanggal Daftar</label>
                                 <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.tanggalDaftar || '-'}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Tanggal pendaftaran tidak dapat diubah</small>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editEmail" value="${this.formattedData.personal.email}" required>
+                                <label class="form-label">Alamat Email *</label>
+                                <input type="email" class="form-control readonly-field" id="editEmail" value="${this.formattedData.personal.email}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Email tidak dapat diubah</small>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">No. WhatsApp *</label>
-                                <input type="tel" class="form-control" id="editTelepon" value="${this.formattedData.personal.telepon}" required>
+                                <input type="tel" class="form-control" id="editTelepon" value="${this.formattedData.personal.telepon}" required placeholder="Contoh: 6285218483129">
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">NIK KTP</label>
-                                <input type="text" class="form-control" id="editNIK" value="${this.formattedData.personal.nik}" maxlength="16">
+                                <input type="text" class="form-control readonly-field" id="editNIK" value="${this.formattedData.personal.nik || ''}" readonly placeholder="16 digit NIK">
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah NIK</small>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">Tanggal Bergabung</label>
                                 <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.tanggalGabung || '-'}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Tanggal bergabung ditentukan oleh admin</small>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label">Status Keanggotaan</label>
-                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.status}" readonly>
+                                <input type="text" class="form-control readonly-field" value="${this.formattedData.personal.status || 'Aktif'}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Status keanggotaan diatur oleh admin</small>
+                            </div>
+                            
+                            <!-- SIMPANAN INFO -->
+                            <div class="form-group">
+                                <label class="form-label">Simpanan Pokok</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(0)}" readonly>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Password</label>
+                                <label class="form-label">Simpanan Wajib</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(0)}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Simpanan Sukarela</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(0)}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Total Simpanan</label>
+                                <input type="text" class="form-control readonly-field" value="Rp ${this.formatNumber(0)}" readonly>
+                                <small style="color: #666; font-size: 0.8rem;">Hanya admin yang dapat mengubah simpanan</small>
+                            </div>
+                            
+                            <!-- Password field with eye toggle -->
+                            <div class="form-group">
+                                <label class="form-label">Password Saat Ini</label>
                                 <div class="password-field">
-                                    <input type="password" class="form-control readonly-field" id="displayPassword" value="${this.formattedData.personal.password}" readonly>
-                                    <button type="button" class="password-toggle" id="toggleDisplayPassword">
+                                    <input type="password" class="form-control readonly-field" id="currentPasswordDisplay" value="${this.formattedData.personal.password || ''}" readonly>
+                                    <button type="button" class="password-toggle" id="toggleCurrentPasswordDisplay">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
+                                <small style="color: #666; font-size: 0.8rem;">Password Anda saat ini (hanya ditampilkan)</small>
                             </div>
                             
                             <div class="password-section">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                     <span style="font-weight: 500;">Ganti Password</span>
                                     <a href="#" class="password-toggle-link" id="showPasswordModal">
-                                        <i class="fas fa-lock"></i> Klik untuk ganti
+                                        <i class="fas fa-lock"></i> Klik untuk ganti password
                                     </a>
                                 </div>
+                                <small style="color: #666; font-size: 0.8rem; display: block;">Klik link di atas untuk mengganti password akun Anda</small>
                             </div>
                             
                             <div class="modal-actions">
-                                <button type="button" class="modal-btn secondary" id="cancelEditBtn">Batal</button>
-                                <button type="submit" class="modal-btn primary" id="saveEditBtn">Simpan Perubahan</button>
+                                <button type="button" class="modal-btn secondary" id="cancelEditBtn">
+                                    <i class="fas fa-times"></i> Batal
+                                </button>
+                                <button type="submit" class="modal-btn primary" id="saveEditBtn">
+                                    <i class="fas fa-save"></i> Simpan Perubahan
+                                </button>
                             </div>
                         </form>
                     </div>
                 `
             });
             
-            document.getElementById('editProfileForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveProfileChanges();
-            });
+            // Setup event listeners for edit profile form
+            const editForm = document.getElementById('editProfileForm');
+            if (editForm) {
+                editForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveProfileChanges();
+                });
+            }
             
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                 this.closeModal();
@@ -1930,21 +2059,68 @@
                 this.showPasswordModal();
             });
             
-            const toggleDisplayPasswordBtn = document.getElementById('toggleDisplayPassword');
-            const displayPasswordField = document.getElementById('displayPassword');
+            // Add event listener for password toggle in edit profile modal
+            const toggleCurrentPasswordBtn = document.getElementById('toggleCurrentPasswordDisplay');
+            const currentPasswordField = document.getElementById('currentPasswordDisplay');
             
-            toggleDisplayPasswordBtn.addEventListener('click', () => {
-                const type = displayPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
-                displayPasswordField.setAttribute('type', type);
-                toggleDisplayPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            });
+            if (toggleCurrentPasswordBtn && currentPasswordField) {
+                toggleCurrentPasswordBtn.addEventListener('click', () => {
+                    const type = currentPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    currentPasswordField.setAttribute('type', type);
+                    toggleCurrentPasswordBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+        }
+        
+        saveProfileChanges() {
+            this.anggotaData.nama = document.getElementById('editNama').value;
+            this.anggotaData.whatsapp = document.getElementById('editTelepon').value;
+            this.anggotaData.alamat = document.getElementById('editAlamat').value;
+            this.anggotaData.jenis_kelamin = document.getElementById('editJenisKelamin').value;
+            this.anggotaData.agama = document.getElementById('editAgama').value;
+            this.anggotaData.lastUpdated = new Date().toISOString();
+            
+            const photoInput = document.getElementById('uploadPhoto');
+            if (photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.anggotaData.foto = e.target.result;
+                    this.completeSaveProfile();
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                this.completeSaveProfile();
+            }
+        }
+        
+        completeSaveProfile() {
+            this.saveAnggotaData();
+            
+            const users = JSON.parse(localStorage.getItem('koperasi_users') || '[]');
+            const userIndex = users.findIndex(u => u.email === this.currentUser.email);
+            if (userIndex !== -1) {
+                users[userIndex].name = this.anggotaData.nama;
+                if (this.anggotaData.foto) {
+                    users[userIndex].foto = this.anggotaData.foto;
+                }
+                localStorage.setItem('koperasi_users', JSON.stringify(users));
+                
+                this.currentUser = users[userIndex];
+                localStorage.setItem('koperasi_current_user', JSON.stringify(this.currentUser));
+            }
+            
+            this.loadAnggotaData();
+            this.updateUI();
+            
+            this.closeModal();
+            this.showToast('Profil berhasil diperbarui', 'success');
         }
         
         showDetailSimpanan() {
-            const simpananPokok = this.formattedData.simpanan.pokok.nominal;
-            const simpananWajib = this.formattedData.simpanan.wajib.nominal;
-            const simpananSukarela = this.formattedData.simpanan.sukarela.nominal;
-            const totalSimpanan = this.formattedData.simpanan.total;
+            const simpananPokok = 0;
+            const simpananWajib = 0;
+            const simpananSukarela = 0;
+            const totalSimpanan = 0;
             
             this.showModal({
                 title: 'Detail Simpanan',
@@ -1971,14 +2147,14 @@
                                 <span class="financial-value">Rp ${this.formatNumber(simpananSukarela)}</span>
                             </div>
                             <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
-                                <span class="financial-label" style="font-weight: 600;">TOTAL</span>
-                                <span class="financial-value" style="font-size: 1.2rem;">Rp ${this.formatNumber(totalSimpanan)}</span>
+                                <span class="financial-label" style="font-weight: 600;">TOTAL SIMPANAN</span>
+                                <span class="financial-value" style="font-size: 1.2rem; color: #1a5f23;">Rp ${this.formatNumber(totalSimpanan)}</span>
                             </div>
                         </div>
                         
                         <div class="modal-actions">
                             <button type="button" class="modal-btn primary" id="closeSimpananBtn" style="width: 100%;">
-                                Tutup
+                                <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
                     </div>
@@ -2021,13 +2197,13 @@
                             ${pinjamanList}
                             <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
                                 <span class="financial-label" style="font-weight: 600;">TOTAL PINJAMAN</span>
-                                <span class="financial-value" style="font-size: 1.2rem;">Rp ${this.formatNumber(totalPinjaman)}</span>
+                                <span class="financial-value" style="font-size: 1.2rem; color: #1a5f23;">Rp ${this.formatNumber(totalPinjaman)}</span>
                             </div>
                         </div>
                         
                         <div class="modal-actions">
                             <button type="button" class="modal-btn primary" id="closePinjamanBtn" style="width: 100%;">
-                                Tutup
+                                <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
                     </div>
@@ -2079,7 +2255,7 @@
                         
                         <div class="modal-actions">
                             <button type="button" class="modal-btn primary" id="closeSHUBtn" style="width: 100%;">
-                                Tutup
+                                <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
                     </div>
@@ -2146,7 +2322,7 @@
                         
                         <div class="modal-actions">
                             <button type="button" class="modal-btn primary" id="closeStatusBtn" style="width: 100%;">
-                                Tutup
+                                <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
                     </div>
@@ -2154,6 +2330,329 @@
             });
             
             document.getElementById('closeStatusBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+        }
+        
+        showSetorModal() {
+            this.showModal({
+                title: 'Setor Simpanan',
+                content: `
+                    <div style="padding: 10px 0;">
+                        <div class="anggota-status-info">
+                            <h4>Status Anggota</h4>
+                            <ul>
+                                <li><strong>Nama:</strong> ${this.formattedData.personal.nama}</li>
+                                <li><strong>ID/NIA:</strong> ${this.formattedData.personal.nia}</li>
+                                <li><strong>Total Simpanan:</strong> Rp ${this.formatNumber(0)}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jenis Simpanan *</label>
+                            <select class="form-control" id="jenisSimpanan" required>
+                                <option value="">Pilih Jenis Simpanan</option>
+                                <option value="pokok">Simpanan Pokok</option>
+                                <option value="wajib">Simpanan Wajib</option>
+                                <option value="sukarela">Simpanan Sukarela</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jumlah Setoran (Rp) *</label>
+                            <input type="number" class="form-control" id="jumlahSetoran" placeholder="Masukkan jumlah setoran" min="10000" step="1000" required>
+                            <small style="color: #666; font-size: 0.8rem;">
+                                Minimal Rp 10.000
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Metode Pembayaran *</label>
+                            <select class="form-control" id="metodeBayar" required>
+                                <option value="">Pilih Metode</option>
+                                <option value="Bank BRI">Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto</option>
+                                <option value="Tunai">Tunai (Bayar di Kantor Koperasi)</option>
+                                <option value="Transfer Lain">Transfer Bank Lain</option>
+                                <option value="E-Wallet">E-Wallet (Dana, OVO, dll)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Catatan (Opsional)</label>
+                            <textarea class="form-control" id="catatanSetoran" rows="2" placeholder="Tambahkan catatan jika perlu"></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn secondary" id="cancelSetorBtn">
+                                <i class="fas fa-times"></i> Batal
+                            </button>
+                            <button type="button" class="modal-btn primary" id="kirimSetoranBtn">
+                                <i class="fab fa-whatsapp"></i> Kirim Permintaan
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            document.getElementById('cancelSetorBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+            
+            document.getElementById('kirimSetoranBtn').addEventListener('click', () => {
+                this.kirimSetoranWhatsApp();
+            });
+        }
+        
+        kirimSetoranWhatsApp() {
+            const jenisSimpanan = document.getElementById('jenisSimpanan').value;
+            const jumlahSetoran = document.getElementById('jumlahSetoran').value;
+            const metodeBayar = document.getElementById('metodeBayar').value;
+            const catatan = document.getElementById('catatanSetoran').value;
+            
+            if (!jenisSimpanan) {
+                this.showToast('Pilih jenis simpanan terlebih dahulu', 'error');
+                return;
+            }
+            
+            if (!jumlahSetoran || jumlahSetoran < 10000) {
+                this.showToast('Jumlah setoran minimal Rp 10.000', 'error');
+                return;
+            }
+            
+            if (!metodeBayar) {
+                this.showToast('Pilih metode pembayaran', 'error');
+                return;
+            }
+            
+            const jenisText = {
+                'pokok': 'Simpanan Pokok',
+                'wajib': 'Simpanan Wajib',
+                'sukarela': 'Simpanan Sukarela'
+            }[jenisSimpanan] || 'Simpanan';
+            
+            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
+*════ ◎•❀•◎﷽◎•❀•◎ ════*
+
+*_Assalamualaikum Warahmatullahi Wabarakatuh_*
+
+==========================
+*PERMINTAAN SETOR SIMPANAN*
+==========================
+*DATA ANGGOTA*
+
+*Nama* : ${this.formattedData.personal.nama}
+*NIA* : ${this.formattedData.personal.nia}
+*No. WhatsApp* : ${this.formattedData.personal.telepon}
+*Alamat* : ${this.formattedData.personal.alamat || '-'}
+*Simpanan Saat Ini* : Rp ${this.formatNumber(0)}
+
+==========================
+*DETAIL SETORAN*
+
+*Jenis Simpanan* : ${jenisText}
+*Jumlah Setoran* : Rp ${this.formatNumber(jumlahSetoran)}
+*Metode Pembayaran* : ${metodeBayar}
+
+${catatan ? `*Catatan* : ${catatan}` : ''}
+
+==========================
+*PETUNJUK PEMBAYARAN*
+
+1. Transfer ke rekening:
+   Bank BRI - 4098 01 019526 53 3
+   A/n Eldi Sugianto
+
+2. Setelah transfer, kirim bukti transfer ke nomor ini
+3. Admin akan memverifikasi dan memperbarui saldo Anda
+
+===========================
+
+*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
+            
+            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            this.closeModal();
+            this.showToast('Permintaan setoran dikirim ke WhatsApp', 'success');
+        }
+        
+        showPinjamModal() {
+            this.showModal({
+                title: 'Ajukan Pinjaman',
+                content: `
+                    <div style="padding: 10px 0;">
+                        <div class="anggota-status-info">
+                            <h4>Status Pinjaman</h4>
+                            <ul>
+                                <li><strong>Nama:</strong> ${this.formattedData.personal.nama}</li>
+                                <li><strong>Simpanan:</strong> Rp ${this.formatNumber(0)}</li>
+                                <li><strong>Pinjaman Aktif:</strong> Rp ${this.formatNumber(0)}</li>
+                                <li><strong>Maksimal Pinjaman:</strong> Rp ${this.formatNumber(0)}</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Jumlah Pinjaman (Rp) *</label>
+                            <input type="number" class="form-control" id="pinjamAmount" placeholder="Minimal Rp 50.000" min="50000" step="50000" required>
+                            <small style="color: #666; font-size: 0.8rem;">
+                                Maksimal: Rp ${this.formatNumber(0)}
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tujuan Pinjaman *</label>
+                            <select class="form-control" id="tujuanPinjaman" required>
+                                <option value="">Pilih Tujuan</option>
+                                <option value="Modal Usaha">Modal Usaha</option>
+                                <option value="Kebutuhan Pendidikan">Kebutuhan Pendidikan</option>
+                                <option value="Kesehatan">Kesehatan</option>
+                                <option value="Konsumtif">Kebutuhan Konsumtif</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tenor (Bulan) *</label>
+                            <select class="form-control" id="tenorPinjaman" required>
+                                <option value="">Pilih Tenor</option>
+                                <option value="6">6 Bulan</option>
+                                <option value="12">12 Bulan</option>
+                                <option value="24">24 Bulan</option>
+                                <option value="36">36 Bulan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Catatan (Opsional)</label>
+                            <textarea class="form-control" id="catatanPinjaman" rows="2" placeholder="Jelaskan tujuan pinjaman secara detail"></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn secondary" id="cancelPinjamBtn">
+                                <i class="fas fa-times"></i> Batal
+                            </button>
+                            <button type="button" class="modal-btn primary" id="kirimPinjamanBtn">
+                                <i class="fab fa-whatsapp"></i> Kirim Pengajuan
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            document.getElementById('cancelPinjamBtn').addEventListener('click', () => {
+                this.closeModal();
+            });
+            
+            document.getElementById('kirimPinjamanBtn').addEventListener('click', () => {
+                this.kirimPengajuanPinjamanWhatsApp();
+            });
+        }
+        
+        kirimPengajuanPinjamanWhatsApp() {
+            const amount = document.getElementById('pinjamAmount').value;
+            const tujuan = document.getElementById('tujuanPinjaman').value;
+            const tenor = document.getElementById('tenorPinjaman').value;
+            const catatan = document.getElementById('catatanPinjaman').value;
+            
+            if (!amount || amount < 50000) {
+                this.showToast('Jumlah pinjaman minimal Rp 50.000', 'error');
+                return;
+            }
+            
+            const maxPinjaman = 0;
+            if (amount > maxPinjaman) {
+                this.showToast(`Maksimal pinjaman adalah Rp ${this.formatNumber(maxPinjaman)}`, 'error');
+                return;
+            }
+            
+            if (!tujuan) {
+                this.showToast('Pilih tujuan pinjaman', 'error');
+                return;
+            }
+            
+            if (!tenor) {
+                this.showToast('Pilih tenor pinjaman', 'error');
+                return;
+            }
+            
+            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
+*════ ◎•❀•◎﷽◎•❀•◎ ════*
+
+*_Assalamualaikum Warahmatullahi Wabarakatuh_*
+
+==========================
+*PENGAJUAN PINJAMAN*
+==========================
+*DATA ANGGOTA*
+
+*Nama* : ${this.formattedData.personal.nama}
+*NIA* : ${this.formattedData.personal.nia}
+*No. WhatsApp* : ${this.formattedData.personal.telepon}
+*Simpanan* : Rp ${this.formatNumber(0)}
+*Pinjaman Aktif* : Rp ${this.formatNumber(0)}
+
+==========================
+*DETAIL PENGAJUAN*
+
+*Jumlah Pinjaman* : Rp ${this.formatNumber(amount)}
+*Tujuan Pinjaman* : ${tujuan}
+*Tenor* : ${tenor} Bulan
+*Estimasi Cicilan* : Rp ${this.formatNumber(Math.round(amount / tenor))}/bulan
+
+${catatan ? `*Keterangan* : ${catatan}` : ''}
+
+==========================
+*PERSYARATAN*
+
+1. Fotokopi KTP
+2. Fotokopi KK
+3. Surat keterangan usaha (jika untuk modal usaha)
+4. Jaminan sesuai ketentuan koperasi
+
+===========================
+
+*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
+            
+            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            this.closeModal();
+            this.showToast('Pengajuan pinjaman dikirim ke WhatsApp', 'success');
+        }
+        
+        showRiwayatModal() {
+            this.showModal({
+                title: 'Riwayat Transaksi',
+                content: `
+                    <div style="padding: 10px 0;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 28px; font-weight: bold; color: #1a5f23;">
+                                Riwayat Transaksi
+                            </div>
+                            <div style="color: #666; font-size: 14px;">Histori terakhir 30 hari</div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <div style="text-align: center; color: #666; padding: 20px;">
+                                <i class="fas fa-history" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
+                                <p>Riwayat transaksi akan ditampilkan di sini</p>
+                                <p style="font-size: 0.9rem; margin-top: 10px;">
+                                    Data akan muncul setelah admin memproses transaksi Anda.
+                                    Hubungi Ketua/Sekretaris untuk informasi lengkap.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="modal-btn primary" id="closeRiwayatBtn" style="width: 100%;">
+                                <i class="fas fa-times"></i> Tutup
+                            </button>
+                        </div>
+                    </div>
+                `
+            });
+            
+            document.getElementById('closeRiwayatBtn').addEventListener('click', () => {
                 this.closeModal();
             });
         }
@@ -2167,7 +2666,7 @@
                 content: `
                     <div class="qr-modal-design">
                         <div class="qr-title">
-                            <i class="fas fa-qrcode"></i> Kartu Digital Anggota
+                            <i class="fas fa-qrcode"></i> QR Code Digital Anggota
                         </div>
                         
                         <div class="qr-card">
@@ -2179,30 +2678,44 @@
                                     <h4>${this.formattedData.personal.nama}</h4>
                                     <p><strong>NIA:</strong> ${this.formattedData.personal.nia}</p>
                                     <p><strong>Posisi:</strong> ${this.formattedData.personal.posisi}</p>
+                                    <p><strong>Status:</strong> ${this.formattedData.personal.status}</p>
                                 </div>
                             </div>
                             
-                            <div id="qr-code-display" style="display: inline-block; padding: 15px; background: white; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee;"></div>
+                            <div id="qr-code-display" style="text-align: center; padding: 15px;">
+                                <div style="display: inline-block; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                    <div id="qrCodeContainer"></div>
+                                </div>
+                            </div>
                             
-                            <p style="color: #666; margin-bottom: 5px; font-size: 0.9rem;">Scan QR Code untuk melihat profil lengkap</p>
-                            <p style="color: #888; font-size: 0.8rem;">QR Code ini berisi URL ke halaman profil anggota</p>
+                            <div style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                                <p style="margin: 0; font-size: 0.9rem; color: #1a5f23;">
+                                    <i class="fas fa-info-circle"></i> Scan QR Code ini untuk melihat data lengkap anggota
+                                </p>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #666;">
+                                <div>
+                                    <i class="fas fa-calendar"></i> Update: ${new Date().toLocaleDateString('id-ID')}
+                                </div>
+                                <div>
+                                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i> Valid
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="action-buttons">
-                            <button type="button" class="action-btn whatsapp" id="shareQRWhatsappBtn">
+                            <button type="button" class="action-btn whatsapp" id="shareQRBtn">
                                 <i class="fab fa-whatsapp"></i> Bagikan QR
                             </button>
                             <button type="button" class="action-btn download" id="downloadQRBtn">
                                 <i class="fas fa-download"></i> Download QR
                             </button>
-                            <button type="button" class="action-btn pdf" id="downloadQRPDFBtn">
-                                <i class="fas fa-file-pdf"></i> Kartu PDF
-                            </button>
                         </div>
                         
                         <div class="modal-actions" style="margin-top: 20px;">
                             <button type="button" class="modal-btn primary" id="closeQRBtn" style="width: 100%;">
-                                Tutup
+                                <i class="fas fa-times"></i> Tutup
                             </button>
                         </div>
                     </div>
@@ -2210,37 +2723,35 @@
             });
             
             setTimeout(() => {
-                const qrContainer = document.getElementById("qr-code-display");
-                qrContainer.innerHTML = '';
-                new QRCode(qrContainer, {
-                    text: qrUrl,
-                    width: 180,
-                    height: 180,
-                    colorDark: "#1a5f23",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
+                const qrContainer = document.getElementById("qrCodeContainer");
+                if (qrContainer) {
+                    qrContainer.innerHTML = '';
+                    new QRCode(qrContainer, {
+                        text: qrUrl,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#1a5f23",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
             }, 100);
             
             document.getElementById('closeQRBtn').addEventListener('click', () => {
                 this.closeModal();
             });
             
-            document.getElementById('shareQRWhatsappBtn').addEventListener('click', () => {
-                this.shareQR('whatsapp');
+            document.getElementById('shareQRBtn').addEventListener('click', () => {
+                this.shareQR(qrData);
             });
             
             document.getElementById('downloadQRBtn').addEventListener('click', () => {
                 this.downloadQR();
             });
-            
-            document.getElementById('downloadQRPDFBtn').addEventListener('click', () => {
-                this.downloadKartuPDF();
-            });
         }
         
         showKartuModal() {
-            const totalSaldo = this.formattedData.simpanan.total - this.formattedData.pinjaman.total;
+            const totalSaldo = 0;
             
             this.showModal({
                 title: 'Kartu Anggota Digital',
@@ -2263,7 +2774,7 @@
                                     <h4>${this.formattedData.personal.nama}</h4>
                                     <p><i class="fas fa-id-card"></i> <strong>NIA:</strong> ${this.formattedData.personal.nia}</p>
                                     <p><i class="fas fa-briefcase"></i> <strong>Posisi:</strong> ${this.formattedData.personal.posisi}</p>
-                                    <p><i class="fas fa-calendar-alt"></i> <strong>Bergabung:</strong> ${this.formattedData.personal.tanggalGabung}</p>
+                                    <p><i class="fas fa-calendar-alt"></i> <strong>Bergabung:</strong> ${this.formattedData.personal.tanggalGabung || this.formattedData.personal.tanggalDaftar}</p>
                                     <p><i class="fas fa-check-circle"></i> <strong>Status:</strong> ${this.formattedData.personal.status}</p>
                                 </div>
                             </div>
@@ -2282,7 +2793,7 @@
                                     <span class="grid-value">${this.formattedData.personal.agama || '-'}</span>
                                 </div>
                                 <div class="grid-item">
-                                    <span class="grid-label">Status</span>
+                                    <span class="grid-label">Status Perkawinan</span>
                                     <span class="grid-value">${this.formattedData.personal.statusPerkawinan || '-'}</span>
                                 </div>
                                 <div class="grid-item">
@@ -2301,21 +2812,40 @@
                                     <span class="grid-label">Tanggal Daftar</span>
                                     <span class="grid-value">${this.formattedData.personal.tanggalDaftar || '-'}</span>
                                 </div>
+                            </div>
+                            
+                            <div class="kartu-grid" style="background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2);">
                                 <div class="grid-item">
                                     <span class="grid-label">Simpanan Pokok</span>
-                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.simpanan.pokok.nominal)}</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(0)}</span>
                                 </div>
                                 <div class="grid-item">
                                     <span class="grid-label">Simpanan Wajib</span>
-                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.simpanan.wajib.nominal)}</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(0)}</span>
                                 </div>
                                 <div class="grid-item">
                                     <span class="grid-label">Simpanan Sukarela</span>
-                                    <span class="grid-value">Rp ${this.formatNumber(this.formattedData.simpanan.sukarela.nominal)}</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(0)}</span>
                                 </div>
                                 <div class="grid-item">
-                                    <span class="grid-label">Total Saldo</span>
-                                    <span class="grid-value" style="color: #ffd700; font-weight: bold;">Rp ${this.formatNumber(totalSaldo)}</span>
+                                    <span class="grid-label">Total Simpanan</span>
+                                    <span class="grid-value" style="color: #ffd700; font-weight: bold;">Rp ${this.formatNumber(0)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Total Pinjaman</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(0)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Saldo Bersih</span>
+                                    <span class="grid-value" style="color: #4CAF50; font-weight: bold;">Rp ${this.formatNumber(0)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">SHU Estimasi</span>
+                                    <span class="grid-value">Rp ${this.formatNumber(0)}</span>
+                                </div>
+                                <div class="grid-item">
+                                    <span class="grid-label">Update Terakhir</span>
+                                    <span class="grid-value">${this.formattedData.personal.lastUpdated ? new Date(this.formattedData.personal.lastUpdated).toLocaleDateString('id-ID') : '-'}</span>
                                 </div>
                             </div>
                             
@@ -2332,7 +2862,7 @@
                                 <i class="fab fa-whatsapp"></i> Bagikan Kartu
                             </button>
                             <button type="button" class="action-btn download" id="downloadKartuBtn">
-                                <i class="fas fa-download"></i> Download Kartu
+                                <i class="fas fa-download"></i> Download Gambar
                             </button>
                             <button type="button" class="action-btn pdf" id="downloadKartuPDFBtn">
                                 <i class="fas fa-file-pdf"></i> Download PDF
@@ -2343,7 +2873,9 @@
                         </div>
                         
                         <div class="modal-actions" style="margin-top: 15px;">
-                            <button type="button" class="modal-btn secondary" id="closeKartuBtn">Tutup</button>
+                            <button type="button" class="modal-btn secondary" id="closeKartuBtn">
+                                <i class="fas fa-times"></i> Tutup
+                            </button>
                         </div>
                     </div>
                 `
@@ -2351,17 +2883,20 @@
             
             setTimeout(() => {
                 const qrContainer = document.getElementById("kartuQrCode");
-                qrContainer.innerHTML = '';
-                const qrUrl = `${window.location.origin}/scan-result.html?data=${encodeURIComponent(JSON.stringify(this.createQRData()))}`;
-                
-                new QRCode(qrContainer, {
-                    text: qrUrl,
-                    width: 120,
-                    height: 120,
-                    colorDark: "#1a5f23",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
+                if (qrContainer) {
+                    qrContainer.innerHTML = '';
+                    const qrData = this.createQRData();
+                    const qrUrl = `${window.location.origin}/scan-result.html?data=${encodeURIComponent(JSON.stringify(qrData))}`;
+                    
+                    new QRCode(qrContainer, {
+                        text: qrUrl,
+                        width: 120,
+                        height: 120,
+                        colorDark: "#1a5f23",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
             }, 100);
             
             document.getElementById('closeKartuBtn').addEventListener('click', () => {
@@ -2369,7 +2904,7 @@
             });
             
             document.getElementById('shareKartuBtn').addEventListener('click', () => {
-                this.shareKartu('whatsapp');
+                this.shareKartu();
             });
             
             document.getElementById('downloadKartuBtn').addEventListener('click', () => {
@@ -2386,473 +2921,60 @@
         }
         
         createQRData() {
-            const totalSaldo = this.formattedData.simpanan.total - this.formattedData.pinjaman.total;
+            const totalSaldo = 0;
             
             return {
                 id: this.formattedData.personal.id,
                 nia: this.formattedData.personal.nia,
-                posisi: this.formattedData.personal.posisi,
                 nama: this.formattedData.personal.nama,
+                posisi: this.formattedData.personal.posisi,
                 alamat: this.formattedData.personal.alamat,
+                telepon: this.formattedData.personal.telepon,
+                email: this.formattedData.personal.email,
                 jenis_kelamin: this.formattedData.personal.jenisKelamin,
                 agama: this.formattedData.personal.agama,
-                status: this.formattedData.personal.statusPerkawinan,
-                tanggal_daftar: this.formattedData.personal.tanggalDaftar,
-                email: this.formattedData.personal.email,
-                whatsapp: this.formattedData.personal.telepon,
+                status_perkawinan: this.formattedData.personal.statusPerkawinan,
                 nik: this.formattedData.personal.nik,
+                tanggal_daftar: this.formattedData.personal.tanggalDaftar,
                 tanggal_bergabung: this.formattedData.personal.tanggalGabung,
                 status_anggota: this.formattedData.personal.status,
+                simpanan_pokok: 0,
+                simpanan_wajib: 0,
+                simpanan_sukarela: 0,
+                total_simpanan: 0,
+                total_pinjaman: 0,
+                total_saldo: 0,
+                shu_estimasi: 0,
                 foto: this.formattedData.personal.foto,
-                
-                // Data keuangan
-                simpanan_pokok: this.formattedData.simpanan.pokok.nominal,
-                simpanan_wajib: this.formattedData.simpanan.wajib.nominal,
-                simpanan_sukarela: this.formattedData.simpanan.sukarela.nominal,
-                total_simpanan: this.formattedData.simpanan.total,
-                total_pinjaman: this.formattedData.pinjaman.total,
-                total_saldo: totalSaldo,
-                
+                last_updated: this.formattedData.personal.lastUpdated,
                 timestamp: new Date().toISOString(),
                 koperasi: "Koperasi Asmara Tani",
                 website: "#koperasijenius"
             };
         }
         
-        // ===== UTILITY FUNCTIONS =====
-        
-        showModal({ title, content }) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalBody').innerHTML = content;
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-        
-        closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            document.getElementById('printPreview').style.display = 'none';
-            document.getElementById('printPreview').innerHTML = '';
-        }
-        
-        showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.className = `toast ${type}`;
-            document.getElementById('toastMessage').textContent = message;
-            
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-        
-        formatNumber(amount) {
-            if (!amount) return '0';
-            return new Intl.NumberFormat('id-ID').format(amount);
-        }
-        
-        startSync() {
-            setInterval(() => {
-                this.updateSyncIndicator();
-            }, 5000);
-            
-            setInterval(() => {
-                this.checkForUpdates();
-            }, 10000);
-            
-            setInterval(() => {
-                this.checkForBroadcastUpdates();
-            }, 3000);
-        }
-        
-        updateSyncIndicator() {
-            const indicator = document.getElementById('syncIndicator');
-            if (indicator) {
-                indicator.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> <span>Sync ${new Date().getSeconds()}</span>`;
-                
-                setTimeout(() => {
-                    if (indicator) {
-                        indicator.innerHTML = `<i class="fas fa-sync-alt"></i> <span>Real-time</span>`;
-                    }
-                }, 1000);
-            }
-        }
-        
-        checkForUpdates() {
-            const adminUpdates = JSON.parse(localStorage.getItem('koperasi_admin_updates') || '{}');
-            const userEmail = this.currentUser.email;
-            
-            if (adminUpdates[userEmail]) {
-                console.log('🔄 Update detected from admin');
-                
-                const updates = adminUpdates[userEmail];
-                
-                if (updates.personal_update) {
-                    this.anggotaData = {
-                        ...this.anggotaData,
-                        ...updates.personal_update.personal,
-                        lastUpdated: new Date().toISOString()
-                    };
-                }
-                
-                if (updates.simpanan_update) {
-                    this.anggotaData.simpanan = {
-                        ...this.anggotaData.simpanan,
-                        ...updates.simpanan_update.simpanan
-                    };
-                    
-                    this.anggotaData.simpanan.total = 
-                        (this.anggotaData.simpanan.pokok?.nominal || 0) +
-                        (this.anggotaData.simpanan.wajib?.nominal || 0) +
-                        (this.anggotaData.simpanan.sukarela?.nominal || 0);
-                }
-                
-                this.saveAnggotaData();
-                this.loadAnggotaData();
-                this.updateUI();
-                
-                delete adminUpdates[userEmail];
-                localStorage.setItem('koperasi_admin_updates', JSON.stringify(adminUpdates));
-                
-                this.showToast('Data diperbarui dari admin', 'success');
-            }
-        }
-        
-        checkForBroadcastUpdates() {
-            const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-            const adminUpdates = koperasiData.adminUpdates || {};
-            
-            if (adminUpdates[this.currentUser.email]) {
-                console.log('🔄 Broadcast update detected');
-                this.applyAdminUpdates(adminUpdates[this.currentUser.email]);
-                
-                delete adminUpdates[this.currentUser.email];
-                koperasiData.adminUpdates = adminUpdates;
-                localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-            }
-        }
-        
-        applyAdminUpdates(updates) {
-            if (updates.personal) {
-                this.anggotaData = {
-                    ...this.anggotaData,
-                    ...updates.personal,
-                    lastUpdated: new Date().toISOString()
-                };
-            }
-            
-            if (updates.simpanan) {
-                this.anggotaData.simpanan = {
-                    ...this.anggotaData.simpanan,
-                    ...updates.simpanan
-                };
-            }
-            
-            if (updates.pinjaman) {
-                this.anggotaData.pinjaman = updates.pinjaman;
-            }
-            
-            if (updates.shu) {
-                this.anggotaData.shu = updates.shu;
-            }
-            
-            this.saveAnggotaData();
-            this.loadAnggotaData();
-            this.updateUI();
-            this.showToast('Data diperbarui dari admin', 'success');
-        }
-        
-        // ===== OTHER FUNCTIONS (Setor, Pinjam, Riwayat, dll) =====
-        
-        showSetorModal() {
-            this.showModal({
-                title: 'Setor Simpanan',
-                content: `
-                    <div style="padding: 10px 0;">
-                        <p>Saldo simpanan terkini: <strong>Rp ${this.formatNumber(this.formattedData.simpanan.total)}</strong></p>
-                        
-                        <div class="form-group" style="margin-top: 20px;">
-                            <label class="form-label">Simpanan Pokok (Rp)</label>
-                            <input type="number" class="form-control" id="pokokAmount" placeholder="Rp 200.000" min="200000" step="1000" value="200000">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Simpanan Wajib (Rp)</label>
-                            <input type="number" class="form-control" id="wajibAmount" placeholder="Rp 20.000" min="20000" step="1000" value="20000">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Simpanan Sukarela (Rp)</label>
-                            <input type="number" class="form-control" id="sukarelaAmount" placeholder="Minimal Rp 10.000" min="10000" step="1000" value="10000">
-                        </div>
-                        
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" id="cancelSetorBtn">Batal</button>
-                            <button type="button" class="modal-btn primary" id="kirimSetoranBtn">
-                                <i class="fab fa-whatsapp"></i> Kirim via WhatsApp
-                            </button>
-                        </div>
-                    </div>
-                `
-            });
-            
-            document.getElementById('cancelSetorBtn').addEventListener('click', () => {
-                this.closeModal();
-            });
-            
-            document.getElementById('kirimSetoranBtn').addEventListener('click', () => {
-                this.kirimSetoranWhatsApp();
-            });
-        }
-        
-        kirimSetoranWhatsApp() {
-            const pokokAmount = document.getElementById('pokokAmount').value;
-            const wajibAmount = document.getElementById('wajibAmount').value;
-            const sukarelaAmount = document.getElementById('sukarelaAmount').value;
-            
-            if (!pokokAmount || pokokAmount < 200000) {
-                this.showToast('Simpanan Pokok minimal Rp 200.000', 'error');
-                return;
-            }
-            
-            if (!wajibAmount || wajibAmount < 20000) {
-                this.showToast('Simpanan Wajib minimal Rp 20.000', 'error');
-                return;
-            }
-            
-            if (!sukarelaAmount || sukarelaAmount < 10000) {
-                this.showToast('Simpanan Sukarela minimal Rp 10.000', 'error');
-                return;
-            }
-            
-            const formattedPokok = this.formatNumber(pokokAmount);
-            const formattedWajib = this.formatNumber(wajibAmount);
-            const formattedSukarela = this.formatNumber(sukarelaAmount);
-            
-            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
-*════ ◎•❀•◎﷽◎•❀•◎ ════*
-
-*_Assalamualaikum Warahmatullahi Wabarakatuh_*
-
-
-==========================
-*Halo Admin saya Anggota Koperasi "Asmara Tani" Saya Mau Setor Simpanan*
-==========================
-*DATA ANGGOTA*
-
-*Nama* : ${this.formattedData.personal.nama}
-*Nomor HP* : ${this.formattedData.personal.telepon || '-'}
-*Alamat* : ${this.formattedData.personal.alamat || '-'}
-
-==========================
-*SETOR SIMPANAN*
-
-*Simpanan Pokok* : Rp. ${formattedPokok}
-*Simpanan Wajib* : Rp. ${formattedWajib}
-*Simpanan Sukarela* : Rp. ${formattedSukarela}
-
-__________________________________
-*Pembayaran* : Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto 
-
-===========================
-*Catatan* : _Silahkan Kirim Bukti Transfer/Pembayaran.!_
-===========================
-
-*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
-            
-            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
-            
-            window.open(whatsappUrl, '_blank');
-            this.closeModal();
-            this.showToast('Permintaan setoran dikirim ke WhatsApp', 'success');
-        }
-        
-        showPinjamModal() {
-            this.showModal({
-                title: 'Ajukan Pinjaman',
-                content: `
-                    <div style="padding: 10px 0;">
-                        <p>Simpanan saat ini: <strong>Rp ${this.formatNumber(this.formattedData.simpanan.total)}</strong></p>
-                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Maksimal pinjaman: 3x total simpanan</p>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Jumlah Pinjaman (Rp)</label>
-                            <input type="number" class="form-control" id="pinjamAmount" placeholder="Minimal Rp 50.000" min="50000" step="50000">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Tujuan Pinjaman</label>
-                            <select class="form-control" id="tujuanPinjaman">
-                                <option value="Modal Usaha">Modal Usaha</option>
-                                <option value="Kebutuhan Pendidikan">Kebutuhan Pendidikan</option>
-                                <option value="Kesehatan">Kesehatan</option>
-                                <option value="Konsumtif">Konsumtif</option>
-                                <option value="Lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Tenor (Bulan)</label>
-                            <select class="form-control" id="tenorPinjaman">
-                                <option value="6">6 Bulan</option>
-                                <option value="12" selected>12 Bulan</option>
-                                <option value="24">24 Bulan</option>
-                                <option value="36">36 Bulan</option>
-                            </select>
-                        </div>
-                        
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn secondary" id="cancelPinjamBtn">Batal</button>
-                            <button type="button" class="modal-btn primary" id="kirimPinjamanBtn">
-                                <i class="fab fa-whatsapp"></i> Kirim via WhatsApp
-                            </button>
-                        </div>
-                    </div>
-                `
-            });
-            
-            document.getElementById('cancelPinjamBtn').addEventListener('click', () => {
-                this.closeModal();
-            });
-            
-            document.getElementById('kirimPinjamanBtn').addEventListener('click', () => {
-                this.kirimPengajuanPinjamanWhatsApp();
-            });
-        }
-        
-        kirimPengajuanPinjamanWhatsApp() {
-            const amount = document.getElementById('pinjamAmount').value;
-            const tujuan = document.getElementById('tujuanPinjaman').value;
-            const tenor = document.getElementById('tenorPinjaman').value;
-            
-            if (!amount || amount < 50000) {
-                this.showToast('Jumlah pinjaman minimal Rp 50.000', 'error');
-                return;
-            }
-            
-            const maxPinjaman = this.formattedData.simpanan.total * 3;
-            if (amount > maxPinjaman) {
-                this.showToast(`Maksimal pinjaman adalah Rp ${this.formatNumber(maxPinjaman)}`, 'error');
-                return;
-            }
-            
-            const formattedAmount = this.formatNumber(amount);
-            
-            const message = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
-*════ ◎•❀•◎﷽◎•❀•◎ ════*
-
-*_Assalamualaikum Warahmatullahi Wabarakatuh_*
-
-
-==========================
-*Halo Admin saya Anggota Koperasi "Asmara Tani" Saya Mau Pengajuan Dana*
-==========================
-*DATA ANGGOTA*
-
-*Nama* : ${this.formattedData.personal.nama}
-*Nomor HP* : ${this.formattedData.personal.telepon || '-'}
-*Alamat* : ${this.formattedData.personal.alamat || '-'}
-
-==========================
-*PENGAJUAN DANA*
-
-*Jumlah Pinjaman* : Rp. ${formattedAmount}
-*Tujuan Pinjaman* : ${tujuan}
-*Tenor Bulan* : ${tenor} Bulan
-
-__________________________________
-*Transfer Dari* : Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto 
-
-===========================
-*Catatan* : _Silahkan Kirim Bukti Penerima Dana.!_
-===========================
-
-*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
-            
-            const whatsappUrl = `https://wa.me/6285218483129?text=${encodeURIComponent(message)}`;
-            
-            window.open(whatsappUrl, '_blank');
-            this.closeModal();
-            this.showToast('Pengajuan pinjaman dikirim ke WhatsApp', 'success');
-        }
-        
-        showRiwayatModal() {
-            this.showModal({
-                title: 'Riwayat Transaksi',
-                content: `
-                    <div style="padding: 10px 0;">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <div style="font-size: 28px; font-weight: bold; color: #1a5f23;">
-                                Riwayat
-                            </div>
-                            <div style="color: #666; font-size: 14px;">Transaksi Terakhir</div>
-                        </div>
-                        
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                            <div style="text-align: center; color: #666; padding: 20px;">
-                                <i class="fas fa-history" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
-                                <p>Riwayat transaksi akan ditampilkan di sini</p>
-                                <p style="font-size: 0.9rem; margin-top: 10px;">Hubungi Ketua/Sekretaris untuk informasi lengkap</p>
-                            </div>
-                        </div>
-                        
-                        <div class="modal-actions">
-                            <button type="button" class="modal-btn primary" id="closeRiwayatBtn" style="width: 100%;">
-                                Tutup
-                            </button>
-                        </div>
-                    </div>
-                `
-            });
-            
-            document.getElementById('closeRiwayatBtn').addEventListener('click', () => {
-                this.closeModal();
-            });
-        }
-        
-        // ===== DOWNLOAD & SHARE FUNCTIONS =====
-        
-        shareQR(platform) {
-            const qrUrl = `${window.location.origin}/scan-result.html?data=${encodeURIComponent(JSON.stringify(this.createQRData()))}`;
+        shareQR(qrData) {
             const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
-                           `👤 *Nama:* ${this.formattedData.personal.nama}\n` +
-                           `🆔 *NIA:* ${this.formattedData.personal.nia}\n` +
-                           `🏢 *Posisi:* ${this.formattedData.personal.posisi}\n` +
-                           `✅ *Status:* ${this.formattedData.personal.status}\n\n` +
-                           `Scan QR Code untuk melihat profil lengkap:\n` +
-                           `${qrUrl}\n\n` +
+                           `👤 *Nama:* ${qrData.nama}\n` +
+                           `🆔 *NIA:* ${qrData.nia}\n` +
+                           `🏢 *Posisi:* ${qrData.posisi}\n` +
+                           `📍 *Alamat:* ${qrData.alamat || '-'}\n` +
+                           `📞 *WhatsApp:* ${qrData.telepon || '-'}\n` +
+                           `📧 *Email:* ${qrData.email}\n` +
+                           `👫 *Jenis Kelamin:* ${qrData.jenis_kelamin || '-'}\n` +
+                           `🕌 *Agama:* ${qrData.agama || '-'}\n` +
+                           `✅ *Status:* ${qrData.status_anggota}\n` +
+                           `💰 *Total Simpanan:* Rp ${this.formatNumber(0)}\n` +
+                           `📅 *Tanggal Bergabung:* ${qrData.tanggal_bergabung || '-'}\n\n` +
                            `_Kartu Anggota Digital - #koperasijenius_`;
             
-            if (platform === 'whatsapp') {
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
-            }
-            
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
             this.showToast('QR Code siap dibagikan', 'success');
         }
         
-        shareKartu(platform) {
-            const qrUrl = `${window.location.origin}/scan-result.html?data=${encodeURIComponent(JSON.stringify(this.createQRData()))}`;
-            const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
-                           `👤 *Nama:* ${this.formattedData.personal.nama}\n` +
-                           `🆔 *NIA:* ${this.formattedData.personal.nia}\n` +
-                           `🏢 *Posisi:* ${this.formattedData.personal.posisi}\n` +
-                           `📅 *Bergabung:* ${this.formattedData.personal.tanggalGabung}\n` +
-                           `✅ *Status:* ${this.formattedData.personal.status}\n` +
-                           `📞 *WhatsApp:* ${this.formattedData.personal.telepon || '-'}\n` +
-                           `📧 *Email:* ${this.formattedData.personal.email}\n\n` +
-                           `Scan QR Code untuk verifikasi:\n` +
-                           `${qrUrl}\n\n` +
-                           `_Kartu Anggota Digital - #koperasijenius_`;
-            
-            if (platform === 'whatsapp') {
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
-            }
-            
-            this.showToast('Kartu siap dibagikan', 'success');
-        }
-        
         downloadQR() {
-            const qrCanvas = document.querySelector('#qr-code-display canvas');
+            const qrCanvas = document.querySelector('#qrCodeContainer canvas');
             if (qrCanvas) {
                 const tempCanvas = document.createElement('canvas');
                 const ctx = tempCanvas.getContext('2d');
@@ -2863,11 +2985,33 @@ __________________________________
                 ctx.drawImage(qrCanvas, 0, 0, tempCanvas.width, tempCanvas.height);
                 
                 const link = document.createElement('a');
-                link.download = `QR_${this.formattedData.personal.nia}_${this.formattedData.personal.nama}.png`;
+                link.download = `QR_${this.formattedData.personal.nia}_${this.formattedData.personal.nama.replace(/\s+/g, '_')}.png`;
                 link.href = tempCanvas.toDataURL('image/png');
                 link.click();
                 this.showToast('QR Code berhasil diunduh', 'success');
             }
+        }
+        
+        shareKartu() {
+            const totalSaldo = 0;
+            const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
+                           `👤 *Nama:* ${this.formattedData.personal.nama}\n` +
+                           `🆔 *NIA:* ${this.formattedData.personal.nia}\n` +
+                           `🏢 *Posisi:* ${this.formattedData.personal.posisi}\n` +
+                           `📍 *Alamat:* ${this.formattedData.personal.alamat || '-'}\n` +
+                           `📞 *WhatsApp:* ${this.formattedData.personal.telepon || '-'}\n` +
+                           `👫 *Jenis Kelamin:* ${this.formattedData.personal.jenisKelamin || '-'}\n` +
+                           `🕌 *Agama:* ${this.formattedData.personal.agama || '-'}\n` +
+                           `✅ *Status:* ${this.formattedData.personal.status}\n` +
+                           `💰 *Total Simpanan:* Rp ${this.formatNumber(0)}\n` +
+                           `💳 *Total Pinjaman:* Rp ${this.formatNumber(0)}\n` +
+                           `💵 *Saldo Bersih:* Rp ${this.formatNumber(0)}\n` +
+                           `📅 *Tanggal Bergabung:* ${this.formattedData.personal.tanggalGabung || this.formattedData.personal.tanggalDaftar}\n\n` +
+                           `_Kartu Anggota Digital - #koperasijenius_`;
+            
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            this.showToast('Kartu siap dibagikan', 'success');
         }
         
         downloadKartu() {
@@ -2880,19 +3024,7 @@ __________________________________
                         useCORS: true,
                         logging: false,
                         allowTaint: true,
-                        imageTimeout: 15000,
-                        onclone: function(clonedDoc) {
-                            const images = clonedDoc.querySelectorAll('img');
-                            images.forEach(img => {
-                                if (img.src.startsWith('data:')) {
-                                } else if (img.complete && img.naturalHeight !== 0) {
-                                } else {
-                                    img.onerror = function() {
-                                        this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
-                                    };
-                                }
-                            });
-                        }
+                        imageTimeout: 15000
                     }).then(canvas => {
                         const link = document.createElement('a');
                         link.download = `Kartu_Anggota_${this.formattedData.personal.nia}_${this.formattedData.personal.nama.replace(/\s+/g, '_')}.png`;
@@ -2922,15 +3054,7 @@ __________________________________
                         scale: 3,
                         useCORS: true,
                         allowTaint: true,
-                        imageTimeout: 15000,
-                        onclone: function(clonedDoc) {
-                            const images = clonedDoc.querySelectorAll('img');
-                            images.forEach(img => {
-                                img.onerror = function() {
-                                    this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
-                                };
-                            });
-                        }
+                        imageTimeout: 15000
                     }).then(canvas => {
                         const pdf = new jsPDF('p', 'mm', 'a6');
                         const imgData = canvas.toDataURL('image/png');
@@ -3008,15 +3132,7 @@ __________________________________
                     scale: 2,
                     useCORS: true,
                     allowTaint: true,
-                    imageTimeout: 10000,
-                    onclone: function(clonedDoc) {
-                        const images = clonedDoc.querySelectorAll('img');
-                        images.forEach(img => {
-                            img.onerror = function() {
-                                this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
-                            };
-                        });
-                    }
+                    imageTimeout: 10000
                 }).then(canvas => {
                     canvasContainer.appendChild(canvas);
                     printPreview.style.display = 'block';
@@ -3027,16 +3143,7 @@ __________________________________
             }, 500);
         }
         
-        handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('photoPreview').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+        // ===== PASSWORD MODAL FUNCTIONS =====
         
         showPasswordModal() {
             document.getElementById('passwordModal').classList.add('active');
@@ -3104,401 +3211,100 @@ __________________________________
             
             this.formattedData.personal.password = newPassword;
             
-            document.getElementById('passwordModal').classList.remove('active');
+            this.closePasswordModal();
+            
             this.showToast('Password berhasil diubah', 'success');
             
             document.getElementById('changePasswordForm').reset();
+        }
+        
+        closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('changePasswordForm').reset();
+        }
+        
+        // ===== UTILITY FUNCTIONS =====
+        
+        showModal({ title, content }) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('modalBody').innerHTML = '';
+        }
+        
+        showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type}`;
+            document.getElementById('toastMessage').textContent = message;
             
-            if (document.getElementById('displayPassword')) {
-                document.getElementById('displayPassword').value = newPassword;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        formatNumber(amount) {
+            if (!amount) return '0';
+            return new Intl.NumberFormat('id-ID').format(amount);
+        }
+        
+        startSync() {
+            setInterval(() => {
+                this.updateSyncIndicator();
+            }, 5000);
+        }
+        
+        updateSyncIndicator() {
+            const indicator = document.getElementById('syncIndicator');
+            if (indicator) {
+                indicator.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> <span>Sync ${new Date().getSeconds()}</span>`;
+                
+                setTimeout(() => {
+                    if (indicator) {
+                        indicator.innerHTML = `<i class="fas fa-sync-alt"></i> <span>Real-time</span>`;
+                    }
+                }, 1000);
             }
         }
         
-        saveProfileChanges() {
-            this.anggotaData.nama = document.getElementById('editNama').value;
-            this.anggotaData.email = document.getElementById('editEmail').value;
-            this.anggotaData.whatsapp = document.getElementById('editTelepon').value;
-            this.anggotaData.alamat = document.getElementById('editAlamat').value;
-            this.anggotaData.jenis_kelamin = document.getElementById('editJenisKelamin').value;
-            this.anggotaData.agama = document.getElementById('editAgama').value;
-            this.anggotaData.status = document.getElementById('editStatus').value;
-            this.anggotaData.nik = document.getElementById('editNIK').value;
-            this.anggotaData.lastUpdated = new Date().toISOString();
-            
-            const photoInput = document.getElementById('uploadPhoto');
-            if (photoInput.files[0]) {
+        handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    this.anggotaData.foto = e.target.result;
-                    this.completeSaveProfile();
+                    document.getElementById('photoPreview').src = e.target.result;
                 };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else {
-                this.completeSaveProfile();
-            }
-        }
-        
-        completeSaveProfile() {
-            this.saveAnggotaData();
-            
-            const users = JSON.parse(localStorage.getItem('koperasi_users') || '[]');
-            const userIndex = users.findIndex(u => u.email === this.currentUser.email);
-            if (userIndex !== -1) {
-                users[userIndex].name = this.anggotaData.nama;
-                if (this.anggotaData.foto) {
-                    users[userIndex].foto = this.anggotaData.foto;
-                }
-                localStorage.setItem('koperasi_users', JSON.stringify(users));
-                
-                this.currentUser = users[userIndex];
-                localStorage.setItem('koperasi_current_user', JSON.stringify(this.currentUser));
-            }
-            
-            this.loadAnggotaData();
-            this.updateUI();
-            this.closeModal();
-            this.showToast('Profil berhasil diperbarui', 'success');
-        }
-    }
-
-    // Initialize tabungan app
-    window.tabunganApp = new DigitalTabungan();
-    </script>
-
-    <!-- SISTEM INTEGRASI REAL-TIME -->
-    <script>
-    class RealTimeSyncManager {
-        constructor() {
-            this.isConnected = false;
-            this.syncInterval = 2000;
-            this.init();
-        }
-        
-        init() {
-            console.log('🔄 Initializing Real-Time Sync Manager...');
-            
-            KOPERASI_CHANNEL.onmessage = (event) => {
-                this.handleBroadcastMessage(event.data);
-            };
-            
-            window.addEventListener('storage', (event) => {
-                this.handleStorageChange(event);
-            });
-            
-            this.startSyncPolling();
-            
-            this.isConnected = true;
-            console.log('✅ Real-Time Sync Manager initialized');
-            
-            document.getElementById('onlineIndicator').style.display = 'flex';
-        }
-        
-        startSyncPolling() {
-            setInterval(() => {
-                this.pullUpdatesFromDashboard();
-            }, this.syncInterval);
-        }
-        
-        handleBroadcastMessage(data) {
-            console.log('📡 Broadcast message received:', data);
-            
-            if (data.type === 'DATA_UPDATED') {
-                this.handleDataUpdate(data.payload);
-            } else if (data.type === 'PROFILE_UPDATED') {
-                this.handleProfileUpdate(data.payload);
-            } else if (data.type === 'FORCE_REFRESH') {
-                this.forceRefreshData();
-            }
-        }
-        
-        handleStorageChange(event) {
-            if (event.key === 'koperasi_anggota' || 
-                event.key === 'simpananData' || 
-                event.key === 'pinjamanData' ||
-                event.key === 'koperasiData') {
-                
-                console.log(`🔄 Storage changed: ${event.key}`);
-                this.pullUpdatesFromDashboard();
-            }
-        }
-        
-        async pullUpdatesFromDashboard() {
-            try {
-                const koperasiData = JSON.parse(localStorage.getItem('koperasiData')) || {};
-                const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
-                
-                if (!currentUser || !currentUser.email) return;
-                
-                const userEmail = currentUser.email;
-                const adminUpdates = koperasiData.adminUpdates || {};
-                const userUpdates = koperasiData.userUpdates || {};
-                
-                let hasUpdates = false;
-                
-                if (adminUpdates[userEmail]) {
-                    console.log('📥 Admin updates found for:', userEmail);
-                    await this.applyAdminUpdates(userEmail, adminUpdates[userEmail]);
-                    hasUpdates = true;
-                    
-                    delete adminUpdates[userEmail];
-                    koperasiData.adminUpdates = adminUpdates;
-                    localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-                }
-                
-                if (userUpdates[userEmail]) {
-                    console.log('📤 User updates found for:', userEmail);
-                    hasUpdates = true;
-                }
-                
-                await this.syncAnggotaDataFromDashboard(userEmail);
-                
-                if (hasUpdates) {
-                    this.showNotification('Data diperbarui secara real-time!', 'success');
-                }
-                
-            } catch (error) {
-                console.error('❌ Error pulling updates:', error);
-            }
-        }
-        
-        async applyAdminUpdates(userEmail, updates) {
-            try {
-                let semuaAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                let userIndex = semuaAnggota.findIndex(a => a.email === userEmail);
-                
-                if (userIndex === -1) {
-                    const newAnggota = {
-                        id: 'AGT-' + Date.now().toString().slice(-6),
-                        email: userEmail,
-                        nama: updates.personal?.nama || '',
-                        whatsapp: updates.personal?.telepon || '',
-                        posisi: updates.personal?.posisi || 'Anggota',
-                        statusAktif: 'Aktif',
-                        createdAt: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString()
-                    };
-                    
-                    semuaAnggota.push(newAnggota);
-                    userIndex = semuaAnggota.length - 1;
-                }
-                
-                let userData = semuaAnggota[userIndex];
-                let dataChanged = false;
-                
-                if (updates.personal) {
-                    userData = { ...userData, ...updates.personal };
-                    dataChanged = true;
-                }
-                
-                if (updates.simpanan) {
-                    if (!userData.simpanan) {
-                        userData.simpanan = {
-                            pokok: { nominal: 0, status: 'belum lunas' },
-                            wajib: { nominal: 0, status: 'belum aktif' },
-                            sukarela: { nominal: 0, status: 'tersedia' },
-                            total: 0
-                        };
-                    }
-                    
-                    Object.keys(updates.simpanan).forEach(jenis => {
-                        if (userData.simpanan[jenis]) {
-                            userData.simpanan[jenis] = {
-                                ...userData.simpanan[jenis],
-                                ...updates.simpanan[jenis]
-                            };
-                            dataChanged = true;
-                        }
-                    });
-                    
-                    userData.simpanan.total = 
-                        (userData.simpanan.pokok?.nominal || 0) +
-                        (userData.simpanan.wajib?.nominal || 0) +
-                        (userData.simpanan.sukarela?.nominal || 0);
-                }
-                
-                if (updates.pinjaman) {
-                    userData.pinjaman = updates.pinjaman;
-                    dataChanged = true;
-                }
-                
-                if (updates.shu) {
-                    userData.shu = updates.shu;
-                    dataChanged = true;
-                }
-                
-                if (dataChanged) {
-                    userData.lastUpdated = new Date().toISOString();
-                    userData.lastUpdatedBy = 'admin';
-                    semuaAnggota[userIndex] = userData;
-                    
-                    localStorage.setItem('koperasi_anggota', JSON.stringify(semuaAnggota));
-                    
-                    const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
-                    if (currentUser && updates.personal?.nama) {
-                        currentUser.name = updates.personal.nama;
-                        currentUser.foto = updates.personal.foto || currentUser.foto;
-                        localStorage.setItem('koperasi_current_user', JSON.stringify(currentUser));
-                    }
-                    
-                    console.log('✅ Admin updates applied successfully');
-                    
-                    window.dispatchEvent(new CustomEvent('dataUpdated', {
-                        detail: { data: userData }
-                    }));
-                    
-                    if (window.tabunganApp) {
-                        window.tabunganApp.handleExternalDataUpdate(userData);
-                    }
-                }
-                
-            } catch (error) {
-                console.error('❌ Error applying admin updates:', error);
-            }
-        }
-        
-        async syncAnggotaDataFromDashboard(userEmail) {
-            try {
-                const semuaAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                const userData = semuaAnggota.find(a => a.email === userEmail);
-                
-                if (!userData) return;
-                
-                const tabunganApp = window.tabunganApp;
-                if (tabunganApp && tabunganApp.anggotaData) {
-                    if (userData.nama) {
-                        tabunganApp.anggotaData = {
-                            ...tabunganApp.anggotaData,
-                            ...userData
-                        };
-                    }
-                    
-                    tabunganApp.saveAnggotaData();
-                    
-                    if (tabunganApp.updateUI) {
-                        tabunganApp.updateUI();
-                    }
-                }
-                
-            } catch (error) {
-                console.error('❌ Error syncing data from dashboard:', error);
-            }
-        }
-        
-        handleDataUpdate(payload) {
-            console.log('📊 Data update received:', payload);
-            
-            const tabunganApp = window.tabunganApp;
-            if (!tabunganApp) return;
-            
-            switch (payload.updateType) {
-                case 'simpanan':
-                    if (tabunganApp.anggotaData.simpanan) {
-                        tabunganApp.anggotaData.simpanan = payload.data;
-                        tabunganApp.saveAnggotaData();
-                        tabunganApp.updateUI();
-                    }
-                    break;
-                    
-                case 'pinjaman':
-                    if (tabunganApp.anggotaData.pinjaman) {
-                        tabunganApp.anggotaData.pinjaman = payload.data;
-                        tabunganApp.saveAnggotaData();
-                        tabunganApp.updateUI();
-                    }
-                    break;
-                    
-                case 'personal':
-                    tabunganApp.anggotaData = {
-                        ...tabunganApp.anggotaData,
-                        ...payload.data
-                    };
-                    tabunganApp.saveAnggotaData();
-                    tabunganApp.updateUI();
-                    break;
-                    
-                case 'shu':
-                    tabunganApp.anggotaData.shu = payload.data;
-                    tabunganApp.saveAnggotaData();
-                    tabunganApp.updateUI();
-                    break;
-            }
-            
-            this.showNotification('Data diperbarui!', 'success');
-        }
-        
-        handleProfileUpdate(profileData) {
-            const tabunganApp = window.tabunganApp;
-            if (tabunganApp && tabunganApp.anggotaData) {
-                tabunganApp.anggotaData = {
-                    ...tabunganApp.anggotaData,
-                    ...profileData
-                };
-                
-                const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
-                if (currentUser) {
-                    currentUser.name = profileData.nama || currentUser.name;
-                    currentUser.foto = profileData.foto || currentUser.foto;
-                    localStorage.setItem('koperasi_current_user', JSON.stringify(currentUser));
-                }
-                
-                tabunganApp.saveAnggotaData();
-                tabunganApp.updateUI();
-                this.showNotification('Profil diperbarui!', 'success');
-            }
-        }
-        
-        forceRefreshData() {
-            const tabunganApp = window.tabunganApp;
-            if (tabunganApp) {
-                tabunganApp.loadAnggotaData();
-                tabunganApp.updateUI();
-                this.showNotification('Data diperbarui paksa!', 'info');
-            }
-        }
-        
-        showNotification(message, type = 'info') {
-            const tabunganApp = window.tabunganApp;
-            if (tabunganApp && tabunganApp.showToast) {
-                tabunganApp.showToast(message, type);
-            } else {
-                console.log(`[${type.toUpperCase()}] ${message}`);
-            }
-        }
-        
-        broadcastToDashboard(type, data) {
-            if (typeof BroadcastChannel !== 'undefined') {
-                const channel = new BroadcastChannel('koperasi_sync');
-                channel.postMessage({
-                    type: type,
-                    payload: data,
-                    timestamp: new Date().toISOString(),
-                    source: 'tabungan-digital'
-                });
-                channel.close();
+                reader.readAsDataURL(file);
             }
         }
     }
 
-    const KOPERASI_CHANNEL = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('koperasi_sync') : null;
-    
-    let syncManager = null;
-
+    // ===== INITIALIZE =====
     document.addEventListener('DOMContentLoaded', function() {
-        syncManager = new RealTimeSyncManager();
-        window.KoperasiSyncManager = syncManager;
+        console.log('🚀 Initializing Tabungan Digital System...');
+        
+        // Initialize main app
+        window.tabunganApp = new DigitalTabungan();
+        
+        // Show ready message
+        setTimeout(() => {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                document.getElementById('toastMessage').textContent = 'Sistem Tabungan Digital siap!';
+                toast.className = 'toast success show';
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            console.log('✅ System fully initialized');
+        }, 2000);
     });
-
-    window.syncTabunganDigital = function(userEmail) {
-        if (syncManager) {
-            syncManager.pullUpdatesFromDashboard(userEmail);
-        }
-    };
-    
-    window.forceRefreshTabunganData = function() {
-        if (syncManager) {
-            syncManager.forceRefreshData();
-        }
-    };
-</script>
+    </script>
 </body>
 </html>
