@@ -1573,7 +1573,1349 @@
         }
     }
     </script>
+<!-- ===== KARTU HOLOGRAM STATIC ===== -->
+<div class="hologram-static-card" id="hologramStaticCard">
+    <!-- Kartu hologram akan diisi secara otomatis -->
+</div>
 
+<!-- ===== MODAL KARTU HOLOGRAM DETAIL ===== -->
+<div class="hologram-modal-overlay" id="hologramDetailModal">
+    <div class="hologram-modal-content">
+        <!-- Header Modal -->
+        <div class="hologram-modal-header">
+            <h3><i class="fas fa-file-invoice-dollar"></i> Detail Ringkasan Keuangan</h3>
+            <button class="hologram-modal-close" id="closeHologramDetail">&times;</button>
+        </div>
+        
+        <!-- Body Modal -->
+        <div class="hologram-modal-body" id="hologramDetailContent">
+            <!-- Detail akan diisi oleh JavaScript -->
+        </div>
+        
+        <!-- Footer Modal dengan Tombol Aksi -->
+        <div class="hologram-modal-footer">
+            <div class="hologram-modal-actions">
+                <button class="hologram-modal-btn hologram-btn-secondary" id="closeDetailBtn">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+                <button class="hologram-modal-btn hologram-btn-print" id="printHologramDetailBtn">
+                    <i class="fas fa-print"></i> Cetak Kartu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ===== STYLE KARTU HOLOGRAM STATIC ===== */
+.hologram-static-card {
+    background: linear-gradient(135deg, 
+        rgba(26, 95, 35, 0.12) 0%,
+        rgba(46, 125, 50, 0.08) 25%,
+        rgba(76, 175, 80, 0.05) 50%,
+        rgba(129, 199, 132, 0.03) 75%,
+        rgba(200, 230, 201, 0.01) 100%
+    );
+    border: 2px solid rgba(26, 95, 35, 0.25);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 600px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+    box-shadow: 
+        0 10px 35px rgba(26, 95, 35, 0.15),
+        0 0 0 1px rgba(46, 125, 50, 0.1) inset,
+        0 0 50px rgba(76, 175, 80, 0.08) inset;
+    animation: hologramGlowStatic 6s ease-in-out infinite alternate;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hologram-static-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 45px rgba(26, 95, 35, 0.25),
+        0 0 0 2px rgba(46, 125, 50, 0.15) inset,
+        0 0 70px rgba(76, 175, 80, 0.12) inset;
+    border-color: rgba(26, 95, 35, 0.4);
+}
+
+.hologram-static-card:active {
+    transform: translateY(-2px);
+    transition: transform 0.1s;
+}
+
+.hologram-static-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.08) 50%,
+        transparent 70%
+    );
+    animation: hologramScanStatic 12s linear infinite;
+    z-index: 1;
+}
+
+.hologram-static-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at 30% 20%,
+        rgba(76, 175, 80, 0.06) 0%,
+        transparent 50%
+    );
+    z-index: 0;
+}
+
+.hologram-static-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hologram-static-header {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(26, 95, 35, 0.2);
+}
+
+.hologram-static-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0d4014;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.hologram-static-subtitle {
+    color: rgba(13, 64, 20, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* 1. CSS GRID SEPERTI YANG DIMINTA */
+.hologram-static-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* 1. STAT-ITEM SEPERTI YANG DIMINTA */
+.hologram-static-item {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hologram-static-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(26, 95, 35, 0.1);
+    background: #f0f7f0;
+}
+
+.hologram-static-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(26, 95, 35, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #1a5f23;
+}
+
+/* 1. STAT-VALUE SEPERTI YANG DIMINTA */
+.hologram-static-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a5f23;
+    margin-bottom: 5px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hologram-static-label {
+    font-size: 0.8rem;
+    color: rgba(13, 64, 20, 0.7);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hologram-static-footer {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid rgba(26, 95, 35, 0.2);
+    color: rgba(13, 64, 20, 0.7);
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hologram-static-update {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+}
+
+.hologram-static-click {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #1a5f23;
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+/* ===== MODAL STYLE KHUSUS UNTUK HOLOGRAM ===== */
+.hologram-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hologram-modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.hologram-modal-content {
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(245, 248, 246, 0.99) 100%);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 700px;
+    position: relative;
+    transform: translateY(30px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(76, 175, 80, 0.2),
+        0 0 120px rgba(76, 175, 80, 0.1);
+    overflow: hidden;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.hologram-modal-overlay.active .hologram-modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hologram-modal-header {
+    background: linear-gradient(135deg, 
+        rgba(26, 95, 35, 0.95) 0%,
+        rgba(46, 125, 50, 0.9) 100%);
+    padding: 25px 30px;
+    color: white;
+    position: relative;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.hologram-modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hologram-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    font-weight: bold;
+}
+
+.hologram-modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.hologram-modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Style untuk konten hologram di dalam modal - TETAP SEPERTI AWAL */
+.hologram-card {
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.97) 0%,
+        rgba(240, 247, 240, 0.98) 100%);
+    border-radius: 18px;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    box-shadow: 
+        0 10px 30px rgba(26, 95, 35, 0.12),
+        inset 0 0 50px rgba(76, 175, 80, 0.05);
+}
+
+.hologram-card::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(255, 255, 255, 0.12) 50%,
+        transparent 60%
+    );
+    animation: hologramScanStatic 8s linear infinite;
+    z-index: 1;
+}
+
+.hologram-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(76, 175, 80, 0.25);
+    position: relative;
+    z-index: 2;
+}
+
+.hologram-header h3 {
+    color: #0d4014;
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.hologram-header p {
+    color: rgba(13, 64, 20, 0.8);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.hologram-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+.hologram-item {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.hologram-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(26, 95, 35, 0.15);
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.hologram-item.full-width {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, 
+        rgba(240, 247, 240, 0.95) 0%,
+        rgba(230, 242, 230, 0.98) 100%);
+    border: 2px solid rgba(76, 175, 80, 0.25);
+}
+
+.hologram-label {
+    font-size: 0.85rem;
+    color: rgba(13, 64, 20, 0.85);
+    margin-bottom: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hologram-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0d4014;
+    margin-bottom: 8px;
+}
+
+.hologram-value.rp {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+}
+
+.hologram-status {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-aktif {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.18), rgba(56, 142, 60, 0.22));
+    color: #1b5e20;
+    border: 2px solid rgba(76, 175, 80, 0.4);
+}
+
+.status-tidak-aktif {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(229, 57, 53, 0.2));
+    color: #c62828;
+    border: 2px solid rgba(244, 67, 54, 0.3);
+}
+
+.hologram-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 2px solid rgba(76, 175, 80, 0.2);
+    color: rgba(13, 64, 20, 0.8);
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 2;
+}
+
+.hologram-footer p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* MODAL FOOTER DENGAN TOMBOL AKSI */
+.hologram-modal-footer {
+    padding: 20px 30px;
+    background: rgba(245, 248, 246, 0.98);
+    border-top: 2px solid rgba(76, 175, 80, 0.15);
+    box-shadow: 0 -5px 20px rgba(26, 95, 35, 0.08);
+}
+
+.hologram-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.hologram-modal-btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 160px;
+    justify-content: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.hologram-modal-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hologram-modal-btn:active {
+    transform: translateY(-1px);
+    transition: transform 0.1s;
+}
+
+/* TOMBOL TUTUP (SECONDARY) */
+.hologram-btn-secondary {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    color: #666;
+    border: 2px solid #ddd;
+}
+
+.hologram-btn-secondary:hover {
+    background: linear-gradient(135deg, #e8e8e8 0%, #dbdbdb 100%);
+    color: #555;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: #ccc;
+}
+
+/* TOMBOL CETAK KARTU */
+.hologram-btn-print {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(33, 150, 243, 0.25);
+}
+
+.hologram-btn-print:hover {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    box-shadow: 0 8px 30px rgba(33, 150, 243, 0.4);
+    transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes hologramGlowStatic {
+    0% {
+        box-shadow: 
+            0 10px 35px rgba(26, 95, 35, 0.15),
+            0 0 0 1px rgba(46, 125, 50, 0.1) inset,
+            0 0 50px rgba(76, 175, 80, 0.08) inset;
+    }
+    100% {
+        box-shadow: 
+            0 10px 35px rgba(26, 95, 35, 0.2),
+            0 0 0 1px rgba(46, 125, 50, 0.15) inset,
+            0 0 60px rgba(76, 175, 80, 0.1) inset;
+    }
+}
+
+@keyframes hologramScanStatic {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hologram-static-card {
+        padding: 20px;
+        margin: 15px auto;
+    }
+    
+    .hologram-static-title {
+        font-size: 1.2rem;
+    }
+    
+    .hologram-static-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .hologram-static-item {
+        padding: 12px;
+    }
+    
+    .hologram-static-value {
+        font-size: 1.2rem;
+    }
+    
+    .hologram-modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .hologram-modal-body {
+        padding: 20px;
+    }
+    
+    .hologram-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hologram-item.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .hologram-modal-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .hologram-modal-btn {
+        width: 100%;
+        min-width: auto;
+        padding: 14px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hologram-static-card {
+        padding: 15px;
+        border-radius: 15px;
+    }
+    
+    .hologram-static-title {
+        font-size: 1.1rem;
+    }
+    
+    .hologram-static-footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .hologram-modal-header {
+        padding: 20px;
+    }
+    
+    .hologram-modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .hologram-modal-close {
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    
+    .hologram-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hologram-item {
+        padding: 18px;
+    }
+    
+    .hologram-modal-footer {
+        padding: 15px 20px;
+    }
+}
+</style>
+
+<script>
+// ===== HOLOGRAM STATIC CARD SYSTEM =====
+class HologramStaticSystem {
+    constructor() {
+        this.currentUser = null;
+        this.data = null;
+        this.updateInterval = null;
+        this.init();
+    }
+    
+    init() {
+        console.log('🌟 Initializing Hologram Static Card System...');
+        
+        // Get current user
+        try {
+            this.currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
+        } catch (error) {
+            console.error('Error getting current user:', error);
+        }
+        
+        // Inject hologram card into the page
+        this.injectHologramCard();
+        
+        // Load initial data
+        this.loadData();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        // Auto refresh every 10 seconds
+        this.startAutoRefresh();
+        
+        console.log('✅ Hologram Static Card System Ready');
+    }
+    
+    injectHologramCard() {
+        // Find the stats card section
+        const statsCard = document.querySelector('.stats-card');
+        
+        if (statsCard) {
+            // Replace stats card with hologram card
+            const hologramHTML = `
+                <div class="hologram-static-card" id="hologramStaticCard">
+                    <div class="hologram-static-content">
+                        <div class="hologram-static-header">
+                            <div class="hologram-static-title">
+                                <i class="fas fa-id-card"></i>
+                                RINGKASAN KEUANGAN ANGGOTA
+                            </div>
+                            <div class="hologram-static-subtitle">
+                                Data Real-time Up To Date
+                            </div>
+                        </div>
+                        
+                        <div class="hologram-static-grid" id="hologramStaticGrid">
+                            <div class="hologram-static-item">
+                                <div class="hologram-static-icon">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                </div>
+                                <div class="hologram-static-value" id="hologramTotalSimpanan">
+                                    Rp 0
+                                </div>
+                                <div class="hologram-static-label">
+                                    Total Simpanan
+                                </div>
+                            </div>
+                            
+                            <div class="hologram-static-item">
+                                <div class="hologram-static-icon">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </div>
+                                <div class="hologram-static-value" id="hologramTotalPinjaman">
+                                    Rp 0
+                                </div>
+                                <div class="hologram-static-label">
+                                    Total Pinjaman
+                                </div>
+                            </div>
+                            
+                            <div class="hologram-static-item">
+                                <div class="hologram-static-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="hologram-static-value" id="hologramSHUEstimasi">
+                                    Rp 0
+                                </div>
+                                <div class="hologram-static-label">
+                                    SHU Estimasi
+                                </div>
+                            </div>
+                            
+                            <div class="hologram-static-item">
+                                <div class="hologram-static-icon">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div class="hologram-static-value" id="hologramStatusAnggota">
+                                    ...
+                                </div>
+                                <div class="hologram-static-label">
+                                    Status Anggota
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hologram-static-footer">
+                            <div class="hologram-static-update" id="hologramUpdateTime">
+                                <i class="fas fa-sync-alt fa-spin"></i>
+                                Memuat data...
+                            </div>
+                            <div class="hologram-static-click">
+                                <i class="fas fa-hand-pointer"></i>
+                                Klik kartu untuk detail
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Replace the entire stats card
+            statsCard.outerHTML = hologramHTML;
+            
+            console.log('✅ Hologram static card injected');
+            
+        } else {
+            console.error('❌ Stats card not found');
+        }
+    }
+    
+    async loadData() {
+        try {
+            // Load data from Dashboard Admin
+            const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            const currentUserEmail = this.currentUser?.email;
+            
+            let userData = null;
+            
+            if (currentUserEmail && anggotaData.length > 0) {
+                userData = anggotaData.find(a => a.email === currentUserEmail);
+            }
+            
+            // If not found in admin data, try tabungan data
+            if (!userData) {
+                userData = await this.getTabunganUserData();
+            }
+            
+            // Calculate totals
+            let totalSimpanan = 0;
+            let totalPinjaman = 0;
+            let shuEstimasi = 0;
+            let statusAnggota = 'Memuat...';
+            
+            if (userData) {
+                totalSimpanan = this.calculateTotalSimpanan(userData);
+                totalPinjaman = parseInt(userData?.totalPinjaman) || 
+                               parseInt(userData?.pinjaman?.total) || 0;
+                shuEstimasi = Math.round(totalSimpanan * 0.2);
+                statusAnggota = userData?.statusAktif || userData?.status || 'Aktif';
+            }
+            
+            this.data = {
+                totalSimpanan,
+                totalPinjaman,
+                shuEstimasi,
+                statusAnggota,
+                lastUpdated: userData?.lastUpdated || new Date().toISOString()
+            };
+            
+            // Update UI
+            this.updateUI();
+            
+            console.log('✅ Hologram data loaded:', this.data);
+            
+        } catch (error) {
+            console.error('❌ Error loading hologram data:', error);
+            this.showFallbackData();
+        }
+    }
+    
+    calculateTotalSimpanan(userData) {
+        if (!userData) return 0;
+        
+        let total = 0;
+        
+        // Try from admin data format
+        total += parseInt(userData.simpananPokok) || 0;
+        total += parseInt(userData.simpananWajib) || 0;
+        total += parseInt(userData.simpananSukarela) || 0;
+        
+        // Try from tabungan format
+        if (userData.simpanan) {
+            total += parseInt(userData.simpanan.pokok?.nominal) || 0;
+            total += parseInt(userData.simpanan.wajib?.nominal) || 0;
+            total += parseInt(userData.simpanan.sukarela?.nominal) || 0;
+            total += parseInt(userData.simpanan.total) || 0;
+        }
+        
+        // Use totalSimpanan if available
+        if (userData.totalSimpanan) {
+            total = Math.max(total, parseInt(userData.totalSimpanan) || 0);
+        }
+        
+        return total;
+    }
+    
+    async getTabunganUserData() {
+        try {
+            const tabunganUsers = JSON.parse(localStorage.getItem('tabunganDigitalUsers') || '[]');
+            const currentUserEmail = this.currentUser?.email;
+            
+            if (currentUserEmail && tabunganUsers.length > 0) {
+                return tabunganUsers.find(u => u.email === currentUserEmail);
+            }
+            
+            return null;
+        } catch (error) {
+            return null;
+        }
+    }
+    
+    updateUI() {
+        if (!this.data) return;
+        
+        const formatRupiah = (amount) => {
+            if (!amount && amount !== 0) return 'Rp 0';
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        };
+        
+        // Update values
+        document.getElementById('hologramTotalSimpanan').textContent = 
+            formatRupiah(this.data.totalSimpanan);
+        
+        document.getElementById('hologramTotalPinjaman').textContent = 
+            formatRupiah(this.data.totalPinjaman);
+        
+        document.getElementById('hologramSHUEstimasi').textContent = 
+            formatRupiah(this.data.shuEstimasi);
+        
+        document.getElementById('hologramStatusAnggota').textContent = 
+            this.data.statusAnggota;
+        
+        // Update status color
+        const statusElement = document.getElementById('hologramStatusAnggota');
+        if (statusElement) {
+            if (this.data.statusAnggota === 'Aktif') {
+                statusElement.style.color = '#2e7d32';
+            } else {
+                statusElement.style.color = '#f44336';
+            }
+        }
+        
+        // Update time
+        const updateElement = document.getElementById('hologramUpdateTime');
+        if (updateElement) {
+            const now = new Date();
+            updateElement.innerHTML = `
+                <i class="fas fa-clock"></i>
+                Update: ${now.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                })}
+            `;
+        }
+    }
+    
+    showFallbackData() {
+        // Show default data
+        this.data = {
+            totalSimpanan: 0,
+            totalPinjaman: 0,
+            shuEstimasi: 0,
+            statusAnggota: 'Tidak ditemukan',
+            lastUpdated: new Date().toISOString()
+        };
+        
+        this.updateUI();
+        
+        const updateElement = document.getElementById('hologramUpdateTime');
+        if (updateElement) {
+            updateElement.innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="color: #FF9800;"></i>
+                Data admin tidak ditemukan
+            `;
+        }
+    }
+    
+    setupEventListeners() {
+        // Click on hologram card to show detail
+        const hologramCard = document.getElementById('hologramStaticCard');
+        if (hologramCard) {
+            hologramCard.addEventListener('click', () => {
+                this.showDetailModal();
+            });
+        }
+        
+        // Setup modal event listeners
+        this.setupModalListeners();
+    }
+    
+    setupModalListeners() {
+        // Close button (X)
+        const closeBtn = document.getElementById('closeHologramDetail');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeDetailModal();
+            });
+        }
+        
+        // Close button in footer
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        if (closeDetailBtn) {
+            closeDetailBtn.addEventListener('click', () => {
+                this.closeDetailModal();
+            });
+        }
+        
+        // Print button
+        const printBtn = document.getElementById('printHologramDetailBtn');
+        if (printBtn) {
+            printBtn.addEventListener('click', () => {
+                this.printDetail();
+            });
+        }
+        
+        // Close modal when clicking outside
+        const modalOverlay = document.getElementById('hologramDetailModal');
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    this.closeDetailModal();
+                }
+            });
+        }
+        
+        // Close modal with ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                this.closeDetailModal();
+            }
+        });
+    }
+    
+    showDetailModal() {
+        if (!this.data) return;
+        
+        const formatRupiah = (amount) => {
+            if (!amount && amount !== 0) return 'Rp 0';
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        };
+        
+        const saldoBersih = this.data.totalSimpanan - this.data.totalPinjaman;
+        const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+        const currentUserEmail = this.currentUser?.email;
+        const userData = anggotaData.find(a => a.email === currentUserEmail);
+        
+        const detailHTML = `
+            <div class="hologram-card">
+                <div class="hologram-header">
+                    <h3><i class="fas fa-chart-line"></i> DETAIL RINGKASAN KEUANGAN</h3>
+                    <p>Koperasi Asmara Tani - #koperasijenius</p>
+                </div>
+                
+                <div class="hologram-grid">
+                    <!-- User Info -->
+                    <div class="hologram-item full-width">
+                        <div class="hologram-label">
+                            <i class="fas fa-user-circle"></i>
+                            Informasi Anggota
+                        </div>
+                        <div class="hologram-value">${this.currentUser?.name || 'Anggota Koperasi'}</div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <span><i class="fas fa-id-card"></i> ${userData?.nia || userData?.id || 'N/A'}</span>
+                            <span><i class="fas fa-briefcase"></i> ${userData?.posisi || 'Anggota'}</span>
+                            <span><i class="fas fa-envelope"></i> ${this.currentUser?.email || ''}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Simpanan Breakdown -->
+                    <div class="hologram-item">
+                        <div class="hologram-label">
+                            <i class="fas fa-landmark"></i>
+                            Simpanan Pokok
+                        </div>
+                        <div class="hologram-value rp">${formatRupiah(parseInt(userData?.simpananPokok) || 0)}</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                            <i class="fas fa-check-circle" style="color: #4CAF50;"></i> Dibayar sekali
+                        </div>
+                    </div>
+                    
+                    <div class="hologram-item">
+                        <div class="hologram-label">
+                            <i class="fas fa-calendar-check"></i>
+                            Simpanan Wajib
+                        </div>
+                        <div class="hologram-value rp">${formatRupiah(parseInt(userData?.simpananWajib) || 0)}</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                            <i class="fas fa-sync-alt" style="color: #FF9800;"></i> Rutin bulanan
+                        </div>
+                    </div>
+                    
+                    <div class="hologram-item">
+                        <div class="hologram-label">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            Simpanan Sukarela
+                        </div>
+                        <div class="hologram-value rp">${formatRupiah(parseInt(userData?.simpananSukarela) || 0)}</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                            <i class="fas fa-heart" style="color: #E91E63;"></i> Opsional
+                        </div>
+                    </div>
+                    
+                    <!-- Totals -->
+                    <div class="hologram-item full-width">
+                        <div class="hologram-label">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            Total Simpanan
+                        </div>
+                        <div class="hologram-value rp" style="font-size: 1.8rem; color: #0d4014;">
+                            ${formatRupiah(this.data.totalSimpanan)}
+                        </div>
+                        <div style="height: 3px; background: linear-gradient(90deg, #4CAF50, #2e7d32, #1a5f23); border-radius: 2px; margin-top: 10px;"></div>
+                    </div>
+                    
+                    <div class="hologram-item">
+                        <div class="hologram-label">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            Total Pinjaman
+                        </div>
+                        <div class="hologram-value rp" style="color: ${this.data.totalPinjaman > 0 ? '#c62828' : '#4CAF50'}">
+                            ${formatRupiah(this.data.totalPinjaman)}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                            <i class="fas ${this.data.totalPinjaman > 0 ? 'fa-exclamation-triangle' : 'fa-check-circle'}" 
+                               style="color: ${this.data.totalPinjaman > 0 ? '#FF9800' : '#4CAF50'}"></i>
+                            ${this.data.totalPinjaman > 0 ? 'Pinjaman aktif' : 'Tidak ada pinjaman'}
+                        </div>
+                    </div>
+                    
+                    <div class="hologram-item">
+                        <div class="hologram-label">
+                            <i class="fas fa-calculator"></i>
+                            SHU Estimasi
+                        </div>
+                        <div class="hologram-value rp" style="color: #2196F3;">
+                            ${formatRupiah(this.data.shuEstimasi)}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                            <i class="fas fa-chart-line" style="color: #2196F3;"></i> 20% dari simpanan
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="hologram-item">
+                        <div class="hologram-label">
+                            <i class="fas fa-user-check"></i>
+                            Status Keanggotaan
+                        </div>
+                        <div class="hologram-status ${this.data.statusAnggota === 'Aktif' ? 'status-aktif' : 'status-tidak-aktif'}">
+                            ${this.data.statusAnggota}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                            <i class="fas fa-badge-check"></i> ${this.data.statusAnggota === 'Aktif' ? 'Akses penuh' : 'Terbatas'}
+                        </div>
+                    </div>
+                    
+                    <!-- Saldo Bersih -->
+                    <div class="hologram-item full-width">
+                        <div class="hologram-label">
+                            <i class="fas fa-scale-balanced"></i>
+                            Saldo Bersih (Estimasi)
+                        </div>
+                        <div class="hologram-value rp" style="font-size: 1.6rem; color: ${saldoBersih >= 0 ? '#1a5f23' : '#c62828'};">
+                            ${formatRupiah(saldoBersih)}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666; margin-top: 5px; text-align: center;">
+                            Simpanan (${formatRupiah(this.data.totalSimpanan)}) - Pinjaman (${formatRupiah(this.data.totalPinjaman)}) = Saldo Bersih
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hologram-footer">
+                    <p>
+                        <i class="fas fa-database"></i> 
+                        Sumber data: ${userData ? 'Dashboard Admin' : 'Tabungan Digital'}
+                    </p>
+                    <p>
+                        <i class="fas fa-clock"></i> 
+                        Update terakhir: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}
+                    </p>
+                    <p style="font-size: 0.75rem; margin-top: 10px; color: rgba(13, 64, 20, 0.6);">
+                        *Data ini diperbarui otomatis setiap 10 detik dari Dashboard Admin
+                    </p>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('hologramDetailContent').innerHTML = detailHTML;
+        document.getElementById('hologramDetailModal').classList.add('active');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+    
+    closeDetailModal() {
+        document.getElementById('hologramDetailModal').classList.remove('active');
+        // Restore body scroll
+        document.body.style.overflow = '';
+    }
+    
+    printDetail() {
+        const detailContent = document.querySelector('.hologram-card');
+        if (!detailContent) return;
+        
+        try {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Kartu Ringkasan Keuangan - Koperasi Asmara Tani</title>
+                    <meta charset="UTF-8">
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                            background: #f5f5f5;
+                        }
+                        
+                        @media print {
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background: white;
+                            }
+                            @page {
+                                size: A4;
+                                margin: 15mm;
+                            }
+                        }
+                        
+                        .print-container {
+                            background: white;
+                            border: 3px solid #1a5f23;
+                            border-radius: 20px;
+                            padding: 30px;
+                            max-width: 700px;
+                            margin: 0 auto;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                        }
+                        
+                        .watermark {
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%) rotate(-45deg);
+                            opacity: 0.05;
+                            font-size: 120px;
+                            color: #1a5f23;
+                            font-weight: bold;
+                            z-index: -1;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="watermark">KOPERASI ASMARA TANI</div>
+                    <div class="print-container">
+                        ${detailContent.outerHTML}
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            setTimeout(() => {
+                                window.print();
+                                setTimeout(() => {
+                                    window.close();
+                                }, 500);
+                            }, 500);
+                        };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            
+            // Show notification
+            this.showNotification('Membuka jendela cetak...', 'info');
+            
+        } catch (error) {
+            console.error('Error printing:', error);
+            this.showNotification('Gagal mencetak. Silakan coba lagi.', 'error');
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = 'hologram-notification';
+        notification.innerHTML = `
+            <i class="fas ${type === 'info' ? 'fa-info-circle' : type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'info' ? '#2196F3' : type === 'success' ? '#4CAF50' : '#f44336'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100000;
+            animation: hologramSlideIn 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'hologramSlideOut 0.3s ease forwards';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+        
+        // Add animation styles
+        if (!document.querySelector('#hologram-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'hologram-notification-styles';
+            style.textContent = `
+                @keyframes hologramSlideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes hologramSlideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    startAutoRefresh() {
+        // Refresh data every 10 seconds
+        this.updateInterval = setInterval(() => {
+            this.loadData();
+        }, 10000);
+        
+        // Also refresh when storage changes (admin updates data)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'koperasi_anggota' || e.key === 'koperasiData') {
+                console.log('🔄 Storage change detected, refreshing hologram data');
+                this.loadData();
+                this.showNotification('Data diperbarui!', 'success');
+            }
+        });
+        
+        // Refresh when page becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.loadData();
+            }
+        });
+    }
+    
+    destroy() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+        }
+    }
+}
+
+// ===== INITIALIZE HOLOGRAM STATIC SYSTEM =====
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        window.hologramStaticSystem = new HologramStaticSystem();
+        console.log('🎨 Hologram Static System integrated successfully');
+    }, 1500);
+});
+</script>
     <!-- ===== MAIN TABUNGAN APP ===== -->
     <script>
     const { jsPDF } = window.jspdf;
