@@ -1116,31 +1116,81 @@
         </div>
     </div>
 
-    <!-- ===== STATS CARD ===== -->
-    <div class="stats-card">
-        <div class="stats-header">
-            <div class="stats-title">Ringkasan Keuangan</div>
-            <div class="sync-indicator success" id="dataSyncIndicator" title="Data tersinkron"></div>
+    <!-- ===== HOLOGRAM STATIC CARD ===== -->
+<div class="hologram-static-card" id="hologramStaticCard">
+    <div class="hologram-static-content">
+        <div class="hologram-static-header">
+            <div class="hologram-static-title">
+                <i class="fas fa-id-card"></i>
+                RINGKASAN KEUANGAN ANGGOTA
+            </div>
+            <div class="hologram-static-subtitle">
+                Data Real-time Up To Date
+            </div>
         </div>
-        <div class="stats-grid">
-            <div class="stat-item" id="totalSimpananBtn">
-                <div class="stat-value" id="totalSimpanan">Rp 0</div>
-                <div class="stat-label">Total Simpanan</div>
+        
+        <div class="hologram-static-grid" id="hologramStaticGrid">
+            <div class="hologram-static-item">
+                <div class="hologram-static-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="hologram-static-value" id="hologramTotalSimpanan">
+                    Rp 0
+                </div>
+                <div class="hologram-static-label">
+                    Total Simpanan
+                </div>
             </div>
-            <div class="stat-item" id="totalPinjamanBtn">
-                <div class="stat-value" id="totalPinjaman">Rp 0</div>
-                <div class="stat-label">Pinjaman</div>
+            
+            <div class="hologram-static-item">
+                <div class="hologram-static-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="hologram-static-value" id="hologramTotalPinjaman">
+                    Rp 0
+                </div>
+                <div class="hologram-static-label">
+                    Total Pinjaman
+                </div>
             </div>
-            <div class="stat-item" id="shuEstimasiBtn">
-                <div class="stat-value" id="shuEstimasi">Rp 0</div>
-                <div class="stat-label">SHU Estimasi</div>
+            
+            <div class="hologram-static-item">
+                <div class="hologram-static-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="hologram-static-value" id="hologramSHUEstimasi">
+                    Rp 0
+                </div>
+                <div class="hologram-static-label">
+                    SHU Estimasi
+                </div>
             </div>
-            <div class="stat-item" id="statusAnggotaBtn">
-                <div class="stat-value" id="statusAnggota">...</div>
-                <div class="stat-label">Status Anggota</div>
+            
+            <div class="hologram-static-item">
+                <div class="hologram-static-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="hologram-static-value" id="hologramStatusAnggota">
+                    Aktif
+                </div>
+                <div class="hologram-static-label">
+                    Status Anggota
+                </div>
+            </div>
+        </div>
+        
+        <div class="hologram-static-footer">
+            <div class="hologram-static-update" id="hologramUpdateTime">
+                <i class="fas fa-sync-alt fa-spin"></i>
+                Memuat data...
+            </div>
+            <div class="hologram-static-click">
+                <i class="fas fa-hand-pointer"></i>
+                Klik kartu untuk detail
             </div>
         </div>
     </div>
+</div>
 
     <!-- ===== MENU UTAMA ===== -->
     <div class="menu-section">
@@ -1280,6 +1330,33 @@
 
     <!-- ===== PRINT PREVIEW ===== -->
     <div id="printPreview" class="print-preview"></div>
+    <!-- ===== MODAL KARTU HOLOGRAM DETAIL ===== -->
+<div class="hologram-modal-overlay" id="hologramDetailModal">
+    <div class="hologram-modal-content">
+        <!-- Header Modal -->
+        <div class="hologram-modal-header">
+            <h3><i class="fas fa-file-invoice-dollar"></i> Detail Ringkasan Keuangan</h3>
+            <button class="hologram-modal-close" id="closeHologramDetail">&times;</button>
+        </div>
+        
+        <!-- Body Modal -->
+        <div class="hologram-modal-body" id="hologramDetailContent">
+            <!-- Detail akan diisi oleh JavaScript -->
+        </div>
+        
+        <!-- Footer Modal dengan Tombol Aksi -->
+        <div class="hologram-modal-footer">
+            <div class="hologram-modal-actions">
+                <button class="hologram-modal-btn hologram-btn-secondary" id="closeDetailBtn">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+                <button class="hologram-modal-btn hologram-btn-print" id="printHologramDetailBtn">
+                    <i class="fas fa-print"></i> Cetak Kartu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ===== ENHANCED SYNC SYSTEM (STANDALONE) ===== -->
 <script>
 // ENHANCED SYNC SYSTEM - Standalone version
