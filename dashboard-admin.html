@@ -4317,10 +4317,10 @@ function updateMinimalSimpananInfo() {
     
     switch(jenis.value) {
         case 'Pokok':
-            minimal = 200000;
+            minimal = 0;
             break;
         case 'Wajib':
-            minimal = 20000;
+            minimal = 0;
             break;
         case 'Sukarela':
             showInfo = false;
@@ -4530,13 +4530,13 @@ async function saveSimpananData() {
         return false;
     }
     
-    if (jenis === 'Pokok' && nominal < 200000) {
-        showNotification('Simpanan Pokok minimal Rp 200.000!', 'error');
+    if (jenis === 'Pokok' && nominal < 0) {
+        showNotification('Simpanan Pokok minimal Rp 0!', 'error');
         return false;
     }
     
-    if (jenis === 'Wajib' && nominal < 20000) {
-        showNotification('Simpanan Wajib minimal Rp 20.000!', 'error');
+    if (jenis === 'Wajib' && nominal < 0) {
+        showNotification('Simpanan Wajib minimal Rp 0!', 'error');
         return false;
     }
     
