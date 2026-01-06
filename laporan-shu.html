@@ -1028,7 +1028,7 @@
                             <i class="fas fa-user-friends"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="totalAnggotaPenerima">48</div>
+                    <div class="stat-value" id="totalAnggotaPenerima">0</div>
                     <div class="stat-detail">
                         <i class="fas fa-check-circle text-success"></i>
                         Semua menerima SHU
@@ -1042,7 +1042,7 @@
                             <i class="fas fa-calculator"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="avgPerAnggota">Rp 653.385</div>
+                    <div class="stat-value" id="avgPerAnggota">Rp 0</div>
                     <div class="stat-detail">
                         <i class="fas fa-coins"></i>
                         Berdasarkan simpanan
@@ -1080,7 +1080,7 @@
         
         <!-- FOOTER -->
         <footer class="footer">
-            <p>© 2024 Koperasi Asmara Tani</p>
+            <p>© <span id="currentYear"></span> Koperasi Asmara Tani</p>
             <p>Laporan SHU - Dicetak dari Sistem Administrasi</p>
         </footer>
     </div>
@@ -1096,25 +1096,21 @@
         };
         let chartInstance = null;
         let chartType = 'pie';
-
+        
         // ===== INITIALIZE APP =====
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📱 Mobile SHU Report Initializing...');
             
+            // Update tahun footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
             // Update tombol back ke dashboard
             document.querySelector('.back-button').onclick = function() {
-                if (window.history.length > 1) {
-                    window.history.back();
-                } else {
-                    window.location.href = 'dashboard-admin.html';
-                }
+                window.location.href = 'dashboard-admin.html';
             };
             
-            // Load data dari Dashboard
+            // Load data dari Dashboard (TERINTEGRASI)
             loadDataFromDashboard();
-            
-            // Load data penerima
-            loadPenerimaData();
             
             // Setup event listeners
             setupEventListeners();
@@ -1122,107 +1118,272 @@
             // Initialize dengan filter saat ini
             applyFilter();
             
-            // Sync dengan dashboard
-            syncWithDashboard();
+            // Setup auto-sync dengan Dashboard
+            setupAutoSync();
             
             console.log('✅ Mobile SHU Report Ready');
         });
 
-        // ===== LOAD DATA FROM DASHBOARD (DIPERBAIKI) =====
+        // ===== FUNGSI LOAD DATA TERINTEGRASI =====
         function loadDataFromDashboard() {
             console.log('📊 Loading data from Dashboard...');
             
             try {
-                // Coba ambil data dari Dashboard Admin
-                const dashboardData = localStorage.getItem('dashboardData');
+                // 1. Ambil data dari localStorage Dashboard
+                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || 
+                                               localStorage.getItem('anggotaData') || '[]');
+                const simpananData = JSON.parse(localStorage.getItem('simpananData') || '[]');
                 
-                if (dashboardData) {
-                    const data = JSON.parse(dashboardData);
-                    
-                    // Ambil data SHU dari dashboard
-                    if (data.shu) {
-                        shuData = data.shu.distribusi || [];
-                        const totalSHU = data.shu.total || 0;
-                        const tahunBerjalan = data.shu.tahun || 2024;
-                        
-                        // Update filter tahun
-                        document.getElementById('tahunSHU').value = tahunBerjalan;
-                        
-                        // Update statistik dari dashboard
-                        updateStatsFromDashboard(data.shu);
-                        
-                        console.log('✅ SHU data loaded from dashboard:', shuData.length, 'items');
-                        return;
+                // 2. Hitung total simpanan dari dashboard
+                const totalSimpanan = simpananData.reduce((sum, s) => {
+                    return sum + (parseInt(s.nominal) || 0);
+                }, 0);
+                
+                // 3. Hitung total SHU (20% dari total simpanan)
+                const totalSHU = Math.round(totalSimpanan * 0.2);
+                
+                // 4. Distribusi SHU berdasarkan AD/ART koperasi
+                const distribusiSHU = [
+                    {
+                        id: 'SHU-001',
+                        jenis: 'Dana Cadangan',
+                        persentase: 40,
+                        jumlah: Math.round(totalSHU * 0.4),
+                        deskripsi: 'Dana untuk pengembangan koperasi',
+                        status: 'Disetorkan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-CAD-' + new Date().getFullYear() + '-001',
+                        color: '#2e7d32'
+                    },
+                    {
+                        id: 'SHU-002',
+                        jenis: 'Dana Anggota',
+                        persentase: 25,
+                        jumlah: Math.round(totalSHU * 0.25),
+                        deskripsi: 'Dibagikan kepada anggota sesuai simpanan',
+                        status: 'Dibagikan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-ANG-' + new Date().getFullYear() + '-001',
+                        color: '#2196f3'
+                    },
+                    {
+                        id: 'SHU-003',
+                        jenis: 'Dana Pengurus',
+                        persentase: 10,
+                        jumlah: Math.round(totalSHU * 0.1),
+                        deskripsi: 'Honorarium pengurus koperasi',
+                        status: 'Dibayarkan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-PEN-' + new Date().getFullYear() + '-001',
+                        color: '#ff9800'
+                    },
+                    {
+                        id: 'SHU-004',
+                        jenis: 'Dana Karyawan',
+                        persentase: 5,
+                        jumlah: Math.round(totalSHU * 0.05),
+                        deskripsi: 'Bonus untuk karyawan',
+                        status: 'Dibayarkan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-KAR-' + new Date().getFullYear() + '-001',
+                        color: '#9c27b0'
+                    },
+                    {
+                        id: 'SHU-005',
+                        jenis: 'Dana Pendidikan',
+                        persentase: 5,
+                        jumlah: Math.round(totalSHU * 0.05),
+                        deskripsi: 'Program pendidikan anggota',
+                        status: 'Dialokasikan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-PDK-' + new Date().getFullYear() + '-001',
+                        color: '#00bcd4'
+                    },
+                    {
+                        id: 'SHU-006',
+                        jenis: 'Dana Sosial',
+                        persentase: 5,
+                        jumlah: Math.round(totalSHU * 0.05),
+                        deskripsi: 'Kegiatan sosial kemasyarakatan',
+                        status: 'Dialokasikan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-SOS-' + new Date().getFullYear() + '-001',
+                        color: '#ff5722'
+                    },
+                    {
+                        id: 'SHU-007',
+                        jenis: 'Dana Pembangunan',
+                        persentase: 10,
+                        jumlah: Math.round(totalSHU * 0.1),
+                        deskripsi: 'Pengembangan sarana prasarana',
+                        status: 'Dialokasikan',
+                        sumber: 'Simpanan Anggota',
+                        tanggal: new Date().getFullYear() + '-12-31',
+                        bukti: 'SHU-BNG-' + new Date().getFullYear() + '-001',
+                        color: '#795548'
                     }
-                }
+                ];
                 
-                // Cek localStorage khusus SHU
-                const savedData = localStorage.getItem('shuData');
-                if (savedData) {
-                    shuData = JSON.parse(savedData);
-                    console.log('✅ SHU data loaded from localStorage');
-                } else {
-                    generateSampleData();
-                }
+                shuData = distribusiSHU;
                 
-                // Update stats
-                updateStats();
+                // 5. Hitung SHU per anggota (25% dari total SHU dibagikan ke anggota)
+                const totalSHUUntukAnggota = Math.round(totalSHU * 0.25);
+                
+                // 6. Hitung total simpanan per anggota
+                const totalSimpananPerAnggota = {};
+                anggotaData.forEach(anggota => {
+                    const simpananAnggota = simpananData
+                        .filter(s => s.idAnggota === anggota.id)
+                        .reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
+                    
+                    totalSimpananPerAnggota[anggota.id] = simpananAnggota;
+                });
+                
+                // 7. Hitung total semua simpanan anggota
+                const totalSimpananSemuaAnggota = Object.values(totalSimpananPerAnggota)
+                    .reduce((sum, val) => sum + val, 0);
+                
+                // 8. Generate data penerima SHU
+                penerimaData = anggotaData
+                    .filter(anggota => totalSimpananPerAnggota[anggota.id] > 0)
+                    .map(anggota => {
+                        const simpananAnggota = totalSimpananPerAnggota[anggota.id] || 0;
+                        const persentaseAnggota = totalSimpananSemuaAnggota > 0 ?
+                            (simpananAnggota / totalSimpananSemuaAnggota * 100) : 0;
+                        const shuAnggota = Math.round(totalSHUUntukAnggota * (persentaseAnggota / 100));
+                        
+                        return {
+                            id: anggota.id,
+                            nama: anggota.nama,
+                            noAnggota: anggota.nia || anggota.id,
+                            simpananPokok: anggota.simpananPokok || 0,
+                            simpananWajib: anggota.simpananWajib || 0,
+                            simpananSukarela: anggota.simpananSukarela || 0,
+                            totalSimpanan: simpananAnggota,
+                            shuDiterima: shuAnggota,
+                            persentase: persentaseAnggota.toFixed(2),
+                            tanggalTerima: new Date().getFullYear() + '-12-15',
+                            status: shuAnggota > 0 ? 'Diterima' : 'Belum Diterima',
+                            bukti: 'SHU-' + (anggota.nia || anggota.id) + '-' + new Date().getFullYear()
+                        };
+                    });
+                
+                // 9. Update statistik
+                updateStats(totalSHU, totalSHUUntukAnggota);
+                
+                // 10. Tampilkan data penerima
+                displayPenerimaData();
+                
+                // 11. Simpan data SHU untuk sinkronisasi dengan Dashboard
+                saveSHUDataToDashboard(totalSHU, totalSHUUntukAnggota, anggotaData.length);
+                
+                console.log('✅ SHU data calculated from dashboard:', {
+                    totalSHU: totalSHU,
+                    totalAnggota: anggotaData.length,
+                    penerimaSHU: penerimaData.length,
+                    distribusiSHU: distribusiSHU.length
+                });
                 
             } catch (error) {
-                console.error('❌ Error loading data:', error);
-                showMessage('Gagal memuat data dari database', 'error');
+                console.error('❌ Error loading data from dashboard:', error);
+                showMessage('Gagal memuat data dari dashboard', 'error');
+                
+                // Fallback ke data sample jika error
                 generateSampleData();
             }
         }
 
-        function updateStatsFromDashboard(shuDataFromDashboard) {
-            if (shuDataFromDashboard) {
-                document.getElementById('totalSHUDisplay').textContent = formatCurrency(shuDataFromDashboard.total || 0);
-                document.getElementById('shuAnggotaDisplay').textContent = formatCurrency(shuDataFromDashboard.dibagikan || 0);
-                document.getElementById('danaCadanganDisplay').textContent = formatCurrency(shuDataFromDashboard.cadangan || 0);
+        // ===== FUNGSI SINKRONISASI DUA ARAH =====
+        function saveSHUDataToDashboard(totalSHU, shuAnggota, jumlahAnggota) {
+            try {
+                // Simpan data SHU untuk digunakan Dashboard
+                const dashboardSHUData = {
+                    total: totalSHU,
+                    dibagikan: shuAnggota,
+                    cadangan: Math.round(totalSHU * 0.4),
+                    anggota: jumlahAnggota,
+                    pertumbuhan: calculateGrowthPercent(),
+                    distribusi: shuData,
+                    penerima: penerimaData,
+                    tahun: new Date().getFullYear(),
+                    tanggalHitung: new Date().toISOString()
+                };
                 
-                // Hitung rata-rata
-                const rataRata = shuDataFromDashboard.anggota > 0 ? 
-                    Math.round(shuDataFromDashboard.dibagikan / shuDataFromDashboard.anggota) : 0;
-                document.getElementById('rataRataSHU').textContent = formatCurrency(rataRata);
-                document.getElementById('jumlahAnggotaSHU').textContent = shuDataFromDashboard.anggota || 0;
+                localStorage.setItem('shuData', JSON.stringify(dashboardSHUData));
                 
-                // Update growth percent dari dashboard
-                if (shuDataFromDashboard.pertumbuhan) {
-                    document.getElementById('growthPercent').textContent = 
-                        `${shuDataFromDashboard.pertumbuhan}%`;
-                }
+                // Update Dashboard stats jika dashboard terbuka
+                updateDashboardStatsFromSHU(totalSHU, shuAnggota);
+                
+                console.log('✅ SHU data saved to dashboard');
+                
+            } catch (error) {
+                console.error('❌ Error saving SHU data to dashboard:', error);
             }
         }
 
-        // ===== REAL-TIME DATA SYNC =====
-        function syncWithDashboard() {
-            // Listen for data changes from dashboard
+        function updateDashboardStatsFromSHU(totalSHU, shuAnggota) {
+            try {
+                // Simpan data untuk dashboard
+                const dashboardStats = {
+                    shu: {
+                        total: totalSHU,
+                        dibagikan: shuAnggota,
+                        cadangan: Math.round(totalSHU * 0.4),
+                        pertumbuhan: calculateGrowthPercent(),
+                        tahun: new Date().getFullYear()
+                    }
+                };
+                
+                localStorage.setItem('dashboardSHUStats', JSON.stringify(dashboardStats));
+                
+            } catch (error) {
+                console.error('❌ Error updating dashboard stats:', error);
+            }
+        }
+
+        function calculateGrowthPercent() {
+            // Simulasi pertumbuhan 15.5%
+            return '15.5';
+        }
+
+        // ===== SETUP AUTO SYNC =====
+        function setupAutoSync() {
+            // Listen for changes in dashboard data
             window.addEventListener('storage', function(e) {
-                if (e.key === 'dashboardData' || e.key === 'shuData') {
-                    console.log('🔄 Data updated from dashboard, refreshing...');
-                    loadDataFromDashboard();
-                    applyFilter();
-                    showMessage('Data diperbarui dari dashboard', 'info');
+                if (e.key === 'simpananData' || 
+                    e.key === 'koperasi_anggota' || 
+                    e.key === 'anggotaData') {
+                    console.log('🔄 Data updated from dashboard, recalculating SHU...');
+                    
+                    // Debounce untuk menghindari multiple recalculations
+                    clearTimeout(window.shuRecalcTimeout);
+                    window.shuRecalcTimeout = setTimeout(() => {
+                        loadDataFromDashboard();
+                        applyFilter();
+                        showMessage('Data SHU diperbarui dari dashboard', 'info');
+                    }, 500);
                 }
             });
             
             // Check for updates every 30 seconds
             setInterval(() => {
-                const dashboardData = localStorage.getItem('dashboardData');
-                if (dashboardData) {
-                    const currentData = JSON.stringify(shuData);
-                    const newData = JSON.parse(dashboardData);
-                    
-                    if (newData.shu && JSON.stringify(newData.shu.distribusi) !== currentData) {
-                        loadDataFromDashboard();
-                        applyFilter();
-                    }
+                const lastUpdate = localStorage.getItem('shuLastUpdate');
+                const now = Date.now();
+                
+                if (!lastUpdate || (now - parseInt(lastUpdate)) > 30000) {
+                    loadDataFromDashboard();
+                    localStorage.setItem('shuLastUpdate', now.toString());
                 }
             }, 30000);
         }
 
-        // ===== GENERATE SAMPLE DATA =====
+        // ===== GENERATE SAMPLE DATA (FALLBACK) =====
         function generateSampleData() {
             console.log('📝 Generating sample data...');
             
@@ -1313,24 +1474,60 @@
                 }
             ];
             
-            console.log('✅ Sample data generated');
-            updateStats();
+            // Generate sample penerima data
+            penerimaData = [
+                {
+                    id: 'P001',
+                    nama: 'Budi Santoso',
+                    noAnggota: 'AGT-001',
+                    simpananPokok: 500000,
+                    simpananWajib: 1200000,
+                    simpananSukarela: 800000,
+                    totalSimpanan: 2500000,
+                    shuDiterima: 843750,
+                    persentase: 3.2,
+                    tanggalTerima: '2024-12-15',
+                    status: 'Diterima',
+                    bukti: 'SHU-AGT-001-2024'
+                },
+                {
+                    id: 'P002',
+                    nama: 'Siti Rahayu',
+                    noAnggota: 'AGT-002',
+                    simpananPokok: 500000,
+                    simpananWajib: 1800000,
+                    simpananSukarela: 1200000,
+                    totalSimpanan: 3500000,
+                    shuDiterima: 1181250,
+                    persentase: 4.5,
+                    tanggalTerima: '2024-12-15',
+                    status: 'Diterima',
+                    bukti: 'SHU-AGT-002-2024'
+                }
+            ];
+            
+            updateStats(125450000, 31362500);
+            displayPenerimaData();
         }
 
         // ===== UPDATE STATISTICS =====
-        function updateStats() {
-            const totalSHU = shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
-            const shuAnggota = shuData.find(item => item.jenis === 'Dana Anggota')?.jumlah || 0;
+        function updateStats(totalSHU = 0, shuAnggota = 0) {
+            // Hitung statistik dari data aktual
             const danaCadangan = shuData.find(item => item.jenis === 'Dana Cadangan')?.jumlah || 0;
-            const rataRata = Math.round(shuAnggota / 48); // Asumsi 48 anggota
+            const rataRata = penerimaData.length > 0 ? 
+                Math.round(shuAnggota / penerimaData.length) : 0;
             
             // Format currency
             document.getElementById('totalSHUDisplay').textContent = formatCurrency(totalSHU);
             document.getElementById('shuAnggotaDisplay').textContent = formatCurrency(shuAnggota);
             document.getElementById('danaCadanganDisplay').textContent = formatCurrency(danaCadangan);
             document.getElementById('rataRataSHU').textContent = formatCurrency(rataRata);
-            document.getElementById('jumlahAnggotaSHU').textContent = '48';
+            document.getElementById('jumlahAnggotaSHU').textContent = penerimaData.length;
             document.getElementById('growthPercent').textContent = '15.5%';
+            
+            // Update statistik penerima
+            document.getElementById('totalAnggotaPenerima').textContent = penerimaData.length;
+            document.getElementById('avgPerAnggota').textContent = formatCurrency(rataRata);
         }
 
         // ===== APPLY FILTER =====
@@ -1494,73 +1691,20 @@
         }
 
         // ===== PENERIMA SHU DATA =====
-        function loadPenerimaData() {
-            // Sample data penerima SHU
-            penerimaData = [
-                {
-                    id: 'P001',
-                    nama: 'Budi Santoso',
-                    noAnggota: 'AGT-001',
-                    simpananPokok: 500000,
-                    simpananWajib: 1200000,
-                    simpananSukarela: 800000,
-                    totalSimpanan: 2500000,
-                    shuDiterima: 843750,
-                    persentase: 3.2,
-                    tanggalTerima: '2024-12-15',
-                    status: 'Diterima',
-                    bukti: 'SHU-AGT-001-2024'
-                },
-                {
-                    id: 'P002',
-                    nama: 'Siti Rahayu',
-                    noAnggota: 'AGT-002',
-                    simpananPokok: 500000,
-                    simpananWajib: 1800000,
-                    simpananSukarela: 1200000,
-                    totalSimpanan: 3500000,
-                    shuDiterima: 1181250,
-                    persentase: 4.5,
-                    tanggalTerima: '2024-12-15',
-                    status: 'Diterima',
-                    bukti: 'SHU-AGT-002-2024'
-                },
-                {
-                    id: 'P003',
-                    nama: 'Agus Wijaya',
-                    noAnggota: 'AGT-003',
-                    simpananPokok: 500000,
-                    simpananWajib: 2400000,
-                    simpananSukarela: 1600000,
-                    totalSimpanan: 4500000,
-                    shuDiterima: 1518750,
-                    persentase: 5.8,
-                    tanggalTerima: '2024-12-16',
-                    status: 'Diterima',
-                    bukti: 'SHU-AGT-003-2024'
-                },
-                {
-                    id: 'P004',
-                    nama: 'Dewi Lestari',
-                    noAnggota: 'AGT-004',
-                    simpananPokok: 500000,
-                    simpananWajib: 1500000,
-                    simpananSukarela: 1000000,
-                    totalSimpanan: 3000000,
-                    shuDiterima: 1012500,
-                    persentase: 3.8,
-                    tanggalTerima: '2024-12-16',
-                    status: 'Diterima',
-                    bukti: 'SHU-AGT-004-2024'
-                }
-            ];
-            
-            displayPenerimaData();
-        }
-
         function displayPenerimaData() {
             const cardView = document.getElementById('penerimaCardView');
             cardView.innerHTML = '';
+            
+            if (penerimaData.length === 0) {
+                cardView.innerHTML = `
+                    <div class="shu-card" style="text-align: center;">
+                        <i class="fas fa-users" style="font-size: 3rem; color: var(--gray-light); margin-bottom: 16px;"></i>
+                        <p style="color: var(--gray);">Belum ada data penerima SHU</p>
+                        <p style="color: var(--gray); font-size: 0.9rem;">Data akan muncul setelah ada simpanan dari anggota</p>
+                    </div>
+                `;
+                return;
+            }
             
             penerimaData.forEach((anggota, index) => {
                 const card = document.createElement('div');
@@ -1573,8 +1717,8 @@
                             <h3>${anggota.nama}</h3>
                             <span class="card-badge">No: ${anggota.noAnggota}</span>
                         </div>
-                        <span class="badge badge-success">
-                            <i class="fas fa-check-circle"></i>
+                        <span class="badge ${anggota.status === 'Diterima' ? 'badge-success' : 'badge-warning'}">
+                            <i class="fas fa-${anggota.status === 'Diterima' ? 'check-circle' : 'clock'}"></i>
                             ${anggota.status}
                         </span>
                     </div>
@@ -1721,7 +1865,7 @@
                     <div class="header">
                         <h1>KOPERASI ASMARA TANI</h1>
                         <h2>BUKTI PENERIMAAN SHU</h2>
-                        <p>Tahun Anggaran 2024</p>
+                        <p>Tahun Anggaran ${new Date().getFullYear()}</p>
                     </div>
                     
                     <div class="content">
@@ -2345,7 +2489,7 @@
             
             // Reset filter button
             document.getElementById('resetFilterBtn').addEventListener('click', function() {
-                document.getElementById('tahunSHU').value = '2024';
+                document.getElementById('tahunSHU').value = new Date().getFullYear().toString();
                 document.getElementById('periodeSHU').value = 'tahunan';
                 document.getElementById('statusSHU').value = 'all';
                 applyFilter();
@@ -2366,7 +2510,7 @@
             // Refresh data
             document.getElementById('refreshDataBtn').addEventListener('click', function() {
                 loadDataFromDashboard();
-                showMessage('Data diperbarui', 'success');
+                showMessage('Data diperbarui dari dashboard', 'success');
             });
             
             // View chart
@@ -2411,8 +2555,8 @@
                     // Swipe left - bisa untuk navigasi
                     console.log('Swiped left');
                 } else {
-                    // Swipe right - bisa untuk navigasi
-                    console.log('Swiped right');
+                    // Swipe right - kembali ke dashboard
+                    window.location.href = 'dashboard-admin.html';
                 }
             }
         });
