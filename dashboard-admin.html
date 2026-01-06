@@ -6997,6 +6997,43 @@ function setupSidebarAutoClose() {
         }
     });
 }
+ // ===== INTEGRASI DUA ARAH DENGAN LAPORAN SHU =====
+‎function updateSHUFromLaporan() {
+‎    try {
+‎        const shuData = JSON.parse(localStorage.getItem('shuData'));
+‎        if (shuData) {
+‎            // Pastikan elemen ada di DOM
+‎            const totalSHUElem = document.getElementById('totalSHU');
+‎            const totalKasElem = document.getElementById('totalKas');
+‎            
+‎            if (totalSHUElem) {
+‎                totalSHUElem.textContent = formatRupiah(shuData.total);
+‎            }
+‎            if (totalKasElem) {
+‎                totalKasElem.textContent = formatRupiah(shuData.cadangan);
+‎            }
+‎            console.log('✅ SHU data loaded from Laporan SHU');
+‎        }
+‎    } catch (error) {
+‎        console.error('❌ Error loading SHU data:', error);
+‎    }
+‎}
+‎
+‎// Tunggu sedikit setelah DOM siap
+‎setTimeout(updateSHUFromLaporan, 500);
+‎
+‎// Setup real-time sync
+‎window.addEventListener('storage', function(e) {
+‎    if (e.key === 'shuData') {
+‎        console.log('🔄 SHU data updated from Laporan SHU');
+‎        updateSHUFromLaporan();
+‎        
+‎        // Tampilkan notifikasi jika fungsi tersedia
+‎        if (typeof showNotification === 'function') {
+‎            showNotification('Data SHU diperbarui', 'success');
+‎        }
+‎    }
+‎});
 </script>
 </body>
 </html>
