@@ -6983,57 +6983,92 @@ function setupSidebarAutoClose() {
     });
     
     // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-        const sidebar = document.getElementById('sidebar');
-        const menuToggle = document.getElementById('menuToggle');
-        
-        if (window.innerWidth <= 992 && 
-            sidebar && 
-            sidebar.classList.contains('active') &&
-            !sidebar.contains(event.target) && 
-            menuToggle && 
-            !menuToggle.contains(event.target)) {
-            sidebar.classList.remove('active');
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    
+    if (window.innerWidth <= 992 && 
+        sidebar && 
+        sidebar.classList.contains('active') &&
+        !sidebar.contains(event.target) && 
+        menuToggle && 
+        !menuToggle.contains(event.target)) {
+        sidebar.classList.remove('active');
+    }
+});
+
+// ===== INTEGRASI DUA ARAH DENGAN LAPORAN SHU =====
+(function() {
+    'use strict';
+    
+    console.log('SHU Integration Module Loading...');
+    
+    function updateSHUFromLaporan() {
+        console.log('updateSHUFromLaporan called');
+        try {
+            const shuData = JSON.parse(localStorage.getItem('shuData'));
+            if (shuData) {
+                console.log('SHU Data found:', shuData);
+                
+                const totalSHUElem = document.getElementById('totalSHU');
+                const totalKasElem = document.getElementById('totalKas');
+                
+                // Format currency fallback
+                const formatCurrency = function(amount) {
+                    if (!amount && amount !== 0) return 'Rp 0';
+                    return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                };
+                
+                // Use existing formatRupiah or fallback
+                const formatter = typeof window.formatRupiah === 'function' ? window.formatRupiah : formatCurrency;
+                
+                if (totalSHUElem) {
+                    totalSHUElem.textContent = formatter(shuData.total);
+                    console.log('Updated totalSHU:', shuData.total);
+                } else {
+                    console.warn('Element #totalSHU not found');
+                }
+                
+                if (totalKasElem) {
+                    totalKasElem.textContent = formatter(shuData.cadangan);
+                    console.log('Updated totalKas:', shuData.cadangan);
+                } else {
+                    console.warn('Element #totalKas not found');
+                }
+                
+                console.log('✅ SHU data loaded from Laporan SHU');
+            } else {
+                console.log('⚠️ No SHU data in localStorage');
+            }
+        } catch (error) {
+            console.error('❌ Error in updateSHUFromLaporan:', error);
+        }
+    }
+    
+    // Wait for full page load
+    if (document.readyState === 'complete') {
+        setTimeout(updateSHUFromLaporan, 1000);
+    } else {
+        window.addEventListener('load', function() {
+            setTimeout(updateSHUFromLaporan, 1000);
+        });
+    }
+    
+    // Real-time sync
+    window.addEventListener('storage', function(e) {
+        console.log('Storage event:', e.key);
+        if (e.key === 'shuData') {
+            console.log('🔄 SHU data updated');
+            setTimeout(updateSHUFromLaporan, 500);
+            
+            if (typeof window.showNotification === 'function') {
+                window.showNotification('Data SHU diperbarui dari Laporan SHU', 'success');
+            }
         }
     });
-
- // ===== INTEGRASI DUA ARAH DENGAN LAPORAN SHU =====
-‎function updateSHUFromLaporan() {
-‎    try {
-‎        const shuData = JSON.parse(localStorage.getItem('shuData'));
-‎        if (shuData) {
-‎            // Pastikan elemen ada di DOM
-‎            const totalSHUElem = document.getElementById('totalSHU');
-‎            const totalKasElem = document.getElementById('totalKas');
-‎            
-‎            if (totalSHUElem) {
-‎                totalSHUElem.textContent = formatRupiah(shuData.total);
-‎            }
-‎            if (totalKasElem) {
-‎                totalKasElem.textContent = formatRupiah(shuData.cadangan);
-‎            }
-‎            console.log('✅ SHU data loaded from Laporan SHU');
-‎        }
-‎    } catch (error) {
-‎        console.error('❌ Error loading SHU data:', error);
-‎    }
-‎}
-‎
-‎// Tunggu sedikit setelah DOM siap
-‎setTimeout(updateSHUFromLaporan, 500);
-‎
-‎// Setup real-time sync
-‎window.addEventListener('storage', function(e) {
-‎    if (e.key === 'shuData') {
-‎        console.log('🔄 SHU data updated from Laporan SHU');
-‎        updateSHUFromLaporan();
-‎        
-‎        // Tampilkan notifikasi jika fungsi tersedia
-‎        if (typeof showNotification === 'function') {
-‎            showNotification('Data SHU diperbarui', 'success');
-‎        }
-‎    }
-‎});
+    
+    console.log('✅ SHU Integration Module Loaded');
+})();
 </script>
 </body>
 </html>
