@@ -73,6 +73,37 @@
             overflow-x: hidden;
         }
         
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--gray-lighter);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: var(--space-md);
+        }
+        
+        .loading-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
         /* ===== CONTAINER MOBILE OPTIMIZED ===== */
         .mobile-container {
             width: 100%;
@@ -199,6 +230,13 @@
             background: white;
             color: var(--dark);
             transition: all 0.2s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d32' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
         }
         
         .filter-select:focus {
@@ -340,7 +378,7 @@
         }
         
         .mobile-table thead {
-            display: none; /* Sembunyikan header di mobile */
+            display: none;
         }
         
         .mobile-table tbody tr {
@@ -386,7 +424,7 @@
         
         /* ===== CARD VIEW UNTUK TABEL - ALTERNATIF MOBILE ===== */
         .card-view {
-            display: none; /* Akan diaktifkan di media query mobile */
+            display: none;
         }
         
         .shu-card {
@@ -396,6 +434,7 @@
             margin-bottom: var(--space-md);
             box-shadow: var(--shadow-md);
             border-left: 4px solid var(--primary);
+            animation: fadeIn 0.3s ease;
         }
         
         .card-header {
@@ -473,8 +512,8 @@
             justify-content: center;
             gap: 8px;
             text-decoration: none;
-            min-height: 44px; /* Touch-friendly */
-            min-width: 44px; /* Touch-friendly */
+            min-height: 44px;
+            min-width: 44px;
         }
         
         .btn:active {
@@ -639,8 +678,6 @@
         .mt-5 { margin-top: var(--space-xl); }
         
         /* ===== MEDIA QUERIES ===== */
-        
-        /* Tablet (768px ke atas) */
         @media screen and (min-width: 768px) {
             html {
                 font-size: 15px;
@@ -663,7 +700,6 @@
                 min-width: auto;
             }
             
-            /* Tampilkan tabel biasa di tablet */
             .mobile-table thead {
                 display: table-header-group;
             }
@@ -698,13 +734,11 @@
                 text-align: left;
             }
             
-            /* Sembunyikan card view di tablet */
             .card-view {
                 display: none;
             }
         }
         
-        /* Desktop (992px ke atas) */
         @media screen and (min-width: 992px) {
             .mobile-container {
                 max-width: 960px;
@@ -729,7 +763,6 @@
             }
         }
         
-        /* Mobile Landscape */
         @media screen and (max-width: 767px) and (orientation: landscape) {
             .mobile-table tbody tr {
                 padding: var(--space-sm);
@@ -745,7 +778,6 @@
             }
         }
         
-        /* Small Mobile (360px ke bawah) */
         @media screen and (max-width: 360px) {
             html {
                 font-size: 13px;
@@ -776,7 +808,6 @@
                 width: 100%;
             }
             
-            /* Aktifkan card view di mobile kecil */
             .table-container {
                 display: none;
             }
@@ -792,6 +823,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .animate-fade-in {
             animation: fadeIn 0.3s ease forwards;
         }
@@ -805,10 +840,6 @@
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
         
         /* Scrollbar styling */
@@ -833,13 +864,19 @@
     </style>
 </head>
 <body>
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Memuat data SHU...</div>
+    </div>
+    
     <!-- MOBILE CONTAINER -->
     <div class="mobile-container">
         
         <!-- HEADER -->
         <header class="header">
             <div class="header-content">
-                <button class="back-button" onclick="window.history.back()" aria-label="Kembali">
+                <button class="back-button" onclick="goBackToDashboard()" aria-label="Kembali">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <div class="header-title">
@@ -1005,7 +1042,7 @@
             </div>
         </section>
         
-        <!-- ================ DAFTAR PENERIMA SHU SECTION ================ -->
+        <!-- DAFTAR PENERIMA SHU SECTION -->
         <section class="table-section">
             <div class="table-header">
                 <h2>
@@ -1086,7 +1123,7 @@
     </div>
     
     <script>
-        // ===== DATA CONFIG =====
+        // ===== KONFIGURASI =====
         let shuData = [];
         let penerimaData = [];
         let currentFilter = {
@@ -1096,565 +1133,281 @@
         };
         let chartInstance = null;
         let chartType = 'pie';
-// ==================== INTEGRASI DUA ARAH: LAPORAN SHU ↔ DASHBOARD ====================
+        let isLoading = false;
+        let filterTimeout = null;
 
-// ===== FUNGSI SYNC DATA DARI DASHBOARD =====
-function syncDataFromDashboard() {
-    console.log('📥 Syncing data from Dashboard...');
-    
-    try {
-        // Coba ambil data dari localStorage Dashboard
-        const dashboardAnggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || 
-                                               localStorage.getItem('anggotaData') || '[]');
-        const dashboardSimpananData = JSON.parse(localStorage.getItem('simpananData') || '[]');
-        
-        // Jika ada data dari dashboard, gunakan itu
-        if (dashboardAnggotaData.length > 0 || dashboardSimpananData.length > 0) {
-            console.log('✅ Using data from Dashboard');
-            
-            // Update data lokal
-            window.anggotaData = dashboardAnggotaData;
-            window.simpananData = dashboardSimpananData;
-            
-            // Hitung ulang SHU
-            const totalSimpanan = dashboardSimpananData.reduce((sum, s) => {
-                return sum + (parseInt(s.nominal) || 0);
-            }, 0);
-            
-            const totalSHU = Math.round(totalSimpanan * 0.2);
-            
-            // Update distribusi SHU jika sudah ada
-            if (window.shuData && window.shuData.length > 0) {
-                window.shuData = window.shuData.map(item => {
-                    const newJumlah = Math.round(totalSHU * (item.persentase / 100));
-                    return { ...item, jumlah: newJumlah };
-                });
-            }
-            
-            // Update statistik
-            if (typeof window.updateStats === 'function') {
-                const totalSHUUntukAnggota = Math.round(totalSHU * 0.25);
-                window.updateStats(totalSHU, totalSHUUntukAnggota);
-            }
-            
-            console.log('✅ Data synced from Dashboard');
-            return true;
-        }
-        
-        return false;
-        
-    } catch (error) {
-        console.error('❌ Error syncing from Dashboard:', error);
-        return false;
-    }
-}
-
-// ===== FUNGSI SAVE DATA SHU KE DASHBOARD =====
-function saveSHUDataToDashboard() {
-    console.log('📤 Saving SHU data to Dashboard...');
-    
-    try {
-        // Pastikan data SHU ada
-        if (!window.shuData || window.shuData.length === 0) {
-            console.warn('⚠️ No SHU data to save');
-            return false;
-        }
-        
-        const totalSHU = window.shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
-        const shuAnggota = window.shuData.find(item => item.jenis === 'Dana Anggota')?.jumlah || 0;
-        
-        const dashboardSHUData = {
-            total: totalSHU,
-            dibagikan: shuAnggota,
-            cadangan: window.shuData.find(item => item.jenis === 'Dana Cadangan')?.jumlah || 0,
-            anggota: window.penerimaData ? window.penerimaData.length : 0,
-            tahun: new Date().getFullYear(),
-            tanggalHitung: new Date().toISOString(),
-            laporanVersion: '1.0'
-        };
-        
-        // Simpan ke localStorage
-        localStorage.setItem('shuData', JSON.stringify(dashboardSHUData));
-        
-        console.log('✅ SHU data saved to Dashboard');
-        return true;
-        
-    } catch (error) {
-        console.error('❌ Error saving SHU data to Dashboard:', error);
-        return false;
-    }
-}
-
-// ===== FUNGSI SETUP AUTO SYNC DUA ARAH =====
-function setupBidirectionalSync() {
-    console.log('Setting up bidirectional sync...');
-    
-    // Listen for storage events
-    window.addEventListener('storage', function(e) {
-        console.log('🔄 Storage event:', e.key);
-        
-        if (e.key === 'simpananData' || e.key === 'anggotaData' || e.key === 'koperasi_anggota') {
-            console.log('📊 Dashboard data updated');
-            
-            clearTimeout(window.shuSyncTimeout);
-            window.shuSyncTimeout = setTimeout(() => {
-                syncDataFromDashboard();
-                if (typeof window.showMessage === 'function') {
-                    window.showMessage('Data diperbarui dari Dashboard', 'info');
-                }
-            }, 1000);
-        }
-    });
-    
-    // Auto-sync setiap 60 detik
-    setInterval(() => {
-        console.log('⏰ Auto-syncing data...');
-        syncDataFromDashboard();
-    }, 60000);
-    
-    // Initial sync
-    setTimeout(() => {
-        syncDataFromDashboard();
-    }, 2000);
-    
-    console.log('✅ Bidirectional sync setup completed');
-}
-
-// ===== MODIFIKASI FUNGSI LOAD DATA =====
-// Simpan referensi fungsi original jika ada
-const originalLoadDataFromDashboard = window.loadDataFromDashboard;
-
-// Override atau extend fungsi loadDataFromDashboard
-if (originalLoadDataFromDashboard && typeof originalLoadDataFromDashboard === 'function') {
-    window.loadDataFromDashboard = function() {
-        console.log('Loading data with sync...');
-        
-        // Coba sync dari dashboard dulu
-        const syncSuccess = syncDataFromDashboard();
-        
-        if (!syncSuccess) {
-            // Jika sync gagal, gunakan fungsi original
-            console.log('⚠️ Sync failed, using original function');
-            originalLoadDataFromDashboard();
-        }
-        
-        // Simpan ke dashboard
-        setTimeout(() => {
-            saveSHUDataToDashboard();
-        }, 1500);
-    };
-}
-
-// ===== INISIALISASI INTEGRASI =====
-function initializeSHUIntegration() {
-    console.log('Initializing SHU integration...');
-    
-    // Setup bidirectional sync
-    setupBidirectionalSync();
-    
-    console.log('✅ SHU integration initialized (background only)');
-}
-
-// ===== JALANKAN INTEGRASI =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📱 Starting SHU integration...');
-    
-    // Tunggu sebentar untuk memastikan fungsi lain sudah load
-    setTimeout(() => {
-        initializeSHUIntegration();
-    }, 2000);
-    
-    console.log('✅ SHU integration ready');
-});
-
-// ===== DEBUG FUNCTIONS =====
-window.debugSHULaporan = function() {
-    console.log('=== DEBUG LAPORAN SHU ===');
-    console.log('SHU Data:', window.shuData);
-    console.log('Penerima Data:', window.penerimaData);
-    console.log('SHU in localStorage:', JSON.parse(localStorage.getItem('shuData') || '{}'));
-    console.log('=== END DEBUG ===');
-};
-            
-// ==================== AKHIR SCRIPT INTEGRASI ====================   
-        // ===== INITIALIZE APP =====
+        // ===== FUNGSI UTAMA =====
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📱 Mobile SHU Report Initializing...');
+            console.log('🚀 Mobile SHU Report Initializing...');
             
-            // Update tahun footer
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-            
-            // Update tombol back ke dashboard
-            document.querySelector('.back-button').onclick = function() {
-                window.location.href = 'dashboard-admin.html';
-            };
-            
-            // Load data dari Dashboard (TERINTEGRASI)
-            loadDataFromDashboard();
-            
-            // Setup event listeners
+            initializeApp();
             setupEventListeners();
-            
-            // Initialize dengan filter saat ini
-            applyFilter();
-            
-            // Setup auto-sync dengan Dashboard
-            setupAutoSync();
+            loadData();
             
             console.log('✅ Mobile SHU Report Ready');
         });
 
-        // ===== FUNGSI LOAD DATA TERINTEGRASI =====
-        function loadDataFromDashboard() {
-            console.log('📊 Loading data from Dashboard...');
+        // ===== INITIALIZE APP =====
+        function initializeApp() {
+            // Update tahun footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Set default filter ke tahun berjalan
+            const currentYear = new Date().getFullYear().toString();
+            document.getElementById('tahunSHU').value = currentYear;
+            currentFilter.tahun = currentYear;
+            
+            // Show initial loading
+            showLoading(true);
+        }
+
+        // ===== LOAD DATA =====
+        async function loadData() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            showLoading(true);
             
             try {
-                // 1. Ambil data dari localStorage Dashboard
-                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || 
-                                               localStorage.getItem('anggotaData') || '[]');
-                const simpananData = JSON.parse(localStorage.getItem('simpananData') || '[]');
+                console.log('📥 Loading SHU data...');
                 
-                // 2. Hitung total simpanan dari dashboard
-                const totalSimpanan = simpananData.reduce((sum, s) => {
-                    return sum + (parseInt(s.nominal) || 0);
-                }, 0);
+                // 1. Coba load data dari Dashboard terlebih dahulu
+                const success = await loadDataFromDashboard();
                 
-                // 3. Hitung total SHU (20% dari total simpanan)
-                const totalSHU = Math.round(totalSimpanan * 0.2);
+                if (!success) {
+                    console.log('⚠️ Using fallback data');
+                    generateFallbackData();
+                }
                 
-                // 4. Distribusi SHU berdasarkan AD/ART koperasi
-                const distribusiSHU = [
-                    {
-                        id: 'SHU-001',
-                        jenis: 'Dana Cadangan',
-                        persentase: 40,
-                        jumlah: Math.round(totalSHU * 0.4),
-                        deskripsi: 'Dana untuk pengembangan koperasi',
-                        status: 'Disetorkan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-CAD-' + new Date().getFullYear() + '-001',
-                        color: '#2e7d32'
-                    },
-                    {
-                        id: 'SHU-002',
-                        jenis: 'Dana Anggota',
-                        persentase: 25,
-                        jumlah: Math.round(totalSHU * 0.25),
-                        deskripsi: 'Dibagikan kepada anggota sesuai simpanan',
-                        status: 'Dibagikan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-ANG-' + new Date().getFullYear() + '-001',
-                        color: '#2196f3'
-                    },
-                    {
-                        id: 'SHU-003',
-                        jenis: 'Dana Pengurus',
-                        persentase: 10,
-                        jumlah: Math.round(totalSHU * 0.1),
-                        deskripsi: 'Honorarium pengurus koperasi',
-                        status: 'Dibayarkan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-PEN-' + new Date().getFullYear() + '-001',
-                        color: '#ff9800'
-                    },
-                    {
-                        id: 'SHU-004',
-                        jenis: 'Dana Karyawan',
-                        persentase: 5,
-                        jumlah: Math.round(totalSHU * 0.05),
-                        deskripsi: 'Bonus untuk karyawan',
-                        status: 'Dibayarkan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-KAR-' + new Date().getFullYear() + '-001',
-                        color: '#9c27b0'
-                    },
-                    {
-                        id: 'SHU-005',
-                        jenis: 'Dana Pendidikan',
-                        persentase: 5,
-                        jumlah: Math.round(totalSHU * 0.05),
-                        deskripsi: 'Program pendidikan anggota',
-                        status: 'Dialokasikan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-PDK-' + new Date().getFullYear() + '-001',
-                        color: '#00bcd4'
-                    },
-                    {
-                        id: 'SHU-006',
-                        jenis: 'Dana Sosial',
-                        persentase: 5,
-                        jumlah: Math.round(totalSHU * 0.05),
-                        deskripsi: 'Kegiatan sosial kemasyarakatan',
-                        status: 'Dialokasikan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-SOS-' + new Date().getFullYear() + '-001',
-                        color: '#ff5722'
-                    },
-                    {
-                        id: 'SHU-007',
-                        jenis: 'Dana Pembangunan',
-                        persentase: 10,
-                        jumlah: Math.round(totalSHU * 0.1),
-                        deskripsi: 'Pengembangan sarana prasarana',
-                        status: 'Dialokasikan',
-                        sumber: 'Simpanan Anggota',
-                        tanggal: new Date().getFullYear() + '-12-31',
-                        bukti: 'SHU-BNG-' + new Date().getFullYear() + '-001',
-                        color: '#795548'
-                    }
-                ];
+                // 2. Update statistik
+                updateStatistics();
                 
-                shuData = distribusiSHU;
+                // 3. Tampilkan data
+                applyFilter();
                 
-                // 5. Hitung SHU per anggota (25% dari total SHU dibagikan ke anggota)
-                const totalSHUUntukAnggota = Math.round(totalSHU * 0.25);
+                // 4. Setup integrasi dua arah
+                setupBidirectionalIntegration();
                 
-                // 6. Hitung total simpanan per anggota
-                const totalSimpananPerAnggota = {};
-                anggotaData.forEach(anggota => {
-                    const simpananAnggota = simpananData
-                        .filter(s => s.idAnggota === anggota.id)
-                        .reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
+                console.log('✅ Data loaded successfully');
+                showMessage('Data SHU berhasil dimuat', 'success');
+                
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                showMessage('Gagal memuat data SHU', 'error');
+                generateFallbackData();
+            } finally {
+                isLoading = false;
+                showLoading(false);
+            }
+        }
+
+        // ===== LOAD DATA FROM DASHBOARD =====
+        async function loadDataFromDashboard() {
+            return new Promise((resolve) => {
+                try {
+                    // 1. Ambil data dari localStorage
+                    const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                    const simpananData = JSON.parse(localStorage.getItem('simpananData') || '[]');
                     
-                    totalSimpananPerAnggota[anggota.id] = simpananAnggota;
-                });
-                
-                // 7. Hitung total semua simpanan anggota
-                const totalSimpananSemuaAnggota = Object.values(totalSimpananPerAnggota)
-                    .reduce((sum, val) => sum + val, 0);
-                
-                // 8. Generate data penerima SHU
-                penerimaData = anggotaData
-                    .filter(anggota => totalSimpananPerAnggota[anggota.id] > 0)
-                    .map(anggota => {
-                        const simpananAnggota = totalSimpananPerAnggota[anggota.id] || 0;
-                        const persentaseAnggota = totalSimpananSemuaAnggota > 0 ?
-                            (simpananAnggota / totalSimpananSemuaAnggota * 100) : 0;
-                        const shuAnggota = Math.round(totalSHUUntukAnggota * (persentaseAnggota / 100));
-                        
-                        return {
-                            id: anggota.id,
-                            nama: anggota.nama,
-                            noAnggota: anggota.nia || anggota.id,
-                            simpananPokok: anggota.simpananPokok || 0,
-                            simpananWajib: anggota.simpananWajib || 0,
-                            simpananSukarela: anggota.simpananSukarela || 0,
-                            totalSimpanan: simpananAnggota,
-                            shuDiterima: shuAnggota,
-                            persentase: persentaseAnggota.toFixed(2),
-                            tanggalTerima: new Date().getFullYear() + '-12-15',
-                            status: shuAnggota > 0 ? 'Diterima' : 'Belum Diterima',
-                            bukti: 'SHU-' + (anggota.nia || anggota.id) + '-' + new Date().getFullYear()
-                        };
+                    console.log('📊 Dashboard data:', {
+                        anggota: anggotaData.length,
+                        simpanan: simpananData.length
                     });
-                
-                // 9. Update statistik
-                updateStats(totalSHU, totalSHUUntukAnggota);
-                
-                // 10. Tampilkan data penerima
-                displayPenerimaData();
-                
-                // 11. Simpan data SHU untuk sinkronisasi dengan Dashboard
-                saveSHUDataToDashboard(totalSHU, totalSHUUntukAnggota, anggotaData.length);
-                
-                console.log('✅ SHU data calculated from dashboard:', {
-                    totalSHU: totalSHU,
-                    totalAnggota: anggotaData.length,
-                    penerimaSHU: penerimaData.length,
-                    distribusiSHU: distribusiSHU.length
-                });
-                
-            } catch (error) {
-                console.error('❌ Error loading data from dashboard:', error);
-                showMessage('Gagal memuat data dari dashboard', 'error');
-                
-                // Fallback ke data sample jika error
-                generateSampleData();
-            }
-        }
-
-        // ===== FUNGSI SINKRONISASI DUA ARAH =====
-        function saveSHUDataToDashboard(totalSHU, shuAnggota, jumlahAnggota) {
-            try {
-                // Simpan data SHU untuk digunakan Dashboard
-                const dashboardSHUData = {
-                    total: totalSHU,
-                    dibagikan: shuAnggota,
-                    cadangan: Math.round(totalSHU * 0.4),
-                    anggota: jumlahAnggota,
-                    pertumbuhan: calculateGrowthPercent(),
-                    distribusi: shuData,
-                    penerima: penerimaData,
-                    tahun: new Date().getFullYear(),
-                    tanggalHitung: new Date().toISOString()
-                };
-                
-                localStorage.setItem('shuData', JSON.stringify(dashboardSHUData));
-                
-                // Update Dashboard stats jika dashboard terbuka
-                updateDashboardStatsFromSHU(totalSHU, shuAnggota);
-                
-                console.log('✅ SHU data saved to dashboard');
-                
-            } catch (error) {
-                console.error('❌ Error saving SHU data to dashboard:', error);
-            }
-        }
-
-        function updateDashboardStatsFromSHU(totalSHU, shuAnggota) {
-            try {
-                // Simpan data untuk dashboard
-                const dashboardStats = {
-                    shu: {
-                        total: totalSHU,
-                        dibagikan: shuAnggota,
-                        cadangan: Math.round(totalSHU * 0.4),
-                        pertumbuhan: calculateGrowthPercent(),
-                        tahun: new Date().getFullYear()
-                    }
-                };
-                
-                localStorage.setItem('dashboardSHUStats', JSON.stringify(dashboardStats));
-                
-            } catch (error) {
-                console.error('❌ Error updating dashboard stats:', error);
-            }
-        }
-
-        function calculateGrowthPercent() {
-            // Simulasi pertumbuhan 15.5%
-            return '15.5';
-        }
-
-        // ===== SETUP AUTO SYNC =====
-        function setupAutoSync() {
-            // Listen for changes in dashboard data
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'simpananData' || 
-                    e.key === 'koperasi_anggota' || 
-                    e.key === 'anggotaData') {
-                    console.log('🔄 Data updated from dashboard, recalculating SHU...');
                     
-                    // Debounce untuk menghindari multiple recalculations
-                    clearTimeout(window.shuRecalcTimeout);
-                    window.shuRecalcTimeout = setTimeout(() => {
-                        loadDataFromDashboard();
-                        applyFilter();
-                        showMessage('Data SHU diperbarui dari dashboard', 'info');
-                    }, 500);
+                    // 2. Validasi data
+                    if (!Array.isArray(anggotaData) || !Array.isArray(simpananData)) {
+                        console.warn('⚠️ Invalid data format from dashboard');
+                        resolve(false);
+                        return;
+                    }
+                    
+                    if (anggotaData.length === 0 || simpananData.length === 0) {
+                        console.warn('⚠️ Empty data from dashboard');
+                        resolve(false);
+                        return;
+                    }
+                    
+                    // 3. Hitung total simpanan
+                    const totalSimpanan = simpananData.reduce((sum, s) => {
+                        return sum + (parseInt(s.nominal) || 0);
+                    }, 0);
+                    
+                    // 4. Hitung SHU (20% dari total simpanan)
+                    const totalSHU = Math.round(totalSimpanan * 0.2);
+                    
+                    // 5. Generate distribusi SHU
+                    shuData = generateSHUDistribution(totalSHU);
+                    
+                    // 6. Generate data penerima
+                    penerimaData = generatePenerimaData(anggotaData, simpananData, totalSHU);
+                    
+                    // 7. Simpan data untuk sinkronisasi
+                    saveSHUDataToDashboard(totalSHU);
+                    
+                    console.log('✅ Dashboard data loaded:', {
+                        totalSHU: totalSHU,
+                        distribusi: shuData.length,
+                        penerima: penerimaData.length
+                    });
+                    
+                    resolve(true);
+                    
+                } catch (error) {
+                    console.error('❌ Error loading from dashboard:', error);
+                    resolve(false);
                 }
             });
-            
-            // Check for updates every 30 seconds
-            setInterval(() => {
-                const lastUpdate = localStorage.getItem('shuLastUpdate');
-                const now = Date.now();
-                
-                if (!lastUpdate || (now - parseInt(lastUpdate)) > 30000) {
-                    loadDataFromDashboard();
-                    localStorage.setItem('shuLastUpdate', now.toString());
-                }
-            }, 30000);
         }
 
-        // ===== GENERATE SAMPLE DATA (FALLBACK) =====
-        function generateSampleData() {
-            console.log('📝 Generating sample data...');
-            
-            shuData = [
+        // ===== GENERATE SHU DISTRIBUTION =====
+        function generateSHUDistribution(totalSHU) {
+            const distribusi = [
                 {
                     id: 'SHU-001',
                     jenis: 'Dana Cadangan',
                     persentase: 40,
-                    jumlah: 50180000,
+                    jumlah: Math.round(totalSHU * 0.4),
                     deskripsi: 'Dana untuk pengembangan koperasi',
                     status: 'Disetorkan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-CAD-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-CAD-' + new Date().getFullYear() + '-001',
                     color: '#2e7d32'
                 },
                 {
                     id: 'SHU-002',
                     jenis: 'Dana Anggota',
                     persentase: 25,
-                    jumlah: 31362500,
+                    jumlah: Math.round(totalSHU * 0.25),
                     deskripsi: 'Dibagikan kepada anggota sesuai simpanan',
                     status: 'Dibagikan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-ANG-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-ANG-' + new Date().getFullYear() + '-001',
                     color: '#2196f3'
                 },
                 {
                     id: 'SHU-003',
                     jenis: 'Dana Pengurus',
                     persentase: 10,
-                    jumlah: 12545000,
+                    jumlah: Math.round(totalSHU * 0.1),
                     deskripsi: 'Honorarium pengurus koperasi',
                     status: 'Dibayarkan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-PEN-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-PEN-' + new Date().getFullYear() + '-001',
                     color: '#ff9800'
                 },
                 {
                     id: 'SHU-004',
                     jenis: 'Dana Karyawan',
                     persentase: 5,
-                    jumlah: 6272500,
+                    jumlah: Math.round(totalSHU * 0.05),
                     deskripsi: 'Bonus untuk karyawan',
                     status: 'Dibayarkan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-KAR-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-KAR-' + new Date().getFullYear() + '-001',
                     color: '#9c27b0'
                 },
                 {
                     id: 'SHU-005',
                     jenis: 'Dana Pendidikan',
                     persentase: 5,
-                    jumlah: 6272500,
+                    jumlah: Math.round(totalSHU * 0.05),
                     deskripsi: 'Program pendidikan anggota',
                     status: 'Dialokasikan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-PDK-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-PDK-' + new Date().getFullYear() + '-001',
                     color: '#00bcd4'
                 },
                 {
                     id: 'SHU-006',
                     jenis: 'Dana Sosial',
                     persentase: 5,
-                    jumlah: 6272500,
+                    jumlah: Math.round(totalSHU * 0.05),
                     deskripsi: 'Kegiatan sosial kemasyarakatan',
                     status: 'Dialokasikan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-SOS-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-SOS-' + new Date().getFullYear() + '-001',
                     color: '#ff5722'
                 },
                 {
                     id: 'SHU-007',
                     jenis: 'Dana Pembangunan',
                     persentase: 10,
-                    jumlah: 12545000,
+                    jumlah: Math.round(totalSHU * 0.1),
                     deskripsi: 'Pengembangan sarana prasarana',
                     status: 'Dialokasikan',
                     sumber: 'Simpanan Anggota',
-                    tanggal: '2024-12-31',
-                    bukti: 'SHU-BNG-2024-001',
+                    tanggal: new Date().getFullYear() + '-12-31',
+                    bukti: 'SHU-BNG-' + new Date().getFullYear() + '-001',
                     color: '#795548'
                 }
             ];
             
-            // Generate sample penerima data
+            return distribusi;
+        }
+
+        // ===== GENERATE PENERIMA DATA =====
+        function generatePenerimaData(anggotaData, simpananData, totalSHU) {
+            // Hitung total simpanan per anggota
+            const simpananPerAnggota = {};
+            anggotaData.forEach(anggota => {
+                const totalSimpanan = simpananData
+                    .filter(s => s.idAnggota === anggota.id)
+                    .reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
+                
+                simpananPerAnggota[anggota.id] = totalSimpanan;
+            });
+            
+            // Hitung total semua simpanan
+            const totalSemuaSimpanan = Object.values(simpananPerAnggota)
+                .reduce((sum, val) => sum + val, 0);
+            
+            // Hitung SHU untuk anggota (25% dari total SHU)
+            const totalSHUAnggota = Math.round(totalSHU * 0.25);
+            
+            // Generate data penerima
+            const penerima = anggotaData
+                .filter(anggota => simpananPerAnggota[anggota.id] > 0)
+                .map(anggota => {
+                    const simpananAnggota = simpananPerAnggota[anggota.id] || 0;
+                    const persentase = totalSemuaSimpanan > 0 
+                        ? (simpananAnggota / totalSemuaSimpanan * 100) 
+                        : 0;
+                    const shuDiterima = Math.round(totalSHUAnggota * (persentase / 100));
+                    
+                    return {
+                        id: anggota.id,
+                        nama: anggota.nama || 'Anggota ' + anggota.id,
+                        noAnggota: anggota.nia || anggota.id,
+                        simpananPokok: anggota.simpananPokok || 0,
+                        simpananWajib: anggota.simpananWajib || 0,
+                        simpananSukarela: anggota.simpananSukarela || 0,
+                        totalSimpanan: simpananAnggota,
+                        shuDiterima: shuDiterima,
+                        persentase: persentase.toFixed(2),
+                        tanggalTerima: new Date().getFullYear() + '-12-15',
+                        status: shuDiterima > 0 ? 'Diterima' : 'Belum Diterima',
+                        bukti: 'SHU-' + (anggota.nia || anggota.id) + '-' + new Date().getFullYear()
+                    };
+                });
+            
+            return penerima;
+        }
+
+        // ===== FALLBACK DATA =====
+        function generateFallbackData() {
+            console.log('📝 Generating fallback data...');
+            
+            const totalSHU = 125450000;
+            
+            shuData = generateSHUDistribution(totalSHU);
+            
+            // Sample penerima data
             penerimaData = [
                 {
                     id: 'P001',
@@ -1665,7 +1418,7 @@ window.debugSHULaporan = function() {
                     simpananSukarela: 800000,
                     totalSimpanan: 2500000,
                     shuDiterima: 843750,
-                    persentase: 3.2,
+                    persentase: '3.20',
                     tanggalTerima: '2024-12-15',
                     status: 'Diterima',
                     bukti: 'SHU-AGT-001-2024'
@@ -1679,73 +1432,126 @@ window.debugSHULaporan = function() {
                     simpananSukarela: 1200000,
                     totalSimpanan: 3500000,
                     shuDiterima: 1181250,
-                    persentase: 4.5,
+                    persentase: '4.50',
                     tanggalTerima: '2024-12-15',
                     status: 'Diterima',
                     bukti: 'SHU-AGT-002-2024'
+                },
+                {
+                    id: 'P003',
+                    nama: 'Ahmad Wijaya',
+                    noAnggota: 'AGT-003',
+                    simpananPokok: 500000,
+                    simpananWajib: 2000000,
+                    simpananSukarela: 1500000,
+                    totalSimpanan: 4000000,
+                    shuDiterima: 1350000,
+                    persentase: '5.14',
+                    tanggalTerima: '2024-12-15',
+                    status: 'Diterima',
+                    bukti: 'SHU-AGT-003-2024'
                 }
             ];
-            
-            updateStats(125450000, 31362500);
-            displayPenerimaData();
         }
 
         // ===== UPDATE STATISTICS =====
-        function updateStats(totalSHU = 0, shuAnggota = 0) {
-            // Hitung statistik dari data aktual
+        function updateStatistics() {
+            const totalSHU = shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
+            const shuAnggota = shuData.find(item => item.jenis === 'Dana Anggota')?.jumlah || 0;
             const danaCadangan = shuData.find(item => item.jenis === 'Dana Cadangan')?.jumlah || 0;
-            const rataRata = penerimaData.length > 0 ? 
-                Math.round(shuAnggota / penerimaData.length) : 0;
+            const rataRata = penerimaData.length > 0 
+                ? Math.round(shuAnggota / penerimaData.length) 
+                : 0;
             
-            // Format currency
+            // Update displays
             document.getElementById('totalSHUDisplay').textContent = formatCurrency(totalSHU);
             document.getElementById('shuAnggotaDisplay').textContent = formatCurrency(shuAnggota);
             document.getElementById('danaCadanganDisplay').textContent = formatCurrency(danaCadangan);
             document.getElementById('rataRataSHU').textContent = formatCurrency(rataRata);
             document.getElementById('jumlahAnggotaSHU').textContent = penerimaData.length;
-            document.getElementById('growthPercent').textContent = '15.5%';
             
-            // Update statistik penerima
+            // Update growth percentage (simulated)
+            const growth = calculateGrowthPercentage();
+            document.getElementById('growthPercent').textContent = growth + '%';
+            
+            // Update penerima stats
             document.getElementById('totalAnggotaPenerima').textContent = penerimaData.length;
             document.getElementById('avgPerAnggota').textContent = formatCurrency(rataRata);
         }
 
+        // ===== CALCULATE GROWTH =====
+        function calculateGrowthPercentage() {
+            // Simulate growth based on year
+            const yearMultipliers = {
+                '2024': 15.5,
+                '2023': 12.8,
+                '2022': 10.2,
+                '2021': 8.5
+            };
+            
+            return yearMultipliers[currentFilter.tahun] || 10.0;
+        }
+
         // ===== APPLY FILTER =====
         function applyFilter() {
+            // Clear previous timeout
+            if (filterTimeout) {
+                clearTimeout(filterTimeout);
+            }
+            
+            // Get filter values
             const tahun = document.getElementById('tahunSHU').value;
             const periode = document.getElementById('periodeSHU').value;
             const status = document.getElementById('statusSHU').value;
             
             currentFilter = { tahun, periode, status };
             
-            // Filter data
-            let filteredData = [...shuData];
-            
-            if (status !== 'all') {
-                filteredData = filteredData.filter(item => 
-                    item.status.toLowerCase().includes(status.toLowerCase())
-                );
-            }
-            
-            // Apply multiplier based on year (simulation)
-            const yearMultiplier = {
-                '2024': 1,
+            // Debounce filter application
+            filterTimeout = setTimeout(() => {
+                showLoading(true);
+                
+                try {
+                    // Filter data berdasarkan status
+                    let filteredData = [...shuData];
+                    
+                    if (status !== 'all') {
+                        filteredData = filteredData.filter(item => 
+                            item.status.toLowerCase().includes(status.toLowerCase())
+                        );
+                    }
+                    
+                    // Apply year multiplier
+                    const multiplier = getYearMultiplier(tahun);
+                    
+                    // Display filtered data
+                    displaySHUData(filteredData, multiplier);
+                    
+                    // Show notification
+                    showMessage(`Filter diterapkan: ${tahun}, ${periode}`, 'info');
+                    
+                } catch (error) {
+                    console.error('❌ Filter error:', error);
+                    showMessage('Gagal menerapkan filter', 'error');
+                } finally {
+                    showLoading(false);
+                }
+            }, 300);
+        }
+
+        // ===== YEAR MULTIPLIER =====
+        function getYearMultiplier(tahun) {
+            const multipliers = {
+                '2024': 1.0,
                 '2023': 0.85,
                 '2022': 0.72,
                 '2021': 0.65
             };
             
-            const multiplier = yearMultiplier[tahun] || 1;
-            
-            // Update display with filtered data
-            displayData(filteredData, multiplier);
-            
-            // Show notification
-            showMessage(`Filter diterapkan: ${tahun}, ${periode}`, 'info');
+            return multipliers[tahun] || 1.0;
         }
 
         // ===== DISPLAY DATA =====
-        function displayData(data, multiplier = 1) {
+        function displaySHUData(data, multiplier = 1) {
             const tableBody = document.getElementById('shuTableBody');
             const cardView = document.getElementById('shuCardView');
             
@@ -1776,101 +1582,101 @@ window.debugSHULaporan = function() {
             data.forEach((item, index) => {
                 const adjustedAmount = Math.round(item.jumlah * multiplier);
                 
-                // Get status badge
-                let badgeClass = 'badge-info';
-                let badgeIcon = 'fa-info-circle';
-                
-                if (item.status === 'Disetorkan') {
-                    badgeClass = 'badge-success';
-                    badgeIcon = 'fa-check-circle';
-                } else if (item.status === 'Dibagikan') {
-                    badgeClass = 'badge-warning';
-                    badgeIcon = 'fa-share-alt';
-                } else if (item.status === 'Dibayarkan') {
-                    badgeClass = 'badge-info';
-                    badgeIcon = 'fa-money-bill-wave';
-                }
-                
                 // Create table row
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td data-label="Jenis">
-                        <div style="font-weight: 600; color: var(--primary-dark);">${item.jenis}</div>
-                        <div style="font-size: 0.85rem; color: var(--gray);">${item.deskripsi}</div>
-                    </td>
-                    <td data-label="Persentase">
-                        <div style="font-weight: 700; color: var(--primary);">${item.persentase}%</div>
-                        <div style="width: 60px; height: 4px; background: var(--gray-light); border-radius: 2px; margin-top: 4px;">
-                            <div style="width: ${item.persentase}%; height: 100%; background: var(--primary); border-radius: 2px;"></div>
-                        </div>
-                    </td>
-                    <td data-label="Jumlah">
-                        <div style="font-weight: 700; color: var(--dark);">${formatCurrency(adjustedAmount)}</div>
-                    </td>
-                    <td data-label="Status">
-                        <span class="badge ${badgeClass}">
-                            <i class="fas ${badgeIcon}"></i>
-                            ${item.status}
-                        </span>
-                    </td>
-                    <td data-label="Aksi">
-                        <button class="action-btn btn-sm" onclick="showDetail('${item.id}')" title="Detail">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                `;
+                row.innerHTML = createTableRowHTML(item, adjustedAmount);
                 tableBody.appendChild(row);
                 
-                // Create card view (for mobile)
+                // Create card view
                 const card = document.createElement('div');
                 card.className = 'shu-card';
-                card.style.borderLeftColor = item.color;
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h3>${item.jenis}</h3>
-                            <span class="card-badge">${item.persentase}%</span>
-                        </div>
-                        <span class="badge ${badgeClass}">
-                            ${item.status}
-                        </span>
-                    </div>
-                    
-                    <div class="card-content">
-                        <div class="card-item">
-                            <div class="card-label">Jumlah</div>
-                            <div class="card-value">${formatCurrency(adjustedAmount)}</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-label">Sumber</div>
-                            <div class="card-value">${item.sumber}</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-label">Tanggal</div>
-                            <div class="card-value">${item.tanggal}</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-label">No. Bukti</div>
-                            <div class="card-value">${item.bukti}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-actions">
-                        <button class="action-btn" onclick="showDetail('${item.id}')">
-                            <i class="fas fa-eye"></i>
-                            <span>Detail</span>
-                        </button>
-                        <button class="action-btn" onclick="printItem('${item.id}')">
-                            <i class="fas fa-print"></i>
-                            <span>Cetak</span>
-                        </button>
-                    </div>
-                `;
+                card.innerHTML = createCardHTML(item, adjustedAmount);
                 cardView.appendChild(card);
             });
+            
+            // Display penerima data
+            displayPenerimaData();
         }
 
-        // ===== PENERIMA SHU DATA =====
+        function createTableRowHTML(item, amount) {
+            const badgeClass = getBadgeClass(item.status);
+            const badgeIcon = getBadgeIcon(item.status);
+            
+            return `
+                <td data-label="Jenis">
+                    <div style="font-weight: 600; color: var(--primary-dark);">${item.jenis}</div>
+                    <div style="font-size: 0.85rem; color: var(--gray);">${item.deskripsi}</div>
+                </td>
+                <td data-label="Persentase">
+                    <div style="font-weight: 700; color: var(--primary);">${item.persentase}%</div>
+                    <div style="width: 60px; height: 4px; background: var(--gray-light); border-radius: 2px; margin-top: 4px;">
+                        <div style="width: ${item.persentase}%; height: 100%; background: var(--primary); border-radius: 2px;"></div>
+                    </div>
+                </td>
+                <td data-label="Jumlah">
+                    <div style="font-weight: 700; color: var(--dark);">${formatCurrency(amount)}</div>
+                </td>
+                <td data-label="Status">
+                    <span class="badge ${badgeClass}">
+                        <i class="fas ${badgeIcon}"></i>
+                        ${item.status}
+                    </span>
+                </td>
+                <td data-label="Aksi">
+                    <button class="action-btn btn-sm" onclick="showSHUDetail('${item.id}')" title="Detail">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            `;
+        }
+
+        function createCardHTML(item, amount) {
+            const badgeClass = getBadgeClass(item.status);
+            
+            return `
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3>${item.jenis}</h3>
+                        <span class="card-badge">${item.persentase}%</span>
+                    </div>
+                    <span class="badge ${badgeClass}">
+                        ${item.status}
+                    </span>
+                </div>
+                
+                <div class="card-content">
+                    <div class="card-item">
+                        <div class="card-label">Jumlah</div>
+                        <div class="card-value">${formatCurrency(amount)}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">Sumber</div>
+                        <div class="card-value">${item.sumber}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">Tanggal</div>
+                        <div class="card-value">${item.tanggal}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">No. Bukti</div>
+                        <div class="card-value">${item.bukti}</div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="action-btn" onclick="showSHUDetail('${item.id}')">
+                        <i class="fas fa-eye"></i>
+                        <span>Detail</span>
+                    </button>
+                    <button class="action-btn" onclick="printSHUItem('${item.id}')">
+                        <i class="fas fa-print"></i>
+                        <span>Cetak</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        // ===== DISPLAY PENERIMA DATA =====
         function displayPenerimaData() {
             const cardView = document.getElementById('penerimaCardView');
             cardView.innerHTML = '';
@@ -1891,70 +1697,163 @@ window.debugSHULaporan = function() {
                 card.className = 'shu-card';
                 card.style.borderLeftColor = index % 2 === 0 ? '#2e7d32' : '#2196f3';
                 
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h3>${anggota.nama}</h3>
-                            <span class="card-badge">No: ${anggota.noAnggota}</span>
-                        </div>
-                        <span class="badge ${anggota.status === 'Diterima' ? 'badge-success' : 'badge-warning'}">
-                            <i class="fas fa-${anggota.status === 'Diterima' ? 'check-circle' : 'clock'}"></i>
-                            ${anggota.status}
-                        </span>
-                    </div>
-                    
-                    <div class="card-content">
-                        <div class="card-item">
-                            <div class="card-label">Total Simpanan</div>
-                            <div class="card-value">${formatCurrency(anggota.totalSimpanan)}</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-label">SHU Diterima</div>
-                            <div class="card-value text-success fw-bold">${formatCurrency(anggota.shuDiterima)}</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-label">Persentase</div>
-                            <div class="card-value">${anggota.persentase}%</div>
-                        </div>
-                        <div class="card-item">
-                            <div class="card-label">Tanggal</div>
-                            <div class="card-value">${anggota.tanggalTerima}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: var(--gray-lighter); border-radius: var(--radius-sm); padding: var(--space-sm); margin-bottom: var(--space-md);">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span>Pokok: ${formatCurrency(anggota.simpananPokok)}</span>
-                            <span>Wajib: ${formatCurrency(anggota.simpananWajib)}</span>
-                            <span>Sukarela: ${formatCurrency(anggota.simpananSukarela)}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="card-actions">
-                        <button class="action-btn" onclick="showDetailPenerima('${anggota.id}')">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Detail Pembagian</span>
-                        </button>
-                        <button class="action-btn" onclick="printKwitansi('${anggota.id}')">
-                            <i class="fas fa-receipt"></i>
-                            <span>Kwitansi</span>
-                        </button>
-                    </div>
-                `;
-                
+                card.innerHTML = createPenerimaCardHTML(anggota);
                 cardView.appendChild(card);
             });
         }
 
-        function showDetailPenerima(id) {
-            const anggota = penerimaData.find(a => a.id === id);
+        function createPenerimaCardHTML(anggota) {
+            const badgeClass = anggota.status === 'Diterima' ? 'badge-success' : 'badge-warning';
+            const badgeIcon = anggota.status === 'Diterima' ? 'fa-check-circle' : 'fa-clock';
+            
+            return `
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3>${anggota.nama}</h3>
+                        <span class="card-badge">No: ${anggota.noAnggota}</span>
+                    </div>
+                    <span class="badge ${badgeClass}">
+                        <i class="fas ${badgeIcon}"></i>
+                        ${anggota.status}
+                    </span>
+                </div>
+                
+                <div class="card-content">
+                    <div class="card-item">
+                        <div class="card-label">Total Simpanan</div>
+                        <div class="card-value">${formatCurrency(anggota.totalSimpanan)}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">SHU Diterima</div>
+                        <div class="card-value text-success fw-bold">${formatCurrency(anggota.shuDiterima)}</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">Persentase</div>
+                        <div class="card-value">${anggota.persentase}%</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-label">Tanggal</div>
+                        <div class="card-value">${anggota.tanggalTerima}</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--gray-lighter); border-radius: var(--radius-sm); padding: var(--space-sm); margin-bottom: var(--space-md);">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span>Pokok: ${formatCurrency(anggota.simpananPokok)}</span>
+                        <span>Wajib: ${formatCurrency(anggota.simpananWajib)}</span>
+                        <span>Sukarela: ${formatCurrency(anggota.simpananSukarela)}</span>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="action-btn" onclick="showPenerimaDetail('${anggota.id}')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Detail Pembagian</span>
+                    </button>
+                    <button class="action-btn" onclick="printKwitansiSHU('${anggota.id}')">
+                        <i class="fas fa-receipt"></i>
+                        <span>Kwitansi</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        // ===== BADGE HELPERS =====
+        function getBadgeClass(status) {
+            switch(status.toLowerCase()) {
+                case 'disetorkan': return 'badge-success';
+                case 'dibagikan': return 'badge-warning';
+                case 'dibayarkan': return 'badge-info';
+                case 'dialokasikan': return 'badge-info';
+                default: return 'badge-info';
+            }
+        }
+
+        function getBadgeIcon(status) {
+            switch(status.toLowerCase()) {
+                case 'disetorkan': return 'fa-check-circle';
+                case 'dibagikan': return 'fa-share-alt';
+                case 'dibayarkan': return 'fa-money-bill-wave';
+                case 'dialokasikan': return 'fa-clock';
+                default: return 'fa-info-circle';
+            }
+        }
+
+        // ===== DETAIL FUNCTIONS =====
+        function showSHUDetail(itemId) {
+            const item = shuData.find(d => d.id === itemId);
+            if (!item) return;
+            
+            const modalHTML = createSHUDetailModal(item);
+            showModal(modalHTML);
+        }
+
+        function createSHUDetailModal(item) {
+            return `
+                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-lg); max-width: 500px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                        <h3 style="color: var(--primary-dark); font-size: 1.2rem;">Detail SHU</h3>
+                        <button class="back-button" onclick="closeModal()" style="background: var(--gray-lighter); color: var(--gray);">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="background: var(--gray-lighter); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-lg);">
+                        <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Jenis Alokasi</div>
+                        <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-dark);">${item.jenis}</div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); margin-bottom: var(--space-lg);">
+                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
+                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Persentase</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">${item.persentase}%</div>
+                        </div>
+                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
+                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Jumlah</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary-dark);">${formatCurrency(item.jumlah)}</div>
+                        </div>
+                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
+                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Status</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">${item.status}</div>
+                        </div>
+                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
+                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Tanggal</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary-dark);">${item.tanggal}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-lg);">
+                        <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 8px;">Deskripsi</div>
+                        <div style="color: var(--dark); line-height: 1.6;">${item.deskripsi}</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: var(--space-sm);">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="printSHUItem('${item.id}')">
+                            <i class="fas fa-print"></i>
+                            Cetak Detail
+                        </button>
+                        <button class="btn btn-outline" onclick="closeModal()">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showPenerimaDetail(anggotaId) {
+            const anggota = penerimaData.find(a => a.id === anggotaId);
             if (!anggota) return;
             
-            const detailHTML = `
+            const modalHTML = createPenerimaDetailModal(anggota);
+            showModal(modalHTML);
+        }
+
+        function createPenerimaDetailModal(anggota) {
+            return `
                 <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-lg); max-width: 500px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
                         <h3 style="color: var(--primary-dark); font-size: 1.2rem;">Detail Penerima SHU</h3>
-                        <button class="back-button" onclick="closeDetail()" style="background: var(--gray-lighter); color: var(--gray);">
+                        <button class="back-button" onclick="closeModal()" style="background: var(--gray-lighter); color: var(--gray);">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -2003,25 +1902,538 @@ window.debugSHULaporan = function() {
                     </div>
                     
                     <div style="display: flex; gap: var(--space-sm);">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="printKwitansi('${anggota.id}')">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="printKwitansiSHU('${anggota.id}')">
                             <i class="fas fa-receipt"></i>
                             Cetak Kwitansi
                         </button>
-                        <button class="btn btn-outline" onclick="closeDetail()">
+                        <button class="btn btn-outline" onclick="closeModal()">
                             Tutup
                         </button>
                     </div>
                 </div>
             `;
-            
-            showModal(detailHTML);
         }
 
-        function printKwitansi(id) {
-            const anggota = penerimaData.find(a => a.id === id);
+        // ===== MODAL FUNCTIONS =====
+        function showModal(content) {
+            const overlay = document.createElement('div');
+            overlay.id = 'modalOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: var(--space-md);
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            overlay.innerHTML = content;
+            document.body.appendChild(overlay);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            if (overlay) {
+                overlay.remove();
+            }
+            document.body.style.overflow = '';
+        }
+
+        // ===== CHART FUNCTIONS =====
+        function showChart() {
+            const totalSHU = shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
+            
+            const chartHTML = `
+                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-lg); width: 95%; max-width: 500px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                        <h3 style="color: var(--primary-dark); font-size: 1.2rem;">
+                            <i class="fas fa-chart-pie"></i> Visualisasi Distribusi SHU
+                        </h3>
+                        <button class="back-button" onclick="closeChart()" style="background: var(--gray-lighter); color: var(--gray);">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="margin-bottom: var(--space-lg);">
+                        <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                            <button class="btn btn-sm ${chartType === 'pie' ? 'btn-primary' : 'btn-outline'}" 
+                                    onclick="changeChartType('pie')">
+                                <i class="fas fa-chart-pie"></i> Pie
+                            </button>
+                            <button class="btn btn-sm ${chartType === 'bar' ? 'btn-primary' : 'btn-outline'}" 
+                                    onclick="changeChartType('bar')">
+                                <i class="fas fa-chart-bar"></i> Bar
+                            </button>
+                            <button class="btn btn-sm ${chartType === 'doughnut' ? 'btn-primary' : 'btn-outline'}" 
+                                    onclick="changeChartType('doughnut')">
+                                <i class="fas fa-chart-pie"></i> Donat
+                            </button>
+                        </div>
+                        
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="shuChartCanvas"></canvas>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: var(--space-md); color: var(--gray); font-size: 0.9rem;">
+                            Total SHU: <strong>${formatCurrency(totalSHU)}</strong>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm);">
+                        ${shuData.map(item => `
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--gray-lighter); border-radius: var(--radius-sm);">
+                                <div style="width: 12px; height: 12px; border-radius: 2px; background: ${item.color || '#2e7d32'}"></div>
+                                <div style="font-size: 0.85rem; flex: 1;">${item.jenis}</div>
+                                <div style="font-weight: 600; font-size: 0.85rem;">${item.persentase}%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            showModal(chartHTML);
+            
+            setTimeout(() => {
+                renderChart(chartType);
+            }, 100);
+        }
+
+        function renderChart(type) {
+            chartType = type;
+            
+            const ctx = document.getElementById('shuChartCanvas').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            const labels = shuData.map(item => item.jenis);
+            const data = shuData.map(item => item.jumlah);
+            const colors = shuData.map(item => item.color || '#2e7d32');
+            
+            chartInstance = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: 'white',
+                        borderWidth: 2,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const persentase = shuData[context.dataIndex]?.persentase || 0;
+                                    return `${label}: ${formatCurrency(value)} (${persentase}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function changeChartType(type) {
+            renderChart(type);
+            
+            // Update button states
+            document.querySelectorAll('#modalOverlay .btn').forEach(btn => {
+                btn.className = btn.className.replace('btn-primary', 'btn-outline');
+            });
+            
+            const activeBtn = document.querySelector(`#modalOverlay button[onclick="changeChartType('${type}')"]`);
+            if (activeBtn) {
+                activeBtn.className = activeBtn.className.replace('btn-outline', 'btn-primary');
+            }
+        }
+
+        function closeChart() {
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+            closeModal();
+        }
+
+        // ===== PRINT FUNCTIONS =====
+        function printSHUItem(itemId) {
+            const item = shuData.find(d => d.id === itemId);
+            if (!item) return;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(createPrintContent(item));
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        function printKwitansiSHU(anggotaId) {
+            const anggota = penerimaData.find(a => a.id === anggotaId);
             if (!anggota) return;
             
-            const printContent = `
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(createKwitansiContent(anggota));
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        function printReport() {
+            const tahun = currentFilter.tahun;
+            const totalSHU = shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(createReportContent(tahun, totalSHU));
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        // ===== EXPORT FUNCTIONS =====
+        function exportToExcel() {
+            try {
+                const exportData = shuData.map(item => ({
+                    'Jenis Alokasi': item.jenis,
+                    'Persentase (%)': item.persentase,
+                    'Jumlah (Rp)': item.jumlah,
+                    'Deskripsi': item.deskripsi,
+                    'Status': item.status,
+                    'Sumber Dana': item.sumber,
+                    'Tanggal': item.tanggal,
+                    'No. Bukti': item.bukti
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Laporan SHU');
+                
+                XLSX.writeFile(wb, `Laporan_SHU_${currentFilter.tahun}.xlsx`);
+                
+                showMessage('Laporan berhasil diexport ke Excel!', 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showMessage('Gagal mengekspor data!', 'error');
+            }
+        }
+
+        function exportPenerimaToExcel() {
+            try {
+                const exportData = penerimaData.map(anggota => ({
+                    'No. Anggota': anggota.noAnggota,
+                    'Nama Anggota': anggota.nama,
+                    'Simpanan Pokok': anggota.simpananPokok,
+                    'Simpanan Wajib': anggota.simpananWajib,
+                    'Simpanan Sukarela': anggota.simpananSukarela,
+                    'Total Simpanan': anggota.totalSimpanan,
+                    'SHU Diterima': anggota.shuDiterima,
+                    'Persentase (%)': anggota.persentase,
+                    'Tanggal Terima': anggota.tanggalTerima,
+                    'Status': anggota.status,
+                    'No. Bukti': anggota.bukti
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Penerima SHU');
+                
+                XLSX.writeFile(wb, `Penerima_SHU_${currentFilter.tahun}.xlsx`);
+                
+                showMessage('Data penerima berhasil diexport ke Excel!', 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showMessage('Gagal mengekspor data penerima!', 'error');
+            }
+        }
+
+        // ===== INTEGRATION FUNCTIONS =====
+        function saveSHUDataToDashboard(totalSHU) {
+            try {
+                const dashboardSHUData = {
+                    total: totalSHU,
+                    dibagikan: shuData.find(item => item.jenis === 'Dana Anggota')?.jumlah || 0,
+                    cadangan: shuData.find(item => item.jenis === 'Dana Cadangan')?.jumlah || 0,
+                    anggota: penerimaData.length,
+                    pertumbuhan: calculateGrowthPercentage(),
+                    distribusi: shuData,
+                    penerima: penerimaData,
+                    tahun: new Date().getFullYear(),
+                    tanggalHitung: new Date().toISOString()
+                };
+                
+                localStorage.setItem('shuData', JSON.stringify(dashboardSHUData));
+                
+                console.log('✅ SHU data saved to dashboard');
+                
+            } catch (error) {
+                console.error('❌ Error saving SHU data to dashboard:', error);
+            }
+        }
+
+        function setupBidirectionalIntegration() {
+            // Listen for storage changes
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'simpananData' || e.key === 'koperasi_anggota' || e.key === 'anggotaData') {
+                    console.log('🔄 Dashboard data updated, reloading SHU...');
+                    
+                    setTimeout(() => {
+                        loadData();
+                        showMessage('Data diperbarui dari dashboard', 'info');
+                    }, 1000);
+                }
+            });
+            
+            // Periodic sync (every 30 seconds)
+            setInterval(() => {
+                if (!isLoading) {
+                    console.log('⏰ Periodic sync...');
+                    loadDataFromDashboard();
+                }
+            }, 30000);
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatCurrency(amount) {
+            if (isNaN(amount) || amount === null || amount === undefined) {
+                return 'Rp 0';
+            }
+            return 'Rp ' + parseInt(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function terbilang(angka) {
+            // Fungsi sederhana untuk terbilang
+            const bilangan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+            
+            angka = parseInt(angka);
+            if (angka < 12) {
+                return bilangan[angka];
+            } else if (angka < 20) {
+                return terbilang(angka - 10) + ' belas';
+            } else if (angka < 100) {
+                return terbilang(Math.floor(angka / 10)) + ' puluh ' + terbilang(angka % 10);
+            } else if (angka < 200) {
+                return 'seratus ' + terbilang(angka - 100);
+            } else if (angka < 1000) {
+                return terbilang(Math.floor(angka / 100)) + ' ratus ' + terbilang(angka % 100);
+            } else if (angka < 2000) {
+                return 'seribu ' + terbilang(angka - 1000);
+            } else if (angka < 1000000) {
+                return terbilang(Math.floor(angka / 1000)) + ' ribu ' + terbilang(angka % 1000);
+            } else if (angka < 1000000000) {
+                return terbilang(Math.floor(angka / 1000000)) + ' juta ' + terbilang(angka % 1000000);
+            }
+            
+            return 'jumlah besar';
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+                overlay.style.opacity = show ? '1' : '0';
+            }
+        }
+
+        function showMessage(message, type = 'info') {
+            // Remove existing message
+            const existingMsg = document.getElementById('flashMessage');
+            if (existingMsg) existingMsg.remove();
+            
+            // Create message element
+            const msg = document.createElement('div');
+            msg.id = 'flashMessage';
+            msg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 300px;
+            `;
+            
+            msg.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(msg);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (msg.parentNode) {
+                    msg.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        if (msg.parentNode) msg.parentNode.removeChild(msg);
+                    }, 300);
+                }
+            }, 3000);
+        }
+
+        function goBackToDashboard() {
+            window.location.href = 'dashboard-admin.html';
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Filter button
+            document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
+            
+            // Reset filter button
+            document.getElementById('resetFilterBtn').addEventListener('click', function() {
+                document.getElementById('tahunSHU').value = new Date().getFullYear().toString();
+                document.getElementById('periodeSHU').value = 'tahunan';
+                document.getElementById('statusSHU').value = 'all';
+                applyFilter();
+                showMessage('Filter direset ke default', 'info');
+            });
+            
+            // Export buttons
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+            document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+            document.getElementById('exportPenerimaBtn').addEventListener('click', exportPenerimaToExcel);
+            document.getElementById('printBtn').addEventListener('click', printReport);
+            
+            // Refresh data
+            document.getElementById('refreshDataBtn').addEventListener('click', function() {
+                loadData();
+            });
+            
+            // View chart
+            document.getElementById('viewChartBtn').addEventListener('click', showChart);
+            
+            // Export PDF (placeholder)
+            document.getElementById('exportPdfBtn').addEventListener('click', function() {
+                showMessage('Fitur export PDF akan segera tersedia', 'info');
+            });
+            
+            // Auto-apply filter on select change
+            document.getElementById('tahunSHU').addEventListener('change', applyFilter);
+            document.getElementById('periodeSHU').addEventListener('change', applyFilter);
+            document.getElementById('statusSHU').addEventListener('change', applyFilter);
+            
+            // Touch events for mobile
+            document.querySelectorAll('.action-btn, .btn').forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'translateY(1px)';
+                });
+                
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+        }
+
+        // ===== PRINT CONTENT GENERATORS =====
+        function createPrintContent(item) {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Detail SHU - ${item.jenis}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #2e7d32; padding-bottom: 20px; }
+                        h1 { color: #2e7d32; font-size: 24px; }
+                        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+                        .info-item { background: #f5f5f5; padding: 15px; border-radius: 8px; }
+                        .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>KOPERASI ASMARA TANI</h1>
+                        <h2>Detail Distribusi SHU</h2>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Jenis Alokasi</strong><br>
+                            ${item.jenis}
+                        </div>
+                        <div class="info-item">
+                            <strong>Jumlah</strong><br>
+                            ${formatCurrency(item.jumlah)}
+                        </div>
+                        <div class="info-item">
+                            <strong>Persentase</strong><br>
+                            ${item.persentase}%
+                        </div>
+                        <div class="info-item">
+                            <strong>Status</strong><br>
+                            ${item.status}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <strong>Deskripsi:</strong>
+                        <p>${item.deskripsi}</p>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <strong>Informasi Tambahan:</strong>
+                        <p>No. Bukti: ${item.bukti}</p>
+                        <p>Tanggal: ${item.tanggal}</p>
+                        <p>Sumber: ${item.sumber}</p>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>Dicetak dari Sistem Laporan SHU - Koperasi Asmara Tani</p>
+                        <p>Tanggal cetak: ${new Date().toLocaleDateString('id-ID')}</p>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function createKwitansiContent(anggota) {
+            return `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2098,412 +2510,9 @@ window.debugSHULaporan = function() {
                 </body>
                 </html>
             `;
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
         }
 
-        // ===== CHART FUNCTIONS =====
-        function showChartModal() {
-            const totalSHU = shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
-            
-            const chartHTML = `
-                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-lg); width: 95%; max-width: 500px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
-                        <h3 style="color: var(--primary-dark); font-size: 1.2rem;">
-                            <i class="fas fa-chart-pie"></i> Visualisasi Distribusi SHU
-                        </h3>
-                        <button class="back-button" onclick="closeChartModal()" style="background: var(--gray-lighter); color: var(--gray);">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <div style="margin-bottom: var(--space-lg);">
-                        <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-md);">
-                            <button class="btn btn-sm ${chartType === 'pie' ? 'btn-primary' : 'btn-outline'}" 
-                                    onclick="changeChartType('pie')">
-                                <i class="fas fa-chart-pie"></i> Pie
-                            </button>
-                            <button class="btn btn-sm ${chartType === 'bar' ? 'btn-primary' : 'btn-outline'}" 
-                                    onclick="changeChartType('bar')">
-                                <i class="fas fa-chart-bar"></i> Bar
-                            </button>
-                            <button class="btn btn-sm ${chartType === 'doughnut' ? 'btn-primary' : 'btn-outline'}" 
-                                    onclick="changeChartType('doughnut')">
-                                <i class="fas fa-chart-pie"></i> Donat
-                            </button>
-                        </div>
-                        
-                        <div style="position: relative; height: 300px;">
-                            <canvas id="shuChartCanvas"></canvas>
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: var(--space-md); color: var(--gray); font-size: 0.9rem;">
-                            Total SHU: <strong>${formatCurrency(totalSHU)}</strong>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm);">
-                        ${shuData.map(item => `
-                            <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--gray-lighter); border-radius: var(--radius-sm);">
-                                <div style="width: 12px; height: 12px; border-radius: 2px; background: ${item.color || '#2e7d32'}"></div>
-                                <div style="font-size: 0.85rem; flex: 1;">${item.jenis}</div>
-                                <div style="font-weight: 600; font-size: 0.85rem;">${item.persentase}%</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            
-            const overlay = document.createElement('div');
-            overlay.id = 'chartOverlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                padding: var(--space-md);
-                animation: fadeIn 0.3s ease;
-            `;
-            
-            overlay.innerHTML = chartHTML;
-            document.body.appendChild(overlay);
-            document.body.style.overflow = 'hidden';
-            
-            // Initialize chart
-            setTimeout(() => {
-                renderChart('pie');
-            }, 100);
-        }
-
-        function renderChart(type) {
-            chartType = type;
-            
-            const ctx = document.getElementById('shuChartCanvas').getContext('2d');
-            
-            // Destroy existing chart
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            
-            const labels = shuData.map(item => item.jenis);
-            const data = shuData.map(item => item.jumlah);
-            const colors = shuData.map(item => item.color || '#2e7d32');
-            const percentages = shuData.map(item => item.persentase);
-            
-            chartInstance = new Chart(ctx, {
-                type: type,
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors,
-                        borderColor: 'white',
-                        borderWidth: 2,
-                        hoverOffset: 15
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true,
-                                font: {
-                                    size: 11
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const percentage = percentages[context.dataIndex] || 0;
-                                    return `${label}: ${formatCurrency(value)} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function changeChartType(type) {
-            renderChart(type);
-            
-            // Update button states
-            document.querySelectorAll('#chartOverlay .btn').forEach(btn => {
-                btn.className = btn.className.replace('btn-primary', 'btn-outline');
-            });
-            
-            const activeBtn = document.querySelector(`#chartOverlay button[onclick="changeChartType('${type}')"]`);
-            if (activeBtn) {
-                activeBtn.className = activeBtn.className.replace('btn-outline', 'btn-primary');
-            }
-        }
-
-        function closeChartModal() {
-            const overlay = document.getElementById('chartOverlay');
-            if (overlay) {
-                overlay.remove();
-            }
-            document.body.style.overflow = '';
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-                chartInstance = null;
-            }
-        }
-
-        // ===== SHOW DETAIL =====
-        function showDetail(itemId) {
-            const item = shuData.find(d => d.id === itemId);
-            if (!item) return;
-            
-            const detailHTML = `
-                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-lg); max-width: 500px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
-                        <h3 style="color: var(--primary-dark); font-size: 1.2rem;">Detail SHU</h3>
-                        <button class="back-button" onclick="closeDetail()" style="background: var(--gray-lighter); color: var(--gray);">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <div style="background: var(--gray-lighter); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-lg);">
-                        <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Jenis Alokasi</div>
-                        <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-dark);">${item.jenis}</div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); margin-bottom: var(--space-lg);">
-                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
-                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Persentase</div>
-                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">${item.persentase}%</div>
-                        </div>
-                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
-                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Jumlah</div>
-                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary-dark);">${formatCurrency(item.jumlah)}</div>
-                        </div>
-                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
-                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Status</div>
-                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">${item.status}</div>
-                        </div>
-                        <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md);">
-                            <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 4px;">Tanggal</div>
-                            <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary-dark);">${item.tanggal}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: white; border: 1px solid var(--gray-light); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-lg);">
-                        <div style="font-size: 0.9rem; color: var(--gray); margin-bottom: 8px;">Deskripsi</div>
-                        <div style="color: var(--dark); line-height: 1.6;">${item.deskripsi}</div>
-                    </div>
-                    
-                    <div style="display: flex; gap: var(--space-sm);">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="printItem('${item.id}')">
-                            <i class="fas fa-print"></i>
-                            Cetak Detail
-                        </button>
-                        <button class="btn btn-outline" onclick="closeDetail()">
-                            Tutup
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            showModal(detailHTML);
-        }
-
-        function showModal(content) {
-            const overlay = document.createElement('div');
-            overlay.id = 'detailOverlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                padding: var(--space-md);
-                animation: fadeIn 0.3s ease;
-            `;
-            
-            overlay.innerHTML = content;
-            document.body.appendChild(overlay);
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeDetail() {
-            const overlay = document.getElementById('detailOverlay');
-            if (overlay) {
-                overlay.remove();
-            }
-            document.body.style.overflow = '';
-        }
-
-        // ===== PRINT ITEM =====
-        function printItem(itemId) {
-            const item = shuData.find(d => d.id === itemId);
-            if (!item) return;
-            
-            const printContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Detail SHU - ${item.jenis}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        h1 { color: #2e7d32; }
-                        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
-                        .info-item { background: #f5f5f5; padding: 15px; border-radius: 8px; }
-                        .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>KOPERASI ASMARA TANI</h1>
-                        <h2>Detail Distribusi SHU</h2>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <strong>Jenis Alokasi</strong><br>
-                            ${item.jenis}
-                        </div>
-                        <div class="info-item">
-                            <strong>Jumlah</strong><br>
-                            ${formatCurrency(item.jumlah)}
-                        </div>
-                        <div class="info-item">
-                            <strong>Persentase</strong><br>
-                            ${item.persentase}%
-                        </div>
-                        <div class="info-item">
-                            <strong>Status</strong><br>
-                            ${item.status}
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <strong>Deskripsi:</strong>
-                        <p>${item.deskripsi}</p>
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <strong>Informasi Tambahan:</strong>
-                        <p>No. Bukti: ${item.bukti}</p>
-                        <p>Tanggal: ${item.tanggal}</p>
-                        <p>Sumber: ${item.sumber}</p>
-                    </div>
-                    
-                    <div class="footer">
-                        <p>Dicetak dari Sistem Laporan SHU - Koperasi Asmara Tani</p>
-                        <p>Tanggal cetak: ${new Date().toLocaleDateString('id-ID')}</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
-        }
-
-        // ===== EXPORT FUNCTIONS =====
-        function exportToExcel() {
-            try {
-                const exportData = shuData.map(item => ({
-                    'Jenis Alokasi': item.jenis,
-                    'Persentase (%)': item.persentase,
-                    'Jumlah (Rp)': item.jumlah,
-                    'Deskripsi': item.deskripsi,
-                    'Status': item.status,
-                    'Sumber Dana': item.sumber,
-                    'Tanggal': item.tanggal,
-                    'No. Bukti': item.bukti
-                }));
-                
-                const ws = XLSX.utils.json_to_sheet(exportData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Laporan SHU');
-                
-                const tahun = document.getElementById('tahunSHU').value;
-                XLSX.writeFile(wb, `Laporan_SHU_${tahun}.xlsx`);
-                
-                showMessage('Laporan berhasil diexport ke Excel!', 'success');
-                
-            } catch (error) {
-                console.error('Export error:', error);
-                showMessage('Gagal mengekspor data!', 'error');
-            }
-        }
-
-        function exportPenerimaToExcel() {
-            try {
-                const exportData = penerimaData.map(anggota => ({
-                    'No. Anggota': anggota.noAnggota,
-                    'Nama Anggota': anggota.nama,
-                    'Simpanan Pokok': anggota.simpananPokok,
-                    'Simpanan Wajib': anggota.simpananWajib,
-                    'Simpanan Sukarela': anggota.simpananSukarela,
-                    'Total Simpanan': anggota.totalSimpanan,
-                    'SHU Diterima': anggota.shuDiterima,
-                    'Persentase (%)': anggota.persentase,
-                    'Tanggal Terima': anggota.tanggalTerima,
-                    'Status': anggota.status,
-                    'No. Bukti': anggota.bukti
-                }));
-                
-                const ws = XLSX.utils.json_to_sheet(exportData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Penerima SHU');
-                
-                const tahun = document.getElementById('tahunSHU').value;
-                XLSX.writeFile(wb, `Penerima_SHU_${tahun}.xlsx`);
-                
-                showMessage('Data penerima berhasil diexport ke Excel!', 'success');
-                
-            } catch (error) {
-                console.error('Export error:', error);
-                showMessage('Gagal mengekspor data penerima!', 'error');
-            }
-        }
-
-        function exportToPDF() {
-            showMessage('Fitur export PDF akan segera tersedia', 'info');
-        }
-
-        function printReport() {
-            const tahun = document.getElementById('tahunSHU').value;
-            const totalSHU = shuData.reduce((sum, item) => sum + item.jumlah, 0);
-            
+        function createReportContent(tahun, totalSHU) {
             let tableRows = '';
             shuData.forEach((item, index) => {
                 tableRows += `
@@ -2517,7 +2526,7 @@ window.debugSHULaporan = function() {
                 `;
             });
             
-            const printContent = `
+            return `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -2561,156 +2570,6 @@ window.debugSHULaporan = function() {
                 </body>
                 </html>
             `;
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
-        }
-
-        // ===== UTILITY FUNCTIONS =====
-        function formatCurrency(amount) {
-            if (!amount) return 'Rp 0';
-            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-
-        function terbilang(angka) {
-            // Fungsi sederhana untuk terbilang
-            const bilangan = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
-            
-            if (angka < 12) {
-                return bilangan[angka];
-            } else if (angka < 20) {
-                return terbilang(angka - 10) + ' belas';
-            } else if (angka < 100) {
-                return terbilang(Math.floor(angka / 10)) + ' puluh ' + terbilang(angka % 10);
-            } else if (angka < 200) {
-                return 'seratus ' + terbilang(angka - 100);
-            } else if (angka < 1000) {
-                return terbilang(Math.floor(angka / 100)) + ' ratus ' + terbilang(angka % 100);
-            } else if (angka < 2000) {
-                return 'seribu ' + terbilang(angka - 1000);
-            } else if (angka < 1000000) {
-                return terbilang(Math.floor(angka / 1000)) + ' ribu ' + terbilang(angka % 1000);
-            } else if (angka < 1000000000) {
-                return terbilang(Math.floor(angka / 1000000)) + ' juta ' + terbilang(angka % 1000000);
-            }
-            
-            return 'jumlah besar';
-        }
-
-        function showMessage(message, type = 'info') {
-            // Remove existing message
-            const existingMsg = document.getElementById('flashMessage');
-            if (existingMsg) existingMsg.remove();
-            
-            // Create message element
-            const msg = document.createElement('div');
-            msg.id = 'flashMessage';
-            msg.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
-                color: white;
-                padding: 12px 20px;
-                border-radius: var(--radius-md);
-                box-shadow: var(--shadow-lg);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                max-width: 300px;
-            `;
-            
-            msg.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(msg);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                msg.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    if (msg.parentNode) msg.parentNode.removeChild(msg);
-                }, 300);
-            }, 3000);
-            
-            // Add animations if not exists
-            if (!document.querySelector('#messageAnimations')) {
-                const style = document.createElement('style');
-                style.id = 'messageAnimations';
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                    @keyframes slideOut {
-                        from { transform: translateX(0); opacity: 1; }
-                        to { transform: translateX(100%); opacity: 0; }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        }
-
-        // ===== EVENT LISTENERS =====
-        function setupEventListeners() {
-            // Filter button
-            document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
-            
-            // Reset filter button
-            document.getElementById('resetFilterBtn').addEventListener('click', function() {
-                document.getElementById('tahunSHU').value = new Date().getFullYear().toString();
-                document.getElementById('periodeSHU').value = 'tahunan';
-                document.getElementById('statusSHU').value = 'all';
-                applyFilter();
-                showMessage('Filter direset ke default', 'info');
-            });
-            
-            // Export buttons
-            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
-            document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-            document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
-            document.getElementById('printBtn').addEventListener('click', printReport);
-            
-            // Export penerima
-            document.getElementById('exportPenerimaBtn').addEventListener('click', function() {
-                exportPenerimaToExcel();
-            });
-            
-            // Refresh data
-            document.getElementById('refreshDataBtn').addEventListener('click', function() {
-                loadDataFromDashboard();
-                showMessage('Data diperbarui dari dashboard', 'success');
-            });
-            
-            // View chart
-            document.getElementById('viewChartBtn').addEventListener('click', showChartModal);
-            
-            // Auto-apply filter on select change
-            document.getElementById('tahunSHU').addEventListener('change', applyFilter);
-            document.getElementById('periodeSHU').addEventListener('change', applyFilter);
-            document.getElementById('statusSHU').addEventListener('change', applyFilter);
-            
-            // Touch events for better mobile experience
-            document.querySelectorAll('.action-btn, .btn').forEach(btn => {
-                btn.addEventListener('touchstart', function() {
-                    this.style.transform = 'translateY(1px)';
-                });
-                
-                btn.addEventListener('touchend', function() {
-                    this.style.transform = '';
-                });
-            });
         }
 
         // ===== SWIPE SUPPORT =====
@@ -2729,17 +2588,27 @@ window.debugSHULaporan = function() {
             const diffX = touchStartX - touchEndX;
             const diffY = touchStartY - touchEndY;
             
-            // Horizontal swipe (more horizontal than vertical)
             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
                 if (diffX > 0) {
-                    // Swipe left - bisa untuk navigasi
+                    // Swipe left
                     console.log('Swiped left');
                 } else {
-                    // Swipe right - kembali ke dashboard
-                    window.location.href = 'dashboard-admin.html';
+                    // Swipe right - back to dashboard
+                    goBackToDashboard();
                 }
             }
         });
+
+        // ===== DEBUG FUNCTIONS =====
+        window.debugSHULaporan = function() {
+            console.log('=== DEBUG LAPORAN SHU ===');
+            console.log('SHU Data:', shuData);
+            console.log('Penerima Data:', penerimaData);
+            console.log('Current Filter:', currentFilter);
+            console.log('Dashboard Data:', JSON.parse(localStorage.getItem('shuData') || '{}'));
+            console.log('=== END DEBUG ===');
+        };
+
     </script>
 </body>
 </html>
