@@ -6996,8 +6996,6 @@ document.addEventListener('click', function(event) {
         sidebar.classList.remove('active');
     }
 });
-
-// ===== INTEGRASI DUA ARAH DENGAN LAPORAN SHU =====
 // ==================== INTEGRASI DUA ARAH: DASHBOARD ↔ LAPORAN SHU ====================
 
 // ===== FUNGSI SYNC DATA SHU KE LAPORAN SHU =====
@@ -7005,171 +7003,37 @@ function syncSHUDataToLaporan() {
     console.log('📤 Syncing SHU data to Laporan SHU...');
     
     try {
+        // Pastikan variabel global sudah didefinisikan
+        if (!window.simpananData || !window.anggotaData) {
+            console.warn('⚠️ Data belum siap, menunggu...');
+            return false;
+        }
+        
         // Hitung total SHU dari dashboard data
-        const totalSimpanan = simpananData.reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
+        const totalSimpanan = window.simpananData.reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
         const totalSHU = Math.round(totalSimpanan * 0.2); // 20% dari total simpanan
         
-        // Distribusi SHU berdasarkan AD/ART koperasi
-        const distribusiSHU = [
-            {
-                id: 'SHU-001',
-                jenis: 'Dana Cadangan',
-                persentase: 40,
-                jumlah: Math.round(totalSHU * 0.4),
-                deskripsi: 'Dana untuk pengembangan koperasi',
-                status: 'Disetorkan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-CAD-' + new Date().getFullYear() + '-001',
-                color: '#2e7d32'
-            },
-            {
-                id: 'SHU-002',
-                jenis: 'Dana Anggota',
-                persentase: 25,
-                jumlah: Math.round(totalSHU * 0.25),
-                deskripsi: 'Dibagikan kepada anggota sesuai simpanan',
-                status: 'Dibagikan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-ANG-' + new Date().getFullYear() + '-001',
-                color: '#2196f3'
-            },
-            {
-                id: 'SHU-003',
-                jenis: 'Dana Pengurus',
-                persentase: 10,
-                jumlah: Math.round(totalSHU * 0.1),
-                deskripsi: 'Honorarium pengurus koperasi',
-                status: 'Dibayarkan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-PEN-' + new Date().getFullYear() + '-001',
-                color: '#ff9800'
-            },
-            {
-                id: 'SHU-004',
-                jenis: 'Dana Karyawan',
-                persentase: 5,
-                jumlah: Math.round(totalSHU * 0.05),
-                deskripsi: 'Bonus untuk karyawan',
-                status: 'Dibayarkan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-KAR-' + new Date().getFullYear() + '-001',
-                color: '#9c27b0'
-            },
-            {
-                id: 'SHU-005',
-                jenis: 'Dana Pendidikan',
-                persentase: 5,
-                jumlah: Math.round(totalSHU * 0.05),
-                deskripsi: 'Program pendidikan anggota',
-                status: 'Dialokasikan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-PDK-' + new Date().getFullYear() + '-001',
-                color: '#00bcd4'
-            },
-            {
-                id: 'SHU-006',
-                jenis: 'Dana Sosial',
-                persentase: 5,
-                jumlah: Math.round(totalSHU * 0.05),
-                deskripsi: 'Kegiatan sosial kemasyarakatan',
-                status: 'Dialokasikan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-SOS-' + new Date().getFullYear() + '-001',
-                color: '#ff5722'
-            },
-            {
-                id: 'SHU-007',
-                jenis: 'Dana Pembangunan',
-                persentase: 10,
-                jumlah: Math.round(totalSHU * 0.1),
-                deskripsi: 'Pengembangan sarana prasarana',
-                status: 'Dialokasikan',
-                sumber: 'Simpanan Anggota',
-                tanggal: new Date().getFullYear() + '-12-31',
-                bukti: 'SHU-BNG-' + new Date().getFullYear() + '-001',
-                color: '#795548'
-            }
-        ];
+        console.log('📊 Total Simpanan:', totalSimpanan, 'Total SHU:', totalSHU);
         
-        // Generate data penerima SHU per anggota
-        const totalSHUUntukAnggota = Math.round(totalSHU * 0.25);
-        
-        // Hitung total simpanan per anggota
-        const totalSimpananPerAnggota = {};
-        anggotaData.forEach(anggota => {
-            const simpananAnggota = simpananData
-                .filter(s => s.idAnggota === anggota.id)
-                .reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
-            
-            totalSimpananPerAnggota[anggota.id] = simpananAnggota;
-        });
-        
-        // Hitung total semua simpanan anggota
-        const totalSimpananSemuaAnggota = Object.values(totalSimpananPerAnggota)
-            .reduce((sum, val) => sum + val, 0);
-        
-        // Generate data penerima SHU
-        const penerimaData = anggotaData
-            .filter(anggota => totalSimpananPerAnggota[anggota.id] > 0)
-            .map(anggota => {
-                const simpananAnggota = totalSimpananPerAnggota[anggota.id] || 0;
-                const persentaseAnggota = totalSimpananSemuaAnggota > 0 ?
-                    (simpananAnggota / totalSimpananSemuaAnggota * 100) : 0;
-                const shuAnggota = Math.round(totalSHUUntukAnggota * (persentaseAnggota / 100));
-                
-                return {
-                    id: anggota.id,
-                    nama: anggota.nama,
-                    noAnggota: anggota.nia || anggota.id,
-                    simpananPokok: anggota.simpananPokok || 0,
-                    simpananWajib: anggota.simpananWajib || 0,
-                    simpananSukarela: anggota.simpananSukarela || 0,
-                    totalSimpanan: simpananAnggota,
-                    shuDiterima: shuAnggota,
-                    persentase: persentaseAnggota.toFixed(2),
-                    tanggalTerima: new Date().getFullYear() + '-12-15',
-                    status: shuAnggota > 0 ? 'Diterima' : 'Belum Diterima',
-                    bukti: 'SHU-' + (anggota.nia || anggota.id) + '-' + new Date().getFullYear()
-                };
-            });
-        
-        // Simpan data SHU lengkap
+        // Simpan data SHU sederhana ke localStorage
         const shuDataForLaporan = {
             total: totalSHU,
-            dibagikan: totalSHUUntukAnggota,
+            dibagikan: Math.round(totalSHU * 0.25),
             cadangan: Math.round(totalSHU * 0.4),
-            anggota: penerimaData.length,
+            anggota: window.anggotaData.length,
             pertumbuhan: '15.5%',
-            distribusi: distribusiSHU,
-            penerima: penerimaData,
             tahun: new Date().getFullYear(),
             tanggalHitung: new Date().toISOString(),
+            dashboardVersion: '1.0',
             totalSimpanan: totalSimpanan,
-            totalAnggota: anggotaData.length,
-            dashboardVersion: '1.0'
+            totalAnggota: window.anggotaData.length
         };
         
-        // Simpan ke localStorage untuk diakses Laporan SHU
+        // Simpan ke localStorage
         localStorage.setItem('shuData', JSON.stringify(shuDataForLaporan));
         localStorage.setItem('shuLastUpdate', Date.now().toString());
         
-        console.log('✅ SHU data synced to Laporan SHU:', {
-            totalSHU: totalSHU,
-            totalAnggota: anggotaData.length,
-            penerimaSHU: penerimaData.length
-        });
-        
-        // Update dashboard stats
-        updateDashboardStatsWithSHU(totalSHU, totalSHUUntukAnggota);
-        
-        // Kirim event untuk notifikasi Laporan SHU
-        dispatchSHUUpdateEvent();
+        console.log('✅ SHU data synced to Laporan SHU');
         
         return true;
         
@@ -7184,23 +7048,17 @@ function updateDashboardStatsWithSHU(totalSHU, shuAnggota) {
     console.log('Updating dashboard stats with SHU data...');
     
     try {
-        // Update elemen SHU di dashboard
+        // Update elemen SHU di dashboard jika ada
         const totalSHUElem = document.getElementById('totalSHU');
         const totalKasElem = document.getElementById('totalKas');
         
         if (totalSHUElem) {
-            totalSHUElem.textContent = formatRupiah(totalSHU);
+            totalSHUElem.textContent = formatRupiah ? formatRupiah(totalSHU) : 'Rp ' + totalSHU.toLocaleString('id-ID');
         }
         
         if (totalKasElem) {
             const danaCadangan = Math.round(totalSHU * 0.4);
-            totalKasElem.textContent = formatRupiah(danaCadangan);
-        }
-        
-        // Update grafik keuangan
-        if (financeChart) {
-            // Tambahkan data SHU ke grafik jika diperlukan
-            fixFinanceChart();
+            totalKasElem.textContent = formatRupiah ? formatRupiah(danaCadangan) : 'Rp ' + danaCadangan.toLocaleString('id-ID');
         }
         
         console.log('✅ Dashboard stats updated with SHU data');
@@ -7208,23 +7066,6 @@ function updateDashboardStatsWithSHU(totalSHU, shuAnggota) {
     } catch (error) {
         console.error('❌ Error updating dashboard stats:', error);
     }
-}
-
-// ===== FUNGSI DISPATCH EVENT UNTUK LAPORAN SHU =====
-function dispatchSHUUpdateEvent() {
-    // Buat custom event untuk memberitahu Laporan SHU
-    const shuUpdateEvent = new CustomEvent('shuDataUpdated', {
-        detail: {
-            timestamp: new Date().toISOString(),
-            source: 'dashboard'
-        }
-    });
-    
-    // Dispatch event
-    window.dispatchEvent(shuUpdateEvent);
-    
-    // Juga simpan di localStorage sebagai trigger
-    localStorage.setItem('shuUpdateTrigger', Date.now().toString());
 }
 
 // ===== FUNGSI LOAD DATA SHU DARI LAPORAN SHU =====
@@ -7239,11 +7080,6 @@ function loadSHUDataFromLaporan() {
             
             // Update dashboard dengan data dari Laporan SHU
             updateDashboardStatsWithSHU(shuData.total, shuData.dibagikan);
-            
-            // Update data lokal jika ada
-            if (shuData.distribusi) {
-                window.shuData = shuData.distribusi;
-            }
             
             console.log('✅ SHU data loaded from Laporan SHU');
             return true;
@@ -7276,79 +7112,19 @@ function setupSHUAutoSync() {
             clearTimeout(window.shuSyncTimeout);
             window.shuSyncTimeout = setTimeout(() => {
                 syncSHUDataToLaporan();
-            }, 1000);
+            }, 2000);
         }
     };
-    
-    // Listen for events from Laporan SHU
-    window.addEventListener('shuDataUpdatedFromLaporan', function(event) {
-        console.log('📬 Received SHU update from Laporan SHU:', event.detail);
-        
-        // Update dashboard dengan data baru
-        loadSHUDataFromLaporan();
-        
-        // Show notification
-        if (typeof showNotification === 'function') {
-            showNotification('Data SHU diperbarui dari Laporan SHU', 'success');
-        }
-    });
-    
-    // Check for updates setiap 30 detik
-    setInterval(() => {
-        const lastUpdate = localStorage.getItem('shuLastUpdate');
-        const now = Date.now();
-        
-        if (!lastUpdate || (now - parseInt(lastUpdate)) > 30000) {
-            console.log('⏰ Auto-checking SHU data...');
-            syncSHUDataToLaporan();
-        }
-    }, 30000);
     
     // Initial sync
     setTimeout(() => {
         syncSHUDataToLaporan();
-    }, 2000);
+    }, 3000);
     
     console.log('✅ SHU auto-sync setup completed');
 }
 
-// ===== FUNGSI EXPORT DATA KE LAPORAN SHU =====
-function exportToSHUReport() {
-    console.log('Exporting data to SHU Report...');
-    
-    try {
-        // Sync data terlebih dahulu
-        const success = syncSHUDataToLaporan();
-        
-        if (success) {
-            // Buka laporan SHU di tab baru
-            const shuWindow = window.open('laporan-shu.html', '_blank');
-            
-            if (shuWindow) {
-                // Tunggu hingga window terbuka, lalu kirim data
-                setTimeout(() => {
-                    shuWindow.postMessage({
-                        type: 'SHU_DATA_FROM_DASHBOARD',
-                        data: JSON.parse(localStorage.getItem('shuData')),
-                        timestamp: new Date().toISOString()
-                    }, '*');
-                }, 1000);
-                
-                if (typeof showNotification === 'function') {
-                    showNotification('Data berhasil diexport ke Laporan SHU', 'success');
-                }
-            }
-        }
-        
-    } catch (error) {
-        console.error('❌ Error exporting to SHU Report:', error);
-        if (typeof showNotification === 'function') {
-            showNotification('Gagal export ke Laporan SHU', 'error');
-        }
-    }
-}
-
-// ===== FUNGSI UNTUK TOMBOL DI DASHBOARD =====
+// ===== FUNGSI SETUP TOMBOL LAPORAN SHU =====
 function setupSHUButtons() {
     console.log('Setting up SHU buttons...');
     
@@ -7356,12 +7132,12 @@ function setupSHUButtons() {
     const shuMenuItems = document.querySelectorAll('.sidebar-menu a[href*="laporan-shu"], .sidebar-menu a[data-tab="shu"]');
     
     shuMenuItems.forEach(item => {
-        // Hapus event listener lama
-        const newItem = item.cloneNode(true);
-        item.parentNode.replaceChild(newItem, item);
+        // Hapus event listener lama jika ada
+        const originalOnclick = item.onclick;
+        item.onclick = null;
         
         // Tambahkan event listener baru
-        newItem.addEventListener('click', function(e) {
+        item.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             
@@ -7380,131 +7156,109 @@ function setupSHUButtons() {
         });
     });
     
-    // Tambahkan tombol export SHU di dashboard
-    const pageTitle = document.querySelector('.page-title h1');
-    if (pageTitle && pageTitle.textContent.includes('Dashboard')) {
-        const actionsDiv = pageTitle.nextElementSibling;
-        if (actionsDiv && actionsDiv.classList.contains('page-title')) {
-            const exportSHUBtn = document.createElement('button');
-            exportSHUBtn.className = 'btn btn-primary btn-sm';
-            exportSHUBtn.innerHTML = '<i class="fas fa-chart-pie"></i> Export ke SHU';
-            exportSHUBtn.onclick = exportToSHUReport;
-            
-            actionsDiv.querySelector('div')?.appendChild(exportSHUBtn);
-        }
-    }
-    
     console.log('✅ SHU buttons setup completed');
 }
 
-// ===== MODIFIKASI FUNGSI INISIALISASI =====
-// Tambahkan fungsi SHU ke dalam initializeSystem
-const originalInitializeSystem = window.initializeSystem;
-window.initializeSystem = function() {
-    // Jalankan fungsi original
-    if (originalInitializeSystem) {
-        originalInitializeSystem();
-    }
-    
-    // Setup SHU integration
-    console.log('Setting up SHU integration...');
-    
-    // Load SHU data
-    loadSHUDataFromLaporan();
-    
-    // Setup auto-sync
-    setupSHUAutoSync();
-    
-    // Setup buttons
-    setupSHUButtons();
-    
-    console.log('✅ SHU integration setup completed');
-};
-
-// ===== FUNGSI UNTUK REAL-TIME SYNC =====
-// Tambahkan ke fungsi-fungsi yang mengubah data
-function enhanceDataFunctionsWithSHUSync() {
-    console.log('Enhancing data functions with SHU sync...');
+// ===== INTEGRASI DENGAN FUNGSI EXISTING =====
+// Tambahkan sync ke fungsi yang sudah ada
+function enhanceExistingFunctions() {
+    console.log('Enhancing existing functions with SHU sync...');
     
     // Simpan referensi fungsi original
     const originalSaveMemberData = window.saveMemberData;
     const originalSaveSimpananData = window.saveSimpananData;
-    const originalConfirmDeleteData = window.confirmDeleteData;
     
     // Override saveMemberData untuk sync SHU
-    if (originalSaveMemberData) {
+    if (originalSaveMemberData && typeof originalSaveMemberData === 'function') {
         window.saveMemberData = async function(...args) {
             const result = await originalSaveMemberData.apply(this, args);
             if (result) {
-                setTimeout(() => syncSHUDataToLaporan(), 500);
+                console.log('🔄 Member data saved, syncing SHU...');
+                setTimeout(() => syncSHUDataToLaporan(), 1000);
             }
             return result;
         };
     }
     
     // Override saveSimpananData untuk sync SHU
-    if (originalSaveSimpananData) {
+    if (originalSaveSimpananData && typeof originalSaveSimpananData === 'function') {
         window.saveSimpananData = async function(...args) {
             const result = await originalSaveSimpananData.apply(this, args);
             if (result) {
-                setTimeout(() => syncSHUDataToLaporan(), 500);
+                console.log('🔄 Simpanan data saved, syncing SHU...');
+                setTimeout(() => syncSHUDataToLaporan(), 1000);
             }
             return result;
         };
     }
     
-    // Override confirmDeleteData untuk sync SHU
-    if (originalConfirmDeleteData) {
-        window.confirmDeleteData = async function(...args) {
-            const result = await originalConfirmDeleteData.apply(this, args);
-            if (result !== undefined) {
-                setTimeout(() => syncSHUDataToLaporan(), 500);
-            }
-            return result;
-        };
-    }
-    
-    console.log('✅ Data functions enhanced with SHU sync');
+    console.log('✅ Existing functions enhanced');
 }
 
-// Panggil fungsi enhancement
-enhanceDataFunctionsWithSHUSync();
-
-// ===== INISIALISASI SAAT PAGE LOAD =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded - Setting up SHU integration...');
+// ===== INISIALISASI INTEGRASI SHU =====
+function initializeSHUIntegration() {
+    console.log('🚀 Initializing SHU Integration...');
     
-    // Setup message listener untuk komunikasi dengan Laporan SHU
-    window.addEventListener('message', function(event) {
-        if (event.data && event.data.type === 'SHU_REQUEST_DATA') {
-            console.log('📬 Received data request from Laporan SHU');
-            
-            // Kirim data ke Laporan SHU
-            syncSHUDataToLaporan();
-            
-            // Kirim respon
-            event.source.postMessage({
-                type: 'SHU_DATA_RESPONSE',
-                data: JSON.parse(localStorage.getItem('shuData') || '{}'),
-                timestamp: new Date().toISOString()
-            }, event.origin);
-        }
+    try {
+        // 1. Load data SHU
+        loadSHUDataFromLaporan();
         
-        if (event.data && event.data.type === 'SHU_DATA_UPDATED') {
-            console.log('📬 Received data update from Laporan SHU:', event.data);
-            
-            // Update dashboard dengan data dari Laporan SHU
-            loadSHUDataFromLaporan();
-            
-            // Show notification
-            if (typeof showNotification === 'function') {
-                showNotification('Data SHU diperbarui dari Laporan SHU', 'success');
-            }
-        }
-    });
+        // 2. Setup auto-sync
+        setupSHUAutoSync();
+        
+        // 3. Setup buttons
+        setupSHUButtons();
+        
+        // 4. Enhance existing functions
+        enhanceExistingFunctions();
+        
+        console.log('✅ SHU Integration initialized successfully');
+        
+    } catch (error) {
+        console.error('❌ Error initializing SHU Integration:', error);
+    }
+}
+
+// ===== JALANKAN SAAT PAGE LOAD =====
+// Tunggu sampai DOM siap dan fungsi lain sudah load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📋 DOM loaded, waiting for system initialization...');
     
-    console.log('✅ SHU integration ready');
+    // Tunggu 3 detik untuk memastikan sistem utama sudah siap
+    setTimeout(() => {
+        console.log('🔗 Starting SHU Integration...');
+        initializeSHUIntegration();
+    }, 3000);
 });
+
+// ===== FUNGSI UTILITY =====
+// Pastikan formatRupiah ada
+if (typeof window.formatRupiah === 'undefined') {
+    window.formatRupiah = function(amount) {
+        if (amount === 0) return 'Rp 0';
+        if (amount >= 1000000000) {
+            return 'Rp ' + (amount / 1000000000).toFixed(1) + ' M';
+        } else if (amount >= 1000000) {
+            return 'Rp ' + (amount / 1000000).toFixed(1) + ' Jt';
+        } else {
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        }
+    };
+}
+
+// ===== DEBUG FUNCTIONS =====
+window.debugSHU = function() {
+    console.log('=== DEBUG SHU ===');
+    console.log('Anggota Data:', window.anggotaData ? window.anggotaData.length : 'undefined');
+    console.log('Simpanan Data:', window.simpananData ? window.simpananData.length : 'undefined');
+    console.log('SHU Data in localStorage:', JSON.parse(localStorage.getItem('shuData') || '{}'));
+    console.log('=== END DEBUG ===');
+};
+
+window.forceSHUSync = function() {
+    console.log('🔄 Manual SHU sync triggered');
+    syncSHUDataToLaporan();
+};   
 </script>
 </body>
 </html>
