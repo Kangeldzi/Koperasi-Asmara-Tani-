@@ -1096,7 +1096,7 @@
         };
         let chartInstance = null;
         let chartType = 'pie';
-     // ==================== INTEGRASI DUA ARAH: LAPORAN SHU ↔ DASHBOARD ====================
+// ==================== INTEGRASI DUA ARAH: LAPORAN SHU ↔ DASHBOARD ====================
 
 // ===== FUNGSI SYNC DATA DARI DASHBOARD =====
 function syncDataFromDashboard() {
@@ -1123,65 +1123,21 @@ function syncDataFromDashboard() {
             
             const totalSHU = Math.round(totalSimpanan * 0.2);
             
-            // Update distribusi SHU
-            window.shuData = window.shuData.map(item => {
-                const newJumlah = Math.round(totalSHU * (item.persentase / 100));
-                return { ...item, jumlah: newJumlah };
-            });
-            
-            // Hitung SHU per anggota
-            const totalSHUUntukAnggota = Math.round(totalSHU * 0.25);
-            const totalSimpananPerAnggota = {};
-            
-            dashboardAnggotaData.forEach(anggota => {
-                const simpananAnggota = dashboardSimpananData
-                    .filter(s => s.idAnggota === anggota.id)
-                    .reduce((sum, s) => sum + (parseInt(s.nominal) || 0), 0);
-                
-                totalSimpananPerAnggota[anggota.id] = simpananAnggota;
-            });
-            
-            const totalSimpananSemuaAnggota = Object.values(totalSimpananPerAnggota)
-                .reduce((sum, val) => sum + val, 0);
-            
-            // Update data penerima
-            window.penerimaData = dashboardAnggotaData
-                .filter(anggota => totalSimpananPerAnggota[anggota.id] > 0)
-                .map(anggota => {
-                    const simpananAnggota = totalSimpananPerAnggota[anggota.id] || 0;
-                    const persentaseAnggota = totalSimpananSemuaAnggota > 0 ?
-                        (simpananAnggota / totalSimpananSemuaAnggota * 100) : 0;
-                    const shuAnggota = Math.round(totalSHUUntukAnggota * (persentaseAnggota / 100));
-                    
-                    return {
-                        id: anggota.id,
-                        nama: anggota.nama,
-                        noAnggota: anggota.nia || anggota.id,
-                        simpananPokok: anggota.simpananPokok || 0,
-                        simpananWajib: anggota.simpananWajib || 0,
-                        simpananSukarela: anggota.simpananSukarela || 0,
-                        totalSimpanan: simpananAnggota,
-                        shuDiterima: shuAnggota,
-                        persentase: persentaseAnggota.toFixed(2),
-                        tanggalTerima: new Date().getFullYear() + '-12-15',
-                        status: shuAnggota > 0 ? 'Diterima' : 'Belum Diterima',
-                        bukti: 'SHU-' + (anggota.nia || anggota.id) + '-' + new Date().getFullYear()
-                    };
+            // Update distribusi SHU jika sudah ada
+            if (window.shuData && window.shuData.length > 0) {
+                window.shuData = window.shuData.map(item => {
+                    const newJumlah = Math.round(totalSHU * (item.persentase / 100));
+                    return { ...item, jumlah: newJumlah };
                 });
+            }
             
             // Update statistik
-            updateStats(totalSHU, totalSHUUntukAnggota);
+            if (typeof window.updateStats === 'function') {
+                const totalSHUUntukAnggota = Math.round(totalSHU * 0.25);
+                window.updateStats(totalSHU, totalSHUUntukAnggota);
+            }
             
-            // Update tampilan
-            displayData(window.shuData, 1);
-            displayPenerimaData();
-            
-            console.log('✅ Data synced from Dashboard:', {
-                totalSHU: totalSHU,
-                totalAnggota: dashboardAnggotaData.length,
-                penerimaSHU: window.penerimaData.length
-            });
-            
+            console.log('✅ Data synced from Dashboard');
             return true;
         }
         
@@ -1198,6 +1154,12 @@ function saveSHUDataToDashboard() {
     console.log('📤 Saving SHU data to Dashboard...');
     
     try {
+        // Pastikan data SHU ada
+        if (!window.shuData || window.shuData.length === 0) {
+            console.warn('⚠️ No SHU data to save');
+            return false;
+        }
+        
         const totalSHU = window.shuData.reduce((sum, item) => sum + (item.jumlah || 0), 0);
         const shuAnggota = window.shuData.find(item => item.jenis === 'Dana Anggota')?.jumlah || 0;
         
@@ -1205,33 +1167,16 @@ function saveSHUDataToDashboard() {
             total: totalSHU,
             dibagikan: shuAnggota,
             cadangan: window.shuData.find(item => item.jenis === 'Dana Cadangan')?.jumlah || 0,
-            anggota: window.penerimaData.length,
-            pertumbuhan: '15.5%',
-            distribusi: window.shuData,
-            penerima: window.penerimaData,
+            anggota: window.penerimaData ? window.penerimaData.length : 0,
             tahun: new Date().getFullYear(),
             tanggalHitung: new Date().toISOString(),
             laporanVersion: '1.0'
         };
         
-        // Simpan ke localStorage untuk diakses Dashboard
+        // Simpan ke localStorage
         localStorage.setItem('shuData', JSON.stringify(dashboardSHUData));
-        localStorage.setItem('shuLastUpdate', Date.now().toString());
-        
-        // Kirim event ke Dashboard
-        dispatchDashboardUpdateEvent();
-        
-        // Kirim message ke parent window jika dalam iframe
-        if (window.parent !== window) {
-            window.parent.postMessage({
-                type: 'SHU_DATA_UPDATED',
-                data: dashboardSHUData,
-                timestamp: new Date().toISOString()
-            }, '*');
-        }
         
         console.log('✅ SHU data saved to Dashboard');
-        
         return true;
         
     } catch (error) {
@@ -1240,198 +1185,65 @@ function saveSHUDataToDashboard() {
     }
 }
 
-// ===== FUNGSI DISPATCH EVENT KE DASHBOARD =====
-function dispatchDashboardUpdateEvent() {
-    // Buat custom event
-    const dashboardUpdateEvent = new CustomEvent('shuDataUpdatedFromLaporan', {
-        detail: {
-            timestamp: new Date().toISOString(),
-            source: 'laporan-shu'
-        }
-    });
-    
-    // Dispatch event
-    window.dispatchEvent(dashboardUpdateEvent);
-    
-    // Juga simpan di localStorage sebagai trigger
-    localStorage.setItem('dashboardUpdateTrigger', Date.now().toString());
-}
-
-// ===== FUNGSI REQUEST DATA DARI DASHBOARD =====
-function requestDataFromDashboard() {
-    console.log('📨 Requesting data from Dashboard...');
-    
-    try {
-        // Jika dalam iframe atau popup, kirim message ke parent
-        if (window.opener) {
-            // Jika dibuka dari window.open
-            window.opener.postMessage({
-                type: 'SHU_REQUEST_DATA',
-                timestamp: new Date().toISOString()
-            }, '*');
-        } else if (window.parent !== window) {
-            // Jika dalam iframe
-            window.parent.postMessage({
-                type: 'SHU_REQUEST_DATA',
-                timestamp: new Date().toISOString()
-            }, '*');
-        }
-        
-        // Juga cek localStorage langsung
-        syncDataFromDashboard();
-        
-        console.log('✅ Data request sent to Dashboard');
-        
-    } catch (error) {
-        console.error('❌ Error requesting data from Dashboard:', error);
-    }
-}
-
 // ===== FUNGSI SETUP AUTO SYNC DUA ARAH =====
 function setupBidirectionalSync() {
     console.log('Setting up bidirectional sync...');
     
-    // Listen for storage events (perubahan di localStorage)
+    // Listen for storage events
     window.addEventListener('storage', function(e) {
-        console.log('🔄 Storage event detected:', e.key);
+        console.log('🔄 Storage event:', e.key);
         
         if (e.key === 'simpananData' || e.key === 'anggotaData' || e.key === 'koperasi_anggota') {
-            console.log('📊 Dashboard data updated, syncing...');
+            console.log('📊 Dashboard data updated');
             
             clearTimeout(window.shuSyncTimeout);
             window.shuSyncTimeout = setTimeout(() => {
                 syncDataFromDashboard();
-                showMessage('Data diperbarui dari Dashboard', 'info');
+                if (typeof window.showMessage === 'function') {
+                    window.showMessage('Data diperbarui dari Dashboard', 'info');
+                }
             }, 1000);
         }
-        
-        if (e.key === 'shuUpdateTrigger') {
-            console.log('📈 SHU data updated in Dashboard');
-            
-            setTimeout(() => {
-                syncDataFromDashboard();
-                showMessage('Data SHU diperbarui', 'success');
-            }, 500);
-        }
     });
     
-    // Listen for messages from Dashboard
-    window.addEventListener('message', function(event) {
-        if (event.data && event.data.type === 'SHU_DATA_FROM_DASHBOARD') {
-            console.log('📬 Received data from Dashboard:', event.data);
-            
-            // Simpan data
-            localStorage.setItem('shuData', JSON.stringify(event.data.data));
-            
-            // Update tampilan
-            loadDataFromDashboard();
-            applyFilter();
-            
-            showMessage('Data SHU diterima dari Dashboard', 'success');
-        }
-        
-        if (event.data && event.data.type === 'SHU_DATA_RESPONSE') {
-            console.log('📬 Received data response from Dashboard');
-            
-            // Update dengan data baru
-            if (event.data.data) {
-                localStorage.setItem('shuData', JSON.stringify(event.data.data));
-                loadDataFromDashboard();
-                applyFilter();
-            }
-        }
-    });
-    
-    // Listen for custom events
-    window.addEventListener('shuDataUpdated', function(event) {
-        console.log('🔄 SHU data updated event received:', event.detail);
-        
-        setTimeout(() => {
-            syncDataFromDashboard();
-        }, 500);
-    });
-    
-    // Auto-sync setiap 30 detik
+    // Auto-sync setiap 60 detik
     setInterval(() => {
-        const lastUpdate = localStorage.getItem('shuLastUpdate');
-        const now = Date.now();
-        
-        if (!lastUpdate || (now - parseInt(lastUpdate)) > 30000) {
-            console.log('⏰ Auto-syncing data...');
-            syncDataFromDashboard();
-        }
-    }, 30000);
+        console.log('⏰ Auto-syncing data...');
+        syncDataFromDashboard();
+    }, 60000);
     
     // Initial sync
     setTimeout(() => {
-        requestDataFromDashboard();
-    }, 1500);
+        syncDataFromDashboard();
+    }, 2000);
     
     console.log('✅ Bidirectional sync setup completed');
 }
 
 // ===== MODIFIKASI FUNGSI LOAD DATA =====
-// Simpan referensi fungsi original
+// Simpan referensi fungsi original jika ada
 const originalLoadDataFromDashboard = window.loadDataFromDashboard;
 
-// Override fungsi loadDataFromDashboard
-window.loadDataFromDashboard = function() {
-    console.log('Loading data with bidirectional sync...');
-    
-    // Coba sync dari dashboard dulu
-    const dashboardSyncSuccess = syncDataFromDashboard();
-    
-    if (!dashboardSyncSuccess) {
-        // Jika tidak ada data dari dashboard, gunakan fungsi original
-        console.log('⚠️ No data from Dashboard, using original function');
-        if (originalLoadDataFromDashboard) {
+// Override atau extend fungsi loadDataFromDashboard
+if (originalLoadDataFromDashboard && typeof originalLoadDataFromDashboard === 'function') {
+    window.loadDataFromDashboard = function() {
+        console.log('Loading data with sync...');
+        
+        // Coba sync dari dashboard dulu
+        const syncSuccess = syncDataFromDashboard();
+        
+        if (!syncSuccess) {
+            // Jika sync gagal, gunakan fungsi original
+            console.log('⚠️ Sync failed, using original function');
             originalLoadDataFromDashboard();
         }
-    }
-    
-    // Setelah load data, simpan ke dashboard juga
-    setTimeout(() => {
-        saveSHUDataToDashboard();
-    }, 1000);
-};
-
-// ===== MODIFIKASI FUNGSI APPLY FILTER =====
-// Simpan referensi fungsi original
-const originalApplyFilter = window.applyFilter;
-
-// Override fungsi applyFilter
-window.applyFilter = function() {
-    console.log('Applying filter with sync...');
-    
-    // Jalankan fungsi original
-    if (originalApplyFilter) {
-        originalApplyFilter();
-    }
-    
-    // Setelah filter diterapkan, simpan perubahan ke dashboard
-    setTimeout(() => {
-        saveSHUDataToDashboard();
-    }, 500);
-};
-
-// ===== MODIFIKASI FUNGSI UPDATE STATS =====
-// Simpan referensi fungsi original
-const originalUpdateStats = window.updateStats;
-
-// Override fungsi updateStats
-window.updateStats = function(totalSHU, shuAnggota) {
-    console.log('Updating stats with sync...');
-    
-    // Jalankan fungsi original
-    if (originalUpdateStats) {
-        originalUpdateStats(totalSHU, shuAnggota);
-    }
-    
-    // Simpan ke dashboard
-    setTimeout(() => {
-        saveSHUDataToDashboard();
-    }, 300);
-};
+        
+        // Simpan ke dashboard
+        setTimeout(() => {
+            saveSHUDataToDashboard();
+        }, 1500);
+    };
+}
 
 // ===== INISIALISASI INTEGRASI =====
 function initializeSHUIntegration() {
@@ -1440,70 +1252,30 @@ function initializeSHUIntegration() {
     // Setup bidirectional sync
     setupBidirectionalSync();
     
-    // TIDAK ADA TOMBOL SYNC DI UI - hanya background sync
     console.log('✅ SHU integration initialized (background only)');
 }
 
-// ===== INTEGRASI DENGAN FUNGSI EXISTING =====
-// Override fungsi showMessage untuk juga tampilkan di console
-const originalShowMessage = window.showMessage;
-window.showMessage = function(message, type = 'info') {
-    console.log(`📢 ${type.toUpperCase()}: ${message}`);
-    
-    // Jalankan fungsi original
-    if (originalShowMessage) {
-        originalShowMessage(message, type);
-    }
-};
-
-// ===== FUNGSI UNTUK DEBUG =====
-// Tambahkan fungsi debug ke window
-window.debugSHUData = function() {
-    console.log('=== DEBUG SHU DATA ===');
-    console.log('Local SHU Data:', window.shuData);
-    console.log('Penerima Data:', window.penerimaData);
-    console.log('LocalStorage shuData:', JSON.parse(localStorage.getItem('shuData') || '{}'));
-    console.log('LocalStorage anggotaData:', JSON.parse(localStorage.getItem('anggotaData') || '{}'));
-    console.log('LocalStorage simpananData:', JSON.parse(localStorage.getItem('simpananData') || '{}'));
-    console.log('=== END DEBUG ===');
-};
-
-// ===== FUNGSI UNTUK FORCE SYNC =====
-window.forceSyncWithDashboard = function() {
-    console.log('🔄 Force syncing with Dashboard...');
-    
-    // Tampilkan loading
-    showMessage('Menyinkronkan dengan Dashboard...', 'info');
-    
-    // Lakukan sync
-    syncDataFromDashboard();
-    saveSHUDataToDashboard();
-    
-    // Request data terbaru
-    requestDataFromDashboard();
-    
-    // Update tampilan
-    setTimeout(() => {
-        applyFilter();
-        showMessage('Sinkronisasi selesai', 'success');
-    }, 1500);
-};
-
-// ===== JALANKAN INTEGRASI SAAT PAGE LOAD =====
+// ===== JALANKAN INTEGRASI =====
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded - Initializing bidirectional integration...');
+    console.log('📱 Starting SHU integration...');
     
     // Tunggu sebentar untuk memastikan fungsi lain sudah load
     setTimeout(() => {
         initializeSHUIntegration();
-        
-        // Request data dari dashboard saat pertama kali load
-        requestDataFromDashboard();
     }, 2000);
     
-    console.log('✅ Bidirectional integration ready (background)');
+    console.log('✅ SHU integration ready');
 });
 
+// ===== DEBUG FUNCTIONS =====
+window.debugSHULaporan = function() {
+    console.log('=== DEBUG LAPORAN SHU ===');
+    console.log('SHU Data:', window.shuData);
+    console.log('Penerima Data:', window.penerimaData);
+    console.log('SHU in localStorage:', JSON.parse(localStorage.getItem('shuData') || '{}'));
+    console.log('=== END DEBUG ===');
+};
+            
 // ==================== AKHIR SCRIPT INTEGRASI ====================   
         // ===== INITIALIZE APP =====
         document.addEventListener('DOMContentLoaded', function() {
