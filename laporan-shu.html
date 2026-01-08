@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan SHU - Koperasi Asmara Tani</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* KONSISTEN DENGAN CSS DASHBOARD ADMIN */
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --accent: #ff5722;
+            --light: #f5f5f5;
+            --dark: #333;
+            --gray: #757575;
+            --gray-light: #e0e0e0;
+            --danger: #f44336;
+            --warning: #ffc107;
+            --success: #4caf50;
+            --info: #2196f3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            border-left: 6px solid var(--primary);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo-section img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-light);
+        }
+        
+        .logo-text h1 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+        }
+        
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+        
+        .page-title h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* SHU Cards */
+        .shu-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        
+        .card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        
+        .bg-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
+        .bg-secondary { background: linear-gradient(135deg, var(--secondary), #ffb74d); }
+        .bg-accent { background: linear-gradient(135deg, var(--accent), #ff8a65); }
+        .bg-info { background: linear-gradient(135deg, var(--info), #64b5f6); }
+        
+        .card-content {
+            margin-bottom: 20px;
+        }
+        
+        .card-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .card-content p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-header h3 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .chart-wrapper {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Distribution Table */
+        .distribution-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .section-header h3 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        th {
+            background-color: rgba(46, 125, 50, 0.05);
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        tr {
+            transition: background-color 0.3s ease;
+        }
+        
+        tr:hover {
+            background-color: rgba(46, 125, 50, 0.03);
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        
+        /* Print Section */
+        .print-section {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 50px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--gray-light);
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+        
+        .modal-header h3 {
+            color: white;
+            font-size: 1.4rem;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+            .navigation {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .shu-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .page-title h2 {
+                font-size: 2rem;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="logo-section">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg" alt="Logo Koperasi">
+                    <div class="logo-text">
+                        <h1>Koperasi Asmara Tani</h1>
+                        <p>#koperasijenius - Laporan SHU</p>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-outline" onclick="window.location.href='dashboard-admin.html'">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                    </button>
+                    <button class="btn btn-primary" onclick="window.location.href='tabungan-digital.html'">
+                        <i class="fas fa-wallet"></i> Tabungan Digital
+                    </button>
+                </div>
+            </div>
+            
+            <div class="page-title">
+                <h2>Laporan Sisa Hasil Usaha (SHU)</h2>
+                <p>Analisis dan distribusi Sisa Hasil Usaha Koperasi Asmara Tani</p>
+            </div>
+        </div>
+
+        <!-- SHU Summary Cards -->
+        <div class="shu-cards">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Total SHU Tahunan</div>
+                    <div class="card-icon bg-primary">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h3 id="totalShu">Rp 0</h3>
+                    <p>Total Sisa Hasil Usaha tahun berjalan</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">SHU Dibagikan</div>
+                    <div class="card-icon bg-secondary">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h3 id="shuDibagikan">Rp 0</h3>
+                    <p>Total SHU yang telah dibagikan kepada anggota</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Cadangan Koperasi</div>
+                    <div class="card-icon bg-accent">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h3 id="cadanganKoperasi">Rp 0</h3>
+                    <p>Dana cadangan dari SHU</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Distribusi SHU 5 Tahun Terakhir</h3>
+                    <button class="btn btn-outline" onclick="refreshChart()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="shuChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Komposisi SHU</h3>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHU Distribution Table -->
+        <div class="distribution-section">
+            <div class="section-header">
+                <h3>Distribusi SHU ke Anggota</h3>
+                <button class="btn btn-primary" onclick="openDistributionModal()">
+                    <i class="fas fa-plus"></i> Tambah Distribusi
+                </button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Anggota</th>
+                        <th>Nama Anggota</th>
+                        <th>Total Simpanan</th>
+                        <th>Porsi SHU</th>
+                        <th>Nilai SHU</th>
+                        <th>Status</th>
+                        <th>Tanggal Distribusi</th>
+                    </tr>
+                </thead>
+                <tbody id="distributionTable">
+                    <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Print Section -->
+        <div class="print-section">
+            <button class="btn btn-primary" onclick="printLaporan()" style="padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-print"></i> Cetak Laporan SHU
+            </button>
+            <p style="color: var(--gray); margin-top: 15px; font-size: 0.9rem;">
+                Cetak laporan untuk dokumentasi dan pelaporan
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; <span id="currentYear"></span> Koperasi Asmara Tani – Laporan Sisa Hasil Usaha</p>
+        </div>
+    </div>
+
+    <!-- Modal Distribusi SHU -->
+    <div class="modal" id="distributionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tambah Distribusi SHU</h3>
+                <button onclick="closeDistributionModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="distributionForm">
+                    <div class="form-group">
+                        <label for="tahunShu">Tahun SHU</label>
+                        <select id="tahunShu" class="form-control" required>
+                            <option value="">Pilih Tahun</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idAnggotaShu">Anggota</label>
+                        <select id="idAnggotaShu" class="form-control" required>
+                            <option value="">Pilih Anggota</option>
+                            <!-- Data anggota akan diisi oleh JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="persentaseShu">Persentase SHU (%)</label>
+                        <input type="number" id="persentaseShu" class="form-control" step="0.01" required>
+                        <small style="color: var(--gray);">Persentase dari total SHU yang akan diterima anggota</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nilaiShu">Nilai SHU (Rp)</label>
+                        <input type="number" id="nilaiShu" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tanggalDistribusi">Tanggal Distribusi</label>
+                        <input type="date" id="tanggalDistribusi" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="keteranganShu">Keterangan</label>
+                        <textarea id="keteranganShu" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeDistributionModal()">Batal</button>
+                <button class="btn btn-primary" onclick="saveDistribution()">Simpan Distribusi</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// Data dan variabel
+let shuData = [];
+let anggotaData = [];
+let simpananData = [];
+let shuChart = null;
+let pieChart = null;
+
+// Inisialisasi
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
+    updateCurrentYear();
+    setupEventListeners();
+    renderCharts();
+    renderDistributionTable();
+    updateSummaryCards();
+});
+
+// Load data dari localStorage
+function loadData() {
+    try {
+        shuData = JSON.parse(localStorage.getItem('shuData')) || [];
+        anggotaData = JSON.parse(localStorage.getItem('anggotaData')) || [];
+        simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
+        
+        // Jika data SHU kosong, buat data contoh
+        if (shuData.length === 0) {
+            createSampleData();
+        }
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+}
+
+// Buat data contoh untuk demo
+function createSampleData() {
+    const currentYear = new Date().getFullYear();
+    
+    // Contoh data SHU 5 tahun terakhir
+    const years = [currentYear-4, currentYear-3, currentYear-2, currentYear-1, currentYear];
+    
+    years.forEach(year => {
+        // SHU ke anggota
+        anggotaData.forEach((anggota, index) => {
+            if (index < 3) { // Hanya buat untuk 3 anggota pertama
+                const totalSimpanan = calculateTotalSimpanan(anggota.id);
+                const shuAmount = totalSimpanan * 0.1; // 10% dari simpanan
+                
+                shuData.push({
+                    id: `SHU-${year}-${anggota.id}`,
+                    tahun: year,
+                    idAnggota: anggota.id,
+                    namaAnggota: anggota.nama,
+                    totalSimpanan: totalSimpanan,
+                    persentase: 10,
+                    nilai: shuAmount,
+                    status: 'Sudah Dibagikan',
+                    tanggalDistribusi: `${year}-12-31`,
+                    createdAt: new Date().toISOString()
+                });
+            }
+        });
+        
+        // Cadangan koperasi
+        shuData.push({
+            id: `CAD-${year}`,
+            tahun: year,
+            idAnggota: '',
+            namaAnggota: 'Cadangan Koperasi',
+            totalSimpanan: 0,
+            persentase: 20,
+            nilai: 10000000, // Rp 10 juta
+            status: 'Dicadangkan',
+            tanggalDistribusi: `${year}-12-31`,
+            createdAt: new Date().toISOString()
+        });
+        
+        // Dana sosial
+        shuData.push({
+            id: `SOC-${year}`,
+            tahun: year,
+            idAnggota: '',
+            namaAnggota: 'Dana Sosial',
+            totalSimpanan: 0,
+            persentase: 5,
+            nilai: 2500000, // Rp 2.5 juta
+            status: 'Disalurkan',
+            tanggalDistribusi: `${year}-12-31`,
+            createdAt: new Date().toISOString()
+        });
+    });
+    
+    localStorage.setItem('shuData', JSON.stringify(shuData));
+}
+
+// Hitung total simpanan anggota
+function calculateTotalSimpanan(idAnggota) {
+    const anggota = anggotaData.find(a => a.id === idAnggota);
+    if (anggota) {
+        return parseFloat(anggota.totalSimpanan) || 0;
+    }
+    return 0;
+}
+
+// Update tahun di footer
+function updateCurrentYear() {
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Update nilai SHU saat persentase diubah
+    document.getElementById('persentaseShu')?.addEventListener('input', updateNilaiShu);
+    
+    // Update persentase saat nilai SHU diubah
+    document.getElementById('nilaiShu')?.addEventListener('input', updatePersentaseShu);
+}
+
+// Update summary cards
+function updateSummaryCards() {
+    const currentYear = new Date().getFullYear();
+    
+    // Hitung total SHU tahun ini
+    const totalShuThisYear = shuData
+        .filter(shu => shu.tahun == currentYear)
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    // Hitung SHU yang sudah dibagikan
+    const shuDibagikan = shuData
+        .filter(shu => shu.tahun == currentYear && shu.status === 'Sudah Dibagikan')
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    // Hitung cadangan koperasi
+    const cadanganKoperasi = shuData
+        .filter(shu => shu.tahun == currentYear && shu.namaAnggota === 'Cadangan Koperasi')
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    document.getElementById('totalShu').textContent = formatRupiah(totalShuThisYear);
+    document.getElementById('shuDibagikan').textContent = formatRupiah(shuDibagikan);
+    document.getElementById('cadanganKoperasi').textContent = formatRupiah(cadanganKoperasi);
+}
+
+// Format angka ke Rupiah
+function formatRupiah(amount) {
+    return 'Rp ' + Math.round(amount).toLocaleString('id-ID');
+}
+
+// Render charts
+function renderCharts() {
+    renderShuChart();
+    renderPieChart();
+}
+
+// Render SHU chart
+function renderShuChart() {
+    const ctx = document.getElementById('shuChart');
+    if (!ctx) return;
+    
+    if (shuChart) {
+        shuChart.destroy();
+    }
+    
+    const currentYear = new Date().getFullYear();
+    const years = [currentYear-4, currentYear-3, currentYear-2, currentYear-1, currentYear];
+    
+    // Hitung total SHU per tahun
+    const shuPerYear = years.map(year => {
+        return shuData
+            .filter(shu => shu.tahun == year)
+            .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    });
+    
+    // Hitung SHU yang dibagikan ke anggota per tahun
+    const shuAnggotaPerYear = years.map(year => {
+        return shuData
+            .filter(shu => shu.tahun == year && shu.status === 'Sudah Dibagikan')
+            .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    });
+    
+    shuChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: years.map(year => year.toString()),
+            datasets: [
+                {
+                    label: 'Total SHU',
+                    data: shuPerYear,
+                    backgroundColor: 'rgba(76, 175, 80, 0.8)',
+                    borderColor: 'rgba(76, 175, 80, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'SHU ke Anggota',
+                    data: shuAnggotaPerYear,
+                    backgroundColor: 'rgba(255, 152, 0, 0.8)',
+                    borderColor: 'rgba(255, 152, 0, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += formatRupiah(context.parsed.y);
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Render pie chart
+function renderPieChart() {
+    const ctx = document.getElementById('pieChart');
+    if (!ctx) return;
+    
+    if (pieChart) {
+        pieChart.destroy();
+    }
+    
+    const currentYear = new Date().getFullYear();
+    
+    // Hitung distribusi SHU tahun ini
+    const shuAnggota = shuData
+        .filter(shu => shu.tahun == currentYear && shu.status === 'Sudah Dibagikan')
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    const cadangan = shuData
+        .filter(shu => shu.tahun == currentYear && shu.namaAnggota === 'Cadangan Koperasi')
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    const danaSosial = shuData
+        .filter(shu => shu.tahun == currentYear && shu.namaAnggota === 'Dana Sosial')
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['SHU ke Anggota', 'Cadangan Koperasi', 'Dana Sosial'],
+            datasets: [{
+                data: [shuAnggota, cadangan, danaSosial],
+                backgroundColor: [
+                    'rgba(76, 175, 80, 0.8)',
+                    'rgba(33, 150, 243, 0.8)',
+                    'rgba(255, 87, 34, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(76, 175, 80, 1)',
+                    'rgba(33, 150, 243, 1)',
+                    'rgba(255, 87, 34, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${formatRupiah(value)} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Render distribution table
+function renderDistributionTable() {
+    const tableBody = document.getElementById('distributionTable');
+    if (!tableBody) return;
+    
+    const currentYear = new Date().getFullYear();
+    const currentYearShu = shuData.filter(shu => shu.tahun == currentYear);
+    
+    tableBody.innerHTML = '';
+    
+    if (currentYearShu.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">
+                    <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--gray-light);"></i>
+                    <h3 style="color: var(--gray); margin-bottom: 10px;">Belum Ada Data Distribusi SHU</h3>
+                    <p style="color: var(--gray);">Klik "Tambah Distribusi" untuk menambahkan data distribusi SHU</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    currentYearShu.forEach(shu => {
+        const row = document.createElement('tr');
+        
+        let statusBadge = '';
+        if (shu.status === 'Sudah Dibagikan') {
+            statusBadge = '<span class="badge badge-success">Sudah Dibagikan</span>';
+        } else if (shu.status === 'Dicadangkan') {
+            statusBadge = '<span class="badge" style="background: rgba(33, 150, 243, 0.1); color: var(--info); border: 1px solid rgba(33, 150, 243, 0.2);">Dicadangkan</span>';
+        } else if (shu.status === 'Disalurkan') {
+            statusBadge = '<span class="badge" style="background: rgba(255, 87, 34, 0.1); color: var(--accent); border: 1px solid rgba(255, 87, 34, 0.2);">Disalurkan</span>';
+        }
+        
+        row.innerHTML = `
+            <td>${shu.idAnggota || '-'}</td>
+            <td>${shu.namaAnggota}</td>
+            <td>${shu.totalSimpanan ? formatRupiah(shu.totalSimpanan) : '-'}</td>
+            <td>${shu.persentase}%</td>
+            <td style="font-weight: bold; color: var(--success);">${formatRupiah(shu.nilai)}</td>
+            <td>${statusBadge}</td>
+            <td>${shu.tanggalDistribusi}</td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+}
+
+// Refresh chart
+function refreshChart() {
+    renderCharts();
+    showNotification('Chart berhasil diperbarui!', 'success');
+}
+
+// Open distribution modal
+function openDistributionModal() {
+    // Isi dropdown anggota
+    const dropdown = document.getElementById('idAnggotaShu');
+    dropdown.innerHTML = '<option value="">Pilih Anggota</option>';
+    
+    anggotaData.forEach(anggota => {
+        if (anggota.statusAktif === 'Aktif') {
+            const option = document.createElement('option');
+            option.value = anggota.id;
+            option.textContent = `${anggota.id} - ${anggota.nama}`;
+            dropdown.appendChild(option);
+        }
+    });
+    
+    // Set tanggal default
+    document.getElementById('tanggalDistribusi').value = new Date().toISOString().split('T')[0];
+    
+    // Reset form
+    document.getElementById('distributionForm').reset();
+    
+    document.getElementById('distributionModal').style.display = 'flex';
+}
+
+// Close distribution modal
+function closeDistributionModal() {
+    document.getElementById('distributionModal').style.display = 'none';
+}
+
+// Update nilai SHU
+function updateNilaiShu() {
+    const persentase = parseFloat(document.getElementById('persentaseShu').value) || 0;
+    const currentYear = new Date().getFullYear();
+    
+    // Hitung total SHU tahun ini
+    const totalShuThisYear = shuData
+        .filter(shu => shu.tahun == currentYear)
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    const nilai = (totalShuThisYear * persentase) / 100;
+    document.getElementById('nilaiShu').value = Math.round(nilai);
+}
+
+// Update persentase SHU
+function updatePersentaseShu() {
+    const nilai = parseFloat(document.getElementById('nilaiShu').value) || 0;
+    const currentYear = new Date().getFullYear();
+    
+    // Hitung total SHU tahun ini
+    const totalShuThisYear = shuData
+        .filter(shu => shu.tahun == currentYear)
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    if (totalShuThisYear > 0) {
+        const persentase = (nilai / totalShuThisYear) * 100;
+        document.getElementById('persentaseShu').value = persentase.toFixed(2);
+    }
+}
+
+// Save distribution
+function saveDistribution() {
+    const tahun = document.getElementById('tahunShu').value;
+    const idAnggota = document.getElementById('idAnggotaShu').value;
+    const persentase = parseFloat(document.getElementById('persentaseShu').value);
+    const nilai = parseFloat(document.getElementById('nilaiShu').value);
+    const tanggalDistribusi = document.getElementById('tanggalDistribusi').value;
+    const keterangan = document.getElementById('keteranganShu').value;
+    
+    if (!tahun || !idAnggota || !persentase || !nilai || !tanggalDistribusi) {
+        showNotification('Harap lengkapi semua field yang wajib diisi!', 'error');
+        return;
+    }
+    
+    const anggota = anggotaData.find(a => a.id === idAnggota);
+    if (!anggota) {
+        showNotification('Anggota tidak ditemukan!', 'error');
+        return;
+    }
+    
+    const totalSimpanan = calculateTotalSimpanan(idAnggota);
+    
+    const shuRecord = {
+        id: `SHU-${Date.now()}`,
+        tahun: parseInt(tahun),
+        idAnggota: idAnggota,
+        namaAnggota: anggota.nama,
+        totalSimpanan: totalSimpanan,
+        persentase: persentase,
+        nilai: nilai,
+        status: 'Sudah Dibagikan',
+        tanggalDistribusi: tanggalDistribusi,
+        keterangan: keterangan,
+        createdAt: new Date().toISOString()
+    };
+    
+    shuData.push(shuRecord);
+    localStorage.setItem('shuData', JSON.stringify(shuData));
+    
+    showNotification('Distribusi SHU berhasil disimpan!', 'success');
+    
+    // Update UI
+    closeDistributionModal();
+    updateSummaryCards();
+    renderCharts();
+    renderDistributionTable();
+}
+
+// Print laporan
+function printLaporan() {
+    const printWindow = window.open('', '_blank');
+    
+    const currentYear = new Date().getFullYear();
+    const currentYearShu = shuData.filter(shu => shu.tahun == currentYear);
+    
+    const totalShu = currentYearShu.reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    const shuAnggota = currentYearShu
+        .filter(shu => shu.status === 'Sudah Dibagikan')
+        .reduce((sum, shu) => sum + (parseFloat(shu.nilai) || 0), 0);
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Laporan SHU Koperasi Asmara Tani</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                h1 { color: #2e7d32; text-align: center; }
+                h2 { color: #1b5e20; margin-top: 30px; }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+                th { background: #f5f5f5; }
+                .total { font-weight: bold; background: #f9f9f9; }
+                .footer { margin-top: 50px; text-align: center; font-size: 0.8rem; color: #666; }
+                @media print {
+                    body { margin: 0; padding: 20px; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h1>LAPORAN SISA HASIL USAHA (SHU)</h1>
+                <h2>Koperasi Asmara Tani</h2>
+                <p>Tahun: ${currentYear}</p>
+                <p>Dicetak pada: ${new Date().toLocaleString('id-ID')}</p>
+            </div>
+            
+            <div style="margin-bottom: 40px;">
+                <h2>Ringkasan SHU</h2>
+                <table>
+                    <tr>
+                        <td width="70%">Total SHU Tahun ${currentYear}</td>
+                        <td width="30%" style="text-align: right; font-weight: bold;">${formatRupiah(totalShu)}</td>
+                    </tr>
+                    <tr>
+                        <td>SHU Dibagikan ke Anggota</td>
+                        <td style="text-align: right; font-weight: bold;">${formatRupiah(shuAnggota)}</td>
+                    </tr>
+                    <tr class="total">
+                        <td>Sisa SHU untuk Cadangan</td>
+                        <td style="text-align: right;">${formatRupiah(totalShu - shuAnggota)}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div>
+                <h2>Detail Distribusi SHU ke Anggota</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Anggota</th>
+                            <th>Nama Anggota</th>
+                            <th>Total Simpanan</th>
+                            <th>Porsi SHU</th>
+                            <th>Nilai SHU</th>
+                            <th>Tanggal Distribusi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${generatePrintRows()}
+                        <tr class="total">
+                            <td colspan="4" style="text-align: right;">TOTAL</td>
+                            <td style="text-align: right;">${formatRupiah(shuAnggota)}</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="footer">
+                <p>© ${currentYear} Koperasi Asmara Tani - Semua hak dilindungi undang-undang</p>
+            </div>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// Generate rows untuk print
+function generatePrintRows() {
+    const currentYear = new Date().getFullYear();
+    const anggotaShu = shuData.filter(shu => 
+        shu.tahun == currentYear && shu.status === 'Sudah Dibagikan'
+    );
+    
+    return anggotaShu.map(shu => `
+        <tr>
+            <td>${shu.idAnggota}</td>
+            <td>${shu.namaAnggota}</td>
+            <td>${shu.totalSimpanan ? formatRupiah(shu.totalSimpanan) : '-'}</td>
+            <td>${shu.persentase}%</td>
+            <td>${formatRupiah(shu.nilai)}</td>
+            <td>${shu.tanggalDistribusi}</td>
+        </tr>
+    `).join('');
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    // Buat notifikasi element
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 9999;
+        animation: slideInRight 0.3s ease;
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    `;
+    
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Otomatis hilang setelah 5 detik
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease forwards';
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+</script>
+</body>
+</html>
