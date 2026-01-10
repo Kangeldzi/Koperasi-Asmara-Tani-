@@ -8,6 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- AR.js Library -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
@@ -1808,6 +1811,110 @@
             100% { transform: scale(1); }
         }
 
+        /* ===== AR CONTAINER STYLES ===== */
+        .ar-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #000;
+            position: relative;
+            margin: 20px 0;
+            border: 3px solid var(--primary);
+        }
+
+        .ar-scene {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ar-controls {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .ar-control-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .ar-control-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .ar-marker-notice {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Voice Command List Styles */
+        .voice-commands-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .voice-command-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .voice-command-keyword {
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .voice-command-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .voice-listening-indicator {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #FF4081, #F50057);
+            color: white;
+            border-radius: 10px;
+            margin: 20px 0;
+            animation: voicePulse 1s infinite;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sync-controls-toggle {
@@ -1920,6 +2027,14 @@
             .voice-command-btn {
                 bottom: 80px;
             }
+
+            .voice-commands-list {
+                grid-template-columns: 1fr;
+            }
+
+            .ar-container {
+                height: 300px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -1991,6 +2106,10 @@
 
             .kartu-details h4 {
                 font-size: 1.2rem;
+            }
+
+            .ar-container {
+                height: 250px;
             }
         }
     </style>
@@ -2313,9 +2432,9 @@
 
     <!-- ===== AR EXPERIENCE MODAL ===== -->
     <div class="modal-overlay" id="arExperienceModal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
-                <h3><i class="fas fa-vr-cardboard"></i> AR Experience</h3>
+                <h3><i class="fas fa-vr-cardboard"></i> AR Experience - Kartu Digital 3D</h3>
                 <button class="modal-close" id="closeARModal">&times;</button>
             </div>
             <div class="modal-body" id="arExperienceContent">
@@ -2326,7 +2445,7 @@
 
     <!-- ===== VOICE COMMAND MODAL ===== -->
     <div class="modal-overlay" id="voiceCommandModal">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3><i class="fas fa-microphone"></i> Voice Commands</h3>
                 <button class="modal-close" id="closeVoiceModal">&times;</button>
@@ -2556,6 +2675,12 @@ class TabunganApp {
         
         // Initialize notification system
         window.pushNotificationSystem = new PushNotificationSystem();
+        
+        // Initialize AR Experience System
+        window.arExperience = new ARExperienceSystem();
+        
+        // Initialize Voice Command System
+        window.voiceCommandSystem = new VoiceCommandSystem();
         
         // Setup session management
         this.resetSessionTimeout();
@@ -2806,6 +2931,15 @@ class TabunganApp {
                 this.showVoiceCommands();
             });
         }
+        
+        // Setup hologram voice button
+        const hologramVoiceBtn = document.getElementById('hologramVoiceBtn');
+        if (hologramVoiceBtn) {
+            hologramVoiceBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.readHologramData();
+            });
+        }
     }
     
     // PERUBAHAN 1: Setup sync controls toggle
@@ -2846,6 +2980,26 @@ class TabunganApp {
                 }
             });
         }
+    }
+    
+    readHologramData() {
+        if (!window.menuVoiceSystem) return;
+        
+        const totalSimpanan = document.getElementById('hologramTotalSimpanan').textContent;
+        const totalPinjaman = document.getElementById('hologramTotalPinjaman').textContent;
+        const shuEstimasi = document.getElementById('hologramSHUEstimasi').textContent;
+        const statusAnggota = document.getElementById('hologramStatusAnggota').textContent;
+        
+        const message = `Ringkasan keuangan. Total simpanan: ${totalSimpanan}. Total pinjaman: ${totalPinjaman}. SHU estimasi: ${shuEstimasi}. Status anggota: ${statusAnggota}.`;
+        
+        window.menuVoiceSystem.speak(message);
+        
+        // Highlight button while speaking
+        const voiceBtn = document.getElementById('hologramVoiceBtn');
+        voiceBtn.classList.add('speaking');
+        setTimeout(() => {
+            voiceBtn.classList.remove('speaking');
+        }, 3000);
     }
     
     showARExperience() {
@@ -5316,6 +5470,641 @@ class HologramStaticSystem {
     destroy() {
         if (this.updateInterval) {
             clearInterval(this.updateInterval);
+        }
+    }
+}
+
+// ===== AR EXPERIENCE SYSTEM =====
+class ARExperienceSystem {
+    constructor() {
+        this.isARActive = false;
+        this.arScene = null;
+        this.init();
+    }
+
+    init() {
+        console.log('🕶️ Initializing AR Experience System...');
+        console.log('✅ AR Experience System Ready');
+    }
+
+    showARExperience() {
+        const completeData = window.app.getCompleteUserData();
+        
+        const html = `
+            <div style="padding: 20px;">
+                <h4 style="color: var(--primary); margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-vr-cardboard"></i> AR Experience - Kartu Digital 3D
+                </h4>
+                
+                <div style="background: #f0f7f0; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <p style="color: var(--primary); margin: 0 0 10px 0;">
+                        <i class="fas fa-info-circle"></i> Cara menggunakan AR:
+                    </p>
+                    <ol style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                        <li>Izinkan akses kamera saat diminta</li>
+                        <li>Arahkan kamera ke permukaan datar</li>
+                        <li>Ketuk layar untuk menempatkan kartu digital</li>
+                        <li>Geser untuk memutar dan zoom in/out</li>
+                    </ol>
+                </div>
+                
+                <div class="ar-container" id="arContainer">
+                    <div class="ar-marker-notice">
+                        <i class="fas fa-camera"></i> Arahkan kamera ke permukaan datar
+                    </div>
+                    <a-scene 
+                        class="ar-scene"
+                        embedded 
+                        arjs="sourceType: webcam; debugUIEnabled: false;"
+                        vr-mode-ui="enabled: false"
+                        gesture-detector
+                        id="gestureDetector">
+                        
+                        <!-- Marker-based AR (Hiro marker) -->
+                        <a-marker type="pattern" preset="custom" url="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.patt">
+                            <a-entity position="0 0 0" scale="0.05 0.05 0.05" rotation="0 0 0">
+                                <!-- Kartu 3D -->
+                                <a-plane 
+                                    position="0 0 0" 
+                                    width="1.5" 
+                                    height="1" 
+                                    color="#1a5f23"
+                                    opacity="0.9"
+                                    shader="flat">
+                                </a-plane>
+                                
+                                <!-- Border kartu -->
+                                <a-plane 
+                                    position="0 0 0.001" 
+                                    width="1.55" 
+                                    height="1.05" 
+                                    color="#0d4014"
+                                    opacity="0.3">
+                                </a-plane>
+                                
+                                <!-- Logo -->
+                                <a-text 
+                                    value="Koperasi Asmara Tani" 
+                                    position="0 0.35 0.002" 
+                                    align="center" 
+                                    color="#FFFFFF" 
+                                    width="1.4"
+                                    scale="0.5 0.5 0.5">
+                                </a-text>
+                                
+                                <!-- Nama -->
+                                <a-text 
+                                    value="${completeData.nama.substring(0, 20)}${completeData.nama.length > 20 ? '...' : ''}" 
+                                    position="0 0.15 0.002" 
+                                    align="center" 
+                                    color="#FFFFFF" 
+                                    width="1.4"
+                                    scale="0.3 0.3 0.3">
+                                </a-text>
+                                
+                                <!-- NIA -->
+                                <a-text 
+                                    value="NIA: ${completeData.nia || 'N/A'}" 
+                                    position="-0.5 -0.1 0.002" 
+                                    align="left" 
+                                    color="#FFD700" 
+                                    width="0.7"
+                                    scale="0.2 0.2 0.2">
+                                </a-text>
+                                
+                                <!-- Total Simpanan -->
+                                <a-text 
+                                    value="Simpanan: ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}" 
+                                    position="0.5 -0.1 0.002" 
+                                    align="right" 
+                                    color="#4CAF50" 
+                                    width="0.7"
+                                    scale="0.2 0.2 0.2">
+                                </a-text>
+                                
+                                <!-- QR Code placeholder -->
+                                <a-plane 
+                                    position="0 -0.3 0.002" 
+                                    width="0.3" 
+                                    height="0.3" 
+                                    color="#FFFFFF">
+                                    <a-text 
+                                        value="QR" 
+                                        position="0 0 0.001" 
+                                        align="center" 
+                                        color="#1a5f23" 
+                                        scale="0.5 0.5 0.5">
+                                    </a-text>
+                                </a-plane>
+                            </a-entity>
+                        </a-marker>
+                        
+                        <!-- Camera -->
+                        <a-entity camera></a-entity>
+                    </a-scene>
+                    
+                    <div class="ar-controls">
+                        <button class="ar-control-btn" id="arRotateLeft">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="ar-control-btn" id="arRotateRight">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="ar-control-btn" id="arReset">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="ar-control-btn" id="arClose">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                    <p style="color: #1976d2; margin: 0; font-size: 0.9rem; text-align: center;">
+                        <i class="fas fa-mobile-alt"></i> 
+                        Gunakan AR untuk melihat kartu anggota dalam bentuk 3D
+                    </p>
+                </div>
+                
+                <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div style="text-align: center;">
+                        <button class="modal-btn secondary" id="arHelpBtn" style="width: 100%;">
+                            <i class="fas fa-question-circle"></i> Bantuan
+                        </button>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="modal-btn primary" id="arCloseBtn" style="width: 100%;">
+                            <i class="fas fa-times"></i> Tutup AR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('arExperienceContent').innerHTML = html;
+        document.getElementById('arExperienceModal').classList.add('active');
+        
+        this.setupARControls();
+        
+        // Speak about AR experience
+        if (window.menuVoiceSystem) {
+            window.menuVoiceSystem.speak("Pengalaman Augmented Reality. Arahkan kamera Anda ke permukaan datar untuk melihat kartu digital dalam bentuk 3D.");
+        }
+    }
+
+    setupARControls() {
+        const arCloseBtn = document.getElementById('arCloseBtn');
+        const arHelpBtn = document.getElementById('arHelpBtn');
+        const closeARModal = document.getElementById('closeARModal');
+        const arRotateLeft = document.getElementById('arRotateLeft');
+        const arRotateRight = document.getElementById('arRotateRight');
+        const arReset = document.getElementById('arReset');
+        const arClose = document.getElementById('arClose');
+        
+        if (arCloseBtn) {
+            arCloseBtn.addEventListener('click', () => {
+                this.closeARExperience();
+            });
+        }
+        
+        if (arHelpBtn) {
+            arHelpBtn.addEventListener('click', () => {
+                this.showARHelp();
+            });
+        }
+        
+        if (closeARModal) {
+            closeARModal.addEventListener('click', () => {
+                this.closeARExperience();
+            });
+        }
+        
+        if (arRotateLeft) {
+            arRotateLeft.addEventListener('click', () => {
+                this.rotateModel(-15);
+            });
+        }
+        
+        if (arRotateRight) {
+            arRotateRight.addEventListener('click', () => {
+                this.rotateModel(15);
+            });
+        }
+        
+        if (arReset) {
+            arReset.addEventListener('click', () => {
+                this.resetModel();
+            });
+        }
+        
+        if (arClose) {
+            arClose.addEventListener('click', () => {
+                this.closeARExperience();
+            });
+        }
+        
+        const arModal = document.getElementById('arExperienceModal');
+        if (arModal) {
+            arModal.addEventListener('click', (e) => {
+                if (e.target === arModal) {
+                    this.closeARExperience();
+                }
+            });
+        }
+    }
+
+    rotateModel(degrees) {
+        const marker = document.querySelector('a-marker');
+        if (marker) {
+            const entity = marker.querySelector('a-entity');
+            if (entity) {
+                const currentRotation = entity.getAttribute('rotation');
+                const newY = (currentRotation.y + degrees) % 360;
+                entity.setAttribute('rotation', {
+                    x: currentRotation.x,
+                    y: newY,
+                    z: currentRotation.z
+                });
+            }
+        }
+    }
+
+    resetModel() {
+        const marker = document.querySelector('a-marker');
+        if (marker) {
+            const entity = marker.querySelector('a-entity');
+            if (entity) {
+                entity.setAttribute('rotation', { x: 0, y: 0, z: 0 });
+                entity.setAttribute('scale', '0.05 0.05 0.05');
+            }
+        }
+    }
+
+    showARHelp() {
+        const helpHtml = `
+            <div style="text-align: center; padding: 20px;">
+                <h4 style="color: var(--primary); margin-bottom: 15px;">
+                    <i class="fas fa-question-circle"></i> Panduan AR Experience
+                </h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; color: #2196F3; margin-bottom: 5px;">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Izinkan Kamera</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; color: #4CAF50; margin-bottom: 5px;">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Scan Permukaan</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; color: #FF9800; margin-bottom: 5px;">
+                            <i class="fas fa-hand-pointer"></i>
+                        </div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Ketuk untuk Tempatkan</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; color: #9C27B0; margin-bottom: 5px;">
+                            <i class="fas fa-expand-alt"></i>
+                        </div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Geser untuk Zoom</div>
+                    </div>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <p style="margin: 0; font-size: 0.9rem; color: #666;">
+                        <strong>Tips:</strong> Gunakan ruangan dengan pencahayaan yang baik. 
+                        Pastikan permukaan datar tidak berkilau.
+                    </p>
+                </div>
+                
+                <button class="modal-btn primary" id="closeHelpBtn" style="width: 100%;">
+                    <i class="fas fa-check"></i> Mengerti
+                </button>
+            </div>
+        `;
+        
+        window.app.showModal('Panduan AR Experience', helpHtml);
+        
+        document.getElementById('closeHelpBtn').addEventListener('click', () => {
+            window.app.closeModal();
+        });
+    }
+
+    closeARExperience() {
+        document.getElementById('arExperienceModal').classList.remove('active');
+        document.getElementById('arExperienceContent').innerHTML = '';
+        
+        // Stop camera
+        const scene = document.querySelector('a-scene');
+        if (scene) {
+            scene.parentNode.removeChild(scene);
+        }
+    }
+}
+
+// ===== VOICE COMMAND SYSTEM =====
+class VoiceCommandSystem {
+    constructor() {
+        this.recognition = null;
+        this.isListening = false;
+        this.commands = [];
+        this.init();
+    }
+
+    init() {
+        console.log('🎤 Initializing Voice Command System...');
+        
+        this.setupCommands();
+        this.setupSpeechRecognition();
+        
+        console.log('✅ Voice Command System Ready');
+    }
+
+    setupCommands() {
+        this.commands = [
+            {
+                keyword: 'buka profil',
+                action: () => window.app.showEditProfileModal(),
+                description: 'Membuka halaman edit profil'
+            },
+            {
+                keyword: 'lihat simpanan',
+                action: () => {
+                    const card = document.querySelector('.hologram-static-card');
+                    if (card) card.click();
+                },
+                description: 'Menampilkan ringkasan simpanan'
+            },
+            {
+                keyword: 'setor uang',
+                action: () => window.app.showSetorModal(),
+                description: 'Membuka formulir setor simpanan'
+            },
+            {
+                keyword: 'pinjam uang',
+                action: () => window.app.showPinjamModal(),
+                description: 'Membuka formulir pengajuan pinjaman'
+            },
+            {
+                keyword: 'lihat kartu',
+                action: () => window.app.showKartuModal(),
+                description: 'Menampilkan kartu anggota digital'
+            },
+            {
+                keyword: 'lihat riwayat',
+                action: () => window.app.showRiwayatModal(),
+                description: 'Menampilkan riwayat transaksi'
+            },
+            {
+                keyword: 'buka qr',
+                action: () => window.app.showQRModal(),
+                description: 'Menampilkan QR Code'
+            },
+            {
+                keyword: 'sinkronisasi',
+                action: () => window.app.forceSync(),
+                description: 'Melakukan sinkronisasi dengan Firebase'
+            },
+            {
+                keyword: 'baca data',
+                action: () => {
+                    if (window.menuVoiceSystem) {
+                        const completeData = window.app.getCompleteUserData();
+                        const message = `Halo ${completeData.nama}. Total simpanan Anda ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}. Total pinjaman ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}. Status keanggotaan ${completeData.status}.`;
+                        window.menuVoiceSystem.speak(message);
+                    }
+                },
+                description: 'Membacakan data keuangan Anda'
+            },
+            {
+                keyword: 'tutup',
+                action: () => {
+                    const modal = document.querySelector('.modal-overlay.active');
+                    if (modal) {
+                        window.app.closeModal();
+                    }
+                },
+                description: 'Menutup modal yang terbuka'
+            },
+            {
+                keyword: 'bantuan',
+                action: () => this.showVoiceCommandHelp(),
+                description: 'Menampilkan daftar perintah suara'
+            }
+        ];
+    }
+
+    setupSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            
+            this.recognition.lang = 'id-ID';
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            this.recognition.maxAlternatives = 1;
+            
+            this.recognition.onstart = () => {
+                this.isListening = true;
+                this.updateVoiceButton(true);
+                this.showListeningIndicator();
+            };
+            
+            this.recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                console.log('🎤 Speech recognized:', transcript);
+                this.processCommand(transcript);
+            };
+            
+            this.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                this.isListening = false;
+                this.updateVoiceButton(false);
+                window.app.showToast('Gagal mengenali suara', 'error');
+            };
+            
+            this.recognition.onend = () => {
+                this.isListening = false;
+                this.updateVoiceButton(false);
+            };
+        } else {
+            console.warn('⚠️ Browser tidak mendukung Web Speech API');
+        }
+    }
+
+    startListening() {
+        if (!this.recognition) {
+            window.app.showToast('Browser tidak mendukung perintah suara', 'error');
+            return;
+        }
+        
+        try {
+            this.recognition.start();
+        } catch (error) {
+            console.error('Error starting speech recognition:', error);
+        }
+    }
+
+    processCommand(transcript) {
+        let commandExecuted = false;
+        
+        for (const command of this.commands) {
+            if (transcript.includes(command.keyword.toLowerCase())) {
+                command.action();
+                commandExecuted = true;
+                
+                // Speak confirmation
+                if (window.menuVoiceSystem) {
+                    window.menuVoiceSystem.speak(`Melakukan perintah: ${command.description}`);
+                }
+                
+                window.app.showToast(`Perintah: ${command.description}`, 'success');
+                break;
+            }
+        }
+        
+        if (!commandExecuted) {
+            if (window.menuVoiceSystem) {
+                window.menuVoiceSystem.speak('Perintah tidak dikenali. Katakan bantuan untuk melihat daftar perintah.');
+            }
+            window.app.showToast('Perintah tidak dikenali', 'warning');
+        }
+    }
+
+    updateVoiceButton(listening) {
+        const voiceBtn = document.getElementById('voiceCommandBtn');
+        if (voiceBtn) {
+            if (listening) {
+                voiceBtn.classList.add('listening');
+                voiceBtn.innerHTML = '<i class="fas fa-microphone-alt"></i>';
+            } else {
+                voiceBtn.classList.remove('listening');
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        }
+    }
+
+    showListeningIndicator() {
+        window.app.showToast('Mendengarkan... Katakan perintah Anda', 'info');
+    }
+
+    showVoiceCommandHelp() {
+        const html = `
+            <div style="padding: 20px;">
+                <h4 style="color: var(--primary); margin-bottom: 20px; text-align: center;">
+                    <i class="fas fa-microphone-alt"></i> Voice Commands
+                </h4>
+                
+                <div class="voice-listening-indicator" id="voiceListeningDemo">
+                    <i class="fas fa-microphone-alt"></i>
+                    <h5 style="margin: 10px 0;">Mendengarkan Perintah Suara...</h5>
+                    <p style="margin: 0; font-size: 0.9rem;">Klik tombol mikrofon untuk mulai</p>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                    <button class="modal-btn primary" id="startListeningBtn" style="flex: 1;">
+                        <i class="fas fa-microphone"></i> Mulai Dengarkan
+                    </button>
+                    <button class="modal-btn secondary" id="stopListeningBtn" style="flex: 1;">
+                        <i class="fas fa-stop"></i> Berhenti
+                    </button>
+                </div>
+                
+                <h5 style="color: var(--primary); margin: 25px 0 15px 0;">Daftar Perintah Suara:</h5>
+                <div class="voice-commands-list">
+                    ${this.commands.map(cmd => `
+                        <div class="voice-command-item">
+                            <div class="voice-command-keyword">
+                                <i class="fas fa-chevron-right"></i>
+                                "${cmd.keyword}"
+                            </div>
+                            <div class="voice-command-desc">${cmd.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                    <p style="margin: 0; font-size: 0.9rem; color: #666;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Tips:</strong> Ucapkan perintah dengan jelas. Gunakan dalam lingkungan yang tenang untuk hasil terbaik.
+                    </p>
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <button class="modal-btn primary" id="closeVoiceHelpBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('voiceCommandContent').innerHTML = html;
+        document.getElementById('voiceCommandModal').classList.add('active');
+        
+        this.setupVoiceHelpListeners();
+        
+        // Speak about voice commands
+        if (window.menuVoiceSystem) {
+            window.menuVoiceSystem.speak("Sistem perintah suara. Anda dapat mengontrol aplikasi dengan perintah suara. Katakan bantuan untuk melihat daftar perintah yang tersedia.");
+        }
+    }
+
+    setupVoiceHelpListeners() {
+        const startBtn = document.getElementById('startListeningBtn');
+        const stopBtn = document.getElementById('stopListeningBtn');
+        const closeBtn = document.getElementById('closeVoiceHelpBtn');
+        const closeVoiceModal = document.getElementById('closeVoiceModal');
+        
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                this.startListening();
+            });
+        }
+        
+        if (stopBtn) {
+            stopBtn.addEventListener('click', () => {
+                if (this.recognition && this.isListening) {
+                    this.recognition.stop();
+                }
+            });
+        }
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeVoiceHelp();
+            });
+        }
+        
+        if (closeVoiceModal) {
+            closeVoiceModal.addEventListener('click', () => {
+                this.closeVoiceHelp();
+            });
+        }
+        
+        const voiceModal = document.getElementById('voiceCommandModal');
+        if (voiceModal) {
+            voiceModal.addEventListener('click', (e) => {
+                if (e.target === voiceModal) {
+                    this.closeVoiceHelp();
+                }
+            });
+        }
+    }
+
+    closeVoiceHelp() {
+        document.getElementById('voiceCommandModal').classList.remove('active');
+        document.getElementById('voiceCommandContent').innerHTML = '';
+        
+        // Stop listening if active
+        if (this.recognition && this.isListening) {
+            this.recognition.stop();
         }
     }
 }
