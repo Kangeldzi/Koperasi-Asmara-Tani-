@@ -73,13 +73,64 @@
             box-shadow: var(--shadow-medium);
         }
 
-        .real-time-indicator {
+        /* ===== PERUBAHAN 1: SYNC CONTROLS DENGAN TOGGLE EYE ===== */
+        .sync-controls-toggle {
             position: fixed;
-            top: 10px;
-            right: 70px;
-            z-index: 9999;
+            top: 15px;
+            right: 90px;
+            background: rgba(26, 95, 35, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.4);
+            color: #1a5f23;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
+        .sync-controls-toggle:hover {
+            background: rgba(26, 95, 35, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .sync-controls-toggle.active {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.6);
+            color: #1a5f23;
+        }
+
+        .sync-controls {
+            position: fixed;
+            top: 65px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(26, 95, 35, 0.1);
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sync-controls.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+        }
+
         .sync-badge {
             background: #4CAF50;
             color: white;
@@ -99,9 +150,6 @@
         }
 
         .online-indicator {
-            position: fixed;
-            top: 15px;
-            right: 120px;
             background: #2196f3;
             color: white;
             padding: 4px 10px;
@@ -110,16 +158,11 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            z-index: 9999;
             box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
-            display: none;
         }
 
         /* Sync Button Styles */
         .sync-button {
-            position: fixed;
-            top: 15px;
-            right: 180px;
             background: var(--accent-blue);
             color: white;
             border: none;
@@ -130,13 +173,12 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            z-index: 9999;
             box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
             transition: all 0.3s ease;
         }
         
         .sync-button:hover {
-            background: var(--accent-blue);
+            background: #1976D2;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
         }
@@ -152,6 +194,167 @@
         
         .sync-button.error {
             background: var(--danger);
+        }
+
+        /* ===== PERUBAHAN 2: NOTIFICATION TOGGLE DI BAWAH ===== */
+        .notification-toggle {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 8px 25px rgba(156, 39, 176, 0.4);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .notification-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(156, 39, 176, 0.6);
+        }
+
+        .notification-toggle.has-notifications {
+            animation: bellRing 1s ease;
+        }
+
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0); }
+            10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+            20%, 40%, 60%, 80% { transform: rotate(10deg); }
+        }
+
+        .notification-panel {
+            position: fixed;
+            bottom: 230px;
+            right: 20px;
+            width: 320px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 9998;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(26, 95, 35, 0.1);
+            overflow: hidden;
+        }
+
+        .notification-panel.active {
+            transform: translateX(0);
+        }
+
+        .notification-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .notification-body {
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .notification-item {
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: #e8f5e9;
+            transform: translateX(-3px);
+        }
+
+        .notification-item.unread {
+            background: #fff8e1;
+            border-left-color: var(--warning);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Voice Control Button */
+        .voice-control-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 95, 35, 0.2);
+            border: 2px solid rgba(76, 175, 80, 0.4);
+            color: #1a5f23;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .voice-control-btn:hover {
+            background: rgba(26, 95, 35, 0.3);
+            transform: scale(1.1);
+        }
+
+        .voice-control-btn.speaking {
+            background: rgba(156, 39, 176, 0.3);
+            border-color: rgba(156, 39, 176, 0.4);
+            animation: pulse 1s infinite;
         }
 
         .profile-container {
@@ -380,7 +583,7 @@
             font-weight: 500;
         }
 
-        /* 1. CSS GRID SEPERTI YANG DIMINTA */
+        /* CSS GRID SEPERTI YANG DIMINTA */
         .hologram-static-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -388,7 +591,7 @@
             margin-bottom: 20px;
         }
 
-        /* 1. STAT-ITEM SEPERTI YANG DIMINTA */
+        /* STAT-ITEM SEPERTI YANG DIMINTA */
         .hologram-static-item {
             text-align: center;
             padding: 15px;
@@ -422,7 +625,7 @@
            color: #1a5f23;
          }
 
-        /* 1. STAT-VALUE SEPERTI YANG DIMINTA */
+        /* STAT-VALUE SEPERTI YANG DIMINTA */
         .hologram-static-value {
            font-size: 1.3rem;
            font-weight: 700;
@@ -568,7 +771,7 @@
             flex: 1;
         }
 
-        /* Style untuk konten hologram di dalam modal - TETAP SEPERTI AWAL */
+        /* Style untuk konten hologram di dalam modal */
         .hologram-card {
             background: linear-gradient(135deg, 
                 rgba(255, 255, 255, 0.97) 0%,
@@ -1288,19 +1491,23 @@
             font-size: 0.8rem;
         }
 
+        /* PERUBAHAN: Foto profil dipindahkan ke atas teks nama */
         .kartu-info {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            flex-direction: column; /* Diubah dari row ke column */
+            align-items: center; /* Pusatkan konten */
+            gap: 15px; /* Kurangi gap */
             margin-bottom: 20px;
+            text-align: center; /* Teks di tengah */
         }
 
         .kartu-photo {
-            width: 80px;
-            height: 80px;
+            width: 100px; /* Sedikit lebih besar untuk fokus */
+            height: 100px;
             border-radius: 50%;
             overflow: hidden;
-            border: 3px solid white;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .kartu-photo img {
@@ -1309,15 +1516,25 @@
             object-fit: cover;
         }
 
+        .kartu-details {
+            width: 100%; /* Gunakan full width */
+        }
+
         .kartu-details h4 {
-            font-size: 1.3rem;
-            margin-bottom: 8px;
+            font-size: 1.4rem; /* Sedikit lebih besar */
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .kartu-details p {
-            font-size: 0.85rem;
-            margin-bottom: 3px;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
             opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .kartu-grid {
@@ -1334,12 +1551,13 @@
         .grid-item {
             display: flex;
             flex-direction: column;
+            text-align: center; /* Tengahkan konten */
         }
 
         .grid-label {
             font-size: 0.75rem;
             opacity: 0.8;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         .grid-value {
@@ -1490,32 +1708,125 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Notification Badge */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
+        /* Voice Notification */
+        .voice-notification {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
             color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 10000;
+            animation: fadeInOut 3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(10px); }
+        }
+
+        /* AR Experience Button */
+        .ar-experience-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .ar-experience-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.6);
+        }
+
+        .ar-experience-btn.pulse {
+            animation: arPulse 2s infinite;
+        }
+
+        @keyframes arPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+
+        /* Voice Command Button */
+        .voice-command-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .voice-command-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(33, 150, 243, 0.6);
+        }
+
+        .voice-command-btn.listening {
+            background: linear-gradient(135deg, #FF4081, #F50057);
+            animation: voicePulse 1s infinite;
+        }
+
+        @keyframes voicePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sync-button {
-                right: 100px;
-                top: 60px;
+            .sync-controls-toggle {
+                top: 15px;
+                right: 80px;
             }
-            
-            .online-indicator {
+
+            .sync-controls {
+                top: 60px;
                 right: 15px;
-                top: 45px;
+            }
+
+            .notification-toggle {
+                bottom: 150px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .notification-panel {
+                width: 280px;
+                right: 10px;
+                bottom: 200px;
             }
 
             .modal-content {
@@ -1594,9 +1905,30 @@
                 min-width: auto;
                 padding: 14px 20px;
             }
+
+            .ar-experience-btn, .voice-command-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .voice-command-btn {
+                bottom: 80px;
+            }
         }
 
         @media (max-width: 576px) {
+            .sync-controls-toggle {
+                right: 70px;
+            }
+
+            .sync-controls {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 5px;
+                top: 55px;
+            }
+
             .hologram-static-card {
                 padding: 15px;
                 border-radius: 15px;
@@ -1639,6 +1971,22 @@
             .hologram-modal-footer {
                 padding: 15px 20px;
             }
+            
+            .voice-control-btn {
+                top: 15px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+            }
+
+            .kartu-photo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .kartu-details h4 {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -1647,22 +1995,54 @@
         <i class="fas fa-arrow-left"></i> Beranda
     </button>
     
-    <div class="real-time-indicator">
+    <!-- ===== PERUBAHAN 1: TOGGLE EYE UNTUK SYNC CONTROLS ===== -->
+    <button class="sync-controls-toggle" id="syncControlsToggle" title="Toggle Sync Controls">
+        <i class="fas fa-eye"></i>
+    </button>
+    
+    <!-- ===== SYNC CONTROLS (BISA DISEMBUNYIKAN) ===== -->
+    <div class="sync-controls" id="syncControls">
         <div class="sync-badge" id="syncIndicator">
             <i class="fas fa-sync-alt"></i>
             <span>Real-time</span>
         </div>
+        
+        <div class="online-indicator" id="onlineIndicator">
+            <i class="fas fa-wifi"></i>
+            <span>Online Sync</span>
+        </div>
+        
+        <!-- MANUAL SYNC BUTTON -->
+        <button class="sync-button" id="manualSyncButton" title="Klik untuk sinkronisasi manual">
+            <i class="fas fa-sync-alt"></i> Sync Now
+        </button>
     </div>
 
-    <div class="online-indicator" id="onlineIndicator">
-        <i class="fas fa-wifi"></i>
-        <span>Online Sync</span>
-    </div>
-    
-    <!-- MANUAL SYNC BUTTON -->
-    <button class="sync-button" id="manualSyncButton" title="Klik untuk sinkronisasi manual">
-        <i class="fas fa-sync-alt"></i> Sync Now
+    <!-- ===== PERUBAHAN 2: NOTIFICATION TOGGLE DI BAWAH ===== -->
+    <button class="notification-toggle" id="notificationToggle" title="Notifikasi">
+        <i class="fas fa-bell"></i>
     </button>
+
+    <!-- NOTIFICATION PANEL -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h4>
+                <i class="fas fa-bell"></i>
+                Notifikasi
+                <span class="notification-badge" id="notificationBadge">0</span>
+            </h4>
+            <button class="notification-clear" id="notificationClear" title="Hapus semua">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+        <div class="notification-body" id="notificationBody">
+            <div style="text-align: center; padding: 40px 20px; color: #666;">
+                <i class="fas fa-bell-slash" style="font-size: 48px; color: #ccc;"></i>
+                <p>Tidak ada notifikasi</p>
+                <p style="font-size: 0.9rem;">Notifikasi akan muncul di sini</p>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== PROFILE HEADER ===== -->
     <div class="profile-container">
@@ -1679,6 +2059,7 @@
         </div>
 
         <div class="btn-area">
+            <!-- TOMBOL QR CODE HYBRID -->
             <button class="btn qr" id="qrButton">
                 <i class="fas fa-qrcode"></i> QR Code Hybrid
             </button>
@@ -1702,8 +2083,13 @@
         </div>
     </div>
 
-    <!-- ===== HOLOGRAM STATIC CARD ===== -->
+    <!-- ===== HOLOGRAM STATIC CARD (DENGAN VOICE CONTROL) ===== -->
     <div class="hologram-static-card" id="hologramStaticCard">
+        <!-- VOICE CONTROL BUTTON -->
+        <div class="voice-control-btn" id="hologramVoiceBtn" title="Baca data dengan suara">
+            <i class="fas fa-volume-up"></i>
+        </div>
+        
         <div class="hologram-static-content">
             <div class="hologram-static-header">
                 <div class="hologram-static-title">
@@ -1813,33 +2199,6 @@
         </div>
     </div>
 
-    <!-- ===== MENU DATA (KARTU YANG AKAN DIHAPUS) ===== -->
-    <div class="menu-section" id="dataMenuSection">
-        <div class="menu-item" data-action="total_simpanan">
-            <div class="menu-left">
-                <div class="menu-icon">🪙</div>
-                <div class="menu-text">Detail Simpanan</div>
-            </div>
-            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-        </div>
-
-        <div class="menu-item" data-action="pinjaman_aktif">
-            <div class="menu-left">
-                <div class="menu-icon">💵</div>
-                <div class="menu-text">Detail Pinjaman</div>
-            </div>
-            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-        </div>
-
-        <div class="menu-item" data-action="shu_estimasi">
-            <div class="menu-left">
-                <div class="menu-icon">💎</div>
-                <div class="menu-text">Detail SHU</div>
-            </div>
-            <div class="menu-right"><i class="fas fa-chevron-right"></i></div>
-        </div>
-    </div>
-
     <!-- ===== FOOTER ===== -->
     <div class="footer">
         <p>Copyright © Koperasi Asmara Tani 2026</p>
@@ -1847,6 +2206,16 @@
             <i class="fas fa-sync-alt"></i> Enhanced Sync System v2.0
         </p>
     </div>
+
+    <!-- ===== VOICE COMMAND BUTTON ===== -->
+    <button class="voice-command-btn" id="voiceCommandBtn" title="Voice Commands">
+        <i class="fas fa-microphone"></i>
+    </button>
+
+    <!-- ===== AR EXPERIENCE BUTTON ===== -->
+    <button class="ar-experience-btn" id="arExperienceBtn" title="AR Experience">
+        <i class="fas fa-vr-cardboard"></i>
+    </button>
 
     <!-- ===== MODAL CONTAINER ===== -->
     <div class="modal-overlay" id="modalOverlay">
@@ -1937,6 +2306,32 @@
         </div>
     </div>
 
+    <!-- ===== AR EXPERIENCE MODAL ===== -->
+    <div class="modal-overlay" id="arExperienceModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-vr-cardboard"></i> AR Experience</h3>
+                <button class="modal-close" id="closeARModal">&times;</button>
+            </div>
+            <div class="modal-body" id="arExperienceContent">
+                <!-- AR content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VOICE COMMAND MODAL ===== -->
+    <div class="modal-overlay" id="voiceCommandModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-microphone"></i> Voice Commands</h3>
+                <button class="modal-close" id="closeVoiceModal">&times;</button>
+            </div>
+            <div class="modal-body" id="voiceCommandContent">
+                <!-- Voice command content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
     <!-- ===== TOAST CONTAINER ===== -->
     <div class="toast" id="toast">
         <i class="fas fa-info-circle"></i>
@@ -1947,157 +2342,452 @@
     <div id="printPreview" class="print-preview"></div>
 
 <script>
-// ===== FUNGSI TAMBAHAN UNTUK UPLOAD FOTO =====
-function handlePhotoUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    // Validasi ukuran file (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-        window.app.showToast('Ukuran file maksimal 2MB', 'error');
-        return;
+// ===== PERUBAHAN 4: TEXT TO SPEECH SYSTEM UNTUK SEMUA TOMBOL DAN KARTU =====
+class MenuVoiceSystem {
+    constructor() {
+        this.speechSynthesis = window.speechSynthesis;
+        this.isSpeaking = false;
+        this.voiceEnabled = 'speechSynthesis' in window;
+        this.currentVoice = null;
+        this.init();
     }
-    
-    // Validasi tipe file
-    if (!file.type.match('image.*')) {
-        window.app.showToast('Hanya file gambar yang diizinkan', 'error');
-        return;
+
+    init() {
+        if (!this.voiceEnabled) {
+            console.warn('⚠️ Browser tidak mendukung Text-to-Speech');
+            return;
+        }
+        
+        setTimeout(() => {
+            this.setupVoices();
+            this.setupAllVoiceListeners();
+            console.log('🔊 Menu Voice System Ready');
+        }, 1000);
     }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = document.getElementById('currentPhoto');
-        if (img) img.src = e.target.result;
+
+    setupVoices() {
+        const voices = this.speechSynthesis.getVoices();
+        this.currentVoice = voices.find(voice => 
+            voice.lang.includes('id') || 
+            voice.name.includes('Indonesia') ||
+            voice.name.includes('Indonesian')
+        ) || voices[0];
+    }
+
+    setupAllVoiceListeners() {
+        // Menu utama
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const text = e.currentTarget.querySelector('.menu-text').textContent;
+                this.speakButton(text);
+            });
+        });
+
+        // Semua tombol dengan class .btn
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const buttonText = button.textContent.trim();
+                this.speakButton(buttonText);
+            });
+        });
+
+        // Hologram card
+        document.getElementById('hologramStaticCard')?.addEventListener('click', () => {
+            this.speakCard("Ringkasan Keuangan Anggota");
+        });
+
+        // Voice button pada hologram
+        document.getElementById('hologramVoiceBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.speakButton("Baca Data Keuangan");
+        });
+
+        // Tombol lainnya
+        document.getElementById('arExperienceBtn')?.addEventListener('click', () => {
+            this.speakButton("A R Experience");
+        });
+
+        document.getElementById('voiceCommandBtn')?.addEventListener('click', () => {
+            this.speakButton("Voice Commands");
+        });
+
+        // Sync button
+        document.getElementById('manualSyncButton')?.addEventListener('click', () => {
+            this.speakButton("Sinkronisasi Manual");
+        });
+
+        // Sync toggle button
+        document.getElementById('syncControlsToggle')?.addEventListener('click', () => {
+            this.speakButton("Panel Sinkronisasi");
+        });
+
+        // Notification toggle button
+        document.getElementById('notificationToggle')?.addEventListener('click', () => {
+            this.speakButton("Notifikasi");
+        });
+
+        // Back home button
+        document.querySelector('.back-home')?.addEventListener('click', () => {
+            this.speakButton("Kembali ke Beranda");
+        });
+
+        // Modal close buttons
+        document.querySelectorAll('.modal-close, .hologram-modal-close').forEach(button => {
+            button.addEventListener('click', () => {
+                this.speakButton("Tutup");
+            });
+        });
+
+        // Modal buttons in hologram modal
+        document.getElementById('closeDetailBtn')?.addEventListener('click', () => {
+            this.speakButton("Tutup Detail");
+        });
+
+        document.getElementById('printHologramDetailBtn')?.addEventListener('click', () => {
+            this.speakButton("Cetak Kartu");
+        });
+
+        // Event saat speech selesai
+        this.speechSynthesis.onend = () => {
+            this.isSpeaking = false;
+        };
+    }
+
+    speak(text, rate = 0.9, pitch = 1.0) {
+        if (!this.voiceEnabled || this.isSpeaking) return;
         
-        const fotoInput = document.getElementById('editFoto');
-        if (fotoInput) fotoInput.value = e.target.result;
+        this.isSpeaking = true;
         
-        // Simpan ke localStorage sementara
-        localStorage.setItem('temp_profile_photo', e.target.result);
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID';
+        utterance.rate = rate;
+        utterance.pitch = pitch;
+        utterance.volume = 1.0;
         
-        window.app.showToast('Foto berhasil diunggah', 'success');
-    };
-    reader.readAsDataURL(file);
+        if (this.currentVoice) {
+            utterance.voice = this.currentVoice;
+        }
+        
+        this.speechSynthesis.speak(utterance);
+    }
+
+    speakButton(buttonName) {
+        const text = `Tombol ${buttonName}`;
+        this.speak(text);
+    }
+
+    speakCard(cardName) {
+        const text = `Kartu ${cardName}`;
+        this.speak(text);
+    }
+
+    speakModal(modalName) {
+        const text = `Modal ${modalName}`;
+        this.speak(text);
+    }
 }
 
-function resetPhoto() {
-    const defaultPhoto = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
-    
-    const img = document.getElementById('currentPhoto');
-    if (img) img.src = defaultPhoto;
-    
-    const fotoInput = document.getElementById('editFoto');
-    if (fotoInput) fotoInput.value = defaultPhoto;
-    
-    localStorage.removeItem('temp_profile_photo');
-    window.app.showToast('Foto direset ke default', 'info');
-}
+// ===== PERUBAHAN 3: PUSH NOTIFICATION SYSTEM DENGAN SOUND HANYA UNTUK UPDATE ADMIN =====
+class PushNotificationSystem {
+    constructor() {
+        this.notificationPermission = 'default';
+        this.notificationQueue = [];
+        this.notificationSound = null;
+        this.unreadCount = 0;
+        this.init();
+    }
 
-// ===== DATA EXTRACTOR DARI DASHBOARD ADMIN (DIPERBAIKI) =====
-class AdminDataExtractor {
-    static extractDataForUser(email) {
+    init() {
+        console.log('🔔 Initializing Push Notification System...');
+        
+        // Setup notification sound (hanya untuk update admin)
+        this.setupNotificationSound();
+        
+        // Check notification permission
+        this.checkPermission();
+        
+        // Listen for admin update events
+        this.setupEventListeners();
+        
+        // Load saved notifications
+        this.loadNotifications();
+        
+        // Start notification queue processor
+        this.startQueueProcessor();
+        
+        console.log('✅ Push Notification System Ready');
+    }
+
+    setupNotificationSound() {
+        // Create simple beep sound untuk update admin saja
         try {
-            // 1. Ambil data dari koperasi_anggota (Dashboard Admin)
-            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-            const adminData = allAnggota.find(a => a.email === email);
-            
-            // 2. Ambil data dari koperasiData (backup)
-            const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
-            const adminUpdates = koperasiData.adminUpdates || {};
-            const userUpdate = adminUpdates[email];
-            
-            // 3. Gabungkan data dari semua sumber
-            let userData = {
-                email: email,
-                nama: 'Anggota',
-                foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                status: 'Aktif',
-                lastUpdated: new Date().toISOString()
-            };
-            
-            // 4. Ekstrak data dari format Dashboard Admin
-            if (adminData) {
-                // Data personal
-                userData.nama = adminData.nama || adminData.name || userData.nama;
-                userData.foto = adminData.foto || userData.foto;
-                userData.status = adminData.statusAktif || adminData.status || userData.status;
-                userData.nia = adminData.nia || adminData.id || '';
-                userData.alamat = adminData.alamat || '';
-                userData.telepon = adminData.whatsapp || adminData.telepon || '';
-                userData.posisi = adminData.posisi || 'Anggota';
-                userData.tanggalGabung = adminData.tanggal_bergabung || adminData.tanggal_daftar || '';
-                userData.jenisKelamin = adminData.jenisKelamin || '';
-                userData.agama = adminData.agama || '';
-                userData.nik = adminData.nik || adminData.nikKtp || '';
-                
-                // Data keuangan (format variasi Dashboard Admin)
-                userData.simpananPokok = this.extractNumber(adminData.simpananPokok) || 
-                                         this.extractNumber(adminData.simpanan?.pokok?.nominal) || 0;
-                
-                userData.simpananWajib = this.extractNumber(adminData.simpananWajib) || 
-                                        this.extractNumber(adminData.simpanan?.wajib?.nominal) || 0;
-                
-                userData.simpananSukarela = this.extractNumber(adminData.simpananSukarela) || 
-                                           this.extractNumber(adminData.simpanan?.sukarela?.nominal) || 0;
-                
-                userData.totalSimpanan = this.extractNumber(adminData.totalSimpanan) || 
-                                        this.extractNumber(adminData.simpanan?.total) || 
-                                        (userData.simpananPokok + userData.simpananWajib + userData.simpananSukarela);
-                
-                userData.totalPinjaman = this.extractNumber(adminData.totalPinjaman) || 
-                                        this.extractNumber(adminData.pinjaman?.total) || 0;
-                
-                userData.shuEstimasi = this.extractNumber(adminData.shuEstimasi) || 
-                                      this.extractNumber(adminData.shu?.estimasi) || 
-                                      Math.round(userData.totalSimpanan * 0.2);
-                
-                // Data pinjaman detail
-                userData.pinjamanAktif = adminData.pinjaman?.aktif || [];
-                
-                // Data riwayat
-                userData.riwayatTransaksi = adminData.riwayatTransaksi || [];
-                
-                userData.lastUpdated = adminData.lastUpdated || userData.lastUpdated;
-                userData.lastUpdatedBy = adminData.lastUpdatedBy || 'admin';
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.notificationSound = audioContext;
+        } catch (e) {
+            console.warn('⚠️ Audio not supported');
+        }
+    }
+
+    checkPermission() {
+        if ('Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                this.notificationPermission = permission;
+                console.log('🔔 Notification permission:', permission);
+            });
+        }
+    }
+
+    setupEventListeners() {
+        // Listen for admin update events - HANYA INI YANG ADA SOUND
+        window.addEventListener('admin-data-updated', (e) => {
+            this.showNotification(
+                'Update Data Admin', 
+                'Data keuangan telah diperbarui oleh admin.', 
+                'warning',
+                true // Play sound hanya untuk update admin
+            );
+        });
+
+        // Setup notification panel toggle
+        const notificationToggle = document.getElementById('notificationToggle');
+        const notificationPanel = document.getElementById('notificationPanel');
+        const notificationClear = document.getElementById('notificationClear');
+        
+        if (notificationToggle && notificationPanel) {
+            notificationToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationPanel.classList.toggle('active');
+                this.markAllAsRead();
+            });
+        }
+        
+        if (notificationClear) {
+            notificationClear.addEventListener('click', () => {
+                this.clearAllNotifications();
+            });
+        }
+
+        // Close notification panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (notificationPanel && notificationPanel.classList.contains('active')) {
+                if (!notificationPanel.contains(e.target) && !notificationToggle.contains(e.target)) {
+                    notificationPanel.classList.remove('active');
+                }
             }
-            
-            // 5. Tambahkan update dari adminUpdates
-            if (userUpdate && userUpdate.personal) {
-                Object.assign(userData, userUpdate.personal);
+        });
+    }
+
+    loadNotifications() {
+        try {
+            const savedNotifications = localStorage.getItem('koperasi_notifications');
+            if (savedNotifications) {
+                this.notificationQueue = JSON.parse(savedNotifications);
+                this.unreadCount = this.notificationQueue.filter(n => !n.read).length;
+                this.updateNotificationUI();
             }
-            
-            // 6. Tambahkan update simpanan dari admin
-            if (userUpdate && userUpdate.simpanan) {
-                Object.assign(userData, userUpdate.simpanan);
-            }
-            
-            console.log('📊 Data extracted from Admin:', userData);
-            return userData;
-            
         } catch (error) {
-            console.error('❌ Error extracting admin data:', error);
-            return null;
+            console.error('Error loading notifications:', error);
         }
     }
-    
-    static extractNumber(value) {
-        if (!value && value !== 0) return 0;
-        if (typeof value === 'number') return value;
-        if (typeof value === 'string') {
-            // Hapus karakter non-digit
-            const numStr = value.replace(/[^\d]/g, '');
-            return parseInt(numStr) || 0;
+
+    saveNotifications() {
+        try {
+            localStorage.setItem('koperasi_notifications', JSON.stringify(this.notificationQueue));
+        } catch (error) {
+            console.error('Error saving notifications:', error);
         }
-        return 0;
     }
-    
-    static formatRupiah(amount) {
-        if (!amount && amount !== 0) return 'Rp 0';
-        return 'Rp ' + amount.toLocaleString('id-ID');
+
+    showNotification(title, message, type = 'info', playSound = false) {
+        const notification = {
+            id: Date.now(),
+            title,
+            message,
+            type,
+            timestamp: new Date(),
+            read: false,
+            fromAdmin: type === 'warning'
+        };
+
+        // Add to queue
+        this.notificationQueue.unshift(notification);
+        
+        // Limit queue size
+        if (this.notificationQueue.length > 50) {
+            this.notificationQueue.pop();
+        }
+
+        // Increase unread count
+        this.unreadCount++;
+        
+        // Save to localStorage
+        this.saveNotifications();
+
+        // Play sound HANYA jika dari admin dan playSound true
+        if (playSound && type === 'warning' && this.notificationSound) {
+            this.playNotificationSound();
+        }
+
+        // Update notification UI
+        this.updateNotificationUI();
+
+        // Show in-app notification
+        this.showInAppNotification(notification);
+
+        return notification;
+    }
+
+    playNotificationSound() {
+        try {
+            // Create beep sound sederhana menggunakan Web Audio API
+            const context = this.notificationSound;
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, context.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.3);
+            
+            oscillator.start(context.currentTime);
+            oscillator.stop(context.currentTime + 0.3);
+        } catch (e) {
+            console.warn('⚠️ Could not play notification sound');
+        }
+    }
+
+    showInAppNotification(notification) {
+        const notificationEl = document.createElement('div');
+        notificationEl.className = `notification-item ${notification.read ? '' : 'unread'}`;
+        notificationEl.dataset.id = notification.id;
+        
+        const timeAgo = this.getTimeAgo(notification.timestamp);
+        
+        notificationEl.innerHTML = `
+            <div class="notification-title">
+                <span>${notification.title}</span>
+                <span class="notification-time">${timeAgo}</span>
+            </div>
+            <div class="notification-message">${notification.message}</div>
+        `;
+        
+        notificationEl.addEventListener('click', () => {
+            this.markAsRead(notification.id);
+            notificationEl.classList.remove('unread');
+        });
+        
+        const notificationBody = document.getElementById('notificationBody');
+        if (notificationBody) {
+            const emptyState = notificationBody.querySelector('div[style*="text-align: center"]');
+            if (emptyState) {
+                emptyState.remove();
+            }
+            
+            notificationBody.insertBefore(notificationEl, notificationBody.firstChild);
+        }
+    }
+
+    updateNotificationUI() {
+        const badge = document.getElementById('notificationBadge');
+        if (badge) {
+            badge.textContent = this.unreadCount;
+            
+            const toggleBtn = document.getElementById('notificationToggle');
+            if (toggleBtn) {
+                if (this.unreadCount > 0) {
+                    toggleBtn.classList.add('has-notifications');
+                } else {
+                    toggleBtn.classList.remove('has-notifications');
+                }
+            }
+        }
+        
+        this.updateNotificationPanel();
+    }
+
+    updateNotificationPanel() {
+        const notificationBody = document.getElementById('notificationBody');
+        if (!notificationBody) return;
+        
+        notificationBody.innerHTML = '';
+        
+        if (this.notificationQueue.length === 0) {
+            notificationBody.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: #666;">
+                    <i class="fas fa-bell-slash" style="font-size: 48px; color: #ccc;"></i>
+                    <p>Tidak ada notifikasi</p>
+                    <p style="font-size: 0.9rem;">Notifikasi akan muncul di sini</p>
+                </div>
+            `;
+            return;
+        }
+        
+        this.notificationQueue.forEach(notification => {
+            this.showInAppNotification(notification);
+        });
+    }
+
+    markAsRead(id) {
+        const notification = this.notificationQueue.find(n => n.id === id);
+        if (notification && !notification.read) {
+            notification.read = true;
+            this.unreadCount--;
+            this.saveNotifications();
+            this.updateNotificationUI();
+        }
+    }
+
+    markAllAsRead() {
+        this.notificationQueue.forEach(notification => {
+            if (!notification.read) {
+                notification.read = true;
+            }
+        });
+        this.unreadCount = 0;
+        this.saveNotifications();
+        this.updateNotificationUI();
+    }
+
+    clearAllNotifications() {
+        this.notificationQueue = [];
+        this.unreadCount = 0;
+        this.saveNotifications();
+        this.updateNotificationUI();
+        
+        window.app.showToast('Semua notifikasi telah dihapus', 'success');
+    }
+
+    getTimeAgo(timestamp) {
+        const now = new Date();
+        const past = new Date(timestamp);
+        const diff = now - past;
+        
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        
+        if (minutes < 1) return 'Baru saja';
+        if (minutes < 60) return `${minutes} menit lalu`;
+        if (hours < 24) return `${hours} jam lalu`;
+        if (days < 7) return `${days} hari lalu`;
+        
+        return past.toLocaleDateString('id-ID');
+    }
+
+    startQueueProcessor() {
+        setInterval(() => {
+            if (this.notificationQueue.length > 0) {
+                this.updateNotificationUI();
+            }
+        }, 5000);
     }
 }
 
-// ===== SISTEM UTAMA TABUNGAN (DIPERBAIKI) =====
+// ===== SISTEM UTAMA TABUNGAN (DIPERTAHANKAN SEPERTI SEMULA) =====
 class TabunganApp {
     constructor() {
         this.currentUser = this.getCurrentUser();
@@ -2139,6 +2829,12 @@ class TabunganApp {
             this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
         };
         
+        // Initialize voice system untuk menu
+        window.menuVoiceSystem = new MenuVoiceSystem();
+        
+        // Initialize notification system
+        window.pushNotificationSystem = new PushNotificationSystem();
+        
         // Setup session management
         this.resetSessionTimeout();
         document.addEventListener('click', () => this.resetSessionTimeout());
@@ -2159,7 +2855,33 @@ class TabunganApp {
         // Setup hologram system
         this.initHologramSystem();
         
+        // Setup AR button animation
+        this.setupARButtonAnimation();
+        
         this.showToast('Sistem Tabungan Digital siap!', 'success');
+        
+        // Show welcome notification (tanpa sound)
+        setTimeout(() => {
+            window.pushNotificationSystem.showNotification(
+                'Selamat Datang!',
+                'Sistem Tabungan Digital siap digunakan.',
+                'info',
+                false // NO SOUND untuk welcome
+            );
+        }, 1000);
+    }
+    
+    setupARButtonAnimation() {
+        const arButton = document.getElementById('arExperienceBtn');
+        if (arButton) {
+            // Add pulse animation every 30 seconds
+            setInterval(() => {
+                arButton.classList.add('pulse');
+                setTimeout(() => {
+                    arButton.classList.remove('pulse');
+                }, 2000);
+            }, 30000);
+        }
     }
     
     getCompleteUserData() {
@@ -2175,7 +2897,7 @@ class TabunganApp {
             // Data default
             let completeData = {
                 email: this.currentUser.email,
-                nama: this.currentUser.name || 'Anggota',
+                nama: this.currentUser.name || 'Anggota Koperasi Asmara Tani',
                 foto: this.currentUser.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
                 status: 'Aktif',
                 // Data statis default
@@ -2215,7 +2937,7 @@ class TabunganApp {
             
             // Pastikan data penting selalu ada
             completeData.email = completeData.email || this.currentUser.email;
-            completeData.nama = completeData.nama || this.currentUser.name || 'Anggota';
+            completeData.nama = completeData.nama || this.currentUser.name || 'Anggota Koperasi';
             completeData.foto = completeData.foto || this.userData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
             completeData.status = completeData.status || completeData.statusAktif || 'Aktif';
             
@@ -2255,7 +2977,7 @@ class TabunganApp {
     createDefaultData() {
         return {
             email: this.currentUser.email,
-            nama: this.currentUser.name || 'Anggota',
+            nama: this.currentUser.name || 'Anggota Koperasi Asmara Tani',
             foto: this.currentUser.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
             status: 'Aktif',
             simpananPokok: 0,
@@ -2270,6 +2992,9 @@ class TabunganApp {
     }
     
     setupEventListeners() {
+        // PERUBAHAN 1: Setup sync controls toggle
+        this.setupSyncControlsToggle();
+        
         // Tombol edit profil
         document.getElementById('editProfileButton').addEventListener('click', () => {
             this.showEditProfileModal();
@@ -2310,11 +3035,88 @@ class TabunganApp {
             if (e.key === 'koperasi_anggota' || e.key === 'koperasiData') {
                 console.log('🔄 Storage change detected');
                 this.loadData();
+                
+                // Trigger admin update notification WITH SOUND
+                window.dispatchEvent(new CustomEvent('admin-data-updated'));
             }
         });
         
         // Setup password modal event listeners
         this.setupPasswordModalListeners();
+        
+        // Setup AR button
+        const arButton = document.getElementById('arExperienceBtn');
+        if (arButton) {
+            arButton.addEventListener('click', () => {
+                this.showARExperience();
+            });
+        }
+        
+        // Setup voice command button
+        const voiceCommandBtn = document.getElementById('voiceCommandBtn');
+        if (voiceCommandBtn) {
+            voiceCommandBtn.addEventListener('click', () => {
+                this.showVoiceCommands();
+            });
+        }
+    }
+    
+    // PERUBAHAN 1: Setup sync controls toggle
+    setupSyncControlsToggle() {
+        const syncToggleBtn = document.getElementById('syncControlsToggle');
+        const syncControls = document.getElementById('syncControls');
+        
+        if (syncToggleBtn && syncControls) {
+            // Default: sync controls ditampilkan
+            syncControls.classList.remove('hidden');
+            syncToggleBtn.classList.add('active');
+            
+            syncToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                syncControls.classList.toggle('hidden');
+                syncToggleBtn.classList.toggle('active');
+                
+                // Ganti icon eye/open eye
+                const icon = syncToggleBtn.querySelector('i');
+                if (syncControls.classList.contains('hidden')) {
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    icon.className = 'fas fa-eye';
+                }
+            });
+            
+            // Close sync controls when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!syncControls.contains(e.target) && !syncToggleBtn.contains(e.target)) {
+                    syncControls.classList.remove('hidden');
+                    syncToggleBtn.classList.add('active');
+                    syncToggleBtn.querySelector('i').className = 'fas fa-eye';
+                }
+            });
+            
+            // Close sync controls with ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    syncControls.classList.remove('hidden');
+                    syncToggleBtn.classList.add('active');
+                    syncToggleBtn.querySelector('i').className = 'fas fa-eye';
+                }
+            });
+        }
+    }
+    
+    showARExperience() {
+        // Delegate to AR system
+        if (window.arExperience) {
+            window.arExperience.showARExperience();
+        }
+    }
+    
+    showVoiceCommands() {
+        // Delegate to voice command system
+        if (window.voiceCommandSystem) {
+            window.voiceCommandSystem.showVoiceCommandHelp();
+        }
     }
     
     setupPasswordModalListeners() {
@@ -2384,15 +3186,6 @@ class TabunganApp {
                 break;
             case 'kartu':
                 this.showKartuModal();
-                break;
-            case 'total_simpanan':
-                this.showDetailSimpanan();
-                break;
-            case 'pinjaman_aktif':
-                this.showDetailPinjaman();
-                break;
-            case 'shu_estimasi':
-                this.showDetailSHU();
                 break;
         }
     }
@@ -2781,6 +3574,14 @@ class TabunganApp {
             this.closeModal();
             this.showToast('Profil berhasil diperbarui!', 'success');
             
+            // Show notification (tanpa sound)
+            window.pushNotificationSystem.showNotification(
+                'Profil Diperbarui',
+                'Perubahan pada profil Anda telah disimpan.',
+                'info',
+                false // NO SOUND
+            );
+            
         } catch (error) {
             console.error('Error saving profile:', error);
             this.showToast('Gagal menyimpan perubahan', 'error');
@@ -2790,15 +3591,6 @@ class TabunganApp {
     validatePhone(phone) {
         const phoneRegex = /^[0-9]{10,15}$/;
         return phoneRegex.test(phone.replace(/^\+?62/, ''));
-    }
-    
-    validateURL(url) {
-        try {
-            new URL(url);
-            return true;
-        } catch {
-            return false;
-        }
     }
     
     saveToLocalStorage() {
@@ -3143,6 +3935,14 @@ class TabunganApp {
         setTimeout(() => {
             this.showModal('Konfirmasi Pengajuan Setoran', confirmHtml);
         }, 500);
+        
+        // Show notification (tanpa sound)
+        window.pushNotificationSystem.showNotification(
+            'Pengajuan Setoran',
+            'Pengajuan setoran Anda telah dikirim ke admin.',
+            'info',
+            false // NO SOUND
+        );
     }
     
     // ===== PINJAM MODAL =====
@@ -3292,6 +4092,14 @@ class TabunganApp {
         setTimeout(() => {
             this.showModal('Konfirmasi Pengajuan Pinjaman', confirmHtml);
         }, 500);
+        
+        // Show notification (tanpa sound)
+        window.pushNotificationSystem.showNotification(
+            'Pengajuan Pinjaman',
+            'Pengajuan pinjaman Anda telah dikirim ke admin.',
+            'info',
+            false // NO SOUND
+        );
     }
     
     savePengajuanHistory(pengajuan) {
@@ -3442,37 +4250,20 @@ class TabunganApp {
                         </span>
                     </div>
                     
-                    <!-- Info Anggota -->
-                    <div style="display: flex; gap: 20px; margin-bottom: 25px; align-items: center;">
-                        <img src="${completeData.foto}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid white;">
-                        <div style="flex: 1;">
-                            <h3 style="margin: 0 0 10px 0; font-size: 1.3rem;">${completeData.nama}</h3>
-                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.9rem;">
-                                <div>
-                                    <div style="opacity: 0.8;">NIA</div>
-                                    <div style="font-weight: 500;">${completeData.nia || completeData.id || '-'}</div>
-                                </div>
-                                <div>
-                                    <div style="opacity: 0.8;">Posisi</div>
-                                    <div style="font-weight: 500;">${completeData.posisi || 'Anggota'}</div>
-                                </div>
-                                <div>
-                                    <div style="opacity: 0.8;">Jenis Kelamin</div>
-                                    <div style="font-weight: 500;">${completeData.jenisKelamin || '-'}</div>
-                                </div>
-                                <div>
-                                    <div style="opacity: 0.8;">Agama</div>
-                                    <div style="font-weight: 500;">${completeData.agama || '-'}</div>
-                                </div>
-                                <div>
-                                    <div style="opacity: 0.8;">NIK KTP</div>
-                                    <div style="font-weight: 500;">${completeData.nik || completeData.nikKtp || '-'}</div>
-                                </div>
-                                <div>
-                                    <div style="opacity: 0.8;">Status</div>
-                                    <div style="font-weight: 500;">${completeData.status || completeData.statusAktif || 'Aktif'}</div>
-                                </div>
-                            </div>
+                    <!-- Info Anggota - FOTO DI ATAS TEKS NAMA -->
+                    <div class="kartu-info">
+                        <div class="kartu-photo">
+                            <img src="${completeData.foto}" 
+                                 onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">
+                        </div>
+                        <div class="kartu-details">
+                            <h4>${completeData.nama}</h4>
+                            <p><i class="fas fa-id-card"></i> NIA: ${completeData.nia || completeData.id || '-'}</p>
+                            <p><i class="fas fa-briefcase"></i> Posisi: ${completeData.posisi || 'Anggota'}</p>
+                            <p><i class="fas fa-venus-mars"></i> Jenis Kelamin: ${completeData.jenisKelamin || '-'}</p>
+                            <p><i class="fas fa-pray"></i> Agama: ${completeData.agama || '-'}</p>
+                            <p><i class="fas fa-address-card"></i> NIK KTP: ${completeData.nik || completeData.nikKtp || '-'}</p>
+                            <p><i class="fas fa-check-circle"></i> Status: ${completeData.status || completeData.statusAktif || 'Aktif'}</p>
                         </div>
                     </div>
                     
@@ -3657,155 +4448,6 @@ class TabunganApp {
         }
     }
     
-    // ===== DETAIL SIMPANAN =====
-    showDetailSimpanan() {
-        const completeData = this.getCompleteUserData();
-        
-        const html = `
-            <div style="padding: 10px 0;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 32px; font-weight: bold; color: #1a5f23;">
-                        ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}
-                    </div>
-                    <div style="color: #666; font-size: 14px;">Total Simpanan</div>
-                </div>
-                
-                <div class="financial-details">
-                    <div class="financial-item">
-                        <span class="financial-label">Simpanan Pokok</span>
-                        <span class="financial-value">${AdminDataExtractor.formatRupiah(completeData.simpananPokok || 0)}</span>
-                    </div>
-                    <div class="financial-item">
-                        <span class="financial-label">Simpanan Wajib</span>
-                        <span class="financial-value">${AdminDataExtractor.formatRupiah(completeData.simpananWajib || 0)}</span>
-                    </div>
-                    <div class="financial-item">
-                        <span class="financial-label">Simpanan Sukarela</span>
-                        <span class="financial-value">${AdminDataExtractor.formatRupiah(completeData.simpananSukarela || 0)}</span>
-                    </div>
-                    <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
-                        <span class="financial-label" style="font-weight: 600;">TOTAL SIMPANAN</span>
-                        <span class="financial-value" style="font-size: 1.2rem; color: #1a5f23;">${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}</span>
-                    </div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" class="modal-btn primary" id="closeSimpananBtn" style="width: 100%;">
-                        <i class="fas fa-times"></i> Tutup
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        this.showModal('Detail Simpanan', html);
-        
-        document.getElementById('closeSimpananBtn').addEventListener('click', () => {
-            this.closeModal();
-        });
-    }
-    
-    // ===== DETAIL PINJAMAN =====
-    showDetailPinjaman() {
-        const completeData = this.getCompleteUserData();
-        const pinjamanAktif = completeData.pinjamanAktif || [];
-        const totalPinjaman = completeData.totalPinjaman || 0;
-        
-        let pinjamanList = '';
-        if (pinjamanAktif.length > 0) {
-            pinjamanList = pinjamanAktif.map(p => `
-                <div class="financial-item">
-                    <span class="financial-label">${p.jenis || 'Pinjaman'}</span>
-                    <span class="financial-value">${AdminDataExtractor.formatRupiah(p.jumlah || 0)}</span>
-                </div>
-            `).join('');
-        } else {
-            pinjamanList = '<div style="text-align: center; padding: 20px; color: #666;">Tidak ada pinjaman aktif</div>';
-        }
-        
-        const html = `
-            <div style="padding: 10px 0;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 32px; font-weight: bold; color: #1a5f23;">
-                        ${AdminDataExtractor.formatRupiah(totalPinjaman)}
-                    </div>
-                    <div style="color: #666; font-size: 14px;">Total Pinjaman</div>
-                </div>
-                
-                <div class="financial-details">
-                    ${pinjamanList}
-                    <div class="financial-item" style="border-top: 2px solid #1a5f23; padding-top: 15px; margin-top: 10px;">
-                        <span class="financial-label" style="font-weight: 600;">TOTAL PINJAMAN</span>
-                        <span class="financial-value" style="font-size: 1.2rem; color: #1a5f23;">${AdminDataExtractor.formatRupiah(totalPinjaman)}</span>
-                    </div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" class="modal-btn primary" id="closePinjamanBtn" style="width: 100%;">
-                        <i class="fas fa-times"></i> Tutup
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        this.showModal('Detail Pinjaman', html);
-        
-        document.getElementById('closePinjamanBtn').addEventListener('click', () => {
-            this.closeModal();
-        });
-    }
-    
-    // ===== DETAIL SHU =====
-    showDetailSHU() {
-        const completeData = this.getCompleteUserData();
-        const shuEstimasi = completeData.shuEstimasi || 0;
-        
-        const html = `
-            <div style="padding: 10px 0;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 32px; font-weight: bold; color: #1a5f23;">
-                        ${AdminDataExtractor.formatRupiah(shuEstimasi)}
-                    </div>
-                    <div style="color: #666; font-size: 14px;">Estimasi SHU</div>
-                </div>
-                
-                <div class="financial-details">
-                    <div class="financial-item">
-                        <span class="financial-label">Status Perhitungan</span>
-                        <span class="financial-value">${completeData.shuStatus || 'Belum ada perhitungan'}</span>
-                    </div>
-                    <div class="financial-item">
-                        <span class="financial-label">Periode</span>
-                        <span class="financial-value">Tahun ${new Date().getFullYear()}</span>
-                    </div>
-                    <div class="financial-item">
-                        <span class="financial-label">Update Terakhir</span>
-                        <span class="financial-value">${new Date(completeData.lastUpdated).toLocaleDateString('id-ID')}</span>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 10px;">
-                    <p style="color: #1a5f23; font-weight: 500; margin-bottom: 10px;">💡 Informasi SHU</p>
-                    <p style="color: #666; font-size: 0.9rem;">
-                        SHU (Sisa Hasil Usaha) adalah keuntungan koperasi yang akan dibagikan kepada anggota 
-                        berdasarkan partisipasi modal dan transaksi. Perhitungan final akan dilakukan di akhir tahun.
-                    </p>
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" class="modal-btn primary" id="closeSHUBtn" style="width: 100%;">
-                        <i class="fas fa-times"></i> Tutup
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        this.showModal('Detail SHU Estimasi', html);
-        
-        document.getElementById('closeSHUBtn').addEventListener('click', () => {
-            this.closeModal();
-        });
-    }
-    
     // ===== SYNC FUNCTIONS =====
     forceSync() {
         if (this.isSyncing) return;
@@ -3823,6 +4465,14 @@ class TabunganApp {
             this.loadData();
             this.showToast('Data berhasil disinkronkan!', 'success');
             this.updateSyncButton('success');
+            
+            // Show notification (tanpa sound)
+            window.pushNotificationSystem.showNotification(
+                'Sinkronisasi Berhasil',
+                'Data keuangan telah diperbarui dari server.',
+                'success',
+                false // NO SOUND
+            );
             
             setTimeout(() => {
                 this.updateSyncButton('normal');
@@ -3863,6 +4513,9 @@ class TabunganApp {
         if (oldData !== newData) {
             console.log('🔄 Data diperbarui dari admin');
             this.showToast('Data diperbarui dari admin', 'info');
+            
+            // Trigger admin update event WITH SOUND
+            window.dispatchEvent(new CustomEvent('admin-data-updated'));
         }
     }
     
@@ -3939,10 +4592,18 @@ class TabunganApp {
         
         this.closePasswordModal();
         this.showToast('Password berhasil diubah', 'success');
+        
+        // Show notification (tanpa sound)
+        window.pushNotificationSystem.showNotification(
+            'Password Diubah',
+            'Password Anda telah berhasil diubah.',
+            'success',
+            false // NO SOUND
+        );
     }
 }
 
-// ===== HOLOGRAM STATIC SYSTEM =====
+// ===== HOLOGRAM STATIC SYSTEM (DIPERTAHANKAN SEPERTI SEMULA) =====
 class HologramStaticSystem {
     constructor() {
         this.currentUser = null;
@@ -3954,11 +4615,8 @@ class HologramStaticSystem {
     init() {
         console.log('🌟 Initializing Hologram Static Card System...');
         
-        // 1. HAPUS KARTU TIDAK DIPERLUKAN
-        this.removeUnwantedCards();
-        
-        // 2. RESET DATA DEFAULT KE 0
-        this.resetToZero();
+        // Reset data default
+        this.resetData();
         
         // Get current user
         try {
@@ -3979,29 +4637,17 @@ class HologramStaticSystem {
         console.log('✅ Hologram Static Card System Ready');
     }
     
-    removeUnwantedCards() {
-        // Hapus kartu DATA MENU SECTION
-        const dataMenuSection = document.getElementById('dataMenuSection');
-        if (dataMenuSection) {
-            dataMenuSection.style.display = 'none';
-            console.log('✅ Kartu tidak diinginkan telah dihapus');
-        }
-    }
-    
-    resetToZero() {
+    resetData() {
         // Reset variabel internal
         this.data = {
             totalSimpanan: 0,
             totalPinjaman: 0,
             shuEstimasi: 0,
-            statusAnggota: 'Menunggu data',
+            statusAnggota: 'Aktif',
             lastUpdated: new Date().toISOString()
         };
         
-        // Update UI dengan nilai 0
-        this.updateUI();
-        
-        console.log('🔄 Data direset ke 0');
+        console.log('🔄 Data hologram direset');
     }
     
     async loadData() {
@@ -4016,7 +4662,7 @@ class HologramStaticSystem {
                     totalSimpanan: 0,
                     totalPinjaman: 0,
                     shuEstimasi: 0,
-                    statusAnggota: 'Data kosong',
+                    statusAnggota: 'Aktif',
                     lastUpdated: new Date().toISOString()
                 };
                 this.updateUI();
@@ -4042,7 +4688,7 @@ class HologramStaticSystem {
             let totalSimpanan = 0;
             let totalPinjaman = 0;
             let shuEstimasi = 0;
-            let statusAnggota = 'Memuat...';
+            let statusAnggota = 'Aktif';
             
             if (userData) {
                 totalSimpanan = this.calculateTotalSimpanan(userData);
@@ -4164,12 +4810,12 @@ class HologramStaticSystem {
     }
     
     showFallbackData() {
-        // RESET semua ke 0
+        // Reset semua ke 0
         this.data = {
             totalSimpanan: 0,
             totalPinjaman: 0,
             shuEstimasi: 0,
-            statusAnggota: 'Belum diinisialisasi',
+            statusAnggota: 'Aktif',
             lastUpdated: new Date().toISOString()
         };
         
@@ -4283,7 +4929,7 @@ class HologramStaticSystem {
                             <i class="fas fa-user-circle"></i>
                             Informasi Anggota
                         </div>
-                        <div class="hologram-value">${this.currentUser?.name || 'Anggota Koperasi'}</div>
+                        <div class="hologram-value">${this.currentUser?.name || 'Anggota Koperasi Asmara Tani'}</div>
                         <div style="font-size: 0.9rem; color: #666; margin-top: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                             <span><i class="fas fa-id-card"></i> ${userData?.nia || userData?.id || 'N/A'}</span>
                             <span><i class="fas fa-briefcase"></i> ${userData?.posisi || 'Anggota'}</span>
@@ -4498,61 +5144,18 @@ class HologramStaticSystem {
             `);
             printWindow.document.close();
             
-            // Show notification
-            this.showNotification('Membuka jendela cetak...', 'info');
+            // Show notification (tanpa sound)
+            window.pushNotificationSystem.showNotification('Mencetak Data', 'Membuka jendela cetak...', 'info', false);
             
         } catch (error) {
             console.error('Error printing:', error);
-            this.showNotification('Gagal mencetak. Silakan coba lagi.', 'error');
+            window.app.showToast('Gagal mencetak. Silakan coba lagi.', 'error');
         }
     }
     
     showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = 'hologram-notification';
-        notification.innerHTML = `
-            <i class="fas ${type === 'info' ? 'fa-info-circle' : type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-            <span>${message}</span>
-        `;
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'info' ? '#2196F3' : type === 'success' ? '#4CAF50' : '#f44336'};
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 100000;
-            animation: hologramSlideIn 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'hologramSlideOut 0.3s ease forwards';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-        
-        // Add animation styles
-        if (!document.querySelector('#hologram-notification-styles')) {
-            const style = document.createElement('style');
-            style.id = 'hologram-notification-styles';
-            style.textContent = `
-                @keyframes hologramSlideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes hologramSlideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
+        if (window.pushNotificationSystem) {
+            window.pushNotificationSystem.showNotification('Hologram System', message, type, false);
         }
     }
     
@@ -4586,249 +5189,154 @@ class HologramStaticSystem {
     }
 }
 
-// ===== ENHANCED SYNC SYSTEM =====
-class EnhancedSyncSystem {
-    constructor() {
-        this.userEmail = null;
-        this.userName = null;
-        this.isSyncing = false;
-        this.init();
-    }
-    
-    init() {
-        console.log('🔧 Initializing Enhanced Sync System...');
-        
-        // Get current user
-        const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user'));
-        if (!currentUser) {
-            console.error('❌ No current user found');
-            return;
-        }
-        
-        this.userEmail = currentUser.email;
-        this.userName = currentUser.name || currentUser.email;
-        
-        console.log('👤 User identified:', this.userEmail);
-        
-        // Setup UI elements
-        this.setupUI();
-        
-        // Setup listeners
-        this.setupListeners();
-        
-        // Initial sync
-        setTimeout(() => this.checkForUpdates(), 1000);
-        
-        // Periodic sync every 5 seconds
-        setInterval(() => this.checkForUpdates(), 5000);
-        
-        console.log('✅ Enhanced Sync System Ready');
-    }
-    
-    setupUI() {
-        // Update sync status text
-        const syncStatusText = document.getElementById('syncStatusText');
-        if (syncStatusText) {
-            syncStatusText.textContent = 'Aktif';
-            syncStatusText.style.color = '#4CAF50';
-        }
-        
-        // Show online indicator
-        const onlineIndicator = document.getElementById('onlineIndicator');
-        if (onlineIndicator) {
-            onlineIndicator.style.display = 'flex';
-        }
-    }
-    
-    setupListeners() {
-        // Storage event listener
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'koperasi_anggota' || e.key === 'koperasiData') {
-                console.log('📦 Storage Event:', e.key);
-                this.checkForUpdates();
-            }
-        });
-        
-        // Page visibility
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                console.log('👁️ Page visible, checking updates');
-                this.checkForUpdates();
-            }
-        });
-    }
-    
-    checkForUpdates() {
-        if (this.isSyncing) return;
-        
-        this.isSyncing = true;
-        console.log('🔍 Checking for updates...');
-        
-        // Check admin updates
-        const hasAdminUpdates = this.checkAdminUpdates();
-        
-        // Check anggota updates
-        const hasAnggotaUpdates = this.checkAnggotaUpdates();
-        
-        if (hasAdminUpdates || hasAnggotaUpdates) {
-            this.updateSyncIndicator('success');
-            this.showNotification('Data diperbarui', 'success');
-        }
-        
-        this.isSyncing = false;
-    }
-    
-    checkAdminUpdates() {
+// ===== DATA EXTRACTOR DARI DASHBOARD ADMIN (DIPERTAHANKAN SEPERTI SEMULA) =====
+class AdminDataExtractor {
+    static extractDataForUser(email) {
         try {
+            // 1. Ambil data dari koperasi_anggota (Dashboard Admin)
+            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            const adminData = allAnggota.find(a => a.email === email);
+            
+            // 2. Ambil data dari koperasiData (backup)
             const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
             const adminUpdates = koperasiData.adminUpdates || {};
+            const userUpdate = adminUpdates[email];
             
-            if (adminUpdates[this.userEmail]) {
-                console.log('📥 Admin update found');
-                this.processAdminUpdate(adminUpdates[this.userEmail]);
+            // 3. Gabungkan data dari semua sumber
+            let userData = {
+                email: email,
+                nama: 'Anggota Koperasi Asmara Tani',
+                foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                status: 'Aktif',
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // 4. Ekstrak data dari format Dashboard Admin
+            if (adminData) {
+                // Data personal
+                userData.nama = adminData.nama || adminData.name || userData.nama;
+                userData.foto = adminData.foto || userData.foto;
+                userData.status = adminData.statusAktif || adminData.status || userData.status;
+                userData.nia = adminData.nia || adminData.id || '';
+                userData.alamat = adminData.alamat || '';
+                userData.telepon = adminData.whatsapp || adminData.telepon || '';
+                userData.posisi = adminData.posisi || 'Anggota';
+                userData.tanggalGabung = adminData.tanggal_bergabung || adminData.tanggal_daftar || '';
+                userData.jenisKelamin = adminData.jenisKelamin || '';
+                userData.agama = adminData.agama || '';
+                userData.nik = adminData.nik || adminData.nikKtp || '';
                 
-                // Clear update
-                delete adminUpdates[this.userEmail];
-                koperasiData.adminUpdates = adminUpdates;
-                localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+                // Data keuangan (format variasi Dashboard Admin)
+                userData.simpananPokok = this.extractNumber(adminData.simpananPokok) || 
+                                         this.extractNumber(adminData.simpanan?.pokok?.nominal) || 0;
                 
-                return true;
+                userData.simpananWajib = this.extractNumber(adminData.simpananWajib) || 
+                                        this.extractNumber(adminData.simpanan?.wajib?.nominal) || 0;
+                
+                userData.simpananSukarela = this.extractNumber(adminData.simpananSukarela) || 
+                                           this.extractNumber(adminData.simpanan?.sukarela?.nominal) || 0;
+                
+                userData.totalSimpanan = this.extractNumber(adminData.totalSimpanan) || 
+                                        this.extractNumber(adminData.simpanan?.total) || 
+                                        (userData.simpananPokok + userData.simpananWajib + userData.simpananSukarela);
+                
+                userData.totalPinjaman = this.extractNumber(adminData.totalPinjaman) || 
+                                        this.extractNumber(adminData.pinjaman?.total) || 0;
+                
+                userData.shuEstimasi = this.extractNumber(adminData.shuEstimasi) || 
+                                      this.extractNumber(adminData.shu?.estimasi) || 
+                                      Math.round(userData.totalSimpanan * 0.2);
+                
+                // Data pinjaman detail
+                userData.pinjamanAktif = adminData.pinjaman?.aktif || [];
+                
+                // Data riwayat
+                userData.riwayatTransaksi = adminData.riwayatTransaksi || [];
+                
+                userData.lastUpdated = adminData.lastUpdated || userData.lastUpdated;
+                userData.lastUpdatedBy = adminData.lastUpdatedBy || 'admin';
             }
-            return false;
+            
+            // 5. Tambahkan update dari adminUpdates
+            if (userUpdate && userUpdate.personal) {
+                Object.assign(userData, userUpdate.personal);
+            }
+            
+            // 6. Tambahkan update simpanan dari admin
+            if (userUpdate && userUpdate.simpanan) {
+                Object.assign(userData, userUpdate.simpanan);
+            }
+            
+            console.log('📊 Data extracted from Admin:', userData);
+            return userData;
             
         } catch (error) {
-            console.error('❌ Error checking admin updates:', error);
-            return false;
+            console.error('❌ Error extracting admin data:', error);
+            return null;
         }
     }
     
-    processAdminUpdate(updateData) {
-        try {
-            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-            const userIndex = allAnggota.findIndex(a => a.email === this.userEmail);
-            
-            if (userIndex === -1) return false;
-            
-            let userData = allAnggota[userIndex];
-            
-            // Apply updates
-            if (updateData.personal) {
-                userData = { ...userData, ...updateData.personal };
-            }
-            
-            if (updateData.simpanan) {
-                if (!userData.simpanan) {
-                    userData.simpanan = {
-                        pokok: { nominal: 0, status: 'belum lunas' },
-                        wajib: { nominal: 0, status: 'belum aktif' },
-                        sukarela: { nominal: 0, status: 'tersedia' },
-                        total: 0
-                    };
-                }
-                
-                Object.keys(updateData.simpanan).forEach(key => {
-                    if (userData.simpanan[key]) {
-                        userData.simpanan[key] = {
-                            ...userData.simpanan[key],
-                            ...updateData.simpanan[key]
-                        };
-                    }
-                });
-                
-                userData.simpanan.total = 0;
-            }
-            
-            userData.lastUpdated = new Date().toISOString();
-            userData.lastUpdatedBy = 'admin';
-            
-            allAnggota[userIndex] = userData;
-            localStorage.setItem('koperasi_anggota', JSON.stringify(allAnggota));
-            
-            console.log('✅ Admin update processed');
-            
-            // Trigger refresh
-            this.triggerRefresh();
-            
-            return true;
-            
-        } catch (error) {
-            console.error('❌ Error processing admin update:', error);
-            return false;
+    static extractNumber(value) {
+        if (!value && value !== 0) return 0;
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+            // Hapus karakter non-digit
+            const numStr = value.replace(/[^\d]/g, '');
+            return parseInt(numStr) || 0;
         }
+        return 0;
     }
     
-    checkAnggotaUpdates() {
-        try {
-            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-            const userData = allAnggota.find(a => a.email === this.userEmail);
-            
-            if (userData) {
-                // Just trigger refresh if data exists
-                this.triggerRefresh();
-                return true;
-            }
-            return false;
-            
-        } catch (error) {
-            console.error('❌ Error checking anggota updates:', error);
-            return false;
-        }
+    static formatRupiah(amount) {
+        if (!amount && amount !== 0) return 'Rp 0';
+        return 'Rp ' + amount.toLocaleString('id-ID');
+    }
+}
+
+// ===== FUNGSI TAMBAHAN UNTUK UPLOAD FOTO (DIPERTAHANKAN SEPERTI SEMULA) =====
+function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Validasi ukuran file (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        window.app.showToast('Ukuran file maksimal 2MB', 'error');
+        return;
     }
     
-    triggerRefresh() {
-        // Dispatch event for main app
-        window.dispatchEvent(new CustomEvent('sync-data-updated', {
-            detail: { timestamp: new Date().toISOString() }
-        }));
+    // Validasi tipe file
+    if (!file.type.match('image.*')) {
+        window.app.showToast('Hanya file gambar yang diizinkan', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.getElementById('currentPhoto');
+        if (img) img.src = e.target.result;
         
-        // Update UI time
-        this.updateLastSyncTime();
-    }
-    
-    updateSyncIndicator(state) {
-        const indicator = document.getElementById('dataSyncIndicator');
-        if (!indicator) return;
+        const fotoInput = document.getElementById('editFoto');
+        if (fotoInput) fotoInput.value = e.target.result;
         
-        indicator.className = 'sync-indicator';
+        // Simpan ke localStorage sementara
+        localStorage.setItem('temp_profile_photo', e.target.result);
         
-        switch(state) {
-            case 'success':
-                indicator.classList.add('success');
-                break;
-                
-            case 'warning':
-                indicator.classList.add('warning');
-                break;
-                
-            case 'error':
-                indicator.classList.add('error');
-                break;
-        }
-    }
+        window.app.showToast('Foto berhasil diunggah', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function resetPhoto() {
+    const defaultPhoto = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
     
-    updateLastSyncTime() {
-        const timeElement = document.getElementById('lastSyncTime');
-        if (timeElement) {
-            const now = new Date();
-            timeElement.textContent = `Terakhir sync: ${now.toLocaleTimeString('id-ID')}`;
-        }
-    }
+    const img = document.getElementById('currentPhoto');
+    if (img) img.src = defaultPhoto;
     
-    showNotification(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        if (toast) {
-            const toastMessage = document.getElementById('toastMessage');
-            if (toastMessage) {
-                toastMessage.textContent = message;
-            }
-            
-            toast.className = `toast ${type} show`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-    }
+    const fotoInput = document.getElementById('editFoto');
+    if (fotoInput) fotoInput.value = defaultPhoto;
+    
+    localStorage.removeItem('temp_profile_photo');
+    window.app.showToast('Foto direset ke default', 'info');
 }
 
 // ===== INISIALISASI APLIKASI =====
@@ -4838,11 +5346,6 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         // Inisialisasi aplikasi utama
         window.app = new TabunganApp();
-        
-        // Setup enhanced sync system
-        setTimeout(() => {
-            window.enhancedSync = new EnhancedSyncSystem();
-        }, 1500);
         
         console.log('✅ Aplikasi berhasil dimulai!');
         
