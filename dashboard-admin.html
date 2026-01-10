@@ -8,6 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
+    
     <style>
         /* SEMUA CSS DARI SEBELUMNYA TETAP SAMA */
         :root {
@@ -3202,6 +3206,30 @@
         </div>
     </div>
 
+    <!-- FIREBASE CONFIGURATION -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCfvnFflFgcDejLnq8nywi5giXqwNy3yuU",
+            authDomain: "koperasi-asmara-tani.firebaseapp.com",
+            projectId: "koperasi-asmara-tani",
+            storageBucket: "koperasi-asmara-tani.firebasestorage.app",
+            messagingSenderId: "1025760764894",
+            appId: "1:1025760764894:web:7f0e6621d50cddb1adf34f",
+            measurementId: "G-P0H3ZX4EFK"
+        };
+
+        // Initialize Firebase
+        let db;
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log("✅ Firebase initialized successfully");
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+        }
+    </script>
+
 <script>
 // ===== VARIABEL GLOBAL =====
 let anggotaData = [];
@@ -3213,6 +3241,134 @@ let shuData = [];
 let currentEditingId = null;
 let currentEditingType = null;
 let financeChart = null;
+let isFirebaseInitialized = false;
+
+// ===== FIREBASE FUNCTIONS =====
+async function initializeFirebase() {
+    if (!db) {
+        console.error("Firebase not initialized");
+        showNotification("Firebase belum diinisialisasi", "error");
+        return false;
+    }
+    
+    try {
+        // Test connection
+        const test = await db.collection('anggota').limit(1).get();
+        isFirebaseInitialized = true;
+        console.log("✅ Firebase connected successfully");
+        showNotification("Terhubung ke Firebase", "success");
+        return true;
+    } catch (error) {
+        console.error("Firebase connection error:", error);
+        showNotification("Gagal terhubung ke Firebase", "error");
+        return false;
+    }
+}
+
+async function loadAnggotaFromFirebase() {
+    if (!db || !isFirebaseInitialized) return;
+    
+    try {
+        const snapshot = await db.collection('anggota').get();
+        anggotaData = [];
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            anggotaData.push({
+                id: doc.id,
+                ...data
+            });
+        });
+        
+        console.log(`✅ Loaded ${anggotaData.length} anggota from Firebase`);
+        return anggotaData;
+    } catch (error) {
+        console.error("Error loading anggota from Firebase:", error);
+        showNotification("Gagal memuat data anggota dari Firebase", "error");
+        return [];
+    }
+}
+
+async function saveAnggotaToFirebase(memberData) {
+    if (!db || !isFirebaseInitialized) return false;
+    
+    try {
+        const memberId = memberData.id || `NIA-${Date.now()}`;
+        const qrUrl = `https://qr-code-hybrid.vercel.app/qr-code-hybrid.html?id=${memberId}`;
+        
+        const dataToSave = {
+            ...memberData,
+            qr_url: qrUrl,
+            last_update: new Date().toLocaleString('id-ID'),
+            updated_at: new Date().toISOString()
+        };
+        
+        await db.collection('anggota').doc(memberId).set(dataToSave, { merge: true });
+        
+        console.log(`✅ Anggota ${memberId} saved to Firebase`);
+        showNotification("Data anggota berhasil disimpan ke Firebase", "success");
+        return true;
+    } catch (error) {
+        console.error("Error saving anggota to Firebase:", error);
+        showNotification("Gagal menyimpan data anggota ke Firebase", "error");
+        return false;
+    }
+}
+
+async function updateAnggotaInFirebase(memberId, memberData) {
+    if (!db || !isFirebaseInitialized) return false;
+    
+    try {
+        const dataToUpdate = {
+            ...memberData,
+            last_update: new Date().toLocaleString('id-ID'),
+            updated_at: new Date().toISOString()
+        };
+        
+        await db.collection('anggota').doc(memberId).set(dataToUpdate, { merge: true });
+        
+        console.log(`✅ Anggota ${memberId} updated in Firebase`);
+        showNotification("Data anggota berhasil diperbarui di Firebase", "success");
+        return true;
+    } catch (error) {
+        console.error("Error updating anggota in Firebase:", error);
+        showNotification("Gagal memperbarui data anggota di Firebase", "error");
+        return false;
+    }
+}
+
+async function deleteAnggotaFromFirebase(memberId) {
+    if (!db || !isFirebaseInitialized) return false;
+    
+    try {
+        await db.collection('anggota').doc(memberId).delete();
+        console.log(`✅ Anggota ${memberId} deleted from Firebase`);
+        showNotification("Data anggota berhasil dihapus dari Firebase", "success");
+        return true;
+    } catch (error) {
+        console.error("Error deleting anggota from Firebase:", error);
+        showNotification("Gagal menghapus data anggota dari Firebase", "error");
+        return false;
+    }
+}
+
+async function getAnggotaFromFirebase(memberId) {
+    if (!db || !isFirebaseInitialized) return null;
+    
+    try {
+        const doc = await db.collection('anggota').doc(memberId).get();
+        if (doc.exists) {
+            return {
+                id: doc.id,
+                ...doc.data()
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error("Error getting anggota from Firebase:", error);
+        return null;
+    }
+}
 
 // ===== PERBAIKAN SIDEBAR NAVIGATION =====
 function fixSidebarNavigation() {
@@ -3311,57 +3467,65 @@ function fixSidebarNavigation() {
 }
 
 // ===== FUNGSI INISIALISASI =====
-function initializeSystem() {
+async function initializeSystem() {
     console.log('=== STARTING SYSTEM INITIALIZATION ===');
     
-    // 1. Fix real-time clock
+    // 1. Initialize Firebase
+    await initializeFirebase();
+    
+    // 2. Fix real-time clock
     fixRealTimeClock();
     
-    // 2. Setup sidebar navigation
+    // 3. Setup sidebar navigation
     fixSidebarNavigation();
     
-    // 3. Load data
-    loadLocalStorageData();
+    // 4. Load data from Firebase
+    if (isFirebaseInitialized) {
+        await loadAnggotaFromFirebase();
+    } else {
+        // Fallback to localStorage
+        loadLocalStorageData();
+    }
     
-    // 4. Setup semua event listeners
+    // 5. Setup semua event listeners
     setupEventListeners();
     
-    // 5. Setup modal controls
+    // 6. Setup modal controls
     setupModalControls();
     
-    // 6. Setup new member form
+    // 7. Setup new member form
     setupNewMemberForm();
     
-    // 7. Setup simpanan form
+    // 8. Setup simpanan form
     setupSimpananForm();
     
-    // 8. Setup barang form
+    // 9. Setup barang form
     setupBarangForm();
     
-    // 9. Perbaiki semua tombol aksi
+    // 10. Perbaiki semua tombol aksi
     fixAllActionButtons();
     
-    // 10. Setup sync ke Tabungan Digital (bekerja di belakang layar)
+    // 11. Setup sync ke Tabungan Digital (bekerja di belakang layar)
     setupAutoSync();
     
-    // 11. Perbaiki grafik keuangan
+    // 12. Perbaiki grafik keuangan
     fixFinanceChart();
     
-    // 12. Setup other buttons
+    // 13. Setup other buttons
     setupOtherButtons();
     
-    // 13. Load initial data
+    // 14. Load initial data
     updateDashboardStats();
     
-    // 14. Update current year
+    // 15. Update current year
     const currentYear = new Date().getFullYear();
     document.getElementById('currentYear').textContent = currentYear;
     document.getElementById('currentYearFooter').textContent = currentYear;
     
-    // 15. Check empty tables
+    // 16. Check empty tables
     checkEmptyTables();
     
-    // 16. Update waktu sinkronisasi terakhir
+    // 17. Update waktu sinkronisasi terakhir
     updateLastSyncTime();
     
     console.log('=== SYSTEM INITIALIZATION COMPLETED ===');
@@ -3530,9 +3694,23 @@ function fixAllActionButtons() {
 }
 
 // ===== FUNGSI VIEW DETAIL ANGGOTA =====
-function viewMemberDetail(memberId) {
-    const member = anggotaData.find(m => m.id === memberId);
-    if (!member) return;
+async function viewMemberDetail(memberId) {
+    let member;
+    
+    // Coba ambil dari Firebase dulu
+    if (isFirebaseInitialized) {
+        member = await getAnggotaFromFirebase(memberId);
+    }
+    
+    // Jika tidak ada di Firebase, cari di lokal
+    if (!member) {
+        member = anggotaData.find(m => m.id === memberId);
+    }
+    
+    if (!member) {
+        showNotification('Data anggota tidak ditemukan', 'error');
+        return;
+    }
     
     const detailHTML = `
         <div class="anggota-detail-section">
@@ -3561,6 +3739,12 @@ function viewMemberDetail(memberId) {
                     </p>
                     <p style="color: var(--gray); margin-bottom: 5px;">
                         <i class="fas fa-calendar-alt"></i> Bergabung: ${member.tanggalDaftar}
+                    </p>
+                    <p style="color: var(--gray); margin-bottom: 5px;">
+                        <i class="fas fa-qrcode"></i> 
+                        <a href="https://qr-code-hybrid.vercel.app/qr-code-hybrid.html?id=${member.id}" target="_blank" style="color: var(--primary); text-decoration: none;">
+                            Lihat QR Code Digital
+                        </a>
                     </p>
                 </div>
             </div>
@@ -3655,10 +3839,10 @@ function viewMemberDetail(memberId) {
             <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem; color: var(--gray);">
                 <div style="display: flex; justify-content: space-between;">
                     <div>
-                        <i class="fas fa-clock"></i> Dibuat: ${new Date(member.createdAt).toLocaleString('id-ID')}
+                        <i class="fas fa-clock"></i> Dibuat: ${new Date(member.createdAt || new Date()).toLocaleString('id-ID')}
                     </div>
                     <div>
-                        <i class="fas fa-sync-alt"></i> Terakhir update: ${new Date(member.lastUpdated).toLocaleString('id-ID')}
+                        <i class="fas fa-sync-alt"></i> Terakhir update: ${new Date(member.lastUpdated || new Date()).toLocaleString('id-ID')}
                     </div>
                 </div>
             </div>
@@ -3680,16 +3864,30 @@ function viewMemberDetail(memberId) {
 }
 
 // ===== FUNGSI EDIT ANGGOTA =====
-function editMemberNew(memberId) {
-    const member = anggotaData.find(m => m.id === memberId);
-    if (!member) return;
+async function editMemberNew(memberId) {
+    let member;
+    
+    // Coba ambil dari Firebase dulu
+    if (isFirebaseInitialized) {
+        member = await getAnggotaFromFirebase(memberId);
+    }
+    
+    // Jika tidak ada di Firebase, cari di lokal
+    if (!member) {
+        member = anggotaData.find(m => m.id === memberId);
+    }
+    
+    if (!member) {
+        showNotification('Data anggota tidak ditemukan', 'error');
+        return;
+    }
     
     // Set judul modal
     document.getElementById('memberModalTitle').textContent = 'Edit Data Anggota';
     document.getElementById('memberId').value = member.id;
     
     // Isi form dengan data anggota
-    document.getElementById('nia').value = member.nia ? member.nia.replace('NIA-', '') : '';
+    document.getElementById('nia').value = member.nia ? member.nia.replace('NIA-', '') : (member.id ? member.id.replace('NIA-', '') : '');
     document.getElementById('posisi').value = member.posisi || '';
     document.getElementById('nama').value = member.nama || '';
     
@@ -3697,6 +3895,8 @@ function editMemberNew(memberId) {
     const jenisKelaminRadio = document.querySelector(`input[name="jenisKelamin"][value="${member.jenisKelamin}"]`);
     if (jenisKelaminRadio) {
         jenisKelaminRadio.checked = true;
+    } else {
+        document.querySelector('input[name="jenisKelamin"][value="Laki-laki"]').checked = true;
     }
     
     document.getElementById('emailMember').value = member.email || '';
@@ -3714,6 +3914,8 @@ function editMemberNew(memberId) {
     const statusAktifRadio = document.querySelector(`input[name="statusAktif"][value="${member.statusAktif}"]`);
     if (statusAktifRadio) {
         statusAktifRadio.checked = true;
+    } else {
+        document.querySelector('input[name="statusAktif"][value="Aktif"]').checked = true;
     }
     
     // Set foto profil jika ada
@@ -4575,10 +4777,10 @@ function updateMinimalSimpananInfo() {
     
     switch(jenis.value) {
         case 'Pokok':
-            minimal = 0;
+            minimal = 200000;
             break;
         case 'Wajib':
-            minimal = 0;
+            minimal = 20000;
             break;
         case 'Sukarela':
             showInfo = false;
@@ -4737,32 +4939,53 @@ async function saveMemberData() {
     };
     
     // Cek apakah edit atau tambah baru
+    let success = false;
     if (memberId) {
         // EDIT anggota
         const index = anggotaData.findIndex(member => member.id === memberId);
         if (index !== -1) {
             anggotaData[index] = { ...anggotaData[index], ...memberData };
-            showNotification('Data anggota berhasil diperbarui!', 'success');
+            
+            // Update ke Firebase
+            if (isFirebaseInitialized) {
+                success = await updateAnggotaInFirebase(memberId, memberData);
+            } else {
+                // Fallback to localStorage
+                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+                success = true;
+                showNotification('Data anggota berhasil diperbarui!', 'success');
+            }
         }
     } else {
         // TAMBAH anggota baru
         anggotaData.push(memberData);
-        showNotification('Data anggota berhasil disimpan!', 'success');
+        
+        // Simpan ke Firebase
+        if (isFirebaseInitialized) {
+            success = await saveAnggotaToFirebase(memberData);
+        } else {
+            // Fallback to localStorage
+            localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+            localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+            success = true;
+            showNotification('Data anggota berhasil disimpan!', 'success');
+        }
         
         // Sync ke Tabungan Digital (bekerja di belakang layar)
-        syncToTabunganDigital(memberData);
+        if (success) {
+            syncToTabunganDigital(memberData);
+        }
     }
     
-    // Simpan ke localStorage
-    localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
-    localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+    if (success) {
+        // Update UI
+        updateDashboardStats();
+        refreshAnggotaTable();
+        checkEmptyTables();
+    }
     
-    // Update UI
-    updateDashboardStats();
-    refreshAnggotaTable();
-    checkEmptyTables();
-    
-    return true;
+    return success;
 }
 
 async function saveSimpananData() {
@@ -4794,6 +5017,17 @@ async function saveSimpananData() {
         return false;
     }
     
+    // Validasi minimal sesuai jenis
+    if (jenis.value === 'Pokok' && nominal < 200000) {
+        showNotification('Simpanan pokok minimal Rp 200.000!', 'error');
+        return false;
+    }
+    
+    if (jenis.value === 'Wajib' && nominal < 20000) {
+        showNotification('Simpanan wajib minimal Rp 20.000!', 'error');
+        return false;
+    }
+    
     // Validasi anggota
     const idAnggota = document.getElementById('idAnggotaSimpanan').value;
     if (!idAnggota) {
@@ -4822,28 +5056,34 @@ async function saveSimpananData() {
     
     // Cek apakah edit atau tambah baru
     const simpananId = document.getElementById('simpananId').value;
+    let success = false;
+    
     if (simpananId) {
         // EDIT simpanan
         const index = simpananData.findIndex(s => s.id === simpananId);
         if (index !== -1) {
             simpananData[index] = { ...simpananData[index], ...simpananDataObj };
+            success = true;
             showNotification('Data simpanan berhasil diperbarui!', 'success');
         }
     } else {
         // TAMBAH simpanan baru
         simpananData.push(simpananDataObj);
+        success = true;
         showNotification('Data simpanan berhasil disimpan!', 'success');
     }
     
     // Simpan ke localStorage
-    localStorage.setItem('simpananData', JSON.stringify(simpananData));
+    if (success) {
+        localStorage.setItem('simpananData', JSON.stringify(simpananData));
+        
+        // Update UI
+        updateDashboardStats();
+        refreshSimpananTable();
+        checkEmptyTables();
+    }
     
-    // Update UI
-    updateDashboardStats();
-    refreshSimpananTable();
-    checkEmptyTables();
-    
-    return true;
+    return success;
 }
 
 async function savePinjamanData() {
@@ -4892,25 +5132,32 @@ async function savePinjamanData() {
     
     // Cek apakah edit atau tambah baru
     const pinjamanId = document.getElementById('pinjamanId').value;
+    let success = false;
+    
     if (pinjamanId) {
         const index = pinjamanData.findIndex(p => p.id === pinjamanId);
         if (index !== -1) {
             pinjamanData[index] = { ...pinjamanData[index], ...pinjamanDataObj };
+            success = true;
             showNotification('Data pinjaman berhasil diperbarui!', 'success');
         }
     } else {
         pinjamanData.push(pinjamanDataObj);
+        success = true;
         showNotification('Data pinjaman berhasil disimpan!', 'success');
     }
     
-    localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
+    if (success) {
+        localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
+        
+        updateDashboardStats();
+        refreshPinjamanTable();
+        checkEmptyTables();
+        
+        document.getElementById('addPinjamanModal').style.display = 'none';
+    }
     
-    updateDashboardStats();
-    refreshPinjamanTable();
-    checkEmptyTables();
-    
-    document.getElementById('addPinjamanModal').style.display = 'none';
-    return true;
+    return success;
 }
 
 async function saveBarangData() {
@@ -4949,24 +5196,31 @@ async function saveBarangData() {
     
     // Cek apakah edit atau tambah baru
     const barangId = document.getElementById('barangId').value;
+    let success = false;
+    
     if (barangId) {
         const index = barangData.findIndex(b => b.id === barangId);
         if (index !== -1) {
             barangData[index] = { ...barangData[index], ...barangDataObj };
+            success = true;
             showNotification('Data barang berhasil diperbarui!', 'success');
         }
     } else {
         barangData.push(barangDataObj);
+        success = true;
         showNotification('Data barang berhasil disimpan!', 'success');
     }
     
-    localStorage.setItem('barangData', JSON.stringify(barangData));
+    if (success) {
+        localStorage.setItem('barangData', JSON.stringify(barangData));
+        
+        refreshBarangTable();
+        checkEmptyTables();
+        
+        document.getElementById('unitUsahaModal').style.display = 'none';
+    }
     
-    refreshBarangTable();
-    checkEmptyTables();
-    
-    document.getElementById('unitUsahaModal').style.display = 'none';
-    return true;
+    return success;
 }
 
 // ===== FUNGSI DELETE DATA =====
@@ -5005,6 +5259,11 @@ async function confirmDeleteData() {
         case 'anggota':
             dataArray = anggotaData;
             storageKey = 'anggotaData';
+            
+            // Hapus dari Firebase juga
+            if (isFirebaseInitialized) {
+                await deleteAnggotaFromFirebase(currentEditingId);
+            }
             break;
         case 'simpanan':
             dataArray = simpananData;
