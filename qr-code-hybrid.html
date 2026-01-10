@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>E-KTP Digital Anggota</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  background:linear-gradient(180deg,#061b12,#020b07);
+  font-family:'Poppins',sans-serif;
+  display:flex;
+  justify-content:center;
+  padding:16px;
+  color:#fff;
+}
+
+/* KARTU */
+.card{
+  width:100%;
+  max-width:390px;
+  background:linear-gradient(160deg,#0f3d28,#062015);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 0 35px rgba(0,255,160,.35);
+  border:1px solid rgba(0,255,160,.35);
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  border-bottom:1px dashed rgba(255,255,255,.25);
+  padding-bottom:14px;
+}
+
+/* LOGO GLASS */
+.logo-wrap{
+  width:86px;
+  height:86px;
+  margin:0 auto 10px;
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 0 18px rgba(0,255,160,.6),
+    inset 0 0 12px rgba(255,255,255,.25);
+  transition:.4s ease;
+  animation:float 4s ease-in-out infinite;
+}
+.logo-wrap:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 28px rgba(0,255,160,.9);
+}
+.logo-wrap img{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+.header h1{
+  font-size:16px;
+  margin:0;
+  font-weight:700;
+  color:#7dffb2;
+}
+.header small{
+  font-size:11px;
+  opacity:.85;
+}
+
+/* STATUS */
+.status{
+  margin:12px auto;
+  text-align:center;
+}
+.status span{
+  padding:6px 18px;
+  border-radius:20px;
+  background:#00ff9d33;
+  color:#00ff9d;
+  font-size:12px;
+  font-weight:600;
+}
+
+/* IDENTITAS */
+.identity{
+  text-align:center;
+  margin:14px 0;
+}
+.identity h2{
+  margin:4px 0;
+  font-size:17px;
+}
+.identity p{
+  margin:0;
+  font-size:12px;
+  color:#a9ffd1;
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:16px 0;
+}
+.stat{
+  background:rgba(0,255,160,.15);
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+}
+.stat small{
+  font-size:10px;
+  opacity:.9;
+}
+.stat b{
+  display:block;
+  margin-top:6px;
+  font-size:13px;
+}
+
+/* DATA */
+.data{
+  font-size:12px;
+}
+.data div{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px dashed rgba(255,255,255,.25);
+}
+.data span{
+  color:#b6ffd9;
+}
+
+/* ACTION BUTTON */
+.actions{
+  display:flex;
+  gap:12px;
+  margin:18px 0 6px;
+}
+.actions button{
+  flex:1;
+  border:none;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(0,255,160,.2);
+  color:#00ff9d;
+  font-weight:600;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 14px rgba(0,255,160,.5);
+  transition:.3s;
+}
+.actions button:hover{
+  background:#00ff9d;
+  color:#003a24;
+  transform:translateY(-2px);
+}
+
+/* FOOTER */
+.footer{
+  margin-top:10px;
+  text-align:center;
+  font-size:10px;
+  opacity:.75;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg">
+    </div>
+    <h1>KOPERASI ASMARA TANI</h1>
+    <small>Kartu Anggota Digital (Mobile-Only)</small>
+  </div>
+
+  <div class="status">
+    <span>AKTIF</span>
+  </div>
+
+  <div class="identity">
+    <h2>Ahmad Sudrajat</h2>
+    <p>NIA : KOP-00123</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><small>Simpanan Pokok</small><b>Rp 0</b></div>
+    <div class="stat"><small>Simpanan Wajib</small><b>Rp 0</b></div>
+    <div class="stat"><small>Simpanan Sukarela</small><b>Rp 0</b></div>
+  </div>
+
+  <div class="data">
+    <div><span>Alamat</span><b>Pamijahan, Bogor</b></div>
+    <div><span>Jenis Kelamin</span><b>Laki-laki</b></div>
+    <div><span>Agama</span><b>Islam</b></div>
+    <div><span>NIK</span><b>3201xxxxxxxxxx</b></div>
+    <div><span>Email</span><b>anggota@email.com</b></div>
+    <div><span>Telepon</span><b>08xxxxxxxxxx</b></div>
+    <div><span>Tanggal Daftar</span><b>12-01-2025</b></div>
+    <div><span>Total Simpanan</span><b>Rp 0</b></div>
+    <div><span>Total Pinjaman</span><b>Rp 0</b></div>
+    <div><span>Estimasi SHU</span><b>Rp 0</b></div>
+  </div>
+
+  <div class="actions">
+    <button onclick="window.print()">Cetak</button>
+    <button onclick="alert('Export PDF terhubung ke Dashboard Admin')">Export PDF</button>
+  </div>
+
+  <div class="footer">
+    Data tersinkronisasi dari Dashboard Admin<br>
+    © Koperasi Asmara Tani 2026
+  </div>
+
+</div>
+
+</body>
+</html>
