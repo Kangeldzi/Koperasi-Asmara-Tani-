@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struk Digital Anggota - Koperasi Asmara Tani</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg">
+    
+    <style>
+        /* ================= RESET & BASE ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* ================= STRUK CONTAINER ================= */
+        .struk {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px dashed rgba(255, 255, 255, 0.45);
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.15),
+                inset 0 0 20px rgba(255, 255, 255, 0.04);
+            animation: fadeUp 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .struk::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.03) 50%,
+                transparent 70%
+            );
+            animation: shimmer 8s infinite linear;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+        }
+
+        /* ================= LOADING STATE ================= */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00f2fe;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #9ee7ff;
+            font-size: 14px;
+        }
+
+        /* ================= ERROR STATE ================= */
+        .error {
+            text-align: center;
+            padding: 30px 20px;
+            display: none;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .error h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .error p {
+            color: #ffd6d6;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .error button {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .error button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 242, 254, 0.3);
+        }
+
+        /* ================= STRUK CONTENT ================= */
+        .struk-content {
+            display: none;
+        }
+
+        /* ================= HEADER ================= */
+        .struk-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed rgba(255, 255, 255, 0.35);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .struk-header h1 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .struk-tag {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 6px 16px;
+            font-size: 12px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        /* ================= STATUS ================= */
+        .struk-status {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .status-badge {
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.8);
+            animation: glow 2s infinite alternate;
+        }
+
+        .status-aktif {
+            background: rgba(0, 255, 150, 0.15);
+            color: #00ff9d;
+            border: 2px solid rgba(0, 255, 157, 0.5);
+        }
+
+        .status-tidak-aktif {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+            border: 2px solid rgba(255, 107, 107, 0.5);
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(0, 255, 157, 0.6); }
+            to { box-shadow: 0 0 20px rgba(0, 255, 157, 0.9); }
+        }
+
+        /* ================= DATA ================= */
+        .struk-data {
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .data-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            padding-left: 10px;
+            padding-right: 10px;
+            border-radius: 8px;
+        }
+
+        .data-label {
+            color: #9ee7ff;
+            font-weight: 500;
+        }
+
+        .data-value {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        /* ================= TIMESTAMP INFO ================= */
+        .timestamp-info {
+            font-size: 11px;
+            color: #88d3ce;
+            text-align: center;
+            margin-top: 15px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .timestamp-info i {
+            margin-right: 5px;
+        }
+
+        /* ================= FOOTER ================= */
+        .struk-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(255, 255, 255, 0.35);
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .footer-message {
+            color: #9ee7ff;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .struk-copyright {
+            margin-top: 10px;
+            font-size: 11px;
+            opacity: 0.6;
+            color: #ccc;
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 480px) {
+            .struk {
+                padding: 20px;
+                max-width: 100%;
+            }
+            
+            .struk-header h1 {
+                font-size: 16px;
+            }
+            
+            .data-row {
+                font-size: 13px;
+            }
+            
+            .status-badge {
+                font-size: 13px;
+                padding: 6px 18px;
+            }
+            
+            .struk-data {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .struk {
+                padding: 15px;
+            }
+            
+            .data-row {
+                flex-direction: column;
+                gap: 5px;
+                padding: 12px 0;
+            }
+            
+            .data-value {
+                text-align: left;
+                max-width: 100%;
+            }
+        }
+
+        /* ================= PRINT STYLES ================= */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0;
+            }
+            
+            .struk {
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                border-radius: 10px !important;
+                padding: 20px !important;
+                margin: 0 !important;
+                color: #000 !important;
+                background: white !important;
+            }
+            
+            .data-label {
+                color: #000 !important;
+                font-weight: bold;
+            }
+            
+            .data-value {
+                color: #000 !important;
+            }
+            
+            .struk-header h1 {
+                background: none !important;
+                color: #000 !important;
+                -webkit-text-fill-color: #000 !important;
+            }
+            
+            .struk-tag {
+                background: #000 !important;
+                color: white !important;
+            }
+            
+            .error,
+            .loading {
+                display: none !important;
+            }
+            
+            .struk-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="struk" id="strukContainer">
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Memuat data anggota...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div class="error" id="error">
+            <div class="error-icon">⚠️</div>
+            <h3>Data Tidak Ditemukan</h3>
+            <p id="errorMessage">Struk tidak valid atau telah kedaluwarsa</p>
+            <button onclick="window.location.href='https://koperasi-asmara-tani.vercel.app'">
+                Kembali ke Beranda
+            </button>
+        </div>
+        
+        <!-- Success State (akan diisi oleh JavaScript) -->
+        <div class="struk-content" id="strukContent"></div>
+    </div>
+
+    <script>
+        // ================= KONFIGURASI =================
+        const CONFIG = {
+            APP_NAME: 'Koperasi Asmara Tani',
+            VERSION: '2.0.0',
+            DATA_SOURCE: 'localStorage',
+            CACHE_DURATION: 24 * 60 * 60 * 1000, // 24 jam
+            ENCRYPTION_KEY: 'koperasi_asmara_tani_2026',
+            MAX_RETRY_ATTEMPTS: 3
+        };
+
+        // ================= FUNGSI UTAMA =================
+        async function initStruk() {
+            try {
+                console.log('🚀 Membuka Struk Digital...');
+                
+                // Ambil parameter URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const id = urlParams.get('id');
+                const v = urlParams.get('v'); // versi/timestamp
+                const t = urlParams.get('t'); // token
+                
+                console.log('📊 Parameter URL:', { id, v, t });
+                
+                // Validasi parameter wajib
+                if (!id) {
+                    throw new Error('ID anggota tidak ditemukan dalam QR Code');
+                }
+                
+                if (!v) {
+                    throw new Error('Versi data tidak ditemukan');
+                }
+                
+                // Validasi format versi (YYYYMMDDHHMM)
+                if (v.length !== 12 && v.length !== 14) {
+                    console.warn('Format versi tidak standar:', v);
+                }
+                
+                // Validasi token jika ada
+                if (t) {
+                    const isValidToken = validateToken(id, v, t);
+                    if (!isValidToken) {
+                        console.warn('⚠️ Token tidak valid, tetap melanjutkan...');
+                    }
+                }
+                
+                // Cek cache
+                const cacheKey = `struk_cache_${id}_${v}`;
+                const cachedData = getCachedData(cacheKey);
+                
+                let data;
+                
+                if (cachedData && !isCacheExpired(cachedData.timestamp)) {
+                    // Gunakan data cache
+                    console.log('📦 Menggunakan data dari cache');
+                    data = cachedData.data;
+                } else {
+                    // Ambil data baru
+                    console.log('🔄 Mengambil data baru...');
+                    data = await fetchDataWithRetry(id, CONFIG.MAX_RETRY_ATTEMPTS);
+                    
+                    if (!data) {
+                        throw new Error('Gagal mengambil data anggota');
+                    }
+                    
+                    // Simpan ke cache
+                    cacheData(cacheKey, data);
+                    console.log('💾 Data disimpan ke cache');
+                }
+                
+                // Render struk
+                renderStruk(data, v);
+                
+                // Simpan history akses
+                saveAccessHistory(id, v, data.nama);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showError(error.message || 'Terjadi kesalahan saat memuat data struk');
+            }
+        }
+
+        // ================= FUNGSI VALIDASI TOKEN =================
+        function validateToken(id, version, token) {
+            try {
+                // Token sederhana: base64(id:version:key)
+                const expected = btoa(`${id}:${version}:${CONFIG.ENCRYPTION_KEY}`);
+                return token === expected;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // ================= FUNGSI AMBIL DATA =================
+        async function fetchDataWithRetry(id, maxAttempts) {
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    console.log(`🔍 Mencari data (percobaan ${attempt}/${maxAttempts})...`);
+                    const data = await fetchData(id);
+                    if (data) return data;
+                } catch (error) {
+                    console.warn(`Percobaan ${attempt} gagal:`, error.message);
+                    if (attempt === maxAttempts) throw error;
+                    
+                    // Tunggu sebelum retry
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                }
+            }
+            return null;
+        }
+
+        async function fetchData(id) {
+            // Coba berbagai sumber data
+            const dataSources = [
+                fetchFromLocalStorage,
+                fetchFromSessionStorage,
+                fetchFromMockData
+            ];
+            
+            for (const source of dataSources) {
+                try {
+                    const data = await source(id);
+                    if (data) {
+                        console.log(`✅ Data ditemukan dari: ${source.name}`);
+                        return data;
+                    }
+                } catch (error) {
+                    console.warn(`${source.name} gagal:`, error.message);
+                }
+            }
+            
+            throw new Error('Data tidak ditemukan di semua sumber');
+        }
+
+        // Sumber 1: LocalStorage (data dari dashboard)
+        async function fetchFromLocalStorage(id) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    try {
+                        // Cari di berbagai key localStorage
+                        const storageKeys = ['koperasi_anggota', 'tabunganDigitalUsers', 'koperasiData'];
+                        
+                        for (const key of storageKeys) {
+                            const storedData = localStorage.getItem(key);
+                            if (storedData) {
+                                const dataArray = JSON.parse(storedData);
+                                
+                                // Cari anggota dengan berbagai identifier
+                                const anggota = dataArray.find(item => 
+                                    item.id === id || 
+                                    item.nia === id || 
+                                    item.email === id ||
+                                    (item.email && item.email.includes(id)) ||
+                                    item.telepon === id ||
+                                    item.whatsapp === id
+                                );
+                                
+                                if (anggota) {
+                                    resolve(formatAnggotaData(anggota));
+                                    return;
+                                }
+                            }
+                        }
+                        reject(new Error('Data tidak ditemukan di localStorage'));
+                    } catch (error) {
+                        reject(error);
+                    }
+                }, 500);
+            });
+        }
+
+        // Sumber 2: SessionStorage
+        async function fetchFromSessionStorage(id) {
+            try {
+                const sessionData = sessionStorage.getItem(`struk_data_${id}`);
+                if (sessionData) {
+                    return JSON.parse(sessionData);
+                }
+                throw new Error('Data tidak ditemukan di sessionStorage');
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // Sumber 3: Mock data untuk testing
+        async function fetchFromMockData(id) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Data contoh untuk testing
+                    const mockData = {
+                        id: id,
+                        nama: 'Anggota Koperasi Asmara Tani',
+                        posisi: 'Anggota',
+                        jenisKelamin: 'Laki-laki',
+                        agama: 'Islam',
+                        nikKtp: '3273xxxxxxxxxxxx',
+                        email: `anggota${id}@asmara-tani.com`,
+                        telepon: '628123456789',
+                        alamat: 'Jl. Koperasi No. 123, Asmara',
+                        status: 'Aktif',
+                        simpananPokok: 500000,
+                        simpananWajib: 100000,
+                        simpananSukarela: 250000,
+                        totalSimpanan: 850000,
+                        totalPinjaman: 2000000,
+                        shuEstimasi: 170000,
+                        tanggalBergabung: '2024-01-15',
+                        foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'
+                    };
+                    resolve(formatAnggotaData(mockData));
+                }, 800);
+            });
+        }
+
+        // ================= FORMAT DATA =================
+        function formatAnggotaData(anggota) {
+            return {
+                id: anggota.id || anggota.nia || 'N/A',
+                nama: anggota.nama || anggota.name || 'Anggota Koperasi',
+                posisi: anggota.posisi || 'Anggota',
+                jenisKelamin: anggota.jenisKelamin || anggota.gender || '',
+                agama: anggota.agama || '',
+                nikKtp: anggota.nik || anggota.nikKtp || '',
+                email: anggota.email || '',
+                telepon: anggota.telepon || anggota.whatsapp || '',
+                alamat: anggota.alamat || '',
+                status: anggota.statusAktif || anggota.status || 'Aktif',
+                simpananPokok: formatRupiah(anggota.simpananPokok || 0),
+                simpananWajib: formatRupiah(anggota.simpananWajib || 0),
+                simpananSukarela: formatRupiah(anggota.simpananSukarela || 0),
+                totalSimpanan: formatRupiah(anggota.totalSimpanan || 0),
+                totalPinjaman: formatRupiah(anggota.totalPinjaman || 0),
+                shuEstimasi: formatRupiah(anggota.shuEstimasi || 0),
+                tanggalBergabung: formatDate(anggota.tanggalGabung || anggota.tanggal_daftar),
+                foto: anggota.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                lastUpdated: new Date().toISOString()
+            };
+        }
+
+        function formatRupiah(amount) {
+            if (!amount && amount !== 0) return 'Rp 0';
+            return 'Rp ' + parseInt(amount).toLocaleString('id-ID');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Tidak tersedia';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'Tidak tersedia';
+            if (timestamp.length === 14) {
+                // Format: YYYYMMDDHHMMSS
+                return `${timestamp.substring(0,4)}-${timestamp.substring(4,6)}-${timestamp.substring(6,8)} ${timestamp.substring(8,10)}:${timestamp.substring(10,12)}`;
+            } else if (timestamp.length === 12) {
+                // Format: YYYYMMDDHHMM
+                return `${timestamp.substring(0,4)}-${timestamp.substring(4,6)}-${timestamp.substring(6,8)} ${timestamp.substring(8,10)}:${timestamp.substring(10,12)}`;
+            }
+            return timestamp;
+        }
+
+        // ================= SISTEM CACHE =================
+        function getCachedData(key) {
+            try {
+                const cached = localStorage.getItem(key);
+                return cached ? JSON.parse(cached) : null;
+            } catch (e) {
+                console.warn('Gagal membaca cache:', e);
+                return null;
+            }
+        }
+
+        function cacheData(key, data) {
+            try {
+                const cacheItem = {
+                    data: data,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(key, JSON.stringify(cacheItem));
+            } catch (e) {
+                console.warn('Gagal menyimpan cache:', e);
+            }
+        }
+
+        function isCacheExpired(timestamp) {
+            return Date.now() - timestamp > CONFIG.CACHE_DURATION;
+        }
+
+        // ================= RENDER STRUK =================
+        function renderStruk(data, version) {
+            console.log('🎨 Merender struk...');
+            
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            
+            // Show content
+            const content = document.getElementById('strukContent');
+            content.style.display = 'block';
+            
+            // Format waktu update
+            const updateTime = formatTimestamp(version);
+            
+            // Hitung saldo bersih
+            const totalSimpananNum = parseInt(data.totalSimpanan.replace(/\D/g, '')) || 0;
+            const totalPinjamanNum = parseInt(data.totalPinjaman.replace(/\D/g, '')) || 0;
+            const saldoBersih = totalSimpananNum - totalPinjamanNum;
+            const saldoBersihFormatted = formatRupiah(saldoBersih);
+            
+            // Build HTML
+            content.innerHTML = `
+                <!-- Header -->
+                <div class="struk-header">
+                    <h1>${CONFIG.APP_NAME.toUpperCase()}</h1>
+                    <div class="struk-tag">#KoperasiJenius</div>
+                </div>
+                
+                <!-- Status -->
+                <div class="struk-status">
+                    <span class="status-badge ${data.status === 'Aktif' ? 'status-aktif' : 'status-tidak-aktif'}">
+                        ${data.status.toUpperCase()}
+                    </span>
+                </div>
+                
+                <!-- Data -->
+                <div class="struk-data">
+                    <div class="data-row">
+                        <span class="data-label">NIA / ID</span>
+                        <span class="data-value">${data.id}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Nama Lengkap</span>
+                        <span class="data-value">${data.nama}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Posisi</span>
+                        <span class="data-value">${data.posisi}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Jenis Kelamin</span>
+                        <span class="data-value">${data.jenisKelamin || '-'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Agama</span>
+                        <span class="data-value">${data.agama || '-'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">NIK KTP</span>
+                        <span class="data-value">${data.nikKtp || '-'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Email</span>
+                        <span class="data-value">${data.email || '-'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Telepon/WA</span>
+                        <span class="data-value">${data.telepon || '-'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Alamat</span>
+                        <span class="data-value">${data.alamat || '-'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Tanggal Bergabung</span>
+                        <span class="data-value">${data.tanggalBergabung}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Simpanan Pokok</span>
+                        <span class="data-value">${data.simpananPokok}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Simpanan Wajib</span>
+                        <span class="data-value">${data.simpananWajib}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Simpanan Sukarela</span>
+                        <span class="data-value">${data.simpananSukarela}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Total Simpanan</span>
+                        <span class="data-value" style="color: #00ff9d; font-weight: 700;">${data.totalSimpanan}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Total Pinjaman</span>
+                        <span class="data-value" style="color: ${totalPinjamanNum > 0 ? '#ff6b6b' : '#00ff9d'}; font-weight: 700;">
+                            ${data.totalPinjaman}
+                        </span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Saldo Bersih</span>
+                        <span class="data-value" style="color: ${saldoBersih >= 0 ? '#4facfe' : '#ff6b6b'}; font-weight: 700;">
+                            ${saldoBersihFormatted}
+                        </span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Estimasi SHU</span>
+                        <span class="data-value" style="color: #ffd700; font-weight: 700;">${data.shuEstimasi}</span>
+                    </div>
+                </div>
+                
+                <!-- Timestamp Info -->
+                <div class="timestamp-info">
+                    <i>🕒</i> Data diperbarui: ${updateTime}
+                </div>
+                
+                <!-- Footer -->
+                <div class="struk-footer">
+                    <div class="footer-message">
+                        Data keanggotaan ini bersifat rahasia dan hanya untuk keperluan verifikasi resmi.
+                    </div>
+                    <div class="struk-copyright">
+                        © ${CONFIG.APP_NAME} - ${new Date().getFullYear()}<br>
+                        Powered by Digital Koperasi System v${CONFIG.VERSION}
+                    </div>
+                </div>
+            `;
+            
+            // Setup interaksi
+            setupInteractions();
+            
+            console.log('✅ Struk berhasil dirender');
+        }
+
+        // ================= INTERAKSI =================
+        function setupInteractions() {
+            // Klik pada email
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('data-value')) {
+                    const text = e.target.textContent.trim();
+                    
+                    // Jika email
+                    if (text.includes('@') && text.includes('.')) {
+                        e.preventDefault();
+                        window.location.href = `mailto:${text}`;
+                        return;
+                    }
+                    
+                    // Jika nomor telepon
+                    const phoneRegex = /^0[0-9]{9,}$/;
+                    const cleanText = text.replace(/\D/g, '');
+                    if (phoneRegex.test('0' + cleanText.substring(2)) || phoneRegex.test(text)) {
+                        e.preventDefault();
+                        const whatsappNum = cleanText.startsWith('0') ? '62' + cleanText.substring(1) : cleanText;
+                        window.location.href = `https://wa.me/${whatsappNum}`;
+                        return;
+                    }
+                }
+            });
+            
+            // Double click untuk copy
+            document.addEventListener('dblclick', function(e) {
+                if (e.target.classList.contains('data-value')) {
+                    const text = e.target.textContent.trim();
+                    copyToClipboard(text);
+                }
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('✅ Berhasil disalin ke clipboard!');
+            }).catch(err => {
+                console.error('Gagal menyalin:', err);
+                showNotification('❌ Gagal menyalin');
+            });
+        }
+
+        function showNotification(message) {
+            // Buat notifikasi sementara
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #00ff9d;
+                color: #000;
+                padding: 10px 20px;
+                border-radius: 10px;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 2s forwards;
+            `;
+            
+            // Tambahkan style animasi
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    to { opacity: 0; transform: translateY(-20px); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+                style.remove();
+            }, 2300);
+        }
+
+        // ================= ERROR HANDLING =================
+        function showError(message) {
+            console.error('❌ Error ditampilkan:', message);
+            
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            
+            // Show error
+            const errorDiv = document.getElementById('error');
+            document.getElementById('errorMessage').textContent = message;
+            errorDiv.style.display = 'block';
+            
+            // Log error untuk debugging
+            logError(message);
+        }
+
+        function logError(error) {
+            try {
+                const errorLog = JSON.parse(localStorage.getItem('struk_errors') || '[]');
+                errorLog.push({
+                    message: error,
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+                
+                // Simpan maksimal 50 error terakhir
+                if (errorLog.length > 50) {
+                    errorLog.shift();
+                }
+                
+                localStorage.setItem('struk_errors', JSON.stringify(errorLog));
+            } catch (e) {
+                console.error('Gagal menyimpan error log:', e);
+            }
+        }
+
+        // ================= HISTORY LOGGING =================
+        function saveAccessHistory(id, version, name) {
+            try {
+                const history = JSON.parse(localStorage.getItem('struk_access_history') || '[]');
+                
+                history.unshift({
+                    id: id,
+                    name: name,
+                    version: version,
+                    accessedAt: new Date().toISOString(),
+                    userAgent: navigator.userAgent.substring(0, 100)
+                });
+                
+                // Simpan maksimal 100 akses terakhir
+                if (history.length > 100) {
+                    history.pop();
+                }
+                
+                localStorage.setItem('struk_access_history', JSON.stringify(history));
+            } catch (e) {
+                console.warn('Gagal menyimpan history:', e);
+            }
+        }
+
+        // ================= FUNGSI TAMBAHAN =================
+        // Print struk
+        window.printStruk = function() {
+            window.print();
+        };
+
+        // Refresh data
+        window.refreshStruk = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const v = urlParams.get('v');
+            
+            // Hapus cache untuk data ini
+            if (id && v) {
+                const cacheKey = `struk_cache_${id}_${v}`;
+                localStorage.removeItem(cacheKey);
+            }
+            
+            // Reload halaman
+            location.reload();
+        };
+
+        // Share struk
+        window.shareStruk = function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Struk Digital Koperasi Asmara Tani',
+                    text: 'Struk keanggotaan digital resmi',
+                    url: window.location.href
+                });
+            } else {
+                copyToClipboard(window.location.href);
+            }
+        };
+
+        // ================= INISIALISASI =================
+        // Cek jika ada parameter print
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('print') === '1') {
+                setTimeout(() => {
+                    window.print();
+                }, 1000);
+            }
+        });
+
+        // Auto-init saat halaman siap
+        document.addEventListener('DOMContentLoaded', initStruk);
+        
+        // Fallback jika DOMContentLoaded sudah lewat
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initStruk, 100);
+        }
+
+        // Console info
+        console.log('%c🔐 Struk Digital Koperasi Asmara Tani', 'color: #00ff9d; font-size: 16px; font-weight: bold;');
+        console.log('%cVersi: ' + CONFIG.VERSION, 'color: #4facfe;');
+        console.log('%cData bersifat dinamis dengan timestamp', 'color: #ffd700;');
+    </script>
+</body>
+</html>
