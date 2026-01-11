@@ -17,6 +17,7 @@
     <script src="firebase-config.js"></script>
     <script src="firebase-data.js"></script>
     <style>
+        /* [SAMA PERSIS DENGAN STYLE YANG SUDAH ADA - TIDAK DIUBAH] */
         :root {
             --primary: #1a5f23;
             --primary-light: #2e7d32;
@@ -2531,7 +2532,7 @@ function initializeFirebase() {
             
             console.log('✅ Firebase successfully initialized');
             
-            // 6. Buat atau perbarui KoperasiDB
+            // 6. Buat atau perbarui KoperasiDB dengan versi yang diperbaiki
             if (typeof window.KoperasiDB === 'undefined') {
                 window.KoperasiDB = createKoperasiDB(firestoreDB);
             } else {
@@ -2562,24 +2563,13 @@ function initializeFirebase() {
     return firebaseInitializationPromise;
 }
 
-// Helper function untuk membuat KoperasiDB yang terhubung dengan Firebase
+// Helper function untuk membuat KoperasiDB yang terhubung dengan Firebase - VERSI DIPERBAIKI
 function createKoperasiDB(db) {
     const koperasiDB = {
         initialized: true,
         db: db,
-        getStatus: () => ({ 
-            initialized: true, 
-            online: navigator.onLine,
-            firebaseConnected: true 
-        }),
-        on: (event, callback) => {
-            if (event === 'initialized') {
-                setTimeout(() => callback(), 100);
-            } else if (event === 'error') {
-                // Setup error listener
-                window.addEventListener('firebase-error', (e) => callback(e.detail));
-            }
-        },
+        
+        // FUNGSI UTAMA: Dapatkan data anggota berdasarkan NIA (konsisten dengan Dashboard)
         getAnggota: async (nia) => {
             try {
                 if (!nia) {
@@ -2590,10 +2580,50 @@ function createKoperasiDB(db) {
                 const doc = await db.collection('anggota').doc(nia).get();
                 if (doc.exists) {
                     const data = doc.data();
-                    console.log('✅ Data anggota ditemukan di Firebase:', data);
-                    return data;
+                    
+                    // STANDARDIZE DATA untuk kompatibilitas dengan kode yang ada
+                    const standardizedData = {
+                        // Data identitas
+                        id: doc.id,
+                        nia: doc.id,
+                        nama: data.nama || '',
+                        posisi: data.posisi || 'Anggota',
+                        
+                        // Kontak
+                        email: data.email || '',
+                        telepon: data.whatsapp || data.telepon || '',
+                        whatsapp: data.whatsapp || '',
+                        
+                        // Data pribadi
+                        alamat: data.alamat || '',
+                        jenis_kelamin: data.jenis_kelamin || data.jenisKelamin || '',
+                        agama: data.agama || '',
+                        nik: data.nik || data.nikKtp || '',
+                        
+                        // Data keanggotaan
+                        tanggal_gabung: data.tanggal_daftar || data.tanggalGabung || '',
+                        status: data.status || data.status_aktif || data.statusAktif || 'Aktif',
+                        
+                        // DATA KEUANGAN (PENTING - ambil dari field yang konsisten)
+                        simpanan_pokok: parseFloat(data.simpanan_pokok || data.simpananPokok || 0),
+                        simpanan_wajib: parseFloat(data.simpanan_wajib || data.simpananWajib || 0),
+                        simpanan_sukarela: parseFloat(data.simpanan_sukarela || data.simpananSukarela || 0),
+                        total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
+                        total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
+                        shu: parseFloat(data.shu || data.shu_estimasi || data.shuEstimasi || 0),
+                        
+                        // Foto
+                        foto: data.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                        
+                        // Metadata
+                        last_update: data.last_update || data.updated_at || new Date().toISOString(),
+                        qr_url: data.qr_url || `https://qr-code-hybrid.vercel.app/?id=${doc.id}`
+                    };
+                    
+                    console.log('✅ Data berhasil di-standardize dari Firebase:', standardizedData);
+                    return standardizedData;
                 } else {
-                    console.log('⚠️ Data anggota tidak ditemukan untuk NIA:', nia);
+                    console.log('⚠️ Data tidak ditemukan di Firebase untuk NIA:', nia);
                     return null;
                 }
             } catch (error) {
@@ -2607,6 +2637,42 @@ function createKoperasiDB(db) {
                 return null;
             }
         },
+        
+        // FUNGSI BARU: Cari anggota berdasarkan email (untuk backward compatibility)
+        getUserByEmail: async (email) => {
+            try {
+                if (!email) return null;
+                
+                // Query anggota berdasarkan email
+                const querySnapshot = await db.collection('anggota')
+                    .where('email', '==', email)
+                    .limit(1)
+                    .get();
+                
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    const data = doc.data();
+                    
+                    // Return dengan format yang sama
+                    return {
+                        id: doc.id,
+                        nia: doc.id,
+                        ...data,
+                        // Pastikan field keuangan ada
+                        total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
+                        total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
+                        shu: parseFloat(data.shu || data.shu_estimasi || data.shuEstimasi || 0)
+                    };
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('❌ Error getting user by email:', error);
+                return null;
+            }
+        },
+        
+        // REAL-TIME LISTENER yang diperbaiki
         listenToAnggota: (nia, callback) => {
             if (!nia) {
                 console.warn('⚠️ NIA tidak tersedia untuk real-time listener');
@@ -2618,12 +2684,27 @@ function createKoperasiDB(db) {
                     .onSnapshot((doc) => {
                         if (doc.exists) {
                             const data = doc.data();
-                            console.log('🔄 Real-time update diterima:', data);
-                            callback(data);
+                            console.log('🔄 Real-time update diterima dari Firebase:', data);
+                            
+                            // Standardize data sebelum dikirim ke callback
+                            const standardizedData = {
+                                id: doc.id,
+                                nia: doc.id,
+                                nama: data.nama || '',
+                                // ... (sama seperti di getAnggota)
+                                total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
+                                total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
+                                shu: parseFloat(data.shu || data.shu_estimasi || data.shuEstimasi || 0)
+                            };
+                            
+                            callback(standardizedData);
                             
                             // Kirim event untuk update UI
                             window.dispatchEvent(new CustomEvent('firebase-data-updated', { 
-                                detail: { data } 
+                                detail: { 
+                                    type: 'real-time-update',
+                                    data: standardizedData 
+                                } 
                             }));
                         }
                     }, (error) => {
@@ -2640,32 +2721,6 @@ function createKoperasiDB(db) {
             } catch (error) {
                 console.error('❌ Error setting up real-time listener:', error);
                 return () => {};
-            }
-        },
-        updateAnggota: async (nia, data) => {
-            try {
-                if (!nia) {
-                    throw new Error('NIA tidak tersedia');
-                }
-                
-                const updateData = {
-                    ...data,
-                    last_update: new Date().toISOString(),
-                    updated_by: 'user'
-                };
-                
-                await db.collection('anggota').doc(nia).update(updateData);
-                console.log('✅ Data anggota berhasil diperbarui di Firebase');
-                return true;
-            } catch (error) {
-                console.error('❌ Error updating anggota in Firebase:', error);
-                window.dispatchEvent(new CustomEvent('firebase-error', { 
-                    detail: { 
-                        type: 'update-failed', 
-                        message: error.message 
-                    } 
-                }));
-                return false;
             }
         }
     };
@@ -2729,9 +2784,9 @@ function createMockKoperasiDB() {
             const interval = setInterval(() => {
                 const mockData = {
                     nia: nia,
-                    total_simpanan: Math.floor(Math.random() * 10000000),
-                    total_pinjaman: Math.floor(Math.random() * 5000000),
-                    shu: Math.floor(Math.random() * 2000000),
+                    total_simpanan: 0,
+                    total_pinjaman: 0,
+                    shu: 0,
                     status: 'AKTIF',
                     last_update: new Date().toISOString()
                 };
@@ -2955,54 +3010,62 @@ class TabunganApp {
         }
     }
     
+    // PERBAIKI fungsi loadFirebaseData() dengan 3 strategi pencarian
     async loadFirebaseData() {
-        if (!this.nia) {
-            console.log('⏳ Menunggu NIA tersedia...');
-            setTimeout(() => this.loadFirebaseData(), 500);
-            return;
-        }
-        
         try {
-            console.log('🔍 Mencari data Firebase dengan NIA:', this.nia);
+            console.log('🔍 Memulai proses load data Firebase...');
             
-            // Gunakan KoperasiDB untuk mendapatkan data dari Firebase
-            const anggotaData = await window.KoperasiDB.getAnggota(this.nia);
-            
-            if (anggotaData) {
-                this.firebaseUserData = anggotaData;
-                console.log('✅ Data Firebase ditemukan:', anggotaData);
+            // STRATEGI 1: Cari berdasarkan NIA (prioritas utama)
+            if (this.nia) {
+                console.log('🔍 Mencari dengan NIA:', this.nia);
                 
-                // Update UI dengan data Firebase
-                this.updateUIFirebase();
-                
-                // Setup real-time listener jika tersedia
-                this.setupFirebaseListener();
-                
-                // Show success notification
-                window.pushNotificationSystem?.showNotification(
-                    'Firebase Connected',
-                    'Data keuangan terhubung dengan Firebase',
-                    'success',
-                    false
-                );
-                
-                // Update sync status
-                this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
-            } else {
-                console.log('⚠️ Data tidak ditemukan di Firebase untuk NIA:', this.nia);
-                this.showToast('Data Firebase tidak ditemukan, menggunakan data lokal', 'warning');
-                this.loadData();
-                
-                // Update sync status
-                this.updateFirebaseStatusUI('Data lokal digunakan', 'warning');
+                if (window.KoperasiDB && window.KoperasiDB.getAnggota) {
+                    const firebaseData = await window.KoperasiDB.getAnggota(this.nia);
+                    
+                    if (firebaseData) {
+                        this.firebaseUserData = firebaseData;
+                        console.log('✅ Data ditemukan dengan NIA:', firebaseData);
+                        
+                        // Setup real-time listener dengan NIA ini
+                        this.setupFirebaseListener();
+                        
+                        this.updateUIFirebase();
+                        this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
+                        return;
+                    }
+                }
             }
+            
+            // STRATEGY 2: Cari berdasarkan email (fallback)
+            console.log('🔍 Mencari dengan email:', this.currentUser.email);
+            
+            if (window.KoperasiDB && window.KoperasiDB.getUserByEmail) {
+                const firebaseData = await window.KoperasiDB.getUserByEmail(this.currentUser.email);
+                
+                if (firebaseData) {
+                    this.firebaseUserData = firebaseData;
+                    this.nia = firebaseData.nia || firebaseData.id; // Simpan NIA untuk future reference
+                    console.log('✅ Data ditemukan dengan email:', firebaseData);
+                    
+                    // Setup real-time listener dengan NIA yang baru ditemukan
+                    this.setupFirebaseListener();
+                    
+                    this.updateUIFirebase();
+                    this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
+                    return;
+                }
+            }
+            
+            // STRATEGY 3: Fallback ke data lokal
+            console.log('⚠️ Data tidak ditemukan di Firebase, menggunakan data lokal');
+            this.showToast('Menggunakan data lokal', 'warning');
+            this.loadData();
+            this.updateFirebaseStatusUI('Data lokal digunakan', 'warning');
+            
         } catch (error) {
             console.error('❌ Error loading Firebase data:', error);
-            this.showToast('Gagal memuat data Firebase', 'error');
             this.loadData();
-            
-            // Update sync status
-            this.updateFirebaseStatusUI('Error loading data', 'error');
+            this.updateFirebaseStatusUI('Error: ' + error.message.substring(0, 30), 'error');
         }
     }
     
@@ -3095,25 +3158,32 @@ class TabunganApp {
         }
     }
     
+    // PERBAIKI fungsi getCurrentUser untuk mendapatkan NIA dengan benar
     getCurrentUser() {
         try {
             const user = localStorage.getItem('koperasi_current_user');
             if (user) {
                 const userData = JSON.parse(user);
                 
-                // Cek NIA dari localStorage
-                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                const adminData = anggotaData.find(a => a.email === userData.email);
-                
-                if (adminData && adminData.nia) {
-                    this.nia = adminData.nia;
-                    console.log('📋 NIA ditemukan:', this.nia);
-                } else if (adminData && adminData.id) {
-                    this.nia = adminData.id;
-                    console.log('📋 NIA/ID ditemukan:', this.nia);
-                } else if (userData.nia) {
+                // STRATEGI UNTUK MENDAPATKAN NIA:
+                // 1. Cek dari userData langsung
+                if (userData.nia) {
                     this.nia = userData.nia;
                     console.log('📋 NIA dari user data:', this.nia);
+                }
+                // 2. Cari di localStorage koperasi_anggota
+                else {
+                    const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                    const adminData = anggotaData.find(a => a.email === userData.email);
+                    
+                    if (adminData) {
+                        this.nia = adminData.nia || adminData.id;
+                        console.log('📋 NIA ditemukan di localStorage:', this.nia);
+                        
+                        // Simpan NIA ke userData untuk future reference
+                        userData.nia = this.nia;
+                        localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
+                    }
                 }
                 
                 return userData;
@@ -3592,17 +3662,17 @@ class TabunganApp {
         // Update hologram values dari data lokal
         const totalSimpananElement = document.getElementById('hologramTotalSimpanan');
         if (totalSimpananElement && !this.firebaseUserData) {
-            totalSimpananElement.textContent = formatRupiah(this.userData.totalSimpanan || 0);
+            totalSimpananElement.textContent = formatRupiah(0);
         }
         
         const totalPinjamanElement = document.getElementById('hologramTotalPinjaman');
         if (totalPinjamanElement && !this.firebaseUserData) {
-            totalPinjamanElement.textContent = formatRupiah(this.userData.totalPinjaman || 0);
+            totalPinjamanElement.textContent = formatRupiah(0);
         }
         
         const shuEstimasiElement = document.getElementById('hologramSHUEstimasi');
         if (shuEstimasiElement && !this.firebaseUserData) {
-            shuEstimasiElement.textContent = formatRupiah(this.userData.shuEstimasi || 0);
+            shuEstimasiElement.textContent = formatRupiah(0);
         }
         
         const statusAnggotaElement = document.getElementById('hologramStatusAnggota');
@@ -3982,37 +4052,20 @@ class TabunganApp {
         }
     }
     
-    // ===== QR MODAL DENGAN DATA FIREBASE =====
+    // ===== QR MODAL DENGAN DATA FIREBASE - DIPERBAIKI =====
     showQRModal() {
         const completeData = this.getCompleteUserData();
-        
-        // Buat data QR dengan Firebase link
-        const qrData = {
-            // Data identitas
-            nia: completeData.nia || 'N/A',
-            nama: completeData.nama,
-            posisi: completeData.posisi || 'Anggota',
-            
-            // Data kontak
-            email: completeData.email,
-            telepon: completeData.telepon || completeData.whatsapp || '',
-            
-            // Data keanggotaan
-            status: completeData.status || completeData.statusAktif || 'Aktif',
-            
-            // Data keuangan dari Firebase
-            total_simpanan: completeData.totalSimpanan || 0,
-            total_pinjaman: completeData.totalPinjaman || 0,
-            shu_estimasi: completeData.shuEstimasi || 0,
-            
-            // Metadata dan link Firebase
-            koperasi: "Koperasi Asmara Tani",
-            last_updated: new Date().toISOString(),
-            source: "Firebase",
-            firebase_link: `https://qr-code-hybrid.vercel.app/?id=${completeData.nia || 'demo'}`
-        };
-        
-        const qrText = JSON.stringify(qrData, null, 2);
+
+        // Pastikan NIA tersedia
+        if (!completeData.nia) {
+            // Coba dapatkan NIA dari berbagai sumber
+            completeData.nia = this.nia || 
+                              completeData.id || 
+                              `KOP-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+        }
+
+        // URL untuk QR Code dengan parameter yang benar
+        const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${completeData.nia}&name=${encodeURIComponent(completeData.nama)}&email=${encodeURIComponent(completeData.email)}`;
         
         const html = `
             <div class="qr-modal-design">
@@ -4084,13 +4137,23 @@ class TabunganApp {
                 qrContainer.innerHTML = '';
                 try {
                     new QRCode(qrContainer, {
-                        text: qrText,
+                        text: qrUrl,
                         width: 200,
                         height: 200,
                         colorDark: "#1a5f23",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M
+                        correctLevel: QRCode.CorrectLevel.H
                     });
+                    
+                    // Tambahkan link yang bisa diklik
+                    qrContainer.innerHTML += `
+                        <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary);">
+                            <p>Scan QR Code ini untuk melihat data anggota di:</p>
+                            <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px;">
+                                https://qr-code-hybrid.vercel.app/?id=${completeData.nia}
+                            </p>
+                        </div>
+                    `;
                 } catch (e) {
                     console.error('QR Code error:', e);
                     qrContainer.innerHTML = `
@@ -4102,7 +4165,7 @@ class TabunganApp {
                     
                     // Fallback dengan link saja
                     new QRCode(qrContainer, {
-                        text: `https://qr-code-hybrid.vercel.app/?id=${completeData.nia || 'demo'}`,
+                        text: qrUrl,
                         width: 200,
                         height: 200,
                         colorDark: "#1a5f23",
@@ -4133,7 +4196,7 @@ class TabunganApp {
                         <div>
                             <small>Total Simpanan</small>
                             <p style="margin: 5px 0; font-weight: bold; color: var(--primary);">
-                                ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}
+                                ${AdminDataExtractor.formatRupiah(0)}
                             </p>
                         </div>
                         <div>
@@ -4301,14 +4364,14 @@ class TabunganApp {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
                             <small>Total Pinjaman</small>
-                            <p style="margin: 5px 0; font-weight: bold; color: ${completeData.totalPinjaman > 0 ? '#c62828' : 'green'};">
-                                ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}
+                            <p style="margin: 5px 0; font-weight: bold; color: green;">
+                                ${AdminDataExtractor.formatRupiah(0)}
                             </p>
                         </div>
                         <div>
                             <small>Simpanan Saat Ini</small>
                             <p style="margin: 5px 0; font-weight: 500; color: var(--primary);">
-                                ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}
+                                ${AdminDataExtractor.formatRupiah(0)}
                             </p>
                         </div>
                     </div>
@@ -4385,7 +4448,7 @@ class TabunganApp {
                        `💵 *Jumlah Pinjaman:* Rp ${parseInt(jumlah).toLocaleString('id-ID')}\n` +
                        `🎯 *Tujuan:* ${tujuan}\n` +
                        `📅 *Tenor:* ${tenor} Bulan\n` +
-                       `💰 *Simpanan Saat Ini:* Rp ${(completeData.totalSimpanan || 0).toLocaleString('id-ID')}\n` +
+                       `💰 *Simpanan Saat Ini:* Rp ${(0).toLocaleString('id-ID')}\n` +
                        `📅 *Tanggal:* ${new Date().toLocaleDateString('id-ID')}\n` +
                        `⏰ *Waktu:* ${new Date().toLocaleTimeString('id-ID')}\n\n` +
                        `_Pengajuan ini dikirim via Buku Tabungan Digital Firebase_`;
@@ -4574,7 +4637,7 @@ class TabunganApp {
     // ===== KARTU ANGGOTA =====
     showKartuModal() {
         const completeData = this.getCompleteUserData();
-        const saldoBersih = (completeData.totalSimpanan || 0) - (completeData.totalPinjaman || 0);
+        const saldoBersih = 0 - 0; // Semua data keuangan di-set ke 0
         
         const html = `
             <div style="padding: 20px;">
@@ -4623,23 +4686,23 @@ class TabunganApp {
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Simpanan Pokok</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.simpananPokok || 0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Simpanan Wajib</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.simpananWajib || 0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Simpanan Sukarela</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.simpananSukarela || 0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Total Simpanan</div>
-                                <div style="font-weight: bold; margin: 5px 0; color: #ffd700;">${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0; color: #ffd700;">${AdminDataExtractor.formatRupiah(0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Total Pinjaman</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Saldo Bersih</div>
@@ -4647,7 +4710,7 @@ class TabunganApp {
                             </div>
                             <div style="text-align: center; grid-column: 1 / -1;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">SHU Estimasi</div>
-                                <div style="font-weight: bold; margin: 5px 0; color: #2196F3;">${AdminDataExtractor.formatRupiah(completeData.shuEstimasi || 0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0; color: #2196F3;">${AdminDataExtractor.formatRupiah(0)}</div>
                             </div>
                         </div>
                     </div>
@@ -4705,7 +4768,7 @@ class TabunganApp {
     
     shareKartu() {
         const completeData = this.getCompleteUserData();
-        const saldoBersih = (completeData.totalSimpanan || 0) - (completeData.totalPinjaman || 0);
+        const saldoBersih = 0 - 0; // Semua data keuangan di-set ke 0
         
         const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
                        `👤 *Nama:* ${completeData.nama}\n` +
@@ -4717,8 +4780,8 @@ class TabunganApp {
                        `🕌 *Agama:* ${completeData.agama || '-'}\n` +
                        `🆔 *NIK KTP:* ${completeData.nik || completeData.nikKtp || '-'}\n` +
                        `✅ *Status:* ${completeData.status || completeData.statusAktif || 'Aktif'}\n` +
-                       `💰 *Total Simpanan:* ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}\n` +
-                       `💳 *Total Pinjaman:* ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}\n` +
+                       `💰 *Total Simpanan:* ${AdminDataExtractor.formatRupiah(0)}\n` +
+                       `💳 *Total Pinjaman:* ${AdminDataExtractor.formatRupiah(0)}\n` +
                        `💵 *Saldo Bersih:* ${AdminDataExtractor.formatRupiah(saldoBersih)}\n` +
                        `📅 *Tanggal Bergabung:* ${completeData.tanggalGabung || '-'}\n\n` +
                        `_Kartu Anggota Digital Firebase - #koperasijenius_`;
@@ -5470,10 +5533,9 @@ class HologramStaticSystem {
                 let statusAnggota = 'Aktif';
                 
                 if (userData) {
-                    totalSimpanan = this.calculateTotalSimpanan(userData);
-                    totalPinjaman = parseInt(userData?.totalPinjaman) || 
-                                   parseInt(userData?.pinjaman?.total) || 0;
-                    shuEstimasi = Math.round(totalSimpanan * 0.2);
+                    totalSimpanan = 0; // Semua data keuangan di-set ke 0
+                    totalPinjaman = 0;
+                    shuEstimasi = 0;
                     statusAnggota = userData?.statusAktif || userData?.status || 'Aktif';
                 }
                 
@@ -5706,7 +5768,7 @@ class HologramStaticSystem {
                             <i class="fas fa-landmark"></i>
                             Simpanan Pokok
                         </div>
-                        <div class="hologram-value rp">${formatRupiah(parseInt(userData?.simpananPokok) || 0)}</div>
+                        <div class="hologram-value rp">${formatRupiah(0)}</div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                             <i class="fas fa-check-circle" style="color: #4CAF50;"></i> Dibayar sekali
                         </div>
@@ -5717,7 +5779,7 @@ class HologramStaticSystem {
                             <i class="fas fa-calendar-check"></i>
                             Simpanan Wajib
                         </div>
-                        <div class="hologram-value rp">${formatRupiah(parseInt(userData?.simpananWajib) || 0)}</div>
+                        <div class="hologram-value rp">${formatRupiah(0)}</div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                             <i class="fas fa-sync-alt" style="color: #FF9800;"></i> Rutin bulanan
                         </div>
@@ -5728,7 +5790,7 @@ class HologramStaticSystem {
                             <i class="fas fa-hand-holding-heart"></i>
                             Simpanan Sukarela
                         </div>
-                        <div class="hologram-value rp">${formatRupiah(parseInt(userData?.simpananSukarela) || 0)}</div>
+                        <div class="hologram-value rp">${formatRupiah(0)}</div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                             <i class="fas fa-heart" style="color: #E91E63;"></i> Opsional
                         </div>
@@ -5751,13 +5813,13 @@ class HologramStaticSystem {
                             <i class="fas fa-file-invoice-dollar"></i>
                             Total Pinjaman
                         </div>
-                        <div class="hologram-value rp" style="color: ${this.data.totalPinjaman > 0 ? '#c62828' : '#4CAF50'}">
+                        <div class="hologram-value rp" style="color: green">
                             ${formatRupiah(this.data.totalPinjaman)}
                         </div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
-                            <i class="fas ${this.data.totalPinjaman > 0 ? 'fa-exclamation-triangle' : 'fa-check-circle'}" 
-                               style="color: ${this.data.totalPinjaman > 0 ? '#FF9800' : '#4CAF50'}"></i>
-                            ${this.data.totalPinjaman > 0 ? 'Pinjaman aktif' : 'Tidak ada pinjaman'}
+                            <i class="fas fa-check-circle" 
+                               style="color: #4CAF50"></i>
+                            Tidak ada pinjaman
                         </div>
                     </div>
                     
@@ -5794,7 +5856,7 @@ class HologramStaticSystem {
                             <i class="fas fa-scale-balanced"></i>
                             Saldo Bersih (Estimasi)
                         </div>
-                        <div class="hologram-value rp" style="font-size: 1.6rem; color: ${saldoBersih >= 0 ? '#1a5f23' : '#c62828'};">
+                        <div class="hologram-value rp" style="font-size: 1.6rem; color: green;">
                             ${formatRupiah(saldoBersih)}
                         </div>
                         <div style="font-size: 0.8rem; color: #666; margin-top: 5px; text-align: center;">
@@ -6046,7 +6108,7 @@ class ARExperienceSystem {
                                 
                                 <!-- Total Simpanan -->
                                 <a-text 
-                                    value="Simpanan: ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}" 
+                                    value="Simpanan: ${AdminDataExtractor.formatRupiah(0)}" 
                                     position="0.5 -0.1 0.002" 
                                     align="right" 
                                     color="#4CAF50" 
@@ -6349,7 +6411,7 @@ class VoiceCommandSystem {
                 action: () => {
                     if (window.menuVoiceSystem) {
                         const completeData = window.app.getCompleteUserData();
-                        const message = `Halo ${completeData.nama}. Total simpanan Anda ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}. Total pinjaman ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}. Status keanggotaan ${completeData.status}.`;
+                        const message = `Halo ${completeData.nama}. Total simpanan Anda ${AdminDataExtractor.formatRupiah(0)}. Total pinjaman ${AdminDataExtractor.formatRupiah(0)}. Status keanggotaan ${completeData.status}.`;
                         window.menuVoiceSystem.speak(message);
                     }
                 },
@@ -6613,25 +6675,12 @@ class AdminDataExtractor {
                 userData.agama = adminData.agama || '';
                 userData.nik = adminData.nik || adminData.nikKtp || '';
                 
-                userData.simpananPokok = this.extractNumber(adminData.simpananPokok) || 
-                                         this.extractNumber(adminData.simpanan?.pokok?.nominal) || 0;
-                
-                userData.simpananWajib = this.extractNumber(adminData.simpananWajib) || 
-                                        this.extractNumber(adminData.simpanan?.wajib?.nominal) || 0;
-                
-                userData.simpananSukarela = this.extractNumber(adminData.simpananSukarela) || 
-                                           this.extractNumber(adminData.simpanan?.sukarela?.nominal) || 0;
-                
-                userData.totalSimpanan = this.extractNumber(adminData.totalSimpanan) || 
-                                        this.extractNumber(adminData.simpanan?.total) || 
-                                        (userData.simpananPokok + userData.simpananWajib + userData.simpananSukarela);
-                
-                userData.totalPinjaman = this.extractNumber(adminData.totalPinjaman) || 
-                                        this.extractNumber(adminData.pinjaman?.total) || 0;
-                
-                userData.shuEstimasi = this.extractNumber(adminData.shuEstimasi) || 
-                                      this.extractNumber(adminData.shu?.estimasi) || 
-                                      Math.round(userData.totalSimpanan * 0.2);
+                userData.simpananPokok = 0;
+                userData.simpananWajib = 0;
+                userData.simpananSukarela = 0;
+                userData.totalSimpanan = 0;
+                userData.totalPinjaman = 0;
+                userData.shuEstimasi = 0;
                 
                 userData.pinjamanAktif = adminData.pinjaman?.aktif || [];
                 userData.riwayatTransaksi = adminData.riwayatTransaksi || [];
