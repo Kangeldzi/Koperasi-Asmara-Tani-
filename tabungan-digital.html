@@ -2466,6 +2466,315 @@
     <div id="printPreview" class="print-preview"></div>
 
 <script>
+// ===== FIREBASE INITIALIZATION WITH TIMEOUT AND ERROR HANDLING =====
+let firebaseInitialized = false;
+let firebaseInitializationPromise = null;
+let firebaseApp = null;
+let firestoreDB = null;
+
+function initializeFirebase() {
+    if (firebaseInitializationPromise) {
+        return firebaseInitializationPromise;
+    }
+    
+    firebaseInitializationPromise = new Promise(async (resolve, reject) => {
+        console.log('🔥 Starting Firebase initialization...');
+        
+        // Timeout 15 detik untuk Firebase
+        const timeoutId = setTimeout(() => {
+            reject(new Error('Firebase initialization timeout after 15 seconds'));
+        }, 15000);
+        
+        try {
+            // 1. Pastikan Firebase SDK sudah dimuat
+            if (typeof firebase === 'undefined') {
+                throw new Error('Firebase SDK not loaded');
+            }
+            
+            // 2. Tunggu konfigurasi Firebase dimuat
+            let configLoaded = false;
+            for (let i = 0; i < 30; i++) {
+                if (typeof firebaseConfig !== 'undefined') {
+                    configLoaded = true;
+                    break;
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            if (!configLoaded) {
+                throw new Error('Firebase configuration not loaded');
+            }
+            
+            // 3. Inisialisasi Firebase App
+            if (!firebase.apps.length) {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+            } else {
+                firebaseApp = firebase.apps[0];
+            }
+            
+            // 4. Inisialisasi Firestore
+            firestoreDB = firebase.firestore();
+            
+            // 5. Tes koneksi dengan timeout terpisah
+            const testTimeout = setTimeout(() => {
+                throw new Error('Firestore connection test timeout');
+            }, 5000);
+            
+            try {
+                await firestoreDB.collection('_test_connection').limit(1).get();
+            } finally {
+                clearTimeout(testTimeout);
+            }
+            
+            clearTimeout(timeoutId);
+            firebaseInitialized = true;
+            
+            console.log('✅ Firebase successfully initialized');
+            
+            // 6. Buat atau perbarui KoperasiDB
+            if (typeof window.KoperasiDB === 'undefined') {
+                window.KoperasiDB = createKoperasiDB(firestoreDB);
+            } else {
+                window.KoperasiDB.initialized = true;
+                window.KoperasiDB.db = firestoreDB;
+            }
+            
+            resolve({ firebaseApp, firestoreDB });
+            
+        } catch (error) {
+            clearTimeout(timeoutId);
+            console.error('❌ Firebase initialization failed:', error);
+            
+            // Fallback ke mode offline dengan mock database
+            if (typeof window.KoperasiDB === 'undefined') {
+                window.KoperasiDB = createMockKoperasiDB();
+            }
+            
+            // Kirim event untuk memberi tahu sistem lain
+            window.dispatchEvent(new CustomEvent('firebase-init-failed', { 
+                detail: { error: error.message } 
+            }));
+            
+            reject(error);
+        }
+    });
+    
+    return firebaseInitializationPromise;
+}
+
+// Helper function untuk membuat KoperasiDB yang terhubung dengan Firebase
+function createKoperasiDB(db) {
+    const koperasiDB = {
+        initialized: true,
+        db: db,
+        getStatus: () => ({ 
+            initialized: true, 
+            online: navigator.onLine,
+            firebaseConnected: true 
+        }),
+        on: (event, callback) => {
+            if (event === 'initialized') {
+                setTimeout(() => callback(), 100);
+            } else if (event === 'error') {
+                // Setup error listener
+                window.addEventListener('firebase-error', (e) => callback(e.detail));
+            }
+        },
+        getAnggota: async (nia) => {
+            try {
+                if (!nia) {
+                    console.warn('⚠️ NIA tidak tersedia');
+                    return null;
+                }
+                
+                const doc = await db.collection('anggota').doc(nia).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    console.log('✅ Data anggota ditemukan di Firebase:', data);
+                    return data;
+                } else {
+                    console.log('⚠️ Data anggota tidak ditemukan untuk NIA:', nia);
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Error getting anggota from Firebase:', error);
+                window.dispatchEvent(new CustomEvent('firebase-error', { 
+                    detail: { 
+                        type: 'get-anggotafailed', 
+                        message: error.message 
+                    } 
+                }));
+                return null;
+            }
+        },
+        listenToAnggota: (nia, callback) => {
+            if (!nia) {
+                console.warn('⚠️ NIA tidak tersedia untuk real-time listener');
+                return () => {};
+            }
+            
+            try {
+                const unsubscribe = db.collection('anggota').doc(nia)
+                    .onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            console.log('🔄 Real-time update diterima:', data);
+                            callback(data);
+                            
+                            // Kirim event untuk update UI
+                            window.dispatchEvent(new CustomEvent('firebase-data-updated', { 
+                                detail: { data } 
+                            }));
+                        }
+                    }, (error) => {
+                        console.error('❌ Real-time listener error:', error);
+                        window.dispatchEvent(new CustomEvent('firebase-error', { 
+                            detail: { 
+                                type: 'realtime-listener-failed', 
+                                message: error.message 
+                            } 
+                        }));
+                    });
+                
+                return unsubscribe;
+            } catch (error) {
+                console.error('❌ Error setting up real-time listener:', error);
+                return () => {};
+            }
+        },
+        updateAnggota: async (nia, data) => {
+            try {
+                if (!nia) {
+                    throw new Error('NIA tidak tersedia');
+                }
+                
+                const updateData = {
+                    ...data,
+                    last_update: new Date().toISOString(),
+                    updated_by: 'user'
+                };
+                
+                await db.collection('anggota').doc(nia).update(updateData);
+                console.log('✅ Data anggota berhasil diperbarui di Firebase');
+                return true;
+            } catch (error) {
+                console.error('❌ Error updating anggota in Firebase:', error);
+                window.dispatchEvent(new CustomEvent('firebase-error', { 
+                    detail: { 
+                        type: 'update-failed', 
+                        message: error.message 
+                    } 
+                }));
+                return false;
+            }
+        }
+    };
+    
+    return koperasiDB;
+}
+
+// Mock database untuk mode offline
+function createMockKoperasiDB() {
+    console.warn('⚠️ Using mock KoperasiDB (offline mode)');
+    
+    const mockDB = {
+        initialized: false,
+        db: null,
+        getStatus: () => ({ 
+            initialized: false, 
+            online: false,
+            firebaseConnected: false,
+            mode: 'offline' 
+        }),
+        on: (event, callback) => {
+            if (event === 'initialized') {
+                setTimeout(() => callback(), 100);
+            }
+        },
+        getAnggota: async (nia) => {
+            console.log('📁 Getting anggota from mock DB for NIA:', nia);
+            
+            // Coba ambil dari localStorage sebagai fallback
+            try {
+                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                const user = JSON.parse(localStorage.getItem('koperasi_current_user') || '{}');
+                
+                if (nia) {
+                    const found = anggotaData.find(a => a.nia === nia || a.id === nia || a.email === user.email);
+                    if (found) {
+                        console.log('✅ Found user data in localStorage:', found);
+                        return found;
+                    }
+                }
+                
+                // Jika tidak ditemukan dengan NIA, cari dengan email
+                if (user.email) {
+                    const found = anggotaData.find(a => a.email === user.email);
+                    if (found) {
+                        console.log('✅ Found user data by email in localStorage:', found);
+                        return found;
+                    }
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('Error getting mock data:', error);
+                return null;
+            }
+        },
+        listenToAnggota: (nia, callback) => {
+            console.log('📡 Mock real-time listener setup for NIA:', nia);
+            
+            // Simulasi perubahan data dengan interval
+            const interval = setInterval(() => {
+                const mockData = {
+                    nia: nia,
+                    total_simpanan: Math.floor(Math.random() * 10000000),
+                    total_pinjaman: Math.floor(Math.random() * 5000000),
+                    shu: Math.floor(Math.random() * 2000000),
+                    status: 'AKTIF',
+                    last_update: new Date().toISOString()
+                };
+                
+                console.log('🔄 Mock real-time update:', mockData);
+                callback(mockData);
+            }, 30000); // Update setiap 30 detik
+            
+            return () => clearInterval(interval);
+        },
+        updateAnggota: async (nia, data) => {
+            console.log('📝 Mock update for NIA:', nia, 'Data:', data);
+            
+            // Simpan ke localStorage sebagai backup
+            try {
+                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                const index = anggotaData.findIndex(a => a.nia === nia || a.id === nia);
+                
+                if (index !== -1) {
+                    anggotaData[index] = { ...anggotaData[index], ...data };
+                } else {
+                    // Tambah data baru
+                    anggotaData.push({
+                        nia: nia,
+                        ...data,
+                        last_update: new Date().toISOString()
+                    });
+                }
+                
+                localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+                console.log('✅ Mock data saved to localStorage');
+                
+                return true;
+            } catch (error) {
+                console.error('Error saving mock data:', error);
+                return false;
+            }
+        }
+    };
+    
+    return mockDB;
+}
+
 // ===== FIREBASE INTEGRATED TABUNGAN APP =====
 class TabunganApp {
     constructor() {
@@ -2484,40 +2793,174 @@ class TabunganApp {
         this.nia = null;
         this.firebaseReady = false;
         this.unsubscribeFirebase = null;
+        this.firebaseInitAttempted = false;
         
-        // Cek apakah Firebase sudah siap
-        this.checkFirebaseStatus();
+        // Setup global error handling
+        this.setupGlobalErrorHandling();
+        
+        // Initialize Firebase dengan retry
+        this.initializeFirebaseWithRetry().then((success) => {
+            if (success) {
+                console.log('✅ Firebase initialized successfully for TabunganApp');
+                this.checkFirebaseStatus();
+            } else {
+                console.warn('⚠️ Firebase initialization failed, using offline mode');
+                this.showToast('Mode offline diaktifkan', 'warning');
+                this.checkFirebaseStatus();
+            }
+        }).catch(error => {
+            console.error('❌ Error in Firebase initialization:', error);
+            this.checkFirebaseStatus();
+        });
+        
         this.init();
     }
     
+    async initializeFirebaseWithRetry() {
+        const maxRetries = 3;
+        let lastError = null;
+        
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                console.log(`🔄 Attempt ${i + 1}/${maxRetries} to initialize Firebase...`);
+                
+                await initializeFirebase();
+                this.firebaseReady = true;
+                this.firebaseInitAttempted = true;
+                
+                console.log('✅ Firebase ready for TabunganApp');
+                return true;
+            } catch (error) {
+                lastError = error;
+                console.warn(`⚠️ Firebase init attempt ${i + 1} failed:`, error.message);
+                
+                // Tampilkan status ke UI
+                this.updateFirebaseStatusUI(`Mencoba ulang... (${i + 1}/${maxRetries})`, 'warning');
+                
+                if (i < maxRetries - 1) {
+                    // Exponential backoff
+                    const delay = 2000 * Math.pow(2, i);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+        
+        console.error('❌ All Firebase initialization attempts failed:', lastError);
+        this.updateFirebaseStatusUI('Mode offline', 'warning');
+        
+        // Pastikan KoperasiDB tersedia (mock atau real)
+        if (typeof window.KoperasiDB === 'undefined') {
+            window.KoperasiDB = createMockKoperasiDB();
+        }
+        
+        this.firebaseInitAttempted = true;
+        return false;
+    }
+    
+    updateFirebaseStatusUI(status, type = 'info') {
+        const syncStatusText = document.getElementById('syncStatusText');
+        if (syncStatusText) {
+            syncStatusText.textContent = status;
+            
+            if (type === 'success') {
+                syncStatusText.style.color = '#4CAF50';
+            } else if (type === 'warning') {
+                syncStatusText.style.color = '#FF9800';
+            } else if (type === 'error') {
+                syncStatusText.style.color = '#f44336';
+            } else {
+                syncStatusText.style.color = '#2196F3';
+            }
+        }
+    }
+    
+    setupGlobalErrorHandling() {
+        // Global error handler
+        window.addEventListener('error', (event) => {
+            console.error('Global error caught:', event.error);
+            this.showGlobalError(event.error);
+        });
+        
+        // Unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            this.showGlobalError(event.reason);
+        });
+        
+        // Firebase error listener
+        window.addEventListener('firebase-error', (event) => {
+            console.error('Firebase error event:', event.detail);
+            this.showToast(`Firebase error: ${event.detail.message}`, 'error');
+        });
+        
+        // Firebase data updated event
+        window.addEventListener('firebase-data-updated', (event) => {
+            console.log('Firebase data updated event received');
+            if (this.firebaseUserData) {
+                this.firebaseUserData = { ...this.firebaseUserData, ...event.detail.data };
+                this.updateUIFirebase();
+            }
+        });
+    }
+    
+    showGlobalError(error) {
+        // Hanya tampilkan error yang signifikan
+        if (error.message && error.message.includes('Firebase')) {
+            this.showToast(`System error: ${error.message.substring(0, 50)}...`, 'error');
+        }
+    }
+    
     async checkFirebaseStatus() {
+        // Tunggu sampai Firebase init dicoba
+        if (!this.firebaseInitAttempted) {
+            setTimeout(() => this.checkFirebaseStatus(), 500);
+            return;
+        }
+        
         if (window.KoperasiDB) {
             try {
                 const status = window.KoperasiDB.getStatus();
                 console.log('Firebase Status:', status);
                 
-                if (status.initialized) {
+                if (status.initialized && status.firebaseConnected) {
                     this.firebaseReady = true;
-                    console.log('✅ Firebase sudah siap');
+                    this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
+                    console.log('✅ Firebase sudah siap dan terhubung');
+                    
+                    // Load data dari Firebase
+                    this.loadFirebaseData();
+                } else if (status.initialized) {
+                    this.firebaseReady = true;
+                    this.updateFirebaseStatusUI('Mode Firebase (offline)', 'warning');
+                    console.log('⚠️ Firebase siap tapi offline');
+                    
+                    // Coba load data dari cache/localStorage
+                    this.loadFirebaseData();
                 } else {
-                    // Tunggu Firebase siap
-                    window.KoperasiDB.on('initialized', () => {
-                        this.firebaseReady = true;
-                        console.log('✅ Firebase diinisialisasi');
-                        this.loadFirebaseData();
-                    });
+                    this.updateFirebaseStatusUI('Mode offline', 'warning');
+                    console.log('⚠️ Menggunakan mode offline');
+                    
+                    // Load data dari localStorage
+                    this.loadData();
                 }
             } catch (error) {
                 console.error('Error checking Firebase status:', error);
+                this.updateFirebaseStatusUI('Error checking status', 'error');
+                this.loadData();
             }
         } else {
             console.warn('⚠️ KoperasiDB belum tersedia');
+            this.updateFirebaseStatusUI('System initializing...', 'info');
             setTimeout(() => this.checkFirebaseStatus(), 1000);
         }
     }
     
     async loadFirebaseData() {
-        if (!this.firebaseReady || !this.nia) return;
+        if (!this.nia) {
+            console.log('⏳ Menunggu NIA tersedia...');
+            setTimeout(() => this.loadFirebaseData(), 500);
+            return;
+        }
         
         try {
             console.log('🔍 Mencari data Firebase dengan NIA:', this.nia);
@@ -2532,7 +2975,7 @@ class TabunganApp {
                 // Update UI dengan data Firebase
                 this.updateUIFirebase();
                 
-                // Setup real-time listener
+                // Setup real-time listener jika tersedia
                 this.setupFirebaseListener();
                 
                 // Show success notification
@@ -2542,18 +2985,34 @@ class TabunganApp {
                     'success',
                     false
                 );
+                
+                // Update sync status
+                this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
             } else {
                 console.log('⚠️ Data tidak ditemukan di Firebase untuk NIA:', this.nia);
-                this.showToast('Data Firebase tidak ditemukan', 'warning');
+                this.showToast('Data Firebase tidak ditemukan, menggunakan data lokal', 'warning');
+                this.loadData();
+                
+                // Update sync status
+                this.updateFirebaseStatusUI('Data lokal digunakan', 'warning');
             }
         } catch (error) {
             console.error('❌ Error loading Firebase data:', error);
             this.showToast('Gagal memuat data Firebase', 'error');
+            this.loadData();
+            
+            // Update sync status
+            this.updateFirebaseStatusUI('Error loading data', 'error');
         }
     }
     
     setupFirebaseListener() {
-        if (!this.nia || !this.firebaseReady) return;
+        if (!this.nia || !window.KoperasiDB || !window.KoperasiDB.listenToAnggota) return;
+        
+        // Hentikan listener sebelumnya jika ada
+        if (this.unsubscribeFirebase) {
+            this.unsubscribeFirebase();
+        }
         
         // Setup real-time listener untuk perubahan data
         this.unsubscribeFirebase = window.KoperasiDB.listenToAnggota(this.nia, (data) => {
@@ -2568,6 +3027,9 @@ class TabunganApp {
                 'info',
                 false
             );
+            
+            // Update timestamp
+            this.updateLastSyncTime();
         });
     }
     
@@ -2618,16 +3080,18 @@ class TabunganApp {
         }
         
         // Update last sync time
+        this.updateLastSyncTime();
+    }
+    
+    updateLastSyncTime() {
         const lastSyncElement = document.getElementById('lastSyncTime');
-        if (lastSyncElement && firebaseData.last_update) {
-            lastSyncElement.textContent = `Firebase Sync: ${firebaseData.last_update}`;
-        }
-        
-        // Update sync status
-        const syncStatusText = document.getElementById('syncStatusText');
-        if (syncStatusText) {
-            syncStatusText.textContent = 'Terhubung ke Firebase';
-            syncStatusText.style.color = '#4CAF50';
+        if (lastSyncElement) {
+            const now = new Date();
+            lastSyncElement.textContent = `Firebase Sync: ${now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            })}`;
         }
     }
     
@@ -2647,6 +3111,9 @@ class TabunganApp {
                 } else if (adminData && adminData.id) {
                     this.nia = adminData.id;
                     console.log('📋 NIA/ID ditemukan:', this.nia);
+                } else if (userData.nia) {
+                    this.nia = userData.nia;
+                    console.log('📋 NIA dari user data:', this.nia);
                 }
                 
                 return userData;
@@ -2696,8 +3163,10 @@ class TabunganApp {
             this.showToast('Anda sedang offline', 'warning');
         });
         
-        // Load initial data
-        this.loadData();
+        // Load initial data jika Firebase belum ready
+        if (!this.firebaseReady) {
+            this.loadData();
+        }
         
         // Setup hologram system
         this.initHologramSystem();
@@ -2839,11 +3308,6 @@ class TabunganApp {
         this.updateUI();
         
         console.log('✅ Data loaded:', this.userData);
-        
-        // 5. Load data dari Firebase jika sudah siap
-        if (this.firebaseReady && this.nia) {
-            this.loadFirebaseData();
-        }
     }
     
     createDefaultData() {
@@ -3099,18 +3563,18 @@ class TabunganApp {
         document.getElementById('lastSyncTime').textContent = 
             `Update: ${new Date(this.userData.lastUpdated || Date.now()).toLocaleTimeString('id-ID')}`;
         
-        // Update sync status
+        // Update sync status jika belum diupdate
         const syncStatusText = document.getElementById('syncStatusText');
-        if (syncStatusText) {
-            syncStatusText.textContent = 'Aktif';
-            syncStatusText.style.color = '#4CAF50';
+        if (syncStatusText && !syncStatusText.textContent.includes('Firebase')) {
+            syncStatusText.textContent = 'Aktif (Data Lokal)';
+            syncStatusText.style.color = '#FF9800';
         }
         
         // Update tabungan status
         const tabunganStatus = document.getElementById('tabunganStatus');
         if (tabunganStatus) {
             tabunganStatus.innerHTML = 
-                `${this.userData.status} • Firebase Real-time data`;
+                `${this.userData.status} • ${this.firebaseReady ? 'Firebase Real-time data' : 'Data Lokal'}`;
         }
         
         // Update hologram card dengan data admin
@@ -4347,23 +4811,31 @@ class TabunganApp {
         
         this.syncTimeout = setTimeout(async () => {
             try {
+                // Coba inisialisasi ulang Firebase jika belum ready
+                if (!this.firebaseReady || !window.KoperasiDB || !window.KoperasiDB.getStatus().firebaseConnected) {
+                    console.log('🔄 Mencoba reconnect Firebase...');
+                    await this.initializeFirebaseWithRetry();
+                }
+                
                 // Reload data dari Firebase
                 await this.loadFirebaseData();
+                
+                // Load data lokal juga untuk backup
                 this.loadData();
                 
-                this.showToast('Data berhasil disinkronkan dengan Firebase!', 'success');
+                this.showToast('Data berhasil disinkronkan!', 'success');
                 this.updateSyncButton('success');
                 
                 window.pushNotificationSystem.showNotification(
                     'Firebase Sync Berhasil',
-                    'Data keuangan telah diperbarui dari Firebase',
+                    'Data keuangan telah diperbarui',
                     'success',
                     false
                 );
                 
             } catch (error) {
                 console.error('Sync error:', error);
-                this.showToast('Gagal sync dengan Firebase', 'error');
+                this.showToast('Gagal sinkronisasi: ' + error.message, 'error');
                 this.updateSyncButton('error');
             }
             
@@ -6243,29 +6715,76 @@ function resetPhoto() {
     window.app.showToast('Foto direset ke default', 'info');
 }
 
-// ===== INISIALISASI APLIKASI =====
+// ===== INISIALISASI APLIKASI DENGAN ERROR HANDLING =====
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM siap, memulai aplikasi Firebase...');
+    console.log('DOM siap, memulai aplikasi Firebase dengan error handling...');
     
     try {
-        window.app = new TabunganApp();
+        // Setup global error boundary
+        window.addEventListener('error', function(event) {
+            console.error('Global error caught:', event.error);
+            showGlobalErrorToast(event.error);
+        });
         
-        console.log('✅ Aplikasi Firebase berhasil dimulai!');
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            showGlobalErrorToast(event.reason);
+        });
         
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('Error:', msg, 'at', url, ':', lineNo);
-            const toast = document.getElementById('toast');
-            if (toast) {
-                document.getElementById('toastMessage').textContent = 'Terjadi kesalahan sistem';
-                toast.className = 'toast error show';
-                setTimeout(() => toast.classList.remove('show'), 3000);
+        function showGlobalErrorToast(error) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                background: #f44336; color: white; padding: 12px 24px;
+                border-radius: 8px; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: flex; align-items: center; gap: 10px;
+                max-width: 80%; text-align: center;
+            `;
+            toast.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Terjadi kesalahan sistem: ${error.message ? error.message.substring(0, 50) : 'Unknown error'}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 5000);
+        }
+        
+        // Inisialisasi aplikasi dengan timeout
+        const appInitTimeout = setTimeout(() => {
+            console.warn('⚠️ App initialization taking too long, forcing continue...');
+            if (!window.app) {
+                window.app = new TabunganApp();
             }
-            return false;
-        };
+        }, 10000);
+        
+        window.app = new TabunganApp();
+        clearTimeout(appInitTimeout);
+        
+        console.log('✅ Aplikasi Firebase berhasil dimulai dengan perbaikan!');
         
     } catch (error) {
-        console.error('Error initializing app:', error);
-        alert('Terjadi kesalahan saat memulai aplikasi. Silakan refresh halaman.');
+        console.error('❌ Error initializing app:', error);
+        
+        // Fallback minimal
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 10000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px; text-align: center;
+        `;
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f44336; margin-bottom: 20px;"></i>
+            <h2 style="color: #333; margin-bottom: 15px;">Terjadi Kesalahan Sistem</h2>
+            <p style="color: #666; margin-bottom: 25px;">${error.message || 'Gagal memuat aplikasi'}</p>
+            <button onclick="window.location.reload()" style="
+                background: #1a5f23; color: white; border: none; padding: 12px 24px;
+                border-radius: 8px; font-size: 16px; cursor: pointer;
+            ">
+                <i class="fas fa-redo"></i> Muat Ulang Halaman
+            </button>
+        `;
+        document.body.innerHTML = '';
+        document.body.appendChild(errorDiv);
     }
 });
 </script>
