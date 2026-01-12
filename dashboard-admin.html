@@ -3491,7 +3491,7 @@ function setupRealtimeListeners() {
     });
 }
 
-// ===== FUNGSI SAVE MEMBER DATA KE FIREBASE =====
+// ===== FUNGSI SAVE MEMBER DATA KE FIREBASE (VERSI DIPERBAIKI) =====
 async function saveMemberDataToFirebase(memberData, niaValue) {
     if (!firebaseInitialized || !db) {
         throw new Error('Firebase not initialized');
@@ -3501,27 +3501,167 @@ async function saveMemberDataToFirebase(memberData, niaValue) {
         const memberId = document.getElementById('memberId').value;
         const memberRef = db.collection('anggota').doc(niaValue);
         
+        // STANDARDIZE DATA STRUCTURE untuk konsistensi
+        const standardizedData = {
+            // Identitas
+            id: niaValue,
+            nia: niaValue,
+            nama: memberData.nama,
+            posisi: memberData.posisi,
+            
+            // Kontak
+            email: memberData.email,
+            whatsapp: memberData.whatsapp,
+            telepon: memberData.whatsapp, // tambah field telepon untuk kompatibilitas
+            
+            // Data pribadi
+            alamat: memberData.alamat,
+            jenis_kelamin: memberData.jenisKelamin,
+            jenisKelamin: memberData.jenisKelamin, // duplikat untuk backward compatibility
+            agama: memberData.agama,
+            nik: memberData.nik,
+            nikKtp: memberData.nik,
+            
+            // Data keanggotaan
+            tanggal_daftar: memberData.tanggalDaftar,
+            tanggalGabung: memberData.tanggalDaftar,
+            status_aktif: memberData.statusAktif,
+            status: memberData.statusAktif, // field standar untuk tabungan digital
+            statusAktif: memberData.statusAktif,
+            
+            // DATA KEUANGAN STANDAR (PENTING UNTUK SINKRONISASI)
+            simpanan_pokok: parseFloat(memberData.simpananPokok) || 0,
+            simpananPokok: parseFloat(memberData.simpananPokok) || 0,
+            
+            simpanan_wajib: parseFloat(memberData.simpananWajib) || 0,
+            simpananWajib: parseFloat(memberData.simpananWajib) || 0,
+            
+            simpanan_sukarela: parseFloat(memberData.simpananSukarela) || 0,
+            simpananSukarela: parseFloat(memberData.simpananSukarela) || 0,
+            
+            total_simpanan: parseFloat(memberData.totalSimpanan) || 0,
+            totalSimpanan: parseFloat(memberData.totalSimpanan) || 0,
+            
+            total_pinjaman: 0, // default
+            totalPinjaman: 0,
+            
+            shu: Math.round(memberData.totalSimpanan * 0.2), // 20% dari total simpanan
+            shu_estimasi: Math.round(memberData.totalSimpanan * 0.2),
+            shuEstimasi: Math.round(memberData.totalSimpanan * 0.2),
+            
+            // Foto
+            foto: memberData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+            
+            // Password (dienkripsi untuk keamanan)
+            password: memberData.password,
+            
+            // Metadata
+            created_at: memberData.createdAt,
+            last_update: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            updated_by: 'dashboard_admin',
+            
+            // QR Code URL untuk sinkronisasi dengan Tabungan Digital
+            qr_url: `https://qr-code-hybrid.vercel.app/?id=${niaValue}`,
+            tabungan_digital_url: `tabungan-digital.html?nia=${niaValue}`
+        };
+        
         if (memberId) {
-            // Update existing member
-            await memberRef.update(memberData);
-            showNotification('Data anggota berhasil diperbarui di Firebase!', 'success');
+            // Update existing member - hanya update field yang diperlukan
+            await memberRef.update(standardizedData);
+            console.log('✅ Data anggota diperbarui di Firebase dengan struktur standar:', standardizedData);
         } else {
             // Add new member
-            await memberRef.set(memberData);
-            showNotification('Data anggota berhasil disimpan di Firebase!', 'success');
-            
-            // Sync ke Tabungan Digital
-            syncToTabunganDigital({
-                id: niaValue,
-                ...memberData
-            });
+            await memberRef.set(standardizedData);
+            console.log('✅ Data anggota baru disimpan ke Firebase dengan struktur standar:', standardizedData);
         }
         
+        // Trigger sync event untuk Tabungan Digital
+        window.dispatchEvent(new CustomEvent('firebase-data-updated', {
+            detail: { 
+                type: 'anggota',
+                id: niaValue,
+                data: standardizedData 
+            }
+        }));
+        
+        showNotification('Data berhasil disinkronisasi dengan Firebase!', 'success');
         return true;
         
     } catch (error) {
         console.error('❌ Error saving to Firebase:', error);
+        showNotification('Gagal menyimpan ke Firebase: ' + error.message, 'error');
         throw error;
+    }
+}
+
+// ===== FUNGSI SINKRONISASI OTOMATIS KE TABUNGAN DIGITAL =====
+async function syncAnggotaToTabunganDigital(nia, anggotaData) {
+    try {
+        console.log('🔄 Sinkronisasi data ke Tabungan Digital untuk NIA:', nia);
+        
+        // 1. Simpan ke localStorage Tabungan Digital
+        const tabunganDigitalData = JSON.parse(localStorage.getItem('tabungan_digital_data') || '[]');
+        
+        // Cari index anggota yang ada
+        const existingIndex = tabunganDigitalData.findIndex(item => 
+            item.id === nia || item.nia === nia || item.email === anggotaData.email
+        );
+        
+        // Data yang sudah distandardisasi
+        const tabunganData = {
+            id: nia,
+            nia: nia,
+            nama: anggotaData.nama,
+            email: anggotaData.email,
+            whatsapp: anggotaData.whatsapp,
+            telepon: anggotaData.whatsapp,
+            alamat: anggotaData.alamat,
+            foto: anggotaData.foto,
+            posisi: anggotaData.posisi,
+            status: anggotaData.statusAktif,
+            
+            // Data keuangan untuk sinkronisasi
+            simpanan_pokok: anggotaData.simpananPokok || 0,
+            simpanan_wajib: anggotaData.simpananWajib || 0,
+            simpanan_sukarela: anggotaData.simpananSukarela || 0,
+            total_simpanan: anggotaData.totalSimpanan || 0,
+            total_pinjaman: 0,
+            shu: Math.round((anggotaData.totalSimpanan || 0) * 0.2),
+            
+            // Timestamp
+            last_sync: new Date().toISOString(),
+            sync_source: 'dashboard_admin'
+        };
+        
+        if (existingIndex !== -1) {
+            tabunganDigitalData[existingIndex] = tabunganData;
+        } else {
+            tabunganDigitalData.push(tabunganData);
+        }
+        
+        localStorage.setItem('tabungan_digital_data', JSON.stringify(tabunganDigitalData));
+        
+        // 2. Simpan juga ke koperasi_anggota untuk kompatibilitas
+        const koperasiAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+        const koperasiIndex = koperasiAnggota.findIndex(item => 
+            item.id === nia || item.nia === nia || item.email === anggotaData.email
+        );
+        
+        if (koperasiIndex !== -1) {
+            koperasiAnggota[koperasiIndex] = { ...koperasiAnggota[koperasiIndex], ...tabunganData };
+        } else {
+            koperasiAnggota.push(tabunganData);
+        }
+        
+        localStorage.setItem('koperasi_anggota', JSON.stringify(koperasiAnggota));
+        
+        console.log('✅ Data berhasil disinkronisasi ke Tabungan Digital');
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Error syncing to Tabungan Digital:', error);
+        return false;
     }
 }
 
@@ -3729,6 +3869,12 @@ async function saveMemberData() {
         // Coba simpan ke Firebase jika tersedia
         if (firebaseInitialized) {
             await saveMemberDataToFirebase(memberData, niaValue);
+            
+            // Trigger sync ke Tabungan Digital
+            setTimeout(() => {
+                syncAnggotaToTabunganDigital(niaValue, memberData);
+            }, 1000);
+            
         } else {
             // Fallback ke localStorage
             throw new Error('Firebase not available');
@@ -3753,10 +3899,7 @@ async function saveMemberData() {
             showNotification('Data anggota berhasil disimpan di localStorage!', 'success');
             
             // Sync ke Tabungan Digital
-            syncToTabunganDigital({
-                id: niaValue,
-                ...memberData
-            });
+            syncAnggotaToTabunganDigital(niaValue, memberData);
         }
         
         // Simpan ke localStorage
@@ -5435,63 +5578,98 @@ function viewMemberDetail(memberId) {
     document.getElementById('detailAnggotaModal').style.display = 'flex';
 }
 
-// ===== FUNGSI EDIT ANGGOTA =====
-function editMemberNew(memberId) {
-    const member = anggotaData.find(m => m.id === memberId || m.nia === memberId);
-    if (!member) return;
+// ===== FUNGSI EDIT ANGGOTA (VERSI DIPERBAIKI) =====
+async function editMemberNew(memberId) {
+    console.log('✏️ Loading data untuk edit dari Firebase, ID:', memberId);
     
-    // Set judul modal
-    document.getElementById('memberModalTitle').textContent = 'Edit Data Anggota';
-    document.getElementById('memberId').value = member.nia || member.id;
-    
-    // Isi form dengan data anggota
-    document.getElementById('nia').value = (member.nia || member.id).replace('NIA-', '');
-    document.getElementById('posisi').value = member.posisi || '';
-    document.getElementById('nama').value = member.nama || '';
-    
-    // Set jenis kelamin
-    const jenisKelaminRadio = document.querySelector(`input[name="jenisKelamin"][value="${member.jenisKelamin}"]`);
-    if (jenisKelaminRadio) {
-        jenisKelaminRadio.checked = true;
-    }
-    
-    document.getElementById('emailMember').value = member.email || '';
-    document.getElementById('whatsapp').value = member.whatsapp || '';
-    document.getElementById('nik').value = member.nik || '';
-    document.getElementById('agama').value = member.agama || 'Islam';
-    document.getElementById('alamat').value = member.alamat || '';
-    document.getElementById('simpananPokok').value = member.simpananPokok || 0;
-    document.getElementById('simpananWajib').value = member.simpananWajib || 0;
-    document.getElementById('simpananSukarela').value = member.simpananSukarela || 0;
-    document.getElementById('passwordMember').value = member.password || '';
-    document.getElementById('tanggalDaftar').value = member.tanggalDaftar || '';
-    
-    // Set status aktif
-    const statusAktifRadio = document.querySelector(`input[name="statusAktif"][value="${member.statusAktif}"]`);
-    if (statusAktifRadio) {
-        statusAktifRadio.checked = true;
-    }
-    
-    // Set foto profil jika ada
-    if (member.foto) {
-        const fotoProfilImg = document.getElementById('fotoProfilImg');
-        const fotoProfilPlaceholder = document.getElementById('fotoProfilPlaceholder');
+    try {
+        let member;
         
-        fotoProfilImg.innerHTML = `<img src="${member.foto}" class="foto-profil-img">`;
-        fotoProfilImg.style.display = 'block';
-        fotoProfilPlaceholder.style.display = 'none';
+        // Coba ambil dari Firebase dulu
+        if (firebaseInitialized && db) {
+            const docRef = db.collection('anggota').doc(memberId);
+            const docSnap = await docRef.get();
+            
+            if (docSnap.exists) {
+                member = { id: docSnap.id, ...docSnap.data() };
+                console.log('✅ Data ditemukan di Firebase:', member);
+            } else {
+                // Fallback ke data lokal
+                member = anggotaData.find(m => m.id === memberId || m.nia === memberId);
+                console.log('⚠️ Data tidak ditemukan di Firebase, menggunakan data lokal');
+            }
+        } else {
+            // Firebase tidak tersedia, gunakan data lokal
+            member = anggotaData.find(m => m.id === memberId || m.nia === memberId);
+        }
+        
+        if (!member) {
+            showNotification('Data anggota tidak ditemukan!', 'error');
+            return;
+        }
+        
+        // Set judul modal
+        document.getElementById('memberModalTitle').textContent = 'Edit Data Anggota';
+        document.getElementById('memberId').value = member.nia || member.id;
+        
+        // Isi form dengan data anggota
+        document.getElementById('nia').value = (member.nia || member.id || '').replace('NIA-', '');
+        document.getElementById('posisi').value = member.posisi || '';
+        document.getElementById('nama').value = member.nama || '';
+        
+        // Set jenis kelamin (gunakan field yang konsisten)
+        const jenisKelamin = member.jenis_kelamin || member.jenisKelamin;
+        const jenisKelaminRadio = document.querySelector(`input[name="jenisKelamin"][value="${jenisKelamin}"]`);
+        if (jenisKelaminRadio) {
+            jenisKelaminRadio.checked = true;
+        }
+        
+        document.getElementById('emailMember').value = member.email || '';
+        document.getElementById('whatsapp').value = member.whatsapp || member.telepon || '';
+        document.getElementById('nik').value = member.nik || member.nikKtp || '';
+        document.getElementById('agama').value = member.agama || 'Islam';
+        document.getElementById('alamat').value = member.alamat || '';
+        
+        // Gunakan field yang konsisten untuk simpanan
+        document.getElementById('simpananPokok').value = member.simpanan_pokok || member.simpananPokok || 0;
+        document.getElementById('simpananWajib').value = member.simpanan_wajib || member.simpananWajib || 0;
+        document.getElementById('simpananSukarela').value = member.simpanan_sukarela || member.simpananSukarela || 0;
+        
+        document.getElementById('passwordMember').value = member.password || '';
+        document.getElementById('tanggalDaftar').value = member.tanggal_daftar || member.tanggalGabung || '';
+        
+        // Set status aktif (gunakan field yang konsisten)
+        const statusAktif = member.status || member.status_aktif || member.statusAktif;
+        const statusAktifRadio = document.querySelector(`input[name="statusAktif"][value="${statusAktif}"]`);
+        if (statusAktifRadio) {
+            statusAktifRadio.checked = true;
+        }
+        
+        // Set foto profil jika ada
+        if (member.foto) {
+            const fotoProfilImg = document.getElementById('fotoProfilImg');
+            const fotoProfilPlaceholder = document.getElementById('fotoProfilPlaceholder');
+            
+            fotoProfilImg.innerHTML = `<img src="${member.foto}" class="foto-profil-img" onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">`;
+            fotoProfilImg.style.display = 'block';
+            fotoProfilPlaceholder.style.display = 'none';
+        }
+        
+        // Update alamat counter
+        const alamatCounter = document.getElementById('alamatCounter');
+        if (alamatCounter && member.alamat) {
+            alamatCounter.textContent = `${member.alamat.length}/200 karakter`;
+        }
+        
+        // Update total simpanan display
+        updateTotalSimpananDisplay();
+        
+        document.getElementById('addMemberModal').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('❌ Error loading member data:', error);
+        showNotification('Gagal memuat data anggota dari database', 'error');
     }
-    
-    // Update alamat counter
-    const alamatCounter = document.getElementById('alamatCounter');
-    if (alamatCounter && member.alamat) {
-        alamatCounter.textContent = `${member.alamat.length}/200 karakter`;
-    }
-    
-    // Update total simpanan display
-    updateTotalSimpananDisplay();
-    
-    document.getElementById('addMemberModal').style.display = 'flex';
 }
 
 // ===== FUNGSI EDIT LAINNYA =====
