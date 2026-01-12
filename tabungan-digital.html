@@ -2569,7 +2569,7 @@ function createKoperasiDB(db) {
         initialized: true,
         db: db,
         
-        // FUNGSI UTAMA: Dapatkan data anggota berdasarkan NIA (konsisten dengan Dashboard)
+        // FUNGSI UTAMA: Dapatkan data anggota berdasarkan NIA (konsisten dengan Dashboard) - PERBAIKAN DI SINI
         getAnggota: async (nia) => {
             try {
                 if (!nia) {
@@ -2581,7 +2581,7 @@ function createKoperasiDB(db) {
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // STANDARDIZE DATA untuk kompatibilitas dengan kode yang ada
+                    // ===== STANDARDIZE DATA DARI FIREBASE =====
                     const standardizedData = {
                         // Data identitas
                         id: doc.id,
@@ -2594,30 +2594,51 @@ function createKoperasiDB(db) {
                         telepon: data.whatsapp || data.telepon || '',
                         whatsapp: data.whatsapp || '',
                         
-                        // Data pribadi
+                        // Data pribadi - handle both snake_case and camelCase
                         alamat: data.alamat || '',
                         jenis_kelamin: data.jenis_kelamin || data.jenisKelamin || '',
+                        jenisKelamin: data.jenisKelamin || data.jenis_kelamin || '',
                         agama: data.agama || '',
-                        nik: data.nik || data.nikKtp || '',
+                        nik: data.nik || data.nik_ktp || '',
+                        nik_ktp: data.nik_ktp || data.nik || '',
                         
                         // Data keanggotaan
-                        tanggal_gabung: data.tanggal_daftar || data.tanggalGabung || '',
-                        status: data.status || data.status_aktif || data.statusAktif || 'Aktif',
+                        tanggal_gabung: data.tanggal_bergabung || data.tanggal_daftar || '',
+                        tanggal_daftar: data.tanggal_daftar || data.tanggal_bergabung || '',
+                        status: data.status || data.status_aktif || '',
+                        status_aktif: data.status_aktif || data.status || '',
                         
-                        // DATA KEUANGAN (PENTING - ambil dari field yang konsisten)
+                        // ===== DATA KEUANGAN - handle both formats =====
                         simpanan_pokok: parseFloat(data.simpanan_pokok || data.simpananPokok || 0),
+                        simpananPokok: parseFloat(data.simpananPokok || data.simpanan_pokok || 0),
+                        
                         simpanan_wajib: parseFloat(data.simpanan_wajib || data.simpananWajib || 0),
+                        simpananWajib: parseFloat(data.simpananWajib || data.simpanan_wajib || 0),
+                        
                         simpanan_sukarela: parseFloat(data.simpanan_sukarela || data.simpananSukarela || 0),
+                        simpananSukarela: parseFloat(data.simpananSukarela || data.simpanan_sukarela || 0),
+                        
                         total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
+                        totalSimpanan: parseFloat(data.totalSimpanan || data.total_simpanan || 0),
+                        
                         total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
-                        shu: parseFloat(data.shu || data.shu_estimasi || data.shuEstimasi || 0),
+                        totalPinjaman: parseFloat(data.totalPinjaman || data.total_pinjaman || 0),
+                        
+                        shu: parseFloat(data.shu || data.shu_estimasi || 0),
+                        shu_estimasi: parseFloat(data.shu_estimasi || data.shu || 0),
                         
                         // Foto
                         foto: data.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
                         
                         // Metadata
-                        last_update: data.last_update || data.updated_at || new Date().toISOString(),
-                        qr_url: data.qr_url || `https://qr-code-hybrid.vercel.app/?id=${doc.id}`
+                        last_update: data.updated_at || data.last_update || '',
+                        updated_at: data.updated_at || data.last_update || '',
+                        
+                        // QR Code
+                        qr_url: data.qr_url || `https://qr-code-hybrid.vercel.app/?id=${doc.id}`,
+                        
+                        // Password
+                        password: data.password || ''
                     };
                     
                     console.log('✅ Data berhasil di-standardize dari Firebase:', standardizedData);
@@ -3010,12 +3031,12 @@ class TabunganApp {
         }
     }
     
-    // PERBAIKI fungsi loadFirebaseData() dengan 3 strategi pencarian
+    // FUNGSI loadFirebaseData() DIPERBAIKI - 3 STRATEGI PENCARIAN
     async loadFirebaseData() {
         try {
             console.log('🔍 Memulai proses load data Firebase...');
             
-            // STRATEGI 1: Cari berdasarkan NIA (prioritas utama)
+            // STRATEGI 1: Cari berdasarkan NIA
             if (this.nia) {
                 console.log('🔍 Mencari dengan NIA:', this.nia);
                 
@@ -3026,9 +3047,10 @@ class TabunganApp {
                         this.firebaseUserData = firebaseData;
                         console.log('✅ Data ditemukan dengan NIA:', firebaseData);
                         
-                        // Setup real-time listener dengan NIA ini
-                        this.setupFirebaseListener();
+                        // Simpan juga ke localStorage untuk offline access
+                        this.saveFirebaseDataToLocal(firebaseData);
                         
+                        this.setupFirebaseListener();
                         this.updateUIFirebase();
                         this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
                         return;
@@ -3036,7 +3058,7 @@ class TabunganApp {
                 }
             }
             
-            // STRATEGY 2: Cari berdasarkan email (fallback)
+            // STRATEGY 2: Cari berdasarkan email
             console.log('🔍 Mencari dengan email:', this.currentUser.email);
             
             if (window.KoperasiDB && window.KoperasiDB.getUserByEmail) {
@@ -3044,19 +3066,40 @@ class TabunganApp {
                 
                 if (firebaseData) {
                     this.firebaseUserData = firebaseData;
-                    this.nia = firebaseData.nia || firebaseData.id; // Simpan NIA untuk future reference
+                    this.nia = firebaseData.nia || firebaseData.id;
                     console.log('✅ Data ditemukan dengan email:', firebaseData);
                     
-                    // Setup real-time listener dengan NIA yang baru ditemukan
-                    this.setupFirebaseListener();
+                    // Simpan juga ke localStorage untuk offline access
+                    this.saveFirebaseDataToLocal(firebaseData);
                     
+                    this.setupFirebaseListener();
                     this.updateUIFirebase();
                     this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
                     return;
                 }
             }
             
-            // STRATEGY 3: Fallback ke data lokal
+            // STRATEGY 3: Coba load dari localStorage backup
+            console.log('🔍 Mencari di localStorage backup...');
+            const backupData = localStorage.getItem(`firebase_backup_${this.currentUser.email}`);
+            if (backupData) {
+                try {
+                    const parsedData = JSON.parse(backupData);
+                    if (parsedData && parsedData.nia) {
+                        this.firebaseUserData = parsedData;
+                        this.nia = parsedData.nia;
+                        console.log('✅ Data ditemukan di localStorage backup');
+                        
+                        this.updateUIFirebase();
+                        this.updateFirebaseStatusUI('Data cached (offline)', 'warning');
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Error parsing backup data:', e);
+                }
+            }
+            
+            // STRATEGY 4: Fallback ke data lokal
             console.log('⚠️ Data tidak ditemukan di Firebase, menggunakan data lokal');
             this.showToast('Menggunakan data lokal', 'warning');
             this.loadData();
@@ -3066,6 +3109,48 @@ class TabunganApp {
             console.error('❌ Error loading Firebase data:', error);
             this.loadData();
             this.updateFirebaseStatusUI('Error: ' + error.message.substring(0, 30), 'error');
+        }
+    }
+    
+    // FUNGSI BARU: saveFirebaseDataToLocal
+    saveFirebaseDataToLocal(firebaseData) {
+        try {
+            // Simpan sebagai backup
+            localStorage.setItem(`firebase_backup_${this.currentUser.email}`, JSON.stringify(firebaseData));
+            
+            // Update koperasi_anggota
+            const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            const existingIndex = anggotaData.findIndex(a => 
+                a.email === this.currentUser.email || 
+                a.nia === firebaseData.nia
+            );
+            
+            if (existingIndex !== -1) {
+                anggotaData[existingIndex] = { ...anggotaData[existingIndex], ...firebaseData };
+            } else {
+                anggotaData.push(firebaseData);
+            }
+            
+            localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+            
+            // Update tabungan_digital_data
+            const tabunganData = JSON.parse(localStorage.getItem('tabungan_digital_data') || '[]');
+            const tabunganIndex = tabunganData.findIndex(a => 
+                a.email === this.currentUser.email || 
+                a.nia === firebaseData.nia
+            );
+            
+            if (tabunganIndex !== -1) {
+                tabunganData[tabunganIndex] = { ...tabunganData[tabunganIndex], ...firebaseData };
+            } else {
+                tabunganData.push(firebaseData);
+            }
+            
+            localStorage.setItem('tabungan_digital_data', JSON.stringify(tabunganData));
+            
+            console.log('✅ Firebase data saved to localStorage');
+        } catch (error) {
+            console.error('Error saving Firebase data to localStorage:', error);
         }
     }
     
