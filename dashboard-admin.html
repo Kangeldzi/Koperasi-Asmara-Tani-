@@ -3501,35 +3501,35 @@ async function saveMemberDataToFirebase(memberData, niaValue) {
         const memberId = document.getElementById('memberId').value;
         const memberRef = db.collection('anggota').doc(niaValue);
         
-        // STANDARDIZE DATA STRUCTURE untuk konsistensi
+        // ===== STANDARDIZE DATA STRUCTURE =====
         const standardizedData = {
-            // Identitas
+            // Identitas - gunakan snake_case untuk konsistensi
             id: niaValue,
             nia: niaValue,
             nama: memberData.nama,
             posisi: memberData.posisi,
             
-            // Kontak
+            // Kontak - gunakan snake_case
             email: memberData.email,
             whatsapp: memberData.whatsapp,
-            telepon: memberData.whatsapp, // tambah field telepon untuk kompatibilitas
+            telepon: memberData.whatsapp,
             
-            // Data pribadi
+            // Data pribadi - standardize field names
             alamat: memberData.alamat,
-            jenis_kelamin: memberData.jenisKelamin,
-            jenisKelamin: memberData.jenisKelamin, // duplikat untuk backward compatibility
+            jenis_kelamin: memberData.jenisKelamin,  // SNAKE_CASE untuk Tabungan Digital
+            jenisKelamin: memberData.jenisKelamin,   // camelCase untuk backward compatibility
             agama: memberData.agama,
             nik: memberData.nik,
-            nikKtp: memberData.nik,
+            nik_ktp: memberData.nik,  // SNAKE_CASE untuk Tabungan Digital
             
             // Data keanggotaan
             tanggal_daftar: memberData.tanggalDaftar,
-            tanggalGabung: memberData.tanggalDaftar,
+            tanggal_bergabung: memberData.tanggalDaftar,  // untuk Tabungan Digital
             status_aktif: memberData.statusAktif,
-            status: memberData.statusAktif, // field standar untuk tabungan digital
-            statusAktif: memberData.statusAktif,
+            status: memberData.statusAktif,  // SINGLE FIELD untuk Tabungan Digital
             
-            // DATA KEUANGAN STANDAR (PENTING UNTUK SINKRONISASI)
+            // ===== DATA KEUANGAN STANDAR =====
+            // Simpanan - gunakan snake_case
             simpanan_pokok: parseFloat(memberData.simpananPokok) || 0,
             simpananPokok: parseFloat(memberData.simpananPokok) || 0,
             
@@ -3542,50 +3542,50 @@ async function saveMemberDataToFirebase(memberData, niaValue) {
             total_simpanan: parseFloat(memberData.totalSimpanan) || 0,
             totalSimpanan: parseFloat(memberData.totalSimpanan) || 0,
             
-            total_pinjaman: 0, // default
+            // Pinjaman - standar 0 default
+            total_pinjaman: 0,
             totalPinjaman: 0,
             
-            shu: Math.round(memberData.totalSimpanan * 0.2), // 20% dari total simpanan
+            // SHU - konsisten
+            shu: Math.round(memberData.totalSimpanan * 0.2),
             shu_estimasi: Math.round(memberData.totalSimpanan * 0.2),
-            shuEstimasi: Math.round(memberData.totalSimpanan * 0.2),
             
-            // Foto
+            // Foto - konsisten
             foto: memberData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
             
-            // Password (dienkripsi untuk keamanan)
+            // Password (encrypted)
             password: memberData.password,
             
             // Metadata
-            created_at: memberData.createdAt,
-            last_update: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            updated_by: 'dashboard_admin',
+            last_update: new Date().toLocaleString('id-ID'),
             
-            // QR Code URL untuk sinkronisasi dengan Tabungan Digital
+            // ===== QR CODE STANDAR =====
             qr_url: `https://qr-code-hybrid.vercel.app/?id=${niaValue}`,
+            qr_code: `https://qr-code-hybrid.vercel.app/?id=${niaValue}&name=${encodeURIComponent(memberData.nama)}`,
+            
+            // Link untuk Tabungan Digital
             tabungan_digital_url: `tabungan-digital.html?nia=${niaValue}`
         };
         
         if (memberId) {
-            // Update existing member - hanya update field yang diperlukan
+            // Update existing member
             await memberRef.update(standardizedData);
-            console.log('✅ Data anggota diperbarui di Firebase dengan struktur standar:', standardizedData);
+            console.log('✅ Data anggota diperbarui dengan struktur standar');
         } else {
             // Add new member
             await memberRef.set(standardizedData);
-            console.log('✅ Data anggota baru disimpan ke Firebase dengan struktur standar:', standardizedData);
+            console.log('✅ Data anggota baru disimpan dengan struktur standar');
         }
         
-        // Trigger sync event untuk Tabungan Digital
-        window.dispatchEvent(new CustomEvent('firebase-data-updated', {
-            detail: { 
-                type: 'anggota',
-                id: niaValue,
-                data: standardizedData 
-            }
-        }));
+        // ===== SINKRONISASI KE TABUNGAN DIGITAL =====
+        await syncToTabunganDigital(niaValue, standardizedData);
         
-        showNotification('Data berhasil disinkronisasi dengan Firebase!', 'success');
+        // Dispatch event untuk sinkronisasi
+        dispatchToTabunganDigital(niaValue, standardizedData);
+        
+        showNotification('Data berhasil disinkronisasi dengan Firebase dan Tabungan Digital!', 'success');
         return true;
         
     } catch (error) {
@@ -3595,20 +3595,15 @@ async function saveMemberDataToFirebase(memberData, niaValue) {
     }
 }
 
-// ===== FUNGSI SINKRONISASI OTOMATIS KE TABUNGAN DIGITAL =====
-async function syncAnggotaToTabunganDigital(nia, anggotaData) {
+// ===== FUNGSI SYNC KE TABUNGAN DIGITAL =====
+async function syncToTabunganDigital(nia, anggotaData) {
     try {
-        console.log('🔄 Sinkronisasi data ke Tabungan Digital untuk NIA:', nia);
+        console.log('🔄 Sinkronisasi ke Tabungan Digital untuk NIA:', nia);
         
         // 1. Simpan ke localStorage Tabungan Digital
         const tabunganDigitalData = JSON.parse(localStorage.getItem('tabungan_digital_data') || '[]');
         
-        // Cari index anggota yang ada
-        const existingIndex = tabunganDigitalData.findIndex(item => 
-            item.id === nia || item.nia === nia || item.email === anggotaData.email
-        );
-        
-        // Data yang sudah distandardisasi
+        // Data yang sudah distandardisasi untuk Tabungan Digital
         const tabunganData = {
             id: nia,
             nia: nia,
@@ -3619,33 +3614,61 @@ async function syncAnggotaToTabunganDigital(nia, anggotaData) {
             alamat: anggotaData.alamat,
             foto: anggotaData.foto,
             posisi: anggotaData.posisi,
-            status: anggotaData.statusAktif,
             
-            // Data keuangan untuk sinkronisasi
-            simpanan_pokok: anggotaData.simpananPokok || 0,
-            simpanan_wajib: anggotaData.simpananWajib || 0,
-            simpanan_sukarela: anggotaData.simpananSukarela || 0,
-            total_simpanan: anggotaData.totalSimpanan || 0,
-            total_pinjaman: 0,
-            shu: Math.round((anggotaData.totalSimpanan || 0) * 0.2),
+            // Gunakan snake_case untuk Tabungan Digital
+            jenis_kelamin: anggotaData.jenis_kelamin || anggotaData.jenisKelamin,
+            agama: anggotaData.agama,
+            nik: anggotaData.nik,
+            nik_ktp: anggotaData.nik_ktp || anggotaData.nik,
             
-            // Timestamp
+            // Status - gunakan field yang konsisten
+            status: anggotaData.status || anggotaData.status_aktif,
+            status_aktif: anggotaData.status_aktif || anggotaData.status,
+            
+            // Data keuangan - gunakan snake_case
+            simpanan_pokok: anggotaData.simpanan_pokok || 0,
+            simpanan_wajib: anggotaData.simpanan_wajib || 0,
+            simpanan_sukarela: anggotaData.simpanan_sukarela || 0,
+            total_simpanan: anggotaData.total_simpanan || 0,
+            total_pinjaman: anggotaData.total_pinjaman || 0,
+            shu: anggotaData.shu || anggotaData.shu_estimasi || 0,
+            
+            // Tanggal
+            tanggal_bergabung: anggotaData.tanggal_bergabung || anggotaData.tanggal_daftar,
+            tanggal_daftar: anggotaData.tanggal_daftar,
+            
+            // Metadata
+            password: anggotaData.password,
+            qr_url: anggotaData.qr_url,
             last_sync: new Date().toISOString(),
-            sync_source: 'dashboard_admin'
+            sync_source: 'dashboard_admin',
+            firebase_id: nia
         };
         
+        // Cari apakah data sudah ada
+        const existingIndex = tabunganDigitalData.findIndex(item => 
+            item.id === nia || 
+            item.nia === nia || 
+            item.email === anggotaData.email
+        );
+        
         if (existingIndex !== -1) {
+            // Update existing
             tabunganDigitalData[existingIndex] = tabunganData;
         } else {
+            // Add new
             tabunganDigitalData.push(tabunganData);
         }
         
+        // Simpan ke localStorage
         localStorage.setItem('tabungan_digital_data', JSON.stringify(tabunganDigitalData));
         
         // 2. Simpan juga ke koperasi_anggota untuk kompatibilitas
         const koperasiAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
         const koperasiIndex = koperasiAnggota.findIndex(item => 
-            item.id === nia || item.nia === nia || item.email === anggotaData.email
+            item.id === nia || 
+            item.nia === nia || 
+            item.email === anggotaData.email
         );
         
         if (koperasiIndex !== -1) {
@@ -3663,6 +3686,144 @@ async function syncAnggotaToTabunganDigital(nia, anggotaData) {
         console.error('❌ Error syncing to Tabungan Digital:', error);
         return false;
     }
+}
+
+// ===== FUNGSI EVENT LISTENERS UNTUK SINKRONISASI =====
+function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
+    // Listen for Tabungan Digital updates
+    window.addEventListener('tabungan-digital-update', (event) => {
+        console.log('🔄 Update dari Tabungan Digital diterima:', event.detail);
+        
+        // Update data lokal dari Tabungan Digital
+        if (event.detail && event.detail.nia) {
+            const index = anggotaData.findIndex(a => a.nia === event.detail.nia || a.id === event.detail.nia);
+            if (index !== -1) {
+                anggotaData[index] = { ...anggotaData[index], ...event.detail.data };
+                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+                
+                // Update Firebase jika perlu
+                if (firebaseInitialized) {
+                    db.collection('anggota').doc(event.detail.nia).update(event.detail.data);
+                }
+                
+                showNotification('Data diperbarui dari Tabungan Digital', 'success');
+                updateDashboardStats();
+                refreshAnggotaTable();
+            }
+        }
+    });
+    
+    // Tombol tambah anggota
+    document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
+    document.getElementById('addFirstMemberBtn')?.addEventListener('click', openAddMemberModal);
+    
+    // Tombol tambah simpanan
+    document.getElementById('addSimpananBtn')?.addEventListener('click', openAddSimpananModal);
+    document.getElementById('addFirstSimpananBtn')?.addEventListener('click', openAddSimpananModal);
+    
+    // Tombol tambah pinjaman
+    document.getElementById('addPinjamanBtn')?.addEventListener('click', openAddPinjamanModal);
+    document.getElementById('addFirstPinjamanBtn')?.addEventListener('click', openAddPinjamanModal);
+    
+    // Tombol tambah barang unit usaha
+    const tambahBarangBtn = document.getElementById('tambahBarangBtn');
+    if (tambahBarangBtn) {
+        tambahBarangBtn.addEventListener('click', openUnitUsahaModal);
+    }
+    
+    // Simpanan tabs
+    document.querySelectorAll('[data-simpanan-tab]').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabType = this.getAttribute('data-simpanan-tab');
+            
+            // Update active tab
+            document.querySelectorAll('[data-simpanan-tab]').forEach(t => {
+                t.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Update title
+            let title = 'Daftar Simpanan ';
+            switch(tabType) {
+                case 'pokok': title += 'Pokok'; break;
+                case 'wajib': title += 'Wajib'; break;
+                case 'sukarela': title += 'Sukarela'; break;
+            }
+            document.getElementById('simpananTitle').textContent = title;
+            
+            // Refresh table
+            refreshSimpananTable();
+        });
+    });
+    
+    // Search functionality
+    document.getElementById('searchAnggota')?.addEventListener('input', searchAnggota);
+    document.getElementById('searchSimpanan')?.addEventListener('input', searchSimpanan);
+    document.getElementById('searchPinjaman')?.addEventListener('input', searchPinjaman);
+    document.getElementById('searchBarang')?.addEventListener('input', searchBarang);
+    
+    // Save member button
+    document.getElementById('saveMemberBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const success = await saveMemberData();
+        if (success) {
+            document.getElementById('addMemberModal').style.display = 'none';
+            checkEmptyTables();
+        }
+    });
+    
+    // Save simpanan button
+    document.getElementById('saveSimpananBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const success = await saveSimpananData();
+        if (success) {
+            document.getElementById('addSimpananModal').style.display = 'none';
+            checkEmptyTables();
+        }
+    });
+    
+    // Save pinjaman button
+    document.getElementById('savePinjamanBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const success = await savePinjamanData();
+        if (success) {
+            document.getElementById('addPinjamanModal').style.display = 'none';
+            checkEmptyTables();
+        }
+    });
+    
+    // Save barang button
+    document.getElementById('saveBarangBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const success = await saveBarangData();
+        if (success) {
+            document.getElementById('unitUsahaModal').style.display = 'none';
+            checkEmptyTables();
+        }
+    });
+    
+    // Confirm delete button
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
+        await confirmDeleteData();
+        document.getElementById('confirmModal').style.display = 'none';
+    });
+    
+    console.log('✅ Event listeners setup completed');
+}
+
+// ===== FUNGSI DISPATCH EVENT KE TABUNGAN DIGITAL =====
+function dispatchToTabunganDigital(nia, data) {
+    window.dispatchEvent(new CustomEvent('dashboard-admin-update', {
+        detail: {
+            nia: nia,
+            data: data,
+            timestamp: new Date().toISOString(),
+            source: 'dashboard_admin'
+        }
+    }));
 }
 
 // ===== FUNGSI DELETE DATA DARI FIREBASE =====
@@ -3862,19 +4023,13 @@ async function saveMemberData() {
         last_update: new Date().toLocaleString('id-ID'),
         
         // QR Code URL untuk Hybrid QR
-        qr_url: `https://qr-code-hybrid.vercel.app/qr-code-hybrid.html?id=${niaValue}`
+        qr_url: `https://qr-code-hybrid.vercel.app/?id=${niaValue}`
     };
     
     try {
         // Coba simpan ke Firebase jika tersedia
         if (firebaseInitialized) {
             await saveMemberDataToFirebase(memberData, niaValue);
-            
-            // Trigger sync ke Tabungan Digital
-            setTimeout(() => {
-                syncAnggotaToTabunganDigital(niaValue, memberData);
-            }, 1000);
-            
         } else {
             // Fallback ke localStorage
             throw new Error('Firebase not available');
@@ -3897,14 +4052,14 @@ async function saveMemberData() {
             // TAMBAH anggota baru
             anggotaData.push({ id: niaValue, ...memberData });
             showNotification('Data anggota berhasil disimpan di localStorage!', 'success');
-            
-            // Sync ke Tabungan Digital
-            syncAnggotaToTabunganDigital(niaValue, memberData);
         }
         
         // Simpan ke localStorage
         localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
         localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+        
+        // Sync ke Tabungan Digital
+        syncToTabunganDigital(niaValue, memberData);
     }
     
     // Update UI (sama untuk Firebase dan localStorage)
@@ -4181,108 +4336,6 @@ function fixSidebarNavigation() {
             sidebar.classList.remove('active');
         }
     });
-}
-
-// ===== FUNGSI SETUP EVENT LISTENERS =====
-function setupEventListeners() {
-    console.log('Setting up event listeners...');
-    
-    // Tombol tambah anggota
-    document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
-    document.getElementById('addFirstMemberBtn')?.addEventListener('click', openAddMemberModal);
-    
-    // Tombol tambah simpanan
-    document.getElementById('addSimpananBtn')?.addEventListener('click', openAddSimpananModal);
-    document.getElementById('addFirstSimpananBtn')?.addEventListener('click', openAddSimpananModal);
-    
-    // Tombol tambah pinjaman
-    document.getElementById('addPinjamanBtn')?.addEventListener('click', openAddPinjamanModal);
-    document.getElementById('addFirstPinjamanBtn')?.addEventListener('click', openAddPinjamanModal);
-    
-    // Tombol tambah barang unit usaha
-    const tambahBarangBtn = document.getElementById('tambahBarangBtn');
-    if (tambahBarangBtn) {
-        tambahBarangBtn.addEventListener('click', openUnitUsahaModal);
-    }
-    
-    // Simpanan tabs
-    document.querySelectorAll('[data-simpanan-tab]').forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabType = this.getAttribute('data-simpanan-tab');
-            
-            // Update active tab
-            document.querySelectorAll('[data-simpanan-tab]').forEach(t => {
-                t.classList.remove('active');
-            });
-            this.classList.add('active');
-            
-            // Update title
-            let title = 'Daftar Simpanan ';
-            switch(tabType) {
-                case 'pokok': title += 'Pokok'; break;
-                case 'wajib': title += 'Wajib'; break;
-                case 'sukarela': title += 'Sukarela'; break;
-            }
-            document.getElementById('simpananTitle').textContent = title;
-            
-            // Refresh table
-            refreshSimpananTable();
-        });
-    });
-    
-    // Search functionality
-    document.getElementById('searchAnggota')?.addEventListener('input', searchAnggota);
-    document.getElementById('searchSimpanan')?.addEventListener('input', searchSimpanan);
-    document.getElementById('searchPinjaman')?.addEventListener('input', searchPinjaman);
-    document.getElementById('searchBarang')?.addEventListener('input', searchBarang);
-    
-    // Save member button
-    document.getElementById('saveMemberBtn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const success = await saveMemberData();
-        if (success) {
-            document.getElementById('addMemberModal').style.display = 'none';
-            checkEmptyTables();
-        }
-    });
-    
-    // Save simpanan button
-    document.getElementById('saveSimpananBtn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const success = await saveSimpananData();
-        if (success) {
-            document.getElementById('addSimpananModal').style.display = 'none';
-            checkEmptyTables();
-        }
-    });
-    
-    // Save pinjaman button
-    document.getElementById('savePinjamanBtn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const success = await savePinjamanData();
-        if (success) {
-            document.getElementById('addPinjamanModal').style.display = 'none';
-            checkEmptyTables();
-        }
-    });
-    
-    // Save barang button
-    document.getElementById('saveBarangBtn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const success = await saveBarangData();
-        if (success) {
-            document.getElementById('unitUsahaModal').style.display = 'none';
-            checkEmptyTables();
-        }
-    });
-    
-    // Confirm delete button
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
-        await confirmDeleteData();
-        document.getElementById('confirmModal').style.display = 'none';
-    });
-    
-    console.log('✅ Event listeners setup completed');
 }
 
 // ===== FUNGSI MODAL CONTROLS =====
@@ -5457,7 +5510,7 @@ function viewMemberDetail(memberId) {
                     </p>
                     <p style="color: var(--gray); margin-bottom: 5px;">
                         <i class="fas fa-qrcode"></i> QR Code: 
-                        <a href="${member.qr_url || `https://qr-code-hybrid.vercel.app/qr-code-hybrid.html?id=${member.nia || member.id}`}" target="_blank" style="color: var(--primary); text-decoration: none;">
+                        <a href="${member.qr_url || `https://qr-code-hybrid.vercel.app/?id=${member.nia || member.id}`}" target="_blank" style="color: var(--primary); text-decoration: none;">
                             Lihat QR Digital <i class="fas fa-external-link-alt"></i>
                         </a>
                     </p>
@@ -6166,50 +6219,6 @@ function updateLastSyncTime() {
             const date = new Date(lastSync);
             lastSyncTime.textContent = `Terakhir update: ${date.toLocaleString('id-ID')}`;
         }
-    }
-}
-
-// ===== FUNGSI SYNC KE TABUNGAN DIGITAL =====
-function syncToTabunganDigital(memberData) {
-    try {
-        // Ambil data tabungan digital yang sudah ada
-        const tabunganDigitalData = JSON.parse(localStorage.getItem('tabungan_digital_data')) || [];
-        
-        // Cek apakah anggota sudah ada di tabungan digital
-        const existingMemberIndex = tabunganDigitalData.findIndex(member => 
-            member.id === memberData.id || 
-            member.nia === memberData.nia
-        );
-        
-        if (existingMemberIndex === -1) {
-            // Tambahkan anggota baru ke tabungan digital
-            const tabunganMember = {
-                id: memberData.id,
-                nia: memberData.nia,
-                nama: memberData.nama,
-                alamat: memberData.alamat,
-                email: memberData.email,
-                whatsapp: memberData.whatsapp,
-                foto: memberData.foto || '',
-                saldo: 0,
-                simpanan_pokok: memberData.simpananPokok || 0,
-                simpanan_wajib: memberData.simpananWajib || 0,
-                simpanan_sukarela: memberData.simpananSukarela || 0,
-                total_simpanan: memberData.totalSimpanan || 0,
-                password: memberData.password,
-                role: 'anggota',
-                status: memberData.statusAktif === 'Aktif' ? 'active' : 'inactive',
-                created_at: memberData.createdAt,
-                updated_at: memberData.lastUpdated
-            };
-            
-            tabunganDigitalData.push(tabunganMember);
-            localStorage.setItem('tabungan_digital_data', JSON.stringify(tabunganDigitalData));
-            
-            console.log('✅ Anggota berhasil disinkronkan ke Tabungan Digital');
-        }
-    } catch (error) {
-        console.error('Error syncing to Tabungan Digital:', error);
     }
 }
 
