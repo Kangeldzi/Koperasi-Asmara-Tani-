@@ -14,6 +14,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js"></script>
     <script src="firebase-config.js"></script>
     <script src="firebase-data.js"></script>
     <style>
@@ -2467,11 +2468,12 @@
     <div id="printPreview" class="print-preview"></div>
 
 <script>
-// ===== FIREBASE INITIALIZATION WITH TIMEOUT AND ERROR HANDLING =====
+// ===== FIREBASE INITIALIZATION =====
 let firebaseInitialized = false;
 let firebaseInitializationPromise = null;
 let firebaseApp = null;
 let firestoreDB = null;
+let auth = null;
 
 function initializeFirebase() {
     if (firebaseInitializationPromise) {
@@ -2516,7 +2518,10 @@ function initializeFirebase() {
             // 4. Inisialisasi Firestore
             firestoreDB = firebase.firestore();
             
-            // 5. Tes koneksi dengan timeout terpisah
+            // 5. Inisialisasi Auth
+            auth = firebase.auth();
+            
+            // 6. Tes koneksi dengan timeout terpisah
             const testTimeout = setTimeout(() => {
                 throw new Error('Firestore connection test timeout');
             }, 5000);
@@ -2532,15 +2537,16 @@ function initializeFirebase() {
             
             console.log('✅ Firebase successfully initialized');
             
-            // 6. Buat atau perbarui KoperasiDB dengan versi yang diperbaiki
+            // 7. Buat atau perbarui KoperasiDB dengan versi yang diperbaiki
             if (typeof window.KoperasiDB === 'undefined') {
-                window.KoperasiDB = createKoperasiDB(firestoreDB);
+                window.KoperasiDB = createKoperasiDB(firestoreDB, auth);
             } else {
                 window.KoperasiDB.initialized = true;
                 window.KoperasiDB.db = firestoreDB;
+                window.KoperasiDB.auth = auth;
             }
             
-            resolve({ firebaseApp, firestoreDB });
+            resolve({ firebaseApp, firestoreDB, auth });
             
         } catch (error) {
             clearTimeout(timeoutId);
@@ -2563,25 +2569,40 @@ function initializeFirebase() {
     return firebaseInitializationPromise;
 }
 
-// Helper function untuk membuat KoperasiDB yang terhubung dengan Firebase - VERSI DIPERBAIKI
-function createKoperasiDB(db) {
+// Helper function untuk membuat KoperasiDB yang terhubung dengan Firebase
+function createKoperasiDB(db, auth) {
     const koperasiDB = {
         initialized: true,
         db: db,
+        auth: auth,
         
-        // FUNGSI UTAMA: Dapatkan data anggota berdasarkan NIA (konsisten dengan Dashboard) - PERBAIKAN DI SINI
-        getAnggota: async (nia) => {
+        // FUNGSI UTAMA: Dapatkan data anggota berdasarkan NIA atau email
+        getAnggota: async (identifier) => {
             try {
-                if (!nia) {
-                    console.warn('⚠️ NIA tidak tersedia');
+                if (!identifier) {
+                    console.warn('⚠️ Identifier tidak tersedia');
                     return null;
                 }
                 
-                const doc = await db.collection('anggota').doc(nia).get();
+                // Coba dengan NIA dulu
+                let doc = await db.collection('anggota').doc(identifier).get();
+                
+                if (!doc.exists) {
+                    // Jika tidak ditemukan dengan NIA, cari dengan email
+                    const querySnapshot = await db.collection('anggota')
+                        .where('email', '==', identifier)
+                        .limit(1)
+                        .get();
+                    
+                    if (!querySnapshot.empty) {
+                        doc = querySnapshot.docs[0];
+                    }
+                }
+                
                 if (doc.exists) {
                     const data = doc.data();
                     
-                    // ===== STANDARDIZE DATA DARI FIREBASE =====
+                    // Standardize data
                     const standardizedData = {
                         // Data identitas
                         id: doc.id,
@@ -2594,45 +2615,29 @@ function createKoperasiDB(db) {
                         telepon: data.whatsapp || data.telepon || '',
                         whatsapp: data.whatsapp || '',
                         
-                        // Data pribadi - handle both snake_case and camelCase
+                        // Data pribadi
                         alamat: data.alamat || '',
                         jenis_kelamin: data.jenis_kelamin || data.jenisKelamin || '',
-                        jenisKelamin: data.jenisKelamin || data.jenis_kelamin || '',
                         agama: data.agama || '',
                         nik: data.nik || data.nik_ktp || '',
-                        nik_ktp: data.nik_ktp || data.nik || '',
                         
                         // Data keanggotaan
                         tanggal_gabung: data.tanggal_bergabung || data.tanggal_daftar || '',
-                        tanggal_daftar: data.tanggal_daftar || data.tanggal_bergabung || '',
                         status: data.status || data.status_aktif || '',
-                        status_aktif: data.status_aktif || data.status || '',
                         
-                        // ===== DATA KEUANGAN - handle both formats =====
+                        // Data keuangan
                         simpanan_pokok: parseFloat(data.simpanan_pokok || data.simpananPokok || 0),
-                        simpananPokok: parseFloat(data.simpananPokok || data.simpanan_pokok || 0),
-                        
                         simpanan_wajib: parseFloat(data.simpanan_wajib || data.simpananWajib || 0),
-                        simpananWajib: parseFloat(data.simpananWajib || data.simpanan_wajib || 0),
-                        
                         simpanan_sukarela: parseFloat(data.simpanan_sukarela || data.simpananSukarela || 0),
-                        simpananSukarela: parseFloat(data.simpananSukarela || data.simpanan_sukarela || 0),
-                        
                         total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
-                        totalSimpanan: parseFloat(data.totalSimpanan || data.total_simpanan || 0),
-                        
                         total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
-                        totalPinjaman: parseFloat(data.totalPinjaman || data.total_pinjaman || 0),
-                        
                         shu: parseFloat(data.shu || data.shu_estimasi || 0),
-                        shu_estimasi: parseFloat(data.shu_estimasi || data.shu || 0),
                         
                         // Foto
                         foto: data.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
                         
                         // Metadata
-                        last_update: data.updated_at || data.last_update || '',
-                        updated_at: data.updated_at || data.last_update || '',
+                        last_update: data.updated_at || data.last_update || new Date().toISOString(),
                         
                         // QR Code
                         qr_url: data.qr_url || `https://qr-code-hybrid.vercel.app/?id=${doc.id}`,
@@ -2644,7 +2649,7 @@ function createKoperasiDB(db) {
                     console.log('✅ Data berhasil di-standardize dari Firebase:', standardizedData);
                     return standardizedData;
                 } else {
-                    console.log('⚠️ Data tidak ditemukan di Firebase untuk NIA:', nia);
+                    console.log('⚠️ Data tidak ditemukan di Firebase untuk identifier:', identifier);
                     return null;
                 }
             } catch (error) {
@@ -2659,41 +2664,47 @@ function createKoperasiDB(db) {
             }
         },
         
-        // FUNGSI BARU: Cari anggota berdasarkan email (untuk backward compatibility)
-        getUserByEmail: async (email) => {
+        // Update password
+        updatePassword: async (currentPassword, newPassword) => {
             try {
-                if (!email) return null;
-                
-                // Query anggota berdasarkan email
-                const querySnapshot = await db.collection('anggota')
-                    .where('email', '==', email)
-                    .limit(1)
-                    .get();
-                
-                if (!querySnapshot.empty) {
-                    const doc = querySnapshot.docs[0];
-                    const data = doc.data();
-                    
-                    // Return dengan format yang sama
-                    return {
-                        id: doc.id,
-                        nia: doc.id,
-                        ...data,
-                        // Pastikan field keuangan ada
-                        total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
-                        total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
-                        shu: parseFloat(data.shu || data.shu_estimasi || data.shuEstimasi || 0)
-                    };
+                const user = auth.currentUser;
+                if (!user) {
+                    throw new Error('User not authenticated');
                 }
                 
-                return null;
+                // Re-authenticate user
+                const credential = firebase.auth.EmailAuthProvider.credential(
+                    user.email, 
+                    currentPassword
+                );
+                
+                await user.reauthenticateWithCredential(credential);
+                
+                // Update password
+                await user.updatePassword(newPassword);
+                
+                return true;
             } catch (error) {
-                console.error('❌ Error getting user by email:', error);
-                return null;
+                console.error('Error updating password:', error);
+                throw error;
             }
         },
         
-        // REAL-TIME LISTENER yang diperbaiki
+        // Update profile
+        updateProfile: async (nia, data) => {
+            try {
+                await db.collection('anggota').doc(nia).update({
+                    ...data,
+                    updated_at: new Date().toISOString()
+                });
+                return true;
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                throw error;
+            }
+        },
+        
+        // REAL-TIME LISTENER
         listenToAnggota: (nia, callback) => {
             if (!nia) {
                 console.warn('⚠️ NIA tidak tersedia untuk real-time listener');
@@ -2707,20 +2718,18 @@ function createKoperasiDB(db) {
                             const data = doc.data();
                             console.log('🔄 Real-time update diterima dari Firebase:', data);
                             
-                            // Standardize data sebelum dikirim ke callback
                             const standardizedData = {
                                 id: doc.id,
                                 nia: doc.id,
                                 nama: data.nama || '',
-                                // ... (sama seperti di getAnggota)
                                 total_simpanan: parseFloat(data.total_simpanan || data.totalSimpanan || 0),
                                 total_pinjaman: parseFloat(data.total_pinjaman || data.totalPinjaman || 0),
-                                shu: parseFloat(data.shu || data.shu_estimasi || data.shuEstimasi || 0)
+                                shu: parseFloat(data.shu || data.shu_estimasi || 0),
+                                status: data.status || 'AKTIF'
                             };
                             
                             callback(standardizedData);
                             
-                            // Kirim event untuk update UI
                             window.dispatchEvent(new CustomEvent('firebase-data-updated', { 
                                 detail: { 
                                     type: 'real-time-update',
@@ -2767,29 +2776,28 @@ function createMockKoperasiDB() {
                 setTimeout(() => callback(), 100);
             }
         },
-        getAnggota: async (nia) => {
-            console.log('📁 Getting anggota from mock DB for NIA:', nia);
+        getAnggota: async (identifier) => {
+            console.log('📁 Getting anggota from mock DB for identifier:', identifier);
             
             // Coba ambil dari localStorage sebagai fallback
             try {
                 const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
                 const user = JSON.parse(localStorage.getItem('koperasi_current_user') || '{}');
                 
-                if (nia) {
-                    const found = anggotaData.find(a => a.nia === nia || a.id === nia || a.email === user.email);
-                    if (found) {
-                        console.log('✅ Found user data in localStorage:', found);
-                        return found;
-                    }
+                let found = null;
+                
+                if (identifier) {
+                    found = anggotaData.find(a => 
+                        a.nia === identifier || 
+                        a.id === identifier || 
+                        a.email === identifier ||
+                        a.email === user.email
+                    );
                 }
                 
-                // Jika tidak ditemukan dengan NIA, cari dengan email
-                if (user.email) {
-                    const found = anggotaData.find(a => a.email === user.email);
-                    if (found) {
-                        console.log('✅ Found user data by email in localStorage:', found);
-                        return found;
-                    }
+                if (found) {
+                    console.log('✅ Found user data in localStorage:', found);
+                    return found;
                 }
                 
                 return null;
@@ -2814,37 +2822,9 @@ function createMockKoperasiDB() {
                 
                 console.log('🔄 Mock real-time update:', mockData);
                 callback(mockData);
-            }, 30000); // Update setiap 30 detik
+            }, 30000);
             
             return () => clearInterval(interval);
-        },
-        updateAnggota: async (nia, data) => {
-            console.log('📝 Mock update for NIA:', nia, 'Data:', data);
-            
-            // Simpan ke localStorage sebagai backup
-            try {
-                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                const index = anggotaData.findIndex(a => a.nia === nia || a.id === nia);
-                
-                if (index !== -1) {
-                    anggotaData[index] = { ...anggotaData[index], ...data };
-                } else {
-                    // Tambah data baru
-                    anggotaData.push({
-                        nia: nia,
-                        ...data,
-                        last_update: new Date().toISOString()
-                    });
-                }
-                
-                localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
-                console.log('✅ Mock data saved to localStorage');
-                
-                return true;
-            } catch (error) {
-                console.error('Error saving mock data:', error);
-                return false;
-            }
         }
     };
     
@@ -2910,11 +2890,9 @@ class TabunganApp {
                 lastError = error;
                 console.warn(`⚠️ Firebase init attempt ${i + 1} failed:`, error.message);
                 
-                // Tampilkan status ke UI
                 this.updateFirebaseStatusUI(`Mencoba ulang... (${i + 1}/${maxRetries})`, 'warning');
                 
                 if (i < maxRetries - 1) {
-                    // Exponential backoff
                     const delay = 2000 * Math.pow(2, i);
                     await new Promise(resolve => setTimeout(resolve, delay));
                 }
@@ -2924,7 +2902,6 @@ class TabunganApp {
         console.error('❌ All Firebase initialization attempts failed:', lastError);
         this.updateFirebaseStatusUI('Mode offline', 'warning');
         
-        // Pastikan KoperasiDB tersedia (mock atau real)
         if (typeof window.KoperasiDB === 'undefined') {
             window.KoperasiDB = createMockKoperasiDB();
         }
@@ -2951,25 +2928,21 @@ class TabunganApp {
     }
     
     setupGlobalErrorHandling() {
-        // Global error handler
         window.addEventListener('error', (event) => {
             console.error('Global error caught:', event.error);
             this.showGlobalError(event.error);
         });
         
-        // Unhandled promise rejection handler
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
             this.showGlobalError(event.reason);
         });
         
-        // Firebase error listener
         window.addEventListener('firebase-error', (event) => {
             console.error('Firebase error event:', event.detail);
             this.showToast(`Firebase error: ${event.detail.message}`, 'error');
         });
         
-        // Firebase data updated event
         window.addEventListener('firebase-data-updated', (event) => {
             console.log('Firebase data updated event received');
             if (this.firebaseUserData) {
@@ -2980,14 +2953,12 @@ class TabunganApp {
     }
     
     showGlobalError(error) {
-        // Hanya tampilkan error yang signifikan
         if (error.message && error.message.includes('Firebase')) {
             this.showToast(`System error: ${error.message.substring(0, 50)}...`, 'error');
         }
     }
     
     async checkFirebaseStatus() {
-        // Tunggu sampai Firebase init dicoba
         if (!this.firebaseInitAttempted) {
             setTimeout(() => this.checkFirebaseStatus(), 500);
             return;
@@ -2995,28 +2966,24 @@ class TabunganApp {
         
         if (window.KoperasiDB) {
             try {
-                const status = window.KoperasiDB.getStatus();
-                console.log('Firebase Status:', status);
+                const status = window.KoperasiDB.getStatus ? window.KoperasiDB.getStatus() : { initialized: false };
                 
                 if (status.initialized && status.firebaseConnected) {
                     this.firebaseReady = true;
                     this.updateFirebaseStatusUI('Terhubung ke Firebase', 'success');
                     console.log('✅ Firebase sudah siap dan terhubung');
                     
-                    // Load data dari Firebase
                     this.loadFirebaseData();
                 } else if (status.initialized) {
                     this.firebaseReady = true;
                     this.updateFirebaseStatusUI('Mode Firebase (offline)', 'warning');
                     console.log('⚠️ Firebase siap tapi offline');
                     
-                    // Coba load data dari cache/localStorage
                     this.loadFirebaseData();
                 } else {
                     this.updateFirebaseStatusUI('Mode offline', 'warning');
                     console.log('⚠️ Menggunakan mode offline');
                     
-                    // Load data dari localStorage
                     this.loadData();
                 }
             } catch (error) {
@@ -3031,7 +2998,6 @@ class TabunganApp {
         }
     }
     
-    // FUNGSI loadFirebaseData() DIPERBAIKI - 3 STRATEGI PENCARIAN
     async loadFirebaseData() {
         try {
             console.log('🔍 Memulai proses load data Firebase...');
@@ -3047,7 +3013,6 @@ class TabunganApp {
                         this.firebaseUserData = firebaseData;
                         console.log('✅ Data ditemukan dengan NIA:', firebaseData);
                         
-                        // Simpan juga ke localStorage untuk offline access
                         this.saveFirebaseDataToLocal(firebaseData);
                         
                         this.setupFirebaseListener();
@@ -3061,15 +3026,14 @@ class TabunganApp {
             // STRATEGY 2: Cari berdasarkan email
             console.log('🔍 Mencari dengan email:', this.currentUser.email);
             
-            if (window.KoperasiDB && window.KoperasiDB.getUserByEmail) {
-                const firebaseData = await window.KoperasiDB.getUserByEmail(this.currentUser.email);
+            if (window.KoperasiDB && window.KoperasiDB.getAnggota) {
+                const firebaseData = await window.KoperasiDB.getAnggota(this.currentUser.email);
                 
                 if (firebaseData) {
                     this.firebaseUserData = firebaseData;
                     this.nia = firebaseData.nia || firebaseData.id;
                     console.log('✅ Data ditemukan dengan email:', firebaseData);
                     
-                    // Simpan juga ke localStorage untuk offline access
                     this.saveFirebaseDataToLocal(firebaseData);
                     
                     this.setupFirebaseListener();
@@ -3112,13 +3076,10 @@ class TabunganApp {
         }
     }
     
-    // FUNGSI BARU: saveFirebaseDataToLocal
     saveFirebaseDataToLocal(firebaseData) {
         try {
-            // Simpan sebagai backup
             localStorage.setItem(`firebase_backup_${this.currentUser.email}`, JSON.stringify(firebaseData));
             
-            // Update koperasi_anggota
             const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
             const existingIndex = anggotaData.findIndex(a => 
                 a.email === this.currentUser.email || 
@@ -3133,21 +3094,6 @@ class TabunganApp {
             
             localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
             
-            // Update tabungan_digital_data
-            const tabunganData = JSON.parse(localStorage.getItem('tabungan_digital_data') || '[]');
-            const tabunganIndex = tabunganData.findIndex(a => 
-                a.email === this.currentUser.email || 
-                a.nia === firebaseData.nia
-            );
-            
-            if (tabunganIndex !== -1) {
-                tabunganData[tabunganIndex] = { ...tabunganData[tabunganIndex], ...firebaseData };
-            } else {
-                tabunganData.push(firebaseData);
-            }
-            
-            localStorage.setItem('tabungan_digital_data', JSON.stringify(tabunganData));
-            
             console.log('✅ Firebase data saved to localStorage');
         } catch (error) {
             console.error('Error saving Firebase data to localStorage:', error);
@@ -3157,18 +3103,15 @@ class TabunganApp {
     setupFirebaseListener() {
         if (!this.nia || !window.KoperasiDB || !window.KoperasiDB.listenToAnggota) return;
         
-        // Hentikan listener sebelumnya jika ada
         if (this.unsubscribeFirebase) {
             this.unsubscribeFirebase();
         }
         
-        // Setup real-time listener untuk perubahan data
         this.unsubscribeFirebase = window.KoperasiDB.listenToAnggota(this.nia, (data) => {
             console.log('🔄 Data Firebase diperbarui:', data);
             this.firebaseUserData = data;
             this.updateUIFirebase();
             
-            // Show notification untuk update dari Firebase
             window.pushNotificationSystem?.showNotification(
                 'Data Diperbarui',
                 'Data keuangan telah diperbarui dari Firebase',
@@ -3176,7 +3119,6 @@ class TabunganApp {
                 false
             );
             
-            // Update timestamp
             this.updateLastSyncTime();
         });
     }
@@ -3189,7 +3131,6 @@ class TabunganApp {
             return 'Rp ' + amount.toLocaleString('id-ID');
         };
         
-        // Update data keuangan dari Firebase
         const firebaseData = this.firebaseUserData;
         
         // Update hologram card dengan data Firebase
@@ -3243,21 +3184,16 @@ class TabunganApp {
         }
     }
     
-    // PERBAIKI fungsi getCurrentUser untuk mendapatkan NIA dengan benar
     getCurrentUser() {
         try {
             const user = localStorage.getItem('koperasi_current_user');
             if (user) {
                 const userData = JSON.parse(user);
                 
-                // STRATEGI UNTUK MENDAPATKAN NIA:
-                // 1. Cek dari userData langsung
                 if (userData.nia) {
                     this.nia = userData.nia;
                     console.log('📋 NIA dari user data:', this.nia);
-                }
-                // 2. Cari di localStorage koperasi_anggota
-                else {
+                } else {
                     const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
                     const adminData = anggotaData.find(a => a.email === userData.email);
                     
@@ -3265,7 +3201,6 @@ class TabunganApp {
                         this.nia = adminData.nia || adminData.id;
                         console.log('📋 NIA ditemukan di localStorage:', this.nia);
                         
-                        // Simpan NIA ke userData untuk future reference
                         userData.nia = this.nia;
                         localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
                     }
@@ -3284,31 +3219,20 @@ class TabunganApp {
         console.log('🚀 Aplikasi dimulai untuk:', this.currentUser.email);
         console.log('📋 NIA yang digunakan:', this.nia);
         
-        // Setup event listeners
         this.setupEventListeners();
         
-        // Setup error handling untuk avatar
         document.getElementById('profileAvatar').onerror = function() {
             this.src = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
         };
         
-        // Initialize voice system untuk menu
         window.menuVoiceSystem = new MenuVoiceSystem();
-        
-        // Initialize notification system
         window.pushNotificationSystem = new PushNotificationSystem();
-        
-        // Initialize AR Experience System
         window.arExperience = new ARExperienceSystem();
-        
-        // Initialize Voice Command System
         window.voiceCommandSystem = new VoiceCommandSystem();
         
-        // Setup session management
         this.resetSessionTimeout();
         document.addEventListener('click', () => this.resetSessionTimeout());
         
-        // Setup online/offline detection
         window.addEventListener('online', () => {
             this.showToast('Koneksi internet tersambung', 'success');
             this.forceSync();
@@ -3318,20 +3242,15 @@ class TabunganApp {
             this.showToast('Anda sedang offline', 'warning');
         });
         
-        // Load initial data jika Firebase belum ready
         if (!this.firebaseReady) {
             this.loadData();
         }
         
-        // Setup hologram system
         this.initHologramSystem();
-        
-        // Setup AR button animation
         this.setupARButtonAnimation();
         
         this.showToast('Sistem Tabungan Digital Firebase siap!', 'success');
         
-        // Show welcome notification
         setTimeout(() => {
             window.pushNotificationSystem.showNotification(
                 'Firebase Connected',
@@ -3345,7 +3264,6 @@ class TabunganApp {
     setupARButtonAnimation() {
         const arButton = document.getElementById('arExperienceBtn');
         if (arButton) {
-            // Add pulse animation every 30 seconds
             setInterval(() => {
                 arButton.classList.add('pulse');
                 setTimeout(() => {
@@ -3357,7 +3275,6 @@ class TabunganApp {
     
     getCompleteUserData() {
         try {
-            // Prioritaskan data dari Firebase
             if (this.firebaseUserData) {
                 console.log('📊 Menggunakan data Firebase:', this.firebaseUserData);
                 return {
@@ -3373,7 +3290,6 @@ class TabunganApp {
                     jenisKelamin: this.firebaseUserData.jenis_kelamin || '',
                     agama: this.firebaseUserData.agama || '',
                     nik: this.firebaseUserData.nik || '',
-                    nikKtp: this.firebaseUserData.nik_ktp || '',
                     tanggalGabung: this.firebaseUserData.tanggal_gabung || '',
                     simpananPokok: this.firebaseUserData.simpanan_pokok || 0,
                     simpananWajib: this.firebaseUserData.simpanan_wajib || 0,
@@ -3386,7 +3302,6 @@ class TabunganApp {
                 };
             }
             
-            // Fallback ke data lokal jika Firebase tidak tersedia
             const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
             const adminData = anggotaData.find(a => a.email === this.currentUser.email);
             
@@ -3406,7 +3321,6 @@ class TabunganApp {
                 jenisKelamin: '',
                 agama: '',
                 nik: '',
-                nikKtp: '',
                 tanggalGabung: '',
                 simpananPokok: 0,
                 simpananWajib: 0,
@@ -3441,25 +3355,19 @@ class TabunganApp {
     }
     
     initHologramSystem() {
-        // Setup hologram system
         setTimeout(() => {
             this.hologramSystem = new HologramStaticSystem();
         }, 1000);
     }
     
     loadData() {
-        // 1. Ambil data dari Dashboard Admin
         this.userData = AdminDataExtractor.extractDataForUser(this.currentUser.email);
         
-        // 2. Jika tidak ada data admin, buat default
         if (!this.userData) {
             this.userData = this.createDefaultData();
         }
         
-        // 3. Backup data
         this.backupData();
-        
-        // 4. Update UI dengan data terbaru
         this.updateUI();
         
         console.log('✅ Data loaded:', this.userData);
@@ -3483,25 +3391,20 @@ class TabunganApp {
     }
     
     setupEventListeners() {
-        // PERUBAHAN 1: Setup sync controls toggle
         this.setupSyncControlsToggle();
         
-        // Tombol edit profil
         document.getElementById('editProfileButton').addEventListener('click', () => {
             this.showEditProfileModal();
         });
         
-        // Tombol QR
         document.getElementById('qrButton').addEventListener('click', () => {
             this.showQRModal();
         });
         
-        // Tombol sync
         document.getElementById('manualSyncButton').addEventListener('click', () => {
             this.forceSync();
         });
         
-        // Menu items
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const action = e.currentTarget.dataset.action;
@@ -3509,33 +3412,26 @@ class TabunganApp {
             });
         });
         
-        // Modal close
         document.getElementById('modalClose').addEventListener('click', () => {
             this.closeModal();
         });
         
-        // Close modal ketika klik di luar
         document.getElementById('modalOverlay').addEventListener('click', (e) => {
             if (e.target === document.getElementById('modalOverlay')) {
                 this.closeModal();
             }
         });
         
-        // Listen for storage changes
         window.addEventListener('storage', (e) => {
             if (e.key === 'koperasi_anggota' || e.key === 'koperasiData') {
                 console.log('🔄 Storage change detected');
                 this.loadData();
-                
-                // Trigger update notification
                 window.dispatchEvent(new CustomEvent('admin-data-updated'));
             }
         });
         
-        // Setup password modal event listeners
         this.setupPasswordModalListeners();
         
-        // Setup AR button
         const arButton = document.getElementById('arExperienceBtn');
         if (arButton) {
             arButton.addEventListener('click', () => {
@@ -3543,7 +3439,6 @@ class TabunganApp {
             });
         }
         
-        // Setup voice command button
         const voiceCommandBtn = document.getElementById('voiceCommandBtn');
         if (voiceCommandBtn) {
             voiceCommandBtn.addEventListener('click', () => {
@@ -3551,7 +3446,6 @@ class TabunganApp {
             });
         }
         
-        // Setup hologram voice button
         const hologramVoiceBtn = document.getElementById('hologramVoiceBtn');
         if (hologramVoiceBtn) {
             hologramVoiceBtn.addEventListener('click', (e) => {
@@ -3561,7 +3455,6 @@ class TabunganApp {
         }
     }
     
-    // PERUBAHAN 1: Setup sync controls toggle
     setupSyncControlsToggle() {
         const syncToggleBtn = document.getElementById('syncControlsToggle');
         const syncControls = document.getElementById('syncControls');
@@ -3613,7 +3506,6 @@ class TabunganApp {
         
         window.menuVoiceSystem.speak(message);
         
-        // Highlight button while speaking
         const voiceBtn = document.getElementById('hologramVoiceBtn');
         voiceBtn.classList.add('speaking');
         setTimeout(() => {
@@ -3706,7 +3598,6 @@ class TabunganApp {
     updateUI() {
         if (!this.userData) return;
         
-        // Update profil
         document.getElementById('profileName').innerHTML = 
             `${this.userData.nama} <span class="badge">${this.userData.status === 'Aktif' || this.userData.status === 'AKTIF' ? '✔' : '⚠'}</span>`;
         
@@ -3718,21 +3609,18 @@ class TabunganApp {
         document.getElementById('lastSyncTime').textContent = 
             `Update: ${new Date(this.userData.lastUpdated || Date.now()).toLocaleTimeString('id-ID')}`;
         
-        // Update sync status jika belum diupdate
         const syncStatusText = document.getElementById('syncStatusText');
         if (syncStatusText && !syncStatusText.textContent.includes('Firebase')) {
             syncStatusText.textContent = 'Aktif (Data Lokal)';
             syncStatusText.style.color = '#FF9800';
         }
         
-        // Update tabungan status
         const tabunganStatus = document.getElementById('tabunganStatus');
         if (tabunganStatus) {
             tabunganStatus.innerHTML = 
                 `${this.userData.status} • ${this.firebaseReady ? 'Firebase Real-time data' : 'Data Lokal'}`;
         }
         
-        // Update hologram card dengan data admin
         this.updateHologramCard();
     }
     
@@ -3744,7 +3632,6 @@ class TabunganApp {
             return 'Rp ' + amount.toLocaleString('id-ID');
         };
         
-        // Update hologram values dari data lokal
         const totalSimpananElement = document.getElementById('hologramTotalSimpanan');
         if (totalSimpananElement && !this.firebaseUserData) {
             totalSimpananElement.textContent = formatRupiah(0);
@@ -3764,7 +3651,6 @@ class TabunganApp {
         if (statusAnggotaElement && !this.firebaseUserData) {
             statusAnggotaElement.textContent = this.userData.status || 'Aktif';
             
-            // Update status color
             if (this.userData.status === 'Aktif' || this.userData.status === 'AKTIF') {
                 statusAnggotaElement.style.color = '#2e7d32';
             } else {
@@ -3772,7 +3658,6 @@ class TabunganApp {
             }
         }
         
-        // Update time
         const updateElement = document.getElementById('hologramUpdateTime');
         if (updateElement) {
             const now = new Date();
@@ -3945,7 +3830,7 @@ class TabunganApp {
                     <div class="form-group">
                         <label class="form-label">NIK KTP</label>
                         <input type="text" class="form-control" id="editNIK" 
-                               value="${completeData.nik || completeData.nikKtp || ''}" 
+                               value="${completeData.nik || ''}" 
                                placeholder="16 digit NIK">
                     </div>
                 </div>
@@ -4019,7 +3904,7 @@ class TabunganApp {
         }
     }
     
-    saveProfileChanges() {
+    async saveProfileChanges() {
         try {
             const nama = document.getElementById('editNama').value.trim();
             const telepon = document.getElementById('editTelepon').value.trim();
@@ -4044,7 +3929,6 @@ class TabunganApp {
                 return;
             }
             
-            // Update data user
             this.userData.nama = nama;
             this.userData.telepon = telepon;
             this.userData.whatsapp = telepon;
@@ -4053,11 +3937,9 @@ class TabunganApp {
             this.userData.jenisKelamin = jenisKelamin;
             this.userData.agama = agama;
             this.userData.nik = nik;
-            this.userData.nikKtp = nik;
             this.userData.lastUpdated = new Date().toISOString();
             this.userData.lastUpdatedBy = 'user';
             
-            // Pertahankan data dari Firebase
             const completeData = this.getCompleteUserData();
             this.userData.nia = completeData.nia || this.userData.nia;
             this.userData.posisi = completeData.posisi || this.userData.posisi;
@@ -4070,16 +3952,29 @@ class TabunganApp {
             this.userData.totalPinjaman = completeData.totalPinjaman || 0;
             this.userData.shuEstimasi = completeData.shuEstimasi || 0;
             
-            // Simpan ke localStorage
+            // Update ke Firebase jika tersedia
+            if (window.KoperasiDB && window.KoperasiDB.updateProfile && this.nia) {
+                try {
+                    await window.KoperasiDB.updateProfile(this.nia, {
+                        nama: nama,
+                        whatsapp: telepon,
+                        telepon: telepon,
+                        alamat: alamat,
+                        foto: foto,
+                        jenis_kelamin: jenisKelamin,
+                        agama: agama,
+                        nik: nik,
+                        updated_at: new Date().toISOString()
+                    });
+                    console.log('✅ Profile updated in Firebase');
+                } catch (error) {
+                    console.error('Error updating profile in Firebase:', error);
+                }
+            }
+            
             this.saveToLocalStorage();
-            
-            // Update UI
             this.updateUI();
-            
-            // Hapus foto sementara
             localStorage.removeItem('temp_profile_photo');
-            
-            // Tutup modal
             this.closeModal();
             this.showToast('Profil berhasil diperbarui!', 'success');
             
@@ -4137,19 +4032,16 @@ class TabunganApp {
         }
     }
     
-    // ===== QR MODAL DENGAN DATA FIREBASE - DIPERBAIKI =====
+    // ===== QR MODAL DENGAN DATA FIREBASE =====
     showQRModal() {
         const completeData = this.getCompleteUserData();
 
-        // Pastikan NIA tersedia
         if (!completeData.nia) {
-            // Coba dapatkan NIA dari berbagai sumber
             completeData.nia = this.nia || 
                               completeData.id || 
                               `KOP-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
         }
 
-        // URL untuk QR Code dengan parameter yang benar
         const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${completeData.nia}&name=${encodeURIComponent(completeData.nama)}&email=${encodeURIComponent(completeData.email)}`;
         
         const html = `
@@ -4230,7 +4122,6 @@ class TabunganApp {
                         correctLevel: QRCode.CorrectLevel.H
                     });
                     
-                    // Tambahkan link yang bisa diklik
                     qrContainer.innerHTML += `
                         <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary);">
                             <p>Scan QR Code ini untuk melihat data anggota di:</p>
@@ -4248,7 +4139,6 @@ class TabunganApp {
                         </div>
                     `;
                     
-                    // Fallback dengan link saja
                     new QRCode(qrContainer, {
                         text: qrUrl,
                         width: 200,
@@ -4281,7 +4171,7 @@ class TabunganApp {
                         <div>
                             <small>Total Simpanan</small>
                             <p style="margin: 5px 0; font-weight: bold; color: var(--primary);">
-                                ${AdminDataExtractor.formatRupiah(0)}
+                                ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}
                             </p>
                         </div>
                         <div>
@@ -4450,13 +4340,13 @@ class TabunganApp {
                         <div>
                             <small>Total Pinjaman</small>
                             <p style="margin: 5px 0; font-weight: bold; color: green;">
-                                ${AdminDataExtractor.formatRupiah(0)}
+                                ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}
                             </p>
                         </div>
                         <div>
                             <small>Simpanan Saat Ini</small>
                             <p style="margin: 5px 0; font-weight: 500; color: var(--primary);">
-                                ${AdminDataExtractor.formatRupiah(0)}
+                                ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}
                             </p>
                         </div>
                     </div>
@@ -4533,7 +4423,7 @@ class TabunganApp {
                        `💵 *Jumlah Pinjaman:* Rp ${parseInt(jumlah).toLocaleString('id-ID')}\n` +
                        `🎯 *Tujuan:* ${tujuan}\n` +
                        `📅 *Tenor:* ${tenor} Bulan\n` +
-                       `💰 *Simpanan Saat Ini:* Rp ${(0).toLocaleString('id-ID')}\n` +
+                       `💰 *Simpanan Saat Ini:* Rp ${(completeData.totalSimpanan || 0).toLocaleString('id-ID')}\n` +
                        `📅 *Tanggal:* ${new Date().toLocaleDateString('id-ID')}\n` +
                        `⏰ *Waktu:* ${new Date().toLocaleTimeString('id-ID')}\n\n` +
                        `_Pengajuan ini dikirim via Buku Tabungan Digital Firebase_`;
@@ -4722,7 +4612,7 @@ class TabunganApp {
     // ===== KARTU ANGGOTA =====
     showKartuModal() {
         const completeData = this.getCompleteUserData();
-        const saldoBersih = 0 - 0; // Semua data keuangan di-set ke 0
+        const saldoBersih = (completeData.totalSimpanan || 0) - (completeData.totalPinjaman || 0);
         
         const html = `
             <div style="padding: 20px;">
@@ -4755,7 +4645,7 @@ class TabunganApp {
                             <p><i class="fas fa-briefcase"></i> Posisi: ${completeData.posisi || 'Anggota'}</p>
                             <p><i class="fas fa-venus-mars"></i> Jenis Kelamin: ${completeData.jenisKelamin || '-'}</p>
                             <p><i class="fas fa-pray"></i> Agama: ${completeData.agama || '-'}</p>
-                            <p><i class="fas fa-address-card"></i> NIK KTP: ${completeData.nik || completeData.nikKtp || '-'}</p>
+                            <p><i class="fas fa-address-card"></i> NIK KTP: ${completeData.nik || '-'}</p>
                             <p><i class="fas fa-check-circle"></i> Status: ${completeData.status || completeData.statusAktif || 'Aktif'}</p>
                         </div>
                     </div>
@@ -4771,23 +4661,23 @@ class TabunganApp {
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Simpanan Pokok</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.simpananPokok || 0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Simpanan Wajib</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.simpananWajib || 0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Simpanan Sukarela</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.simpananSukarela || 0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Total Simpanan</div>
-                                <div style="font-weight: bold; margin: 5px 0; color: #ffd700;">${AdminDataExtractor.formatRupiah(0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0; color: #ffd700;">${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Total Pinjaman</div>
-                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0;">${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}</div>
                             </div>
                             <div style="text-align: center;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">Saldo Bersih</div>
@@ -4795,7 +4685,7 @@ class TabunganApp {
                             </div>
                             <div style="text-align: center; grid-column: 1 / -1;">
                                 <div style="opacity: 0.8; font-size: 0.8rem;">SHU Estimasi</div>
-                                <div style="font-weight: bold; margin: 5px 0; color: #2196F3;">${AdminDataExtractor.formatRupiah(0)}</div>
+                                <div style="font-weight: bold; margin: 5px 0; color: #2196F3;">${AdminDataExtractor.formatRupiah(completeData.shuEstimasi || 0)}</div>
                             </div>
                         </div>
                     </div>
@@ -4853,7 +4743,7 @@ class TabunganApp {
     
     shareKartu() {
         const completeData = this.getCompleteUserData();
-        const saldoBersih = 0 - 0; // Semua data keuangan di-set ke 0
+        const saldoBersih = (completeData.totalSimpanan || 0) - (completeData.totalPinjaman || 0);
         
         const message = `*KARTU ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
                        `👤 *Nama:* ${completeData.nama}\n` +
@@ -4863,10 +4753,10 @@ class TabunganApp {
                        `📞 *WhatsApp:* ${completeData.telepon || completeData.whatsapp || '-'}\n` +
                        `👫 *Jenis Kelamin:* ${completeData.jenisKelamin || '-'}\n` +
                        `🕌 *Agama:* ${completeData.agama || '-'}\n` +
-                       `🆔 *NIK KTP:* ${completeData.nik || completeData.nikKtp || '-'}\n` +
+                       `🆔 *NIK KTP:* ${completeData.nik || '-'}\n` +
                        `✅ *Status:* ${completeData.status || completeData.statusAktif || 'Aktif'}\n` +
-                       `💰 *Total Simpanan:* ${AdminDataExtractor.formatRupiah(0)}\n` +
-                       `💳 *Total Pinjaman:* ${AdminDataExtractor.formatRupiah(0)}\n` +
+                       `💰 *Total Simpanan:* ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}\n` +
+                       `💳 *Total Pinjaman:* ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}\n` +
                        `💵 *Saldo Bersih:* ${AdminDataExtractor.formatRupiah(saldoBersih)}\n` +
                        `📅 *Tanggal Bergabung:* ${completeData.tanggalGabung || '-'}\n\n` +
                        `_Kartu Anggota Digital Firebase - #koperasijenius_`;
@@ -4959,16 +4849,12 @@ class TabunganApp {
         
         this.syncTimeout = setTimeout(async () => {
             try {
-                // Coba inisialisasi ulang Firebase jika belum ready
-                if (!this.firebaseReady || !window.KoperasiDB || !window.KoperasiDB.getStatus().firebaseConnected) {
+                if (!this.firebaseReady || !window.KoperasiDB) {
                     console.log('🔄 Mencoba reconnect Firebase...');
                     await this.initializeFirebaseWithRetry();
                 }
                 
-                // Reload data dari Firebase
                 await this.loadFirebaseData();
-                
-                // Load data lokal juga untuk backup
                 this.loadData();
                 
                 this.showToast('Data berhasil disinkronkan!', 'success');
@@ -5058,7 +4944,7 @@ class TabunganApp {
         document.getElementById('changePasswordForm').reset();
     }
     
-    changePassword() {
+    async changePassword() {
         const currentPassword = document.getElementById('currentPassword').value;
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
@@ -5081,28 +4967,40 @@ class TabunganApp {
             return;
         }
         
-        currentUser.password = newPassword;
-        
-        const userIndex = users.findIndex(u => u.email === this.currentUser.email);
-        if (userIndex !== -1) {
-            users[userIndex] = currentUser;
-            localStorage.setItem('koperasi_users', JSON.stringify(users));
+        try {
+            // Update password di Firebase jika tersedia
+            if (window.KoperasiDB && window.KoperasiDB.updatePassword) {
+                await window.KoperasiDB.updatePassword(currentPassword, newPassword);
+                console.log('✅ Password updated in Firebase');
+            }
+            
+            // Update di localStorage
+            currentUser.password = newPassword;
+            const userIndex = users.findIndex(u => u.email === this.currentUser.email);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('koperasi_users', JSON.stringify(users));
+            }
+            
+            this.currentUser = currentUser;
+            localStorage.setItem('koperasi_current_user', JSON.stringify(this.currentUser));
+            
+            this.userData.password = newPassword;
+            
+            this.closePasswordModal();
+            this.showToast('Password berhasil diubah', 'success');
+            
+            window.pushNotificationSystem.showNotification(
+                'Password Diubah',
+                'Password Anda telah berhasil diubah.',
+                'success',
+                false
+            );
+            
+        } catch (error) {
+            console.error('Error changing password:', error);
+            this.showToast('Gagal mengubah password: ' + error.message, 'error');
         }
-        
-        this.currentUser = currentUser;
-        localStorage.setItem('koperasi_current_user', JSON.stringify(this.currentUser));
-        
-        this.userData.password = newPassword;
-        
-        this.closePasswordModal();
-        this.showToast('Password berhasil diubah', 'success');
-        
-        window.pushNotificationSystem.showNotification(
-            'Password Diubah',
-            'Password Anda telah berhasil diubah.',
-            'success',
-            false
-        );
     }
 }
 
@@ -5139,7 +5037,6 @@ class MenuVoiceSystem {
     }
 
     setupAllVoiceListeners() {
-        // Menu utama
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const text = e.currentTarget.querySelector('.menu-text').textContent;
@@ -5147,7 +5044,6 @@ class MenuVoiceSystem {
             });
         });
 
-        // Semua tombol dengan class .btn
         document.querySelectorAll('.btn').forEach(button => {
             button.addEventListener('click', () => {
                 const buttonText = button.textContent.trim();
@@ -5155,18 +5051,15 @@ class MenuVoiceSystem {
             });
         });
 
-        // Hologram card
         document.getElementById('hologramStaticCard')?.addEventListener('click', () => {
             this.speakCard("Ringkasan Keuangan Firebase");
         });
 
-        // Voice button pada hologram
         document.getElementById('hologramVoiceBtn')?.addEventListener('click', (e) => {
             e.stopPropagation();
             this.speakButton("Baca Data Keuangan Firebase");
         });
 
-        // Tombol lainnya
         document.getElementById('arExperienceBtn')?.addEventListener('click', () => {
             this.speakButton("A R Experience");
         });
@@ -5175,34 +5068,28 @@ class MenuVoiceSystem {
             this.speakButton("Voice Commands");
         });
 
-        // Sync button
         document.getElementById('manualSyncButton')?.addEventListener('click', () => {
             this.speakButton("Sinkronisasi Firebase");
         });
 
-        // Sync toggle button
         document.getElementById('syncControlsToggle')?.addEventListener('click', () => {
             this.speakButton("Panel Sinkronisasi Firebase");
         });
 
-        // Notification toggle button
         document.getElementById('notificationToggle')?.addEventListener('click', () => {
             this.speakButton("Notifikasi");
         });
 
-        // Back home button
         document.querySelector('.back-home')?.addEventListener('click', () => {
             this.speakButton("Kembali ke Beranda");
         });
 
-        // Modal close buttons
         document.querySelectorAll('.modal-close, .hologram-modal-close').forEach(button => {
             button.addEventListener('click', () => {
                 this.speakButton("Tutup");
             });
         });
 
-        // Modal buttons in hologram modal
         document.getElementById('closeDetailBtn')?.addEventListener('click', () => {
             this.speakButton("Tutup Detail");
         });
@@ -5211,7 +5098,6 @@ class MenuVoiceSystem {
             this.speakButton("Cetak Kartu");
         });
 
-        // Event saat speech selesai
         this.speechSynthesis.onend = () => {
             this.isSpeaking = false;
         };
@@ -5569,7 +5455,6 @@ class HologramStaticSystem {
     
     async loadData() {
         try {
-            // Cek apakah ada data Firebase
             if (window.app && window.app.firebaseUserData) {
                 const firebaseData = window.app.firebaseUserData;
                 
@@ -5583,7 +5468,6 @@ class HologramStaticSystem {
                 
                 console.log('✅ Hologram data loaded from Firebase:', this.data);
             } else {
-                // Fallback ke data lokal
                 const adminData = localStorage.getItem('koperasi_anggota');
                 const tabunganData = localStorage.getItem('tabunganDigitalUsers');
                 
@@ -5618,9 +5502,9 @@ class HologramStaticSystem {
                 let statusAnggota = 'Aktif';
                 
                 if (userData) {
-                    totalSimpanan = 0; // Semua data keuangan di-set ke 0
-                    totalPinjaman = 0;
-                    shuEstimasi = 0;
+                    totalSimpanan = userData.totalSimpanan || 0;
+                    totalPinjaman = userData.totalPinjaman || 0;
+                    shuEstimasi = userData.shuEstimasi || 0;
                     statusAnggota = userData?.statusAktif || userData?.status || 'Aktif';
                 }
                 
@@ -5641,29 +5525,6 @@ class HologramStaticSystem {
             console.error('❌ Error loading hologram data:', error);
             this.showFallbackData();
         }
-    }
-    
-    calculateTotalSimpanan(userData) {
-        if (!userData) return 0;
-        
-        let total = 0;
-        
-        total += parseInt(userData.simpananPokok) || 0;
-        total += parseInt(userData.simpananWajib) || 0;
-        total += parseInt(userData.simpananSukarela) || 0;
-        
-        if (userData.simpanan) {
-            total += parseInt(userData.simpanan.pokok?.nominal) || 0;
-            total += parseInt(userData.simpanan.wajib?.nominal) || 0;
-            total += parseInt(userData.simpanan.sukarela?.nominal) || 0;
-            total += parseInt(userData.simpanan.total) || 0;
-        }
-        
-        if (userData.totalSimpanan) {
-            total = Math.max(total, parseInt(userData.totalSimpanan) || 0);
-        }
-        
-        return total;
     }
     
     async getTabunganUserData() {
@@ -5689,7 +5550,6 @@ class HologramStaticSystem {
             return 'Rp ' + amount.toLocaleString('id-ID');
         };
         
-        // Update values
         const totalSimpananElement = document.getElementById('hologramTotalSimpanan');
         if (totalSimpananElement) {
             totalSimpananElement.textContent = formatRupiah(this.data.totalSimpanan);
@@ -5716,7 +5576,6 @@ class HologramStaticSystem {
             }
         }
         
-        // Update time
         const updateElement = document.getElementById('hologramUpdateTime');
         if (updateElement) {
             const now = new Date();
@@ -5853,7 +5712,7 @@ class HologramStaticSystem {
                             <i class="fas fa-landmark"></i>
                             Simpanan Pokok
                         </div>
-                        <div class="hologram-value rp">${formatRupiah(0)}</div>
+                        <div class="hologram-value rp">${formatRupiah(this.data.simpananPokok || 0)}</div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                             <i class="fas fa-check-circle" style="color: #4CAF50;"></i> Dibayar sekali
                         </div>
@@ -5864,7 +5723,7 @@ class HologramStaticSystem {
                             <i class="fas fa-calendar-check"></i>
                             Simpanan Wajib
                         </div>
-                        <div class="hologram-value rp">${formatRupiah(0)}</div>
+                        <div class="hologram-value rp">${formatRupiah(this.data.simpananWajib || 0)}</div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                             <i class="fas fa-sync-alt" style="color: #FF9800;"></i> Rutin bulanan
                         </div>
@@ -5875,7 +5734,7 @@ class HologramStaticSystem {
                             <i class="fas fa-hand-holding-heart"></i>
                             Simpanan Sukarela
                         </div>
-                        <div class="hologram-value rp">${formatRupiah(0)}</div>
+                        <div class="hologram-value rp">${formatRupiah(this.data.simpananSukarela || 0)}</div>
                         <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
                             <i class="fas fa-heart" style="color: #E91E63;"></i> Opsional
                         </div>
@@ -6193,7 +6052,7 @@ class ARExperienceSystem {
                                 
                                 <!-- Total Simpanan -->
                                 <a-text 
-                                    value="Simpanan: ${AdminDataExtractor.formatRupiah(0)}" 
+                                    value="Simpanan: ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}" 
                                     position="0.5 -0.1 0.002" 
                                     align="right" 
                                     color="#4CAF50" 
@@ -6265,7 +6124,6 @@ class ARExperienceSystem {
         
         this.setupARControls();
         
-        // Speak about AR experience
         if (window.menuVoiceSystem) {
             window.menuVoiceSystem.speak("Pengalaman Augmented Reality. Arahkan kamera Anda ke permukaan datar untuk melihat kartu digital dalam bentuk 3D.");
         }
@@ -6420,7 +6278,6 @@ class ARExperienceSystem {
         document.getElementById('arExperienceModal').classList.remove('active');
         document.getElementById('arExperienceContent').innerHTML = '';
         
-        // Stop camera
         const scene = document.querySelector('a-scene');
         if (scene) {
             scene.parentNode.removeChild(scene);
@@ -6496,7 +6353,7 @@ class VoiceCommandSystem {
                 action: () => {
                     if (window.menuVoiceSystem) {
                         const completeData = window.app.getCompleteUserData();
-                        const message = `Halo ${completeData.nama}. Total simpanan Anda ${AdminDataExtractor.formatRupiah(0)}. Total pinjaman ${AdminDataExtractor.formatRupiah(0)}. Status keanggotaan ${completeData.status}.`;
+                        const message = `Halo ${completeData.nama}. Total simpanan Anda ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}. Total pinjaman ${AdminDataExtractor.formatRupiah(completeData.totalPinjaman || 0)}. Status keanggotaan ${completeData.status}.`;
                         window.menuVoiceSystem.speak(message);
                     }
                 },
@@ -6579,7 +6436,6 @@ class VoiceCommandSystem {
                 command.action();
                 commandExecuted = true;
                 
-                // Speak confirmation
                 if (window.menuVoiceSystem) {
                     window.menuVoiceSystem.speak(`Melakukan perintah: ${command.description}`);
                 }
@@ -6669,7 +6525,6 @@ class VoiceCommandSystem {
         
         this.setupVoiceHelpListeners();
         
-        // Speak about voice commands
         if (window.menuVoiceSystem) {
             window.menuVoiceSystem.speak("Sistem perintah suara. Anda dapat mengontrol aplikasi dengan perintah suara. Katakan bantuan untuk melihat daftar perintah yang tersedia.");
         }
@@ -6721,7 +6576,6 @@ class VoiceCommandSystem {
         document.getElementById('voiceCommandModal').classList.remove('active');
         document.getElementById('voiceCommandContent').innerHTML = '';
         
-        // Stop listening if active
         if (this.recognition && this.isListening) {
             this.recognition.stop();
         }
@@ -6758,14 +6612,14 @@ class AdminDataExtractor {
                 userData.tanggalGabung = adminData.tanggal_bergabung || adminData.tanggal_daftar || '';
                 userData.jenisKelamin = adminData.jenisKelamin || '';
                 userData.agama = adminData.agama || '';
-                userData.nik = adminData.nik || adminData.nikKtp || '';
+                userData.nik = adminData.nik || '';
                 
-                userData.simpananPokok = 0;
-                userData.simpananWajib = 0;
-                userData.simpananSukarela = 0;
-                userData.totalSimpanan = 0;
-                userData.totalPinjaman = 0;
-                userData.shuEstimasi = 0;
+                userData.simpananPokok = adminData.simpananPokok || adminData.simpanan_pokok || 0;
+                userData.simpananWajib = adminData.simpananWajib || adminData.simpanan_wajib || 0;
+                userData.simpananSukarela = adminData.simpananSukarela || adminData.simpanan_sukarela || 0;
+                userData.totalSimpanan = adminData.totalSimpanan || adminData.total_simpanan || 0;
+                userData.totalPinjaman = adminData.totalPinjaman || adminData.total_pinjaman || 0;
+                userData.shuEstimasi = adminData.shuEstimasi || adminData.shu || 0;
                 
                 userData.pinjamanAktif = adminData.pinjaman?.aktif || [];
                 userData.riwayatTransaksi = adminData.riwayatTransaksi || [];
@@ -6849,12 +6703,11 @@ function resetPhoto() {
     window.app.showToast('Foto direset ke default', 'info');
 }
 
-// ===== INISIALISASI APLIKASI DENGAN ERROR HANDLING =====
+// ===== INISIALISASI APLIKASI =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM siap, memulai aplikasi Firebase dengan error handling...');
     
     try {
-        // Setup global error boundary
         window.addEventListener('error', function(event) {
             console.error('Global error caught:', event.error);
             showGlobalErrorToast(event.error);
@@ -6883,7 +6736,6 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => toast.remove(), 5000);
         }
         
-        // Inisialisasi aplikasi dengan timeout
         const appInitTimeout = setTimeout(() => {
             console.warn('⚠️ App initialization taking too long, forcing continue...');
             if (!window.app) {
@@ -6899,7 +6751,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         console.error('❌ Error initializing app:', error);
         
-        // Fallback minimal
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = `
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
