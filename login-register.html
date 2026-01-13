@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Register - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <style>
         :root {
             --primary: #2e7d32;
@@ -443,9 +447,112 @@
             background: var(--light);
         }
         
+        /* New styles for NIA display */
+        .nia-display {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .nia-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .nia-value {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+        
+        /* New styles for optional label */
+        .optional-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-left: 5px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            animation: modalSlideIn 0.5s ease forwards;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+        
+        .modal-header h3 {
+            color: white;
+            font-size: 1.4rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            transform: scale(1.2);
+        }
+        
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
         
         .login-right, .form-container {
@@ -570,23 +677,55 @@
             </div>
             
             <div class="form-container">
+                <!-- Display NIA (Generated Automatically) -->
+                <div class="nia-display">
+                    <div class="nia-label">ID/NIA Anggota Anda</div>
+                    <div class="nia-value" id="niaDisplay">Memuat...</div>
+                </div>
+                
                 <form id="registrationForm">
+                    <!-- SECTION 1: Foto Profil (Opsional) -->
+                    <div class="form-group">
+                        <label for="foto_profil">
+                            <i class="fas fa-camera"></i> Foto Profil 
+                            <span class="optional-label">(Opsional)</span>
+                        </label>
+                        <div class="file-upload">
+                            <div class="file-upload-btn">
+                                <i class="fas fa-cloud-upload-alt"></i> Pilih Foto
+                            </div>
+                            <input type="file" id="foto_profil" accept="image/*">
+                        </div>
+                        <div class="file-name" id="foto-profil-name">Belum ada file dipilih</div>
+                    </div>
+                    
+                    <!-- SECTION 2: Identitas (Wajib) -->
+                    <div class="form-group">
+                        <label for="nama_lengkap">Nama Lengkap <span class="required">*</span></label>
+                        <input type="text" id="nama_lengkap" class="form-control" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="posisi">Posisi <span class="required">*</span></label>
                         <select id="posisi" class="form-select" required>
                             <option value="">Pilih Posisi</option>
-                            <option value="Anggota">Anggota</option>
+                            <option value="Ketua">Ketua</option>
+                            <option value="Sekretaris">Sekretaris</option>
+                            <option value="Bendahara">Bendahara</option>
+                            <option value="Pengawas">Pengawas</option>
+                            <option value="Anggota" selected>Anggota</option>
                         </select>
                     </div>
                     
+                    <!-- SECTION 3: Data Pribadi (Wajib) -->
                     <div class="form-group">
-                        <label for="nama">Nama Lengkap <span class="required">*</span></label>
-                        <input type="text" id="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="alamat">Alamat Lengkap <span class="required">*</span></label>
-                        <textarea id="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+                        <label for="alamat_lengkap">Alamat Lengkap <span class="required">*</span></label>
+                        <textarea id="alamat_lengkap" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required maxlength="500"></textarea>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                            <span id="alamatCounter" style="font-size: 0.8rem; color: var(--gray);">
+                                0/500 karakter
+                            </span>
+                        </div>
                     </div>
                     
                     <div class="form-row">
@@ -607,6 +746,7 @@
                                     <option value="">Pilih Agama</option>
                                     <option value="Islam">Islam</option>
                                     <option value="Kristen">Kristen</option>
+                                    <option value="Katolik">Katolik</option>
                                     <option value="Hindu">Hindu</option>
                                     <option value="Budha">Budha</option>
                                     <option value="Konghucu">Konghucu</option>
@@ -615,53 +755,97 @@
                         </div>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="nik_ktp">NIK KTP <span class="required">*</span></label>
+                        <input type="text" id="nik_ktp" class="form-control" placeholder="Masukkan 16 digit NIK KTP" required pattern="[0-9]{16}" maxlength="16">
+                    </div>
+                    
+                    <!-- SECTION 4: Kontak (Wajib) -->
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="status">Status <span class="required">*</span></label>
-                                <select id="status" class="form-select" required>
-                                    <option value="">Pilih Status</option>
-                                    <option value="Menikah">Menikah</option>
-                                    <option value="Belum Menikah">Belum Menikah</option>
-                                    <option value="Duda">Duda</option>
-                                    <option value="Janda">Janda</option>
+                                <label for="email">Email <span class="required">*</span></label>
+                                <input type="email" id="email_daftar" class="form-control" placeholder="Masukkan email aktif" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="whatsapp">WhatsApp <span class="required">*</span></label>
+                                <input type="tel" id="whatsapp" class="form-control" placeholder="628xxxxxxxxxx" required pattern="^[0-9]{10,15}$">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SECTION 5: Status Keanggotaan -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="status_aktif">Status Aktif <span class="required">*</span></label>
+                                <select id="status_aktif" class="form-select" required>
+                                    <option value="Aktif" selected>Aktif</option>
+                                    <option value="Tidak Aktif">Tidak Aktif</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="tanggal_daftar">Tanggal Daftar</label>
+                                <label for="tanggal_daftar">Tanggal Daftar <span class="required">*</span></label>
                                 <input type="text" id="tanggal_daftar" class="form-control" readonly>
                             </div>
                         </div>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="tanggal_bergabung">Tanggal Bergabung <span class="required">*</span></label>
+                        <input type="date" id="tanggal_bergabung" class="form-control" required>
+                    </div>
+                    
+                    <!-- SECTION 6: Data Simpanan -->
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="email_daftar">Alamat Email <span class="required">*</span></label>
-                                <input type="email" id="email_daftar" class="form-control" placeholder="Masukkan alamat email" required>
+                                <label for="simpanan_pokok">Simpanan Pokok <span class="required">*</span></label>
+                                <div class="input-group" style="display: flex; align-items: center;">
+                                    <span style="padding: 0 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-right: none; border-radius: 10px 0 0 10px; height: 100%; display: flex; align-items: center;">Rp</span>
+                                    <input type="number" id="simpanan_pokok" class="form-control" value="200000" min="200000" step="1000" required style="border-radius: 0 10px 10px 0; border-left: none;">
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--gray); margin-top: 5px;">
+                                    Minimal Rp 200.000
+                                </div>
                             </div>
                         </div>
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="whatsapp">No WhatsApp <span class="required">*</span></label>
-                                <input type="tel" id="whatsapp" class="form-control" placeholder="Masukkan nomor WhatsApp" required>
+                                <label for="simpanan_wajib">Simpanan Wajib <span class="required">*</span></label>
+                                <div class="input-group" style="display: flex; align-items: center;">
+                                    <span style="padding: 0 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-right: none; border-radius: 10px 0 0 10px; height: 100%; display: flex; align-items: center;">Rp</span>
+                                    <input type="number" id="simpanan_wajib" class="form-control" value="20000" min="20000" step="1000" required style="border-radius: 0 10px 10px 0; border-left: none;">
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--gray); margin-top: 5px;">
+                                    Minimal Rp 20.000
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="nik">No NIK KTP <span class="required">*</span></label>
-                        <input type="text" id="nik" class="form-control" placeholder="Masukkan nomor NIK KTP" required>
+                        <label for="simpanan_sukarela">
+                            Simpanan Sukarela 
+                            <span class="optional-label">(Opsional)</span>
+                        </label>
+                        <div class="input-group" style="display: flex; align-items: center;">
+                            <span style="padding: 0 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-right: none; border-radius: 10px 0 0 10px; height: 100%; display: flex; align-items: center;">Rp</span>
+                            <input type="number" id="simpanan_sukarela" class="form-control" value="0" min="0" step="1000" style="border-radius: 0 10px 10px 0; border-left: none;">
+                        </div>
                     </div>
-
+                    
+                    <!-- SECTION 7: Password -->
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="password_daftar">Password <span class="required">*</span></label>
                                 <div class="password-container">
-                                    <input type="password" id="password_daftar" class="form-control" placeholder="Masukkan password" required minlength="6">
+                                    <input type="password" id="password_daftar" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
                                     <button type="button" class="toggle-password" onclick="togglePassword('password_daftar', this)">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -681,39 +865,12 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="foto">Upload Foto Anda <span class="required">*</span></label>
-                                <div class="file-upload">
-                                    <div class="file-upload-btn">
-                                        <i class="fas fa-cloud-upload-alt"></i> Pilih Foto
-                                    </div>
-                                    <input type="file" id="foto" accept="image/*" required>
-                                </div>
-                                <div class="file-name" id="foto-name">Belum ada file dipilih</div>
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="bukti_transfer">Upload Bukti Transfer (Opsional)</label>
-                                <div class="file-upload">
-                                    <div class="file-upload-btn">
-                                        <i class="fas fa-cloud-upload-alt"></i> Pilih File
-                                    </div>
-                                    <input type="file" id="bukti_transfer" accept="image/*,.pdf">
-                                </div>
-                                <div class="file-name" id="bukti-transfer-name">Belum ada file dipilih</div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="error-message" id="errorMessageDaftar"></div>
                     <div class="success-message" id="successMessageDaftar"></div>
                     
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-user-plus"></i> Daftar
+                        <button type="submit" class="btn btn-primary" id="submitRegisterBtn">
+                            <i class="fas fa-user-plus"></i> Daftar sebagai Anggota
                         </button>
                     </div>
                 </form>
@@ -725,9 +882,244 @@
         </div>
     </div>
 
-    <!-- SIMPLIFIED KOPERASI CORE SCRIPT -->
+    <!-- Modal Quick Register -->
+    <div class="modal" id="quickRegisterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registrasi Cepat Anggota</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fas fa-user-plus" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h4 style="color: var(--primary-dark); margin-bottom: 10px;">Daftar Sebagai Anggota Baru</h4>
+                    <p style="color: var(--gray);">Lengkapi data diri Anda untuk menjadi anggota Koperasi Asmara Tani</p>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+                    <button class="btn btn-primary" id="openFullRegister">
+                        <i class="fas fa-edit"></i> Daftar dengan Form Lengkap
+                    </button>
+                    
+                    <button class="btn btn-outline" onclick="window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20bertanya%20tentang%20pendaftaran%20anggota', '_blank')">
+                        <i class="fab fa-whatsapp"></i> Hubungi Admin via WhatsApp
+                    </button>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    <h5 style="color: var(--primary-dark); margin-bottom: 10px;">
+                        <i class="fas fa-info-circle"></i> Informasi Pendaftaran
+                    </h5>
+                    <ul style="color: var(--gray); font-size: 0.9rem; padding-left: 20px;">
+                        <li>Simpanan pokok minimal Rp 200.000</li>
+                        <li>Simpanan wajib minimal Rp 20.000 per bulan</li>
+                        <li>Mendapatkan estimasi SHU 20% dari total simpanan</li>
+                        <li>Akses ke Tabungan Digital</li>
+                        <li>Bisa mengajukan pinjaman</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE CONFIGURATION -->
     <script>
-    // ===== SIMPLIFIED KOPERASI CORE =====
+    // ===== FIREBASE CONFIGURATION =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyC73l7zgnN4lAtXmYGY-7KpER8_h0QZMg8",
+        authDomain: "koperasi-asmara-tani.firebaseapp.com",
+        projectId: "koperasi-asmara-tani",
+        storageBucket: "koperasi-asmara-tani.firebasestorage.app",
+        messagingSenderId: "378910307691",
+        appId: "1:378910307691:web:16ba94c7de9fd77c4e56c1",
+        measurementId: "G-TQQ3P3YSYE"
+    };
+
+    // ===== FIREBASE INITIALIZATION =====
+    let firebaseApp = null;
+    let firestoreDB = null;
+    let firebaseInitialized = false;
+
+    async function initializeFirebase() {
+        try {
+            // Initialize Firebase
+            if (!firebase.apps.length) {
+                firebaseApp = firebase.initializeApp(firebaseConfig);
+            } else {
+                firebaseApp = firebase.app();
+            }
+            
+            // Initialize Firestore
+            firestoreDB = firebase.firestore();
+            
+            // Test connection
+            await firestoreDB.collection('test').limit(1).get();
+            
+            firebaseInitialized = true;
+            console.log('✅ Firebase initialized successfully');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            firebaseInitialized = false;
+            return false;
+        }
+    }
+
+    // ===== FIREBASE FUNCTIONS =====
+    async function saveAnggotaToFirebase(anggotaData) {
+        if (!firebaseInitialized || !firestoreDB) {
+            throw new Error('Firebase not initialized');
+        }
+        
+        try {
+            const nia = anggotaData.nia;
+            const anggotaRef = firestoreDB.collection('anggota').doc(nia);
+            
+            // Prepare data for Firebase
+            const firebaseData = {
+                // Identitas
+                id: nia,
+                nia: nia,
+                nama: anggotaData.nama,
+                posisi: anggotaData.posisi,
+                
+                // Data Pribadi
+                alamat: anggotaData.alamat_lengkap,
+                alamat_lengkap: anggotaData.alamat_lengkap,
+                jenis_kelamin: anggotaData.jenis_kelamin,
+                agama: anggotaData.agama,
+                nik: anggotaData.nik_ktp,
+                nik_ktp: anggotaData.nik_ktp,
+                
+                // Kontak
+                email: anggotaData.email,
+                whatsapp: anggotaData.whatsapp,
+                telepon: anggotaData.whatsapp,
+                
+                // Status Keanggotaan
+                status: anggotaData.status_aktif,
+                status_aktif: anggotaData.status_aktif,
+                tanggal_daftar: anggotaData.tanggal_daftar,
+                tanggal_bergabung: anggotaData.tanggal_bergabung,
+                
+                // Data Simpanan
+                simpanan_pokok: parseFloat(anggotaData.simpanan_pokok) || 0,
+                simpanan_wajib: parseFloat(anggotaData.simpanan_wajib) || 0,
+                simpanan_sukarela: parseFloat(anggotaData.simpanan_sukarela) || 0,
+                total_simpanan: parseFloat(anggotaData.total_simpanan) || 0,
+                
+                // Data Pinjaman (default 0 untuk anggota baru)
+                total_pinjaman: 0,
+                
+                // Data SHU
+                shu_estimasi: parseFloat(anggotaData.shu_estimasi) || 0,
+                
+                // Foto
+                foto: anggotaData.foto_profil || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                foto_profil: anggotaData.foto_profil,
+                
+                // Authentication
+                password: anggotaData.password,
+                
+                // Metadata
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                last_update: new Date().toLocaleString('id-ID'),
+                
+                // QR Code URL
+                qr_url: `https://qr-code-hybrid.vercel.app/?id=${nia}`,
+                
+                // Link untuk Tabungan Digital
+                tabungan_digital_url: `tabungan-digital.html?nia=${nia}`
+            };
+            
+            // Save to Firebase
+            await anggotaRef.set(firebaseData);
+            
+            console.log('✅ Data anggota disimpan ke Firebase:', nia);
+            return { success: true, nia: nia, data: firebaseData };
+            
+        } catch (error) {
+            console.error('❌ Error saving to Firebase:', error);
+            throw error;
+        }
+    }
+
+    async function checkEmailExists(email) {
+        if (!firebaseInitialized || !firestoreDB) {
+            return false;
+        }
+        
+        try {
+            const snapshot = await firestoreDB.collection('anggota')
+                .where('email', '==', email)
+                .limit(1)
+                .get();
+            
+            return !snapshot.empty;
+        } catch (error) {
+            console.error('Error checking email:', error);
+            return false;
+        }
+    }
+
+    async function getNextNIA() {
+        if (!firebaseInitialized || !firestoreDB) {
+            return generateNIALocal();
+        }
+        
+        try {
+            // Get all anggota ordered by NIA
+            const snapshot = await firestoreDB.collection('anggota')
+                .orderBy('nia', 'desc')
+                .limit(1)
+                .get();
+            
+            let nextNumber = 1;
+            
+            if (!snapshot.empty) {
+                const lastDoc = snapshot.docs[0];
+                const lastNIA = lastDoc.data().nia;
+                
+                if (lastNIA && lastNIA.startsWith('NIA-')) {
+                    const lastNumber = parseInt(lastNIA.split('-')[1]) || 0;
+                    nextNumber = lastNumber + 1;
+                }
+            }
+            
+            return `NIA-${nextNumber.toString().padStart(3, '0')}`;
+            
+        } catch (error) {
+            console.error('Error getting next NIA from Firebase:', error);
+            return generateNIALocal();
+        }
+    }
+
+    function generateNIALocal() {
+        try {
+            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            let nextNumber = 1;
+            
+            allAnggota.forEach(anggota => {
+                if (anggota.nia && anggota.nia.startsWith('NIA-')) {
+                    const currentNum = parseInt(anggota.nia.split('-')[1]) || 0;
+                    if (currentNum >= nextNumber) {
+                        nextNumber = currentNum + 1;
+                    }
+                }
+            });
+            
+            return `NIA-${nextNumber.toString().padStart(3, '0')}`;
+        } catch (error) {
+            return `NIA-${Math.floor(Math.random() * 900 + 100)}`;
+        }
+    }
+    </script>
+
+    <!-- KOPERASI CORE SCRIPT -->
+    <script>
+    // ===== KOPERASI CORE =====
     const KOPERASI_CORE = {
         KEYS: {
             USERS: 'koperasi_users',
@@ -735,7 +1127,6 @@
             SESSION: 'koperasi_current_user'
         },
         
-        // Default users untuk testing
         initDefaultUsers() {
             const defaultUsers = {
                 'ketua@koperasi.com': {
@@ -773,7 +1164,6 @@
                 }
             };
             
-            // Initialize databases if not exists
             if (!localStorage.getItem(this.KEYS.USERS)) {
                 localStorage.setItem(this.KEYS.USERS, JSON.stringify(defaultUsers));
                 console.log('✅ Created default users database');
@@ -787,7 +1177,6 @@
             return true;
         },
         
-        // Get user by email
         getUser(email) {
             try {
                 const users = JSON.parse(localStorage.getItem(this.KEYS.USERS) || '{}');
@@ -798,7 +1187,6 @@
             }
         },
         
-        // Save new user
         saveUser(userData) {
             try {
                 const users = JSON.parse(localStorage.getItem(this.KEYS.USERS) || '{}');
@@ -821,51 +1209,19 @@
             }
         },
         
-        // Save anggota data
         saveAnggota(anggotaData) {
             try {
                 const semuaAnggota = JSON.parse(localStorage.getItem(this.KEYS.ANGGOTA) || '[]');
                 const email = anggotaData.email;
                 
-                // Generate ID jika baru
-                if (!anggotaData.id) {
-                    anggotaData.id = 'AGT-' + Date.now().toString().slice(-8);
-                }
-                
+                // Set timestamp
                 anggotaData.createdAt = new Date().toISOString();
                 anggotaData.updatedAt = new Date().toISOString();
-                anggotaData.statusAktif = 'Aktif';
-                
-                // Initialize simpanan data
-                if (!anggotaData.simpanan) {
-                    anggotaData.simpanan = {
-                        pokok: { nominal: 200000, status: 'lunas' },
-                        wajib: { nominal: 20000, status: 'aktif' },
-                        sukarela: { nominal: 0, status: 'tersedia' },
-                        total: 220000
-                    };
-                }
-                
-                // Initialize pinjaman data
-                if (!anggotaData.pinjaman) {
-                    anggotaData.pinjaman = {
-                        aktif: [],
-                        total: 0
-                    };
-                }
-                
-                // Initialize SHU data
-                if (!anggotaData.shu) {
-                    anggotaData.shu = {
-                        estimasi: 0,
-                        status: 'Dalam perhitungan'
-                    };
-                }
                 
                 // Check if exists
                 const existingIndex = semuaAnggota.findIndex(a => a.email === email);
                 if (existingIndex !== -1) {
-                    semuaAnggota[existingIndex] = anggotaData;
+                    semuaAnggota[existingIndex] = { ...semuaAnggota[existingIndex], ...anggotaData };
                 } else {
                     semuaAnggota.push(anggotaData);
                 }
@@ -878,7 +1234,6 @@
             }
         },
         
-        // Verify login
         verifyLogin(email, password) {
             try {
                 const user = this.getUser(email);
@@ -897,7 +1252,6 @@
                     };
                 }
                 
-                // Update last login
                 this.updateLastLogin(email);
                 
                 return {
@@ -924,7 +1278,6 @@
             }
         },
         
-        // Session management
         setCurrentSession(user) {
             try {
                 localStorage.setItem(this.KEYS.SESSION, JSON.stringify(user));
@@ -934,15 +1287,18 @@
             }
         }
     };
-
-    // Initialize core system
-    KOPERASI_CORE.initDefaultUsers();
     </script>
 
+    <!-- MAIN APPLICATION SCRIPT -->
     <script>
-    // ===== MAIN APPLICATION =====
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM ===');
+        
+        // Initialize Firebase
+        await initializeFirebase();
+        
+        // Initialize Core
+        KOPERASI_CORE.initDefaultUsers();
         
         // Element references
         const loginContainer = document.getElementById('loginContainer');
@@ -950,6 +1306,26 @@
         const backHomeBtn = document.getElementById('backHome');
         const closeBtn = document.getElementById('closeBtn');
         const backToLoginLink = document.getElementById('backToLogin');
+        const niaDisplay = document.getElementById('niaDisplay');
+        const quickRegisterModal = document.getElementById('quickRegisterModal');
+        const openFullRegisterBtn = document.getElementById('openFullRegister');
+        
+        // Initialize NIA
+        let currentNIA = '';
+        async function updateNIA() {
+            try {
+                currentNIA = await getNextNIA();
+                if (niaDisplay) {
+                    niaDisplay.textContent = currentNIA;
+                }
+            } catch (error) {
+                console.error('Error updating NIA:', error);
+                currentNIA = generateNIALocal();
+                if (niaDisplay) {
+                    niaDisplay.textContent = currentNIA;
+                }
+            }
+        }
         
         // Navigation
         backHomeBtn.addEventListener('click', function() {
@@ -962,20 +1338,47 @@
             }
         });
         
-        // Toggle form functions
+        // Form toggle functions
         function showLoginForm() {
             loginContainer.style.display = 'flex';
             registerContainer.style.display = 'none';
         }
         
-        function showRegisterForm() {
+        async function showRegisterForm() {
+            await updateNIA();
             loginContainer.style.display = 'none';
             registerContainer.style.display = 'block';
+            
+            // Set default values
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal_bergabung').value = today;
+            updateTanggalDaftar();
         }
         
         backToLoginLink.addEventListener('click', function(e) {
             e.preventDefault();
             showLoginForm();
+        });
+        
+        // Modal controls
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+        
+        // Open quick register modal
+        openFullRegisterBtn?.addEventListener('click', function() {
+            quickRegisterModal.style.display = 'none';
+            showRegisterForm();
         });
         
         // Toggle password visibility
@@ -1034,7 +1437,8 @@
                     if (userType === 'admin') {
                         window.open('https://wa.me/6285218483129?text=Halo%20Admin%20Koperasi%20Asmara%20Tani,%20saya%20ingin%20mendaftar%20sebagai%20ketua/sekretaris', '_blank');
                     } else {
-                        showRegisterForm();
+                        // Show quick register modal instead of full form
+                        quickRegisterModal.style.display = 'flex';
                     }
                 };
             }
@@ -1060,7 +1464,6 @@
                     return;
                 }
                 
-                // Verify login
                 const loginResult = KOPERASI_CORE.verifyLogin(email, password);
                 
                 if (loginResult.success) {
@@ -1068,7 +1471,6 @@
                     
                     console.log('✅ Login successful:', email);
                     
-                    // Check access based on user type
                     if (currentUserType === 'admin' && user.access !== 'dashboard') {
                         showError('Akses ditolak. Silakan login sebagai anggota.');
                         return;
@@ -1079,23 +1481,19 @@
                         return;
                     }
                     
-                    // Save session
                     KOPERASI_CORE.setCurrentSession(user);
                     
-                    // Save remembered email
                     if (remember) {
                         localStorage.setItem('koperasi_remembered_email', email);
                     } else {
                         localStorage.removeItem('koperasi_remembered_email');
                     }
                     
-                    // Show success message
                     if (successMessage) {
                         successMessage.style.display = 'block';
                         errorMessage.style.display = 'none';
                     }
                     
-                    // Redirect based on role
                     setTimeout(() => {
                         if (user.access === 'dashboard') {
                             window.location.href = 'dashboard-admin.html';
@@ -1156,21 +1554,32 @@
         updateTanggalDaftar();
         setInterval(updateTanggalDaftar, 1000);
         
-        // File upload handlers
-        const fotoInput = document.getElementById('foto');
-        const fotoName = document.getElementById('foto-name');
-        const buktiTransferInput = document.getElementById('bukti_transfer');
-        const buktiTransferName = document.getElementById('bukti-transfer-name');
+        // Alamat character counter
+        const alamatInput = document.getElementById('alamat_lengkap');
+        const alamatCounter = document.getElementById('alamatCounter');
         
-        if (fotoInput && fotoName) {
-            fotoInput.addEventListener('change', function() {
-                fotoName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+        if (alamatInput && alamatCounter) {
+            alamatInput.addEventListener('input', function() {
+                const count = this.value.length;
+                alamatCounter.textContent = `${count}/500 karakter`;
+                
+                if (count > 500) {
+                    alamatCounter.style.color = 'var(--danger)';
+                } else if (count > 450) {
+                    alamatCounter.style.color = 'var(--warning)';
+                } else {
+                    alamatCounter.style.color = 'var(--gray)';
+                }
             });
         }
         
-        if (buktiTransferInput && buktiTransferName) {
-            buktiTransferInput.addEventListener('change', function() {
-                buktiTransferName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
+        // File upload handlers
+        const fotoProfilInput = document.getElementById('foto_profil');
+        const fotoProfilName = document.getElementById('foto-profil-name');
+        
+        if (fotoProfilInput && fotoProfilName) {
+            fotoProfilInput.addEventListener('change', function() {
+                fotoProfilName.textContent = this.files.length > 0 ? this.files[0].name : 'Belum ada file dipilih';
             });
         }
         
@@ -1178,104 +1587,186 @@
         const registrationForm = document.getElementById('registrationForm');
         const errorMessageDaftar = document.getElementById('errorMessageDaftar');
         const successMessageDaftar = document.getElementById('successMessageDaftar');
+        const submitRegisterBtn = document.getElementById('submitRegisterBtn');
         
         if (registrationForm) {
-            registrationForm.addEventListener('submit', function(e) {
+            registrationForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                if (!validateForm()) return;
+                if (!validateRegistrationForm()) return;
                 
-                const password = document.getElementById('password_daftar').value;
-                const email = document.getElementById('email_daftar').value.trim();
+                // Disable submit button
+                submitRegisterBtn.disabled = true;
+                submitRegisterBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
                 
-                // Handle photo upload
-                let fotoUrl = '';
-                if (fotoInput.files.length > 0) {
-                    const file = fotoInput.files[0];
-                    fotoUrl = URL.createObjectURL(file);
-                } else {
-                    fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                try {
+                    const password = document.getElementById('password_daftar').value;
+                    const email = document.getElementById('email_daftar').value.trim();
+                    
+                    // Check if email exists in Firebase
+                    const emailExists = await checkEmailExists(email);
+                    if (emailExists) {
+                        showErrorDaftar('❌ Email sudah terdaftar di sistem. Gunakan email lain.');
+                        submitRegisterBtn.disabled = false;
+                        submitRegisterBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar sebagai Anggota';
+                        return;
+                    }
+                    
+                    // Handle photo upload
+                    let fotoUrl = '';
+                    if (fotoProfilInput.files.length > 0) {
+                        const file = fotoProfilInput.files[0];
+                        fotoUrl = URL.createObjectURL(file);
+                    } else {
+                        fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                    }
+                    
+                    // Calculate totals
+                    const pokok = parseFloat(document.getElementById('simpanan_pokok').value) || 0;
+                    const wajib = parseFloat(document.getElementById('simpanan_wajib').value) || 0;
+                    const sukarela = parseFloat(document.getElementById('simpanan_sukarela').value) || 0;
+                    const totalSimpanan = pokok + wajib + sukarela;
+                    const shuEstimasi = Math.round(totalSimpanan * 0.2);
+                    
+                    // Prepare data
+                    const anggotaData = {
+                        nia: currentNIA,
+                        id: currentNIA,
+                        nama: document.getElementById('nama_lengkap').value,
+                        posisi: document.getElementById('posisi').value,
+                        alamat_lengkap: document.getElementById('alamat_lengkap').value,
+                        jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                        agama: document.getElementById('agama').value,
+                        nik_ktp: document.getElementById('nik_ktp').value,
+                        email: email,
+                        whatsapp: document.getElementById('whatsapp').value,
+                        status_aktif: document.getElementById('status_aktif').value,
+                        tanggal_daftar: document.getElementById('tanggal_daftar').value,
+                        tanggal_bergabung: document.getElementById('tanggal_bergabung').value,
+                        simpanan_pokok: pokok,
+                        simpanan_wajib: wajib,
+                        simpanan_sukarela: sukarela,
+                        total_simpanan: totalSimpanan,
+                        total_pinjaman: 0,
+                        shu_estimasi: shuEstimasi,
+                        foto_profil: fotoUrl,
+                        foto: fotoUrl,
+                        password: password,
+                        createdAt: new Date().toISOString(),
+                        qr_url: `https://qr-code-hybrid.vercel.app/?id=${currentNIA}`,
+                        tabungan_digital_url: `tabungan-digital.html?nia=${currentNIA}`
+                    };
+                    
+                    // Save to Firebase
+                    let firebaseResult;
+                    try {
+                        firebaseResult = await saveAnggotaToFirebase(anggotaData);
+                        console.log('✅ Saved to Firebase:', firebaseResult);
+                    } catch (firebaseError) {
+                        console.error('Firebase save failed:', firebaseError);
+                        // Continue with localStorage fallback
+                    }
+                    
+                    // Save to KOPERASI_CORE (localStorage fallback)
+                    const coreResult = KOPERASI_CORE.saveAnggota(anggotaData);
+                    
+                    if (!coreResult.success) {
+                        showErrorDaftar('❌ ' + coreResult.message);
+                        submitRegisterBtn.disabled = false;
+                        submitRegisterBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar sebagai Anggota';
+                        return;
+                    }
+                    
+                    // Create user account for login
+                    const userData = {
+                        password: password,
+                        name: anggotaData.nama,
+                        role: 'Anggota',
+                        email: email,
+                        foto: fotoUrl,
+                        norek: 'Belum diatur',
+                        access: 'anggota',
+                        anggotaId: currentNIA,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    const userResult = KOPERASI_CORE.saveUser(userData);
+                    
+                    if (!userResult.success) {
+                        showErrorDaftar('❌ Gagal membuat akun login');
+                        submitRegisterBtn.disabled = false;
+                        submitRegisterBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar sebagai Anggota';
+                        return;
+                    }
+                    
+                    // Show success
+                    showSuccessDaftar('✅ Pendaftaran berhasil! ID Anda: ' + currentNIA);
+                    
+                    // Reset and prepare for next registration
+                    setTimeout(async () => {
+                        registrationForm.reset();
+                        if (fotoProfilName) fotoProfilName.textContent = 'Belum ada file dipilih';
+                        updateTanggalDaftar();
+                        
+                        // Set tanggal bergabung default
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('tanggal_bergabung').value = today;
+                        
+                        // Reset alamat counter
+                        if (alamatCounter) {
+                            alamatCounter.textContent = '0/500 karakter';
+                            alamatCounter.style.color = 'var(--gray)';
+                        }
+                        
+                        // Get new NIA for next registration
+                        await updateNIA();
+                        
+                        // Reset button
+                        submitRegisterBtn.disabled = false;
+                        submitRegisterBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar sebagai Anggota';
+                        
+                        // Auto-fill login form
+                        document.getElementById('email').value = email;
+                        document.getElementById('password').value = password;
+                        
+                        // Show login form
+                        showLoginForm();
+                        
+                        // Show success alert
+                        alert('🎉 PENDAFTARAN BERHASIL!\n\n' +
+                              'ID/NIA: ' + anggotaData.nia + '\n' +
+                              'Nama: ' + anggotaData.nama + '\n' +
+                              'Email: ' + email + '\n' +
+                              'Password: ' + password + '\n' +
+                              'Tanggal Bergabung: ' + anggotaData.tanggal_bergabung + '\n' +
+                              'Total Simpanan: Rp ' + totalSimpanan.toLocaleString('id-ID') + '\n\n' +
+                              'Sekarang Anda bisa login dengan akun ini.\n' +
+                              'Hubungi admin jika ada pertanyaan.');
+                        
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showErrorDaftar('❌ Terjadi kesalahan sistem. Silakan coba lagi.');
+                    submitRegisterBtn.disabled = false;
+                    submitRegisterBtn.innerHTML = '<i class="fas fa-user-plus"></i> Daftar sebagai Anggota';
                 }
-                
-                // Prepare data for KOPERASI_CORE
-                const anggotaData = {
-                    posisi: document.getElementById('posisi').value,
-                    nama: document.getElementById('nama').value,
-                    alamat: document.getElementById('alamat').value,
-                    jenis_kelamin: document.getElementById('jenis_kelamin').value,
-                    agama: document.getElementById('agama').value,
-                    status: document.getElementById('status').value,
-                    email: email,
-                    whatsapp: document.getElementById('whatsapp').value,
-                    nik: document.getElementById('nik').value,
-                    tanggal_daftar: document.getElementById('tanggal_daftar').value,
-                    foto: fotoUrl,
-                    password: password
-                };
-                
-                // Save to KOPERASI_CORE
-                const coreResult = KOPERASI_CORE.saveAnggota(anggotaData);
-                
-                if (!coreResult.success) {
-                    showErrorDaftar('❌ ' + coreResult.message);
-                    return;
-                }
-                
-                // Also create user account for login
-                const userData = {
-                    password: password,
-                    name: anggotaData.nama,
-                    role: 'Anggota',
-                    email: email,
-                    foto: fotoUrl,
-                    norek: 'Belum diatur',
-                    access: 'anggota',
-                    anggotaId: coreResult.data.id,
-                    createdAt: new Date().toISOString()
-                };
-                
-                const userResult = KOPERASI_CORE.saveUser(userData);
-                
-                if (!userResult.success) {
-                    showErrorDaftar('❌ Gagal membuat akun login');
-                    return;
-                }
-                
-                // Show success
-                showSuccessDaftar('✅ Pendaftaran berhasil! Akun Anda sudah aktif.');
-                
-                // Reset form
-                setTimeout(() => {
-                    registrationForm.reset();
-                    if (fotoName) fotoName.textContent = 'Belum ada file dipilih';
-                    if (buktiTransferName) buktiTransferName.textContent = 'Belum ada file dipilih';
-                    updateTanggalDaftar();
-                    
-                    // Auto-fill login form
-                    document.getElementById('email').value = email;
-                    document.getElementById('password').value = password;
-                    
-                    // Show login form
-                    showLoginForm();
-                    
-                    // Alert user
-                    alert('🎉 Pendaftaran berhasil!\n\nEmail: ' + email + '\nPassword: ' + password + '\n\nSekarang Anda bisa login dengan akun ini.');
-                    
-                }, 2000);
             });
         }
         
-        function validateForm() {
+        function validateRegistrationForm() {
             const requiredFields = [
-                'posisi', 'nama', 'alamat', 'jenis_kelamin', 
-                'agama', 'status', 'email_daftar', 'whatsapp', 'nik', 'foto',
+                'nama_lengkap', 'posisi', 'alamat_lengkap', 
+                'jenis_kelamin', 'agama', 'nik_ktp', 
+                'email_daftar', 'whatsapp', 'status_aktif',
+                'tanggal_bergabung', 'simpanan_pokok', 'simpanan_wajib',
                 'password_daftar', 'ulangi_password'
             ];
             
             for (let field of requiredFields) {
                 const element = document.getElementById(field);
-                if (!element || !element.value) {
-                    showErrorDaftar(`Field ${field} harus diisi.`);
+                if (!element || element.value === '' || element.value === null) {
+                    showErrorDaftar(`Field ${field.replace('_', ' ')} harus diisi.`);
                     if (element) element.focus();
                     return false;
                 }
@@ -1285,6 +1776,14 @@
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showErrorDaftar('Format email tidak valid.');
+                document.getElementById('email_daftar').focus();
+                return false;
+            }
+            
+            // Check locally first
+            const existingUser = KOPERASI_CORE.getUser(email);
+            if (existingUser) {
+                showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain.');
                 document.getElementById('email_daftar').focus();
                 return false;
             }
@@ -1304,25 +1803,41 @@
                 return false;
             }
             
-            // Check if email already exists
-            const existingUser = KOPERASI_CORE.getUser(email);
-            if (existingUser) {
-                showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain.');
-                document.getElementById('email_daftar').focus();
-                return false;
-            }
-            
             const whatsapp = document.getElementById('whatsapp').value;
-            if (whatsapp.length < 10) {
-                showErrorDaftar('WhatsApp minimal 10 digit.');
+            const whatsappRegex = /^[0-9]{10,15}$/;
+            if (!whatsappRegex.test(whatsapp)) {
+                showErrorDaftar('WhatsApp harus 10-15 digit angka.');
                 document.getElementById('whatsapp').focus();
                 return false;
             }
             
-            const nik = document.getElementById('nik').value;
-            if (nik.length < 10 || isNaN(nik)) {
-                showErrorDaftar('NIK harus minimal 10 digit angka.');
-                document.getElementById('nik').focus();
+            const nik = document.getElementById('nik_ktp').value;
+            const nikRegex = /^[0-9]{16}$/;
+            if (!nikRegex.test(nik)) {
+                showErrorDaftar('NIK harus 16 digit angka.');
+                document.getElementById('nik_ktp').focus();
+                return false;
+            }
+            
+            const simpananPokok = parseFloat(document.getElementById('simpanan_pokok').value);
+            const simpananWajib = parseFloat(document.getElementById('simpanan_wajib').value);
+            
+            if (simpananPokok < 200000) {
+                showErrorDaftar('Simpanan pokok minimal Rp 200.000');
+                document.getElementById('simpanan_pokok').focus();
+                return false;
+            }
+            
+            if (simpananWajib < 20000) {
+                showErrorDaftar('Simpanan wajib minimal Rp 20.000');
+                document.getElementById('simpanan_wajib').focus();
+                return false;
+            }
+            
+            const alamat = document.getElementById('alamat_lengkap').value;
+            if (alamat.length > 500) {
+                showErrorDaftar('Alamat maksimal 500 karakter.');
+                document.getElementById('alamat_lengkap').focus();
                 return false;
             }
             
@@ -1351,14 +1866,17 @@
             }
         }
         
+        // Initialize NIA on load
+        await updateNIA();
+        
         // Console info
         console.log('=== LOGIN SYSTEM READY ===');
+        console.log('Firebase Status:', firebaseInitialized ? '✅ Connected' : '❌ Disconnected');
         console.log('Test accounts:');
         console.log('1. Ketua: ketua@koperasi.com / ketua014212');
         console.log('2. Sekretaris: sekretaris@koperasi.com / sekretaris4212');
         console.log('3. Anggota: anggota@koperasi.com / anggota123');
-        console.log('4. Register: Buat akun baru (email bebas)');
     });
-</script>
+    </script>
 </body>
 </html>
