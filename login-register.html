@@ -1636,10 +1636,10 @@
             const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
             
             // Default admin user
-            if (!localUsers['ketua@koperasi.com']) {
-                localUsers['ketua@koperasi.com'] = {
-                    email: 'ketua@koperasi.com',
-                    password: 'ketua014212',
+            if (!localUsers['admin@koperasi.com']) {
+                localUsers['admin@koperasi.com'] = {
+                    email: 'admin@koperasi.com',
+                    password: 'admin123',
                     name: 'Administrator',
                     role: 'Admin',
                     foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
@@ -1650,20 +1650,16 @@
                 };
             }
             
-           localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
-‎        }
-‎        
-‎        initDefaultUsers();
-‎        
-‎        // Console info
-‎        console.log('=== LOGIN SYSTEM READY ===');
-‎        console.log('User khusus yang tersedia:');
-‎        console.log('- Ketua: ketua@koperasi.com / ketua014212');
-‎        console.log('- Sekretaris: sekretaris@koperasi.com / sekretaris4212');
-‎        console.log('- Bendahara: bendahara@koperasi.com / bendahara4212');
-‎        console.log('- Pengawas: pengawas@koperasi.com / pengawas4212');
-‎        console.log('Firebase status:', firebaseInitialized ? 'Connected' : 'Not connected');
-‎    }); 
+            localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
+        }
+        
+        initDefaultUsers();
+        
+        // Console info
+        console.log('=== LOGIN SYSTEM READY ===');
+        console.log('Default admin: admin@koperasi.com / admin123');
+        console.log('Firebase status:', firebaseInitialized ? 'Connected' : 'Not connected');
+    });
 </script>
 </body>
 </html>
