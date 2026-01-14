@@ -2848,7 +2848,6 @@ class TabunganApp {
         this.isSyncing = false;
         this.nia = null;
         this.firebaseReady = false;
-        this.unsubscribeFirebase = null;
         this.firebaseInitAttempted = false;
         
         // Setup global error handling
@@ -4042,6 +4041,7 @@ class TabunganApp {
                               `KOP-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
         }
 
+        // ===== PENAMBAHAN KODE UNTUK QR CODE =====
         const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${completeData.nia}&name=${encodeURIComponent(completeData.nama)}&email=${encodeURIComponent(completeData.email)}`;
         
         const html = `
@@ -4072,7 +4072,13 @@ class TabunganApp {
                     </div>
                 </div>
                 
-                <div id="qrcodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light);"></div>
+                <!-- ===== TEMPAT UNTUK QR CODE ===== -->
+                <div id="qrcodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light);">
+                    <div style="margin-bottom: 15px;">
+                        <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Memuat QR Code...</p>
+                </div>
                 
                 <div style="text-align: center; margin: 20px 0;">
                     <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
@@ -4098,6 +4104,12 @@ class TabunganApp {
                     </div>
                 </div>
                 
+                <div style="background: #f0f7f0; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <p style="color: var(--primary); margin: 0; font-size: 0.9rem; text-align: center;">
+                        <i class="fas fa-scan"></i> Scan QR Code di atas untuk melihat data anggota di browser
+                    </p>
+                </div>
+                
                 <div class="modal-actions" style="margin-top: 25px;">
                     <button type="button" class="modal-btn primary" id="closeQRBtn" style="width: 100%;">
                         <i class="fas fa-times"></i> Tutup QR Code
@@ -4108,11 +4120,13 @@ class TabunganApp {
         
         this.showModal('QR Code Hybrid Firebase', html);
         
+        // ===== MEMBUAT QR CODE =====
         setTimeout(() => {
             const qrContainer = document.getElementById('qrcodeContainer');
             if (qrContainer) {
                 qrContainer.innerHTML = '';
                 try {
+                    // Generate QR Code
                     new QRCode(qrContainer, {
                         text: qrUrl,
                         width: 200,
@@ -4122,37 +4136,53 @@ class TabunganApp {
                         correctLevel: QRCode.CorrectLevel.H
                     });
                     
+                    // Tambahkan info di bawah QR Code
                     qrContainer.innerHTML += `
                         <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary);">
                             <p>Scan QR Code ini untuk melihat data anggota di:</p>
-                            <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px;">
-                                https://qr-code-hybrid.vercel.app/?id=${completeData.nia}
+                            <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px; font-size: 0.7rem;">
+                                ${qrUrl}
                             </p>
                         </div>
                     `;
+                    
+                    console.log('✅ QR Code berhasil dibuat untuk URL:', qrUrl);
+                    
                 } catch (e) {
                     console.error('QR Code error:', e);
                     qrContainer.innerHTML = `
                         <div style="color: var(--text-secondary); padding: 20px;">
                             <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ff9800; margin-bottom: 10px;"></i>
-                            <p>QR Code terlalu besar</p>
+                            <p>Gagal membuat QR Code</p>
+                            <p style="font-size: 0.8rem; margin-top: 10px;">URL: ${qrUrl.substring(0, 50)}...</p>
                         </div>
                     `;
                     
-                    new QRCode(qrContainer, {
-                        text: qrUrl,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#1a5f23",
-                        colorLight: "#ffffff"
-                    });
+                    // Fallback ke QRCode yang lebih sederhana
+                    try {
+                        new QRCode(qrContainer, {
+                            text: qrUrl,
+                            width: 150,
+                            height: 150,
+                            colorDark: "#1a5f23",
+                            colorLight: "#ffffff"
+                        });
+                    } catch (error) {
+                        console.error('Fallback QR Code juga gagal:', error);
+                    }
                 }
             }
         }, 100);
         
+        // Event listener untuk tombol tutup
         document.getElementById('closeQRBtn').addEventListener('click', () => {
             this.closeModal();
         });
+        
+        // Voice notification
+        if (window.menuVoiceSystem) {
+            window.menuVoiceSystem.speak("QR Code Hybrid Firebase telah ditampilkan. Scan QR Code untuk melihat data anggota.");
+        }
     }
     
     // ===== SETOR MODAL =====
