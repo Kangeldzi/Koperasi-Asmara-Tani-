@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Register - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase SDKs (PERBAIKAN: Gunakan versi yang lebih ringan) -->
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
         :root {
             --primary: #2e7d32;
@@ -39,43 +39,6 @@
             color: var(--dark);
             min-height: 100vh;
             padding: 20px;
-        }
-        
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            display: none;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--light);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-size: 1.2rem;
-            color: var(--primary-dark);
-            font-weight: 600;
         }
         
         .back-home {
@@ -485,6 +448,7 @@
             background: var(--light);
         }
         
+        /* New styles for NIA display */
         .nia-display {
             background: #f8f9fa;
             border: 2px solid #e9ecef;
@@ -508,6 +472,7 @@
             color: var(--primary);
         }
         
+        /* New styles for optional label */
         .optional-label {
             font-size: 0.85rem;
             color: var(--gray);
@@ -515,6 +480,7 @@
             margin-left: 5px;
         }
         
+        /* Radio button styles */
         .radio-group {
             display: flex;
             gap: 20px;
@@ -541,6 +507,7 @@
             height: 18px;
         }
         
+        /* Input group styles */
         .input-group {
             display: flex;
             align-items: center;
@@ -570,6 +537,22 @@
         
         .login-right, .form-container {
             animation: fadeIn 0.8s ease;
+        }
+        
+        /* Storage Warning - Minimal & Non-intrusive */
+        .storage-warning {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: var(--warning);
+            color: var(--dark);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            display: none;
+            z-index: 1000;
+            max-width: 250px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         @media (max-width: 768px) {
@@ -612,14 +595,20 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .storage-warning {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text" id="loadingText">Memuat aplikasi...</div>
+    <!-- Storage Warning (Hanya muncul jika diperlukan) -->
+    <div class="storage-warning" id="storageWarning">
+        <span id="storageMessage">Penyimpanan lokal penuh. Klik untuk membersihkan.</span>
     </div>
     
     <button class="back-home" id="backHome">
@@ -944,8 +933,6 @@
     
     async function initializeFirebase() {
         try {
-            showLoading('Memuat Firebase...');
-            
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
@@ -954,295 +941,27 @@
             auth = firebase.auth();
             storage = firebase.storage();
             firebaseInitialized = true;
-            
-            // Enable offline persistence untuk Firestore
-            db.enablePersistence()
-                .catch((err) => {
-                    console.warn('Firebase persistence error:', err);
-                });
-            
             console.log('✅ Firebase initialized successfully');
-            hideLoading();
             return true;
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
-            hideLoading();
             return false;
-        }
-    }
-    
-    // Loading utility functions
-    function showLoading(message = 'Memuat...') {
-        const overlay = document.getElementById('loadingOverlay');
-        const text = document.getElementById('loadingText');
-        if (overlay && text) {
-            text.textContent = message;
-            overlay.style.display = 'flex';
-        }
-    }
-    
-    function hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 500);
         }
     }
     
     // Initialize Firebase on load
     initializeFirebase();
-    
-    // ===== FIREBASE FUNCTIONS =====
-    
-    // Fungsi untuk cek apakah user sudah ada di Firebase
-    async function checkUserInFirebase(email) {
-        try {
-            const querySnapshot = await db.collection('anggota')
-                .where('email', '==', email)
-                .limit(1)
-                .get();
-            
-            return !querySnapshot.empty;
-        } catch (error) {
-            console.error('Error checking user:', error);
-            return false;
-        }
-    }
-    
-    // Fungsi untuk upload foto ke Firebase Storage
-    async function uploadFotoProfil(file, nia) {
-        try {
-            if (!file) {
-                return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
-            }
-            
-            showLoading('Mengupload foto...');
-            
-            const storageRef = storage.ref();
-            const fotoRef = storageRef.child(`foto_profil/${nia}_${Date.now()}_${file.name}`);
-            
-            // Upload file
-            const snapshot = await fotoRef.put(file);
-            
-            // Get download URL
-            const downloadURL = await snapshot.ref.getDownloadURL();
-            
-            hideLoading();
-            return downloadURL;
-        } catch (error) {
-            console.error('Error uploading foto:', error);
-            hideLoading();
-            throw error;
-        }
-    }
-    
-    // Fungsi untuk register ke Firebase (diperbarui)
-    async function registerToFirebase(userData) {
-        try {
-            showLoading('Mendaftarkan akun...');
-            
-            // 1. Register di Firebase Auth
-            const userCredential = await auth.createUserWithEmailAndPassword(
-                userData.email, 
-                userData.password
-            );
-            
-            const user = userCredential.user;
-            
-            // 2. Simpan data lengkap ke Firestore
-            await db.collection('anggota').doc(userData.nia).set({
-                // Identitas
-                nia: userData.nia,
-                nama: userData.nama,
-                email: userData.email,
-                telepon: userData.telepon,
-                whatsapp: userData.telepon,
-                alamat: userData.alamat,
-                jenis_kelamin: userData.jenisKelamin,
-                jenisKelamin: userData.jenisKelamin,
-                agama: userData.agama,
-                nik: userData.nik,
-                nik_ktp: userData.nik,
-                
-                // Posisi/Role
-                posisi: userData.posisi,
-                role: userData.posisi,
-                
-                // Status
-                status: userData.status || 'AKTIF',
-                status_aktif: userData.status || 'AKTIF',
-                tanggal_bergabung: userData.tanggal_bergabung || new Date().toISOString(),
-                tanggal_daftar: userData.tanggal_bergabung || new Date().toISOString(),
-                
-                // Simpanan
-                simpanan_pokok: userData.simpanan_pokok || 0,
-                simpananPokok: userData.simpanan_pokok || 0,
-                simpanan_wajib: userData.simpanan_wajib || 0,
-                simpananWajib: userData.simpanan_wajib || 0,
-                simpanan_sukarela: userData.simpanan_sukarela || 0,
-                simpananSukarela: userData.simpanan_sukarela || 0,
-                
-                // Keuangan
-                total_simpanan: userData.total_simpanan || 0,
-                totalSimpanan: userData.total_simpanan || 0,
-                total_pinjaman: 0,
-                totalPinjaman: 0,
-                shu_estimasi: userData.shu_estimasi || 0,
-                shu: userData.shu_estimasi || 0,
-                
-                // Foto
-                foto: userData.foto,
-                
-                // Metadata
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                last_update: new Date().toLocaleString('id-ID'),
-                
-                // QR Code
-                qr_url: `https://qr-code-hybrid.vercel.app/?id=${userData.nia}`,
-                qr_code: `https://qr-code-hybrid.vercel.app/?id=${userData.nia}&name=${encodeURIComponent(userData.nama)}`,
-                
-                // Link untuk Tabungan Digital
-                tabungan_digital_url: `tabungan-digital.html?nia=${userData.nia}`
-            });
-            
-            // 3. Juga simpan di collection 'users' untuk login
-            await db.collection('users').doc(userData.email).set({
-                email: userData.email,
-                password: userData.password,
-                name: userData.nama,
-                role: userData.posisi,
-                foto: userData.foto,
-                access: (userData.posisi === 'Ketua' || userData.posisi === 'Sekretaris' || userData.posisi === 'Bendahara') ? 'dashboard' : 'tabungan',
-                anggotaId: userData.nia,
-                createdAt: new Date().toISOString(),
-                lastLogin: null
-            });
-            
-            console.log('✅ User registered to Firebase:', userData.nia);
-            hideLoading();
-            return true;
-        } catch (error) {
-            console.error('❌ Error registering to Firebase:', error);
-            hideLoading();
-            throw error;
-        }
-    }
-    
-    // ===== DATA ADMIN DEFAULT =====
-    const adminUsers = [
-        {
-            email: "ketua@koperasi.com",
-            password: "Ketua014212",
-            name: "Ketua Koperasi",
-            role: "Ketua",
-            nia: "KOP-001",
-            posisi: "Ketua"
-        },
-        {
-            email: "sekretaris@koperasi.com",
-            password: "Sekretaris4212",
-            name: "Sekretaris Koperasi",
-            role: "Sekretaris",
-            nia: "KOP-002",
-            posisi: "Sekretaris"
-        },
-        {
-            email: "bendahara@koperasi.com",
-            password: "Bendahara4212",
-            name: "Bendahara Koperasi",
-            role: "Bendahara",
-            nia: "KOP-004",
-            posisi: "Bendahara"
-        },
-        {
-            email: "pengawas@koperasi.com",
-            password: "Pengawas4212",
-            name: "Pengawas Koperasi",
-            role: "Pengawas",
-            nia: "KOP-003",
-            posisi: "Pengawas"
-        }
-    ];
-    
-    // Fungsi untuk membuat user admin di Firebase
-    async function createAdminUsers() {
-        console.log('🔧 Checking admin users...');
-        
-        try {
-            for (const admin of adminUsers) {
-                // Cek jika user sudah ada
-                const userDoc = await db.collection('users').doc(admin.email).get();
-                
-                if (!userDoc.exists) {
-                    console.log(`Creating admin user: ${admin.email}`);
-                    
-                    try {
-                        // Buat user di Firebase Auth
-                        await auth.createUserWithEmailAndPassword(admin.email, admin.password);
-                        
-                        // Simpan data di Firestore
-                        await db.collection('anggota').doc(admin.nia).set({
-                            nama: admin.name,
-                            email: admin.email,
-                            posisi: admin.posisi,
-                            role: admin.role,
-                            status: 'AKTIF',
-                            tanggal_bergabung: new Date().toISOString(),
-                            total_simpanan: 5000000,
-                            total_pinjaman: 0,
-                            shu_estimasi: 1000000,
-                            foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString(),
-                            qr_url: `https://qr-code-hybrid.vercel.app/?id=${admin.nia}`,
-                            tabungan_digital_url: `tabungan-digital.html?nia=${admin.nia}`
-                        });
-                        
-                        await db.collection('users').doc(admin.email).set({
-                            email: admin.email,
-                            password: admin.password,
-                            name: admin.name,
-                            role: admin.role,
-                            foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                            access: (admin.role === 'Ketua' || admin.role === 'Sekretaris' || admin.role === 'Bendahara') ? 'dashboard' : 'tabungan',
-                            anggotaId: admin.nia,
-                            createdAt: new Date().toISOString(),
-                            lastLogin: null
-                        });
-                        
-                        console.log(`✅ Created ${admin.role}: ${admin.email}`);
-                    } catch (authError) {
-                        if (authError.code === 'auth/email-already-in-use') {
-                            console.log(`⚠️ ${admin.email} already exists in Auth`);
-                        } else {
-                            console.error(`❌ Error creating ${admin.role}:`, authError);
-                        }
-                    }
-                } else {
-                    console.log(`✅ ${admin.email} already exists`);
-                }
-            }
-        } catch (error) {
-            console.error('Error in createAdminUsers:', error);
-        }
-    }
-    
-    // Jalankan pembuatan admin users dengan delay
-    setTimeout(async () => {
-        if (firebaseInitialized) {
-            await createAdminUsers();
-        }
-    }, 5000);
     </script>
 
     <script>
-    // ===== MAIN APPLICATION =====
+    // ===== MAIN APPLICATION (DIPERBAIKI UNTUK QUOTA STORAGE) =====
     document.addEventListener('DOMContentLoaded', async function() {
         console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM ===');
         
-        // Initialize elements first
+        // Initialize Firebase
+        await initializeFirebase();
+        
+        // Element references
         const loginContainer = document.getElementById('loginContainer');
         const registerContainer = document.getElementById('registerContainer');
         const backHomeBtn = document.getElementById('backHome');
@@ -1250,20 +969,219 @@
         const backToLoginLink = document.getElementById('backToLogin');
         const registerLink = document.getElementById('registerLink');
         const niaDisplay = document.getElementById('niaDisplay');
+        const storageWarning = document.getElementById('storageWarning');
+        const storageMessage = document.getElementById('storageMessage');
         
         // Initialize NIA
         let currentNIA = '';
         
-        // Function to generate NIA
+        // ===== STORAGE MANAGEMENT FUNCTIONS =====
+        
+        // Fungsi untuk membersihkan localStorage secara aman
+        function safeClearStorage() {
+            try {
+                // Simpan data penting terlebih dahulu
+                const importantData = {
+                    rememberedEmail: localStorage.getItem('koperasi_remembered_email'),
+                    currentUser: localStorage.getItem('koperasi_current_user')
+                };
+                
+                // Hapus semua data kecuali yang penting
+                const keysToKeep = ['koperasi_remembered_email', 'koperasi_current_user'];
+                const allKeys = [];
+                
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    allKeys.push(key);
+                }
+                
+                // Hapus data yang tidak penting
+                allKeys.forEach(key => {
+                    if (!keysToKeep.includes(key)) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                console.log('🗑️ Cleared unnecessary storage data');
+                return true;
+                
+            } catch (error) {
+                console.error('Error clearing storage:', error);
+                return false;
+            }
+        }
+        
+        // Fungsi untuk cek dan handle storage penuh
+        function handleStorageError(action) {
+            console.warn(`⚠️ Storage error during ${action}`);
+            
+            // Tampilkan warning
+            storageMessage.textContent = 'Penyimpanan lokal penuh. Membersihkan...';
+            storageWarning.style.display = 'block';
+            
+            // Coba bersihkan storage
+            safeClearStorage();
+            
+            // Auto-hide warning setelah 5 detik
+            setTimeout(() => {
+                storageWarning.style.display = 'none';
+            }, 5000);
+            
+            // Coba lagi action setelah membersihkan
+            return true;
+        }
+        
+        // Fungsi untuk menyimpan data dengan aman
+        function safeSetItem(key, value) {
+            try {
+                // Coba simpan
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (error) {
+                if (error.name === 'QuotaExceededError') {
+                    // Storage penuh, coba bersihkan
+                    if (handleStorageError(`saving ${key}`)) {
+                        // Coba lagi setelah membersihkan
+                        try {
+                            localStorage.setItem(key, JSON.stringify(value));
+                            return true;
+                        } catch (retryError) {
+                            console.error('Retry failed:', retryError);
+                            return false;
+                        }
+                    }
+                }
+                console.error(`Error saving ${key}:`, error);
+                return false;
+            }
+        }
+        
+        // Fungsi untuk mendapatkan data dengan aman
+        function safeGetItem(key) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            } catch (error) {
+                console.error(`Error getting ${key}:`, error);
+                return null;
+            }
+        }
+        
+        // Fungsi untuk menyimpan data anggota dengan efisien
+        function saveAnggotaData(anggotaData) {
+            try {
+                // Ambil data yang sudah ada
+                let allAnggota = safeGetItem('koperasi_anggota') || [];
+                
+                // Hanya simpan data penting untuk hemat storage
+                const essentialData = {
+                    nia: anggotaData.nia,
+                    nama: anggotaData.nama,
+                    email: anggotaData.email,
+                    posisi: anggotaData.posisi,
+                    status: anggotaData.status
+                };
+                
+                // Cek jika sudah ada
+                const existingIndex = allAnggota.findIndex(a => a.nia === essentialData.nia);
+                if (existingIndex !== -1) {
+                    allAnggota[existingIndex] = essentialData;
+                } else {
+                    allAnggota.push(essentialData);
+                }
+                
+                // Batasi jumlah data yang disimpan (maks 100)
+                if (allAnggota.length > 100) {
+                    allAnggota = allAnggota.slice(-100);
+                }
+                
+                // Simpan
+                return safeSetItem('koperasi_anggota', allAnggota);
+                
+            } catch (error) {
+                console.error('Error saving anggota data:', error);
+                return false;
+            }
+        }
+        
+        // Fungsi untuk menyimpan user data dengan efisien
+        function saveUserData(email, userData) {
+            try {
+                let allUsers = safeGetItem('koperasi_users') || {};
+                
+                // Hanya simpan data penting
+                const essentialUserData = {
+                    email: userData.email,
+                    name: userData.name,
+                    role: userData.role,
+                    access: userData.access,
+                    anggotaId: userData.anggotaId,
+                    createdAt: userData.createdAt
+                };
+                
+                allUsers[email] = essentialUserData;
+                
+                // Batasi jumlah user yang disimpan
+                const userKeys = Object.keys(allUsers);
+                if (userKeys.length > 50) {
+                    // Hapus user terlama
+                    const oldestKey = userKeys.reduce((oldest, current) => {
+                        return allUsers[current].createdAt < allUsers[oldest].createdAt ? current : oldest;
+                    });
+                    delete allUsers[oldestKey];
+                }
+                
+                return safeSetItem('koperasi_users', allUsers);
+                
+            } catch (error) {
+                console.error('Error saving user data:', error);
+                return false;
+            }
+        }
+        
+        // Function to generate NIA from Firebase
         async function generateNIA() {
             try {
-                // Generate NIA sederhana tanpa query Firebase dulu
-                const timestamp = Date.now().toString().slice(-6);
-                return `KOP-${timestamp}`;
+                if (!firebaseInitialized || !db) {
+                    // Fallback to local storage if Firebase not available
+                    const localAnggota = safeGetItem('koperasi_anggota') || [];
+                    let nextNumber = 1;
+                    
+                    localAnggota.forEach(anggota => {
+                        if (anggota.nia && anggota.nia.startsWith('KOP-')) {
+                            const currentNum = parseInt(anggota.nia.split('-')[1]) || 0;
+                            if (currentNum >= nextNumber) {
+                                nextNumber = currentNum + 1;
+                            }
+                        }
+                    });
+                    
+                    return `KOP-${nextNumber.toString().padStart(3, '0')}`;
+                }
+                
+                // Get all anggota from Firebase
+                const anggotaRef = db.collection('anggota');
+                const snapshot = await anggotaRef.orderBy('nia').get();
+                
+                let nextNumber = 1;
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.nia && data.nia.startsWith('KOP-')) {
+                        const currentNum = parseInt(data.nia.split('-')[1]) || 0;
+                        if (currentNum >= nextNumber) {
+                            nextNumber = currentNum + 1;
+                        }
+                    }
+                });
+                
+                return `KOP-${nextNumber.toString().padStart(3, '0')}`;
+                
             } catch (error) {
                 console.error('Error generating NIA:', error);
-                const timestamp = Date.now().toString().slice(-6);
-                return `KOP-${timestamp}`;
+                // Fallback
+                const localAnggota = safeGetItem('koperasi_anggota') || [];
+                return `KOP-${(localAnggota.length + 1).toString().padStart(3, '0')}`;
             }
         }
         
@@ -1286,6 +1204,15 @@
         closeBtn.addEventListener('click', function() {
             if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
                 window.location.href = 'index.html';
+            }
+        });
+        
+        // Click storage warning to clear storage
+        storageWarning.addEventListener('click', function() {
+            if (confirm('Bersihkan penyimpanan lokal untuk menghemat space?')) {
+                safeClearStorage();
+                storageWarning.style.display = 'none';
+                alert('Penyimpanan berhasil dibersihkan!');
             }
         });
         
@@ -1317,15 +1244,8 @@
             document.getElementById('foto-name').textContent = 'Belum ada file dipilih';
             
             // Reset radio buttons
-            const jenisKelaminRadios = document.querySelectorAll('input[name="jenisKelamin"]');
-            if (jenisKelaminRadios.length > 0) {
-                jenisKelaminRadios[0].checked = true;
-            }
-            
-            const statusRadios = document.querySelectorAll('input[name="statusAktif"]');
-            if (statusRadios.length > 0) {
-                statusRadios[0].checked = true;
-            }
+            document.querySelector('input[name="jenisKelamin"][value="Laki-laki"]').checked = true;
+            document.querySelector('input[name="statusAktif"][value="AKTIF"]').checked = true;
             
             // Reset alamat counter
             document.getElementById('alamatCounter').textContent = '0/200 karakter';
@@ -1419,6 +1339,226 @@
         
         updateFormForUserType(currentUserType);
         
+        // ===== FIREBASE FUNCTIONS =====
+        
+        // Fungsi untuk upload foto ke Firebase Storage
+        async function uploadFotoProfil(file, nia) {
+            try {
+                if (!file) {
+                    return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                }
+                
+                const storageRef = storage.ref();
+                const fotoRef = storageRef.child(`foto_profil/${nia}_${Date.now()}_${file.name}`);
+                
+                // Upload file
+                const snapshot = await fotoRef.put(file);
+                
+                // Get download URL
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                
+                return downloadURL;
+            } catch (error) {
+                console.error('Error uploading foto:', error);
+                throw error;
+            }
+        }
+        
+        // Fungsi untuk register ke Firebase
+        async function registerToFirebase(userData) {
+            try {
+                // 1. Register di Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(
+                    userData.email, 
+                    userData.password
+                );
+                
+                const user = userCredential.user;
+                
+                // 2. Simpan data lengkap ke Firestore
+                await db.collection('anggota').doc(userData.nia).set({
+                    // Identitas
+                    nia: userData.nia,
+                    nama: userData.nama,
+                    email: userData.email,
+                    telepon: userData.telepon,
+                    whatsapp: userData.telepon,
+                    alamat: userData.alamat,
+                    jenis_kelamin: userData.jenisKelamin,
+                    jenisKelamin: userData.jenisKelamin,
+                    agama: userData.agama,
+                    nik: userData.nik,
+                    nik_ktp: userData.nik,
+                    
+                    // Posisi/Role
+                    posisi: userData.posisi,
+                    role: userData.posisi,
+                    
+                    // Status
+                    status: userData.status || 'AKTIF',
+                    status_aktif: userData.status || 'AKTIF',
+                    tanggal_bergabung: userData.tanggal_bergabung || new Date().toISOString(),
+                    tanggal_daftar: userData.tanggal_bergabung || new Date().toISOString(),
+                    
+                    // Simpanan
+                    simpanan_pokok: userData.simpanan_pokok || 0,
+                    simpananPokok: userData.simpanan_pokok || 0,
+                    simpanan_wajib: userData.simpanan_wajib || 0,
+                    simpananWajib: userData.simpanan_wajib || 0,
+                    simpanan_sukarela: userData.simpanan_sukarela || 0,
+                    simpananSukarela: userData.simpanan_sukarela || 0,
+                    
+                    // Keuangan
+                    total_simpanan: userData.total_simpanan || 0,
+                    totalSimpanan: userData.total_simpanan || 0,
+                    total_pinjaman: 0,
+                    totalPinjaman: 0,
+                    shu_estimasi: userData.shu_estimasi || 0,
+                    shu: userData.shu_estimasi || 0,
+                    
+                    // Foto
+                    foto: userData.foto,
+                    
+                    // Metadata
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    last_update: new Date().toLocaleString('id-ID'),
+                    
+                    // QR Code
+                    qr_url: `https://qr-code-hybrid.vercel.app/?id=${userData.nia}`,
+                    qr_code: `https://qr-code-hybrid.vercel.app/?id=${userData.nia}&name=${encodeURIComponent(userData.nama)}`,
+                    
+                    // Link untuk Tabungan Digital
+                    tabungan_digital_url: `tabungan-digital.html?nia=${userData.nia}`
+                });
+                
+                // 3. Juga simpan di collection 'users' untuk login
+                await db.collection('users').doc(userData.email).set({
+                    email: userData.email,
+                    password: userData.password,
+                    name: userData.nama,
+                    role: userData.posisi,
+                    foto: userData.foto,
+                    access: (userData.posisi === 'Ketua' || userData.posisi === 'Sekretaris' || userData.posisi === 'Bendahara') ? 'dashboard' : 'tabungan',
+                    anggotaId: userData.nia,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: null
+                });
+                
+                console.log('✅ User registered to Firebase:', userData.nia);
+                return true;
+            } catch (error) {
+                console.error('❌ Error registering to Firebase:', error);
+                throw error;
+            }
+        }
+        
+        // ===== DATA ADMIN DEFAULT =====
+        const adminUsers = [
+            {
+                email: "ketua@koperasi.com",
+                password: "Ketua014212",
+                name: "Ketua Koperasi",
+                role: "Ketua",
+                nia: "KOP-001",
+                posisi: "Ketua"
+            },
+            {
+                email: "sekretaris@koperasi.com",
+                password: "Sekretaris4212",
+                name: "Sekretaris Koperasi",
+                role: "Sekretaris",
+                nia: "KOP-002",
+                posisi: "Sekretaris"
+            },
+            {
+                email: "bendahara@koperasi.com",
+                password: "Bendahara4212",
+                name: "Bendahara Koperasi",
+                role: "Bendahara",
+                nia: "KOP-004",
+                posisi: "Bendahara"
+            },
+            {
+                email: "pengawas@koperasi.com",
+                password: "Pengawas4212",
+                name: "Pengawas Koperasi",
+                role: "Pengawas",
+                nia: "KOP-003",
+                posisi: "Pengawas"
+            }
+        ];
+        
+        // Fungsi untuk membuat user admin di Firebase
+        async function createAdminUsers() {
+            console.log('🔧 Creating admin users...');
+            
+            for (const admin of adminUsers) {
+                try {
+                    // Check if user already exists
+                    const userDoc = await db.collection('users').doc(admin.email).get();
+                    
+                    if (!userDoc.exists) {
+                        console.log(`Creating admin user: ${admin.email}`);
+                        
+                        try {
+                            // Buat user di Firebase Auth
+                            await auth.createUserWithEmailAndPassword(admin.email, admin.password);
+                            
+                            // Simpan data di Firestore
+                            await db.collection('anggota').doc(admin.nia).set({
+                                nama: admin.name,
+                                email: admin.email,
+                                posisi: admin.posisi,
+                                role: admin.role,
+                                status: 'AKTIF',
+                                tanggal_bergabung: new Date().toISOString(),
+                                total_simpanan: 5000000,
+                                total_pinjaman: 0,
+                                shu_estimasi: 1000000,
+                                foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString(),
+                                qr_url: `https://qr-code-hybrid.vercel.app/?id=${admin.nia}`,
+                                tabungan_digital_url: `tabungan-digital.html?nia=${admin.nia}`
+                            });
+                            
+                            await db.collection('users').doc(admin.email).set({
+                                email: admin.email,
+                                password: admin.password,
+                                name: admin.name,
+                                role: admin.role,
+                                foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                                access: (admin.role === 'Ketua' || admin.role === 'Sekretaris' || admin.role === 'Bendahara') ? 'dashboard' : 'tabungan',
+                                anggotaId: admin.nia,
+                                createdAt: new Date().toISOString(),
+                                lastLogin: null
+                            });
+                            
+                            console.log(`✅ Created ${admin.role}: ${admin.email}`);
+                        } catch (authError) {
+                            if (authError.code === 'auth/email-already-in-use') {
+                                console.log(`⚠️ ${admin.email} already exists in Auth`);
+                            } else {
+                                console.error(`❌ Error creating ${admin.role}:`, authError);
+                            }
+                        }
+                    } else {
+                        console.log(`✅ ${admin.email} already exists`);
+                    }
+                } catch (error) {
+                    console.error(`Error checking ${admin.email}:`, error);
+                }
+            }
+        }
+        
+        // Jalankan pembuatan admin users dengan delay
+        setTimeout(async () => {
+            if (firebaseInitialized) {
+                await createAdminUsers();
+            }
+        }, 5000);
+        
         // Form login
         const loginForm = document.getElementById('loginForm');
         const errorMessage = document.getElementById('errorMessage');
@@ -1451,25 +1591,29 @@
                             password: 'Ketua014212', 
                             role: 'Ketua', 
                             name: 'Ketua Koperasi',
-                            access: 'dashboard'
+                            access: 'dashboard',
+                            nia: 'KOP-001'
                         },
                         'sekretaris@koperasi.com': { 
                             password: 'Sekretaris4212', 
                             role: 'Sekretaris', 
                             name: 'Sekretaris Koperasi',
-                            access: 'dashboard'
+                            access: 'dashboard',
+                            nia: 'KOP-002'
                         },
                         'bendahara@koperasi.com': { 
                             password: 'Bendahara4212', 
                             role: 'Bendahara', 
                             name: 'Bendahara Koperasi',
-                            access: 'dashboard'
+                            access: 'dashboard',
+                            nia: 'KOP-004'
                         },
                         'pengawas@koperasi.com': { 
                             password: 'Pengawas4212', 
                             role: 'Pengawas', 
                             name: 'Pengawas Koperasi',
-                            access: 'tabungan'
+                            access: 'tabungan',
+                            nia: 'KOP-003'
                         }
                     };
                     
@@ -1481,26 +1625,27 @@
                             // Login berhasil untuk user khusus
                             showSuccess('Login berhasil! Mengarahkan...');
                             
-                            // Simpan session
-                            const userData = {
+                            // Simpan session dengan aman
+                            const userSessionData = {
                                 email: email,
                                 name: user.name,
                                 role: user.role,
                                 access: user.access,
                                 foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                                isSpecialUser: true
+                                isSpecialUser: true,
+                                nia: user.nia
                             };
                             
-                            localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
+                            safeSetItem('koperasi_current_user', userSessionData);
                             
                             // Save remembered email
                             if (remember) {
-                                localStorage.setItem('koperasi_remembered_email', email);
+                                safeSetItem('koperasi_remembered_email', email);
                             } else {
                                 localStorage.removeItem('koperasi_remembered_email');
                             }
                             
-                            // Redirect langsung tanpa Firebase
+                            // Redirect berdasarkan role
                             setTimeout(() => {
                                 if (user.access === 'dashboard') {
                                     window.location.href = 'dashboard-admin.html';
@@ -1518,41 +1663,31 @@
                     
                     // Untuk user non-khusus, coba Firebase
                     if (firebaseInitialized) {
-                        showLoading('Memproses login...');
-                        
                         try {
                             // Coba login dengan Firebase Auth
                             await auth.signInWithEmailAndPassword(email, password);
                             
-                            // Get user data dari localStorage dulu (lebih cepat)
-                            const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                            let userData = localUsers[email];
+                            // Get user data dari Firestore
+                            const userDoc = await db.collection('users').doc(email).get();
                             
-                            // Jika tidak ada di localStorage, ambil dari Firestore
-                            if (!userData) {
-                                const userDoc = await db.collection('users').doc(email).get();
-                                if (userDoc.exists) {
-                                    userData = userDoc.data();
-                                    
-                                    // Simpan ke localStorage untuk akses lebih cepat next time
-                                    localUsers[email] = userData;
-                                    localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
-                                }
-                            }
-                            
-                            if (userData) {
+                            if (userDoc.exists) {
+                                const userData = userDoc.data();
+                                
                                 // Login successful
                                 showSuccess('Login berhasil! Mengarahkan...');
                                 
-                                // Save session
-                                localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
+                                // Save session dengan aman
+                                safeSetItem('koperasi_current_user', userData);
                                 
                                 // Save remembered email
                                 if (remember) {
-                                    localStorage.setItem('koperasi_remembered_email', email);
+                                    safeSetItem('koperasi_remembered_email', email);
                                 } else {
                                     localStorage.removeItem('koperasi_remembered_email');
                                 }
+                                
+                                // Simpan juga ke cache lokal untuk akses cepat (dengan data minimal)
+                                saveUserData(email, userData);
                                 
                                 // Redirect berdasarkan role/access
                                 setTimeout(() => {
@@ -1562,16 +1697,17 @@
                                         window.location.href = 'tabungan-digital.html';
                                     }
                                 }, 1000);
+                                
                             } else {
-                                showError('Data user tidak ditemukan.');
+                                showError('Data user tidak ditemukan di database.');
                             }
                             
                         } catch (firebaseError) {
                             console.log('Firebase auth failed:', firebaseError);
                             
-                            // Fallback ke localStorage
-                            const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                            const user = localUsers[email];
+                            // Fallback ke localStorage cache
+                            const cachedUsers = safeGetItem('koperasi_users') || {};
+                            const user = cachedUsers[email];
                             
                             if (!user) {
                                 showError('Email tidak terdaftar.');
@@ -1587,11 +1723,11 @@
                             showSuccess('Login berhasil! Mengarahkan...');
                             
                             // Save session
-                            localStorage.setItem('koperasi_current_user', JSON.stringify(user));
+                            safeSetItem('koperasi_current_user', user);
                             
                             // Save remembered email
                             if (remember) {
-                                localStorage.setItem('koperasi_remembered_email', email);
+                                safeSetItem('koperasi_remembered_email', email);
                             } else {
                                 localStorage.removeItem('koperasi_remembered_email');
                             }
@@ -1607,8 +1743,8 @@
                         }
                     } else {
                         // Firebase tidak tersedia, gunakan localStorage saja
-                        const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                        const user = localUsers[email];
+                        const cachedUsers = safeGetItem('koperasi_users') || {};
+                        const user = cachedUsers[email];
                         
                         if (!user) {
                             showError('Email tidak terdaftar.');
@@ -1624,11 +1760,11 @@
                         showSuccess('Login berhasil! Mengarahkan...');
                         
                         // Save session
-                        localStorage.setItem('koperasi_current_user', JSON.stringify(user));
+                        safeSetItem('koperasi_current_user', user);
                         
                         // Save remembered email
                         if (remember) {
-                            localStorage.setItem('koperasi_remembered_email', email);
+                            safeSetItem('koperasi_remembered_email', email);
                         } else {
                             localStorage.removeItem('koperasi_remembered_email');
                         }
@@ -1646,7 +1782,6 @@
                 } catch (error) {
                     showError('Terjadi kesalahan: ' + error.message);
                 } finally {
-                    hideLoading();
                     // Restore button
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
@@ -1677,7 +1812,7 @@
         }
         
         // Check remembered email
-        const rememberedEmail = localStorage.getItem('koperasi_remembered_email');
+        const rememberedEmail = safeGetItem('koperasi_remembered_email');
         if (rememberedEmail) {
             document.getElementById('email').value = rememberedEmail;
             document.getElementById('remember').checked = true;
@@ -1734,7 +1869,7 @@
                     const password = document.getElementById('passwordMember').value;
                     const fotoFile = document.getElementById('foto').files[0];
                     
-                    // PERBAIKAN 2: Upload foto profil
+                    // Upload foto profil
                     let fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
                     
                     if (fotoFile) {
@@ -1744,59 +1879,89 @@
                             return;
                         }
                         
-                        // Upload foto ke Firebase Storage jika Firebase tersedia
+                        // Upload foto ke Firebase Storage
                         if (firebaseInitialized) {
-                            fotoUrl = await uploadFotoProfil(fotoFile, currentNIA);
-                        } else {
-                            // Jika Firebase tidak tersedia, konversi ke base64
-                            const reader = new FileReader();
-                            fotoUrl = await new Promise((resolve) => {
-                                reader.onload = function(e) {
-                                    resolve(e.target.result);
-                                };
-                                reader.readAsDataURL(fotoFile);
-                            });
+                            try {
+                                fotoUrl = await uploadFotoProfil(fotoFile, currentNIA);
+                            } catch (uploadError) {
+                                console.error('Error uploading foto:', uploadError);
+                                // Tetap lanjut dengan foto default
+                            }
                         }
                     }
                     
-                    // Prepare data
+                    // Prepare data for Firebase
                     const anggotaData = {
+                        // Identitas
                         nia: currentNIA,
                         nama: document.getElementById('nama').value,
                         posisi: document.getElementById('posisi').value,
                         role: document.getElementById('posisi').value,
+                        
+                        // Data pribadi
                         alamat: document.getElementById('alamat').value,
                         jenis_kelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
+                        jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
                         agama: document.getElementById('agama').value,
                         nik: document.getElementById('nik').value,
+                        nik_ktp: document.getElementById('nik').value,
+                        
+                        // Kontak
                         email: email,
                         whatsapp: '+62' + document.getElementById('whatsapp').value,
                         telepon: '+62' + document.getElementById('whatsapp').value,
+                        
+                        // Status keanggotaan
                         status: document.querySelector('input[name="statusAktif"]:checked').value,
+                        status_aktif: document.querySelector('input[name="statusAktif"]:checked').value,
+                        tanggal_daftar: document.getElementById('tanggalDaftar').value,
                         tanggal_bergabung: document.getElementById('tanggalDaftar').value,
+                        
+                        // Data simpanan
                         simpanan_pokok: parseFloat(document.getElementById('simpananPokok').value) || 0,
+                        simpananPokok: parseFloat(document.getElementById('simpananPokok').value) || 0,
                         simpanan_wajib: parseFloat(document.getElementById('simpananWajib').value) || 0,
+                        simpananWajib: parseFloat(document.getElementById('simpananWajib').value) || 0,
                         simpanan_sukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
+                        simpananSukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
+                        
+                        // Data keuangan
                         total_simpanan: (parseFloat(document.getElementById('simpananPokok').value) || 0) + 
                                       (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
                                       (parseFloat(document.getElementById('simpananSukarela').value) || 0),
+                        totalSimpanan: (parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                     (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                     (parseFloat(document.getElementById('simpananSukarela').value) || 0),
                         total_pinjaman: 0,
+                        totalPinjaman: 0,
+                        shu: Math.round(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                       (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                       (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.2),
                         shu_estimasi: Math.round(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
-                                                (parseFloat(document.getElementById('simpananWajib').value) || 0)) * 0.2),
+                                                (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                                (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.2),
+                        
+                        // Foto
                         foto: fotoUrl,
+                        
+                        // Password
                         password: password,
+                        
+                        // Metadata
                         created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
+                        updated_at: new Date().toISOString(),
+                        last_update: new Date().toLocaleString('id-ID'),
+                        
+                        // QR Code
+                        qr_url: `https://qr-code-hybrid.vercel.app/?id=${currentNIA}`,
+                        qr_code: `https://qr-code-hybrid.vercel.app/?id=${currentNIA}&name=${encodeURIComponent(document.getElementById('nama').value)}`,
+                        
+                        // Link untuk Tabungan Digital
+                        tabungan_digital_url: `tabungan-digital.html?nia=${currentNIA}`
                     };
                     
-                    // Save to localStorage dulu (lebih cepat)
-                    const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                    localAnggota.push(anggotaData);
-                    localStorage.setItem('koperasi_anggota', JSON.stringify(localAnggota));
-                    
-                    // Save user for login
-                    const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                    localUsers[email] = {
+                    // User data untuk login
+                    const userData = {
                         email: email,
                         password: password,
                         name: anggotaData.nama,
@@ -1807,20 +1972,41 @@
                         createdAt: new Date().toISOString(),
                         lastLogin: null
                     };
-                    localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
                     
-                    // Simpan ke Firebase secara async (tidak blocking)
-                    if (firebaseInitialized) {
-                        // Lakukan secara background tanpa menunggu
-                        registerToFirebase({
-                            ...anggotaData,
-                            email: email,
-                            password: password
-                        }).catch(error => {
-                            console.log('Background Firebase save failed:', error);
-                            // Tetap lanjut meski Firebase error
-                        });
+                    // Save to Firebase if available
+                    if (firebaseInitialized && db) {
+                        try {
+                            // Check if email already exists in Firebase
+                            const emailQuery = await db.collection('anggota').where('email', '==', email).get();
+                            
+                            if (!emailQuery.empty) {
+                                showErrorDaftar('❌ Email sudah terdaftar di sistem.');
+                                return;
+                            }
+                            
+                            // Register to Firebase
+                            await registerToFirebase({
+                                ...anggotaData,
+                                email: email,
+                                password: password
+                            });
+                            
+                            console.log('✅ Data saved to Firebase:', currentNIA);
+                            
+                        } catch (firebaseError) {
+                            console.error('Firebase save error:', firebaseError);
+                            if (firebaseError.code === 'auth/email-already-in-use') {
+                                showErrorDaftar('❌ Email sudah terdaftar.');
+                            } else {
+                                throw new Error('Gagal menyimpan ke database online: ' + firebaseError.message);
+                            }
+                            return;
+                        }
                     }
+                    
+                    // Save to local storage dengan data minimal (untuk cache)
+                    saveAnggotaData(anggotaData);
+                    saveUserData(email, userData);
                     
                     // Show success
                     showSuccessDaftar('✅ Pendaftaran berhasil! ID Anda: ' + currentNIA);
@@ -1846,33 +2032,108 @@
         }
         
         function validateRegistrationForm() {
-            // Validasi sederhana dan cepat
+            const requiredFields = [
+                'nama', 'posisi', 'alamat', 
+                'nik', 'emailMember', 'whatsapp',
+                'tanggalDaftar', 'simpananPokok', 'simpananWajib',
+                'passwordMember', 'ulangiPassword'
+            ];
+            
+            // PERBAIKAN 2: Cek file foto (WAJIB)
             const fotoFile = document.getElementById('foto').files[0];
             if (!fotoFile) {
                 showErrorDaftar('Foto profil wajib diupload.');
+                document.getElementById('foto').focus();
                 return false;
             }
             
-            // Cek file size
-            if (fotoFile.size > 2 * 1024 * 1024) {
-                showErrorDaftar('Ukuran file foto terlalu besar. Maksimal 2MB.');
+            // Check required fields
+            for (let field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element || element.value === '' || element.value === null) {
+                    showErrorDaftar(`Field ${field} harus diisi.`);
+                    if (element) element.focus();
+                    return false;
+                }
+            }
+            
+            // Check radio buttons
+            const jenisKelamin = document.querySelector('input[name="jenisKelamin"]:checked');
+            if (!jenisKelamin) {
+                showErrorDaftar('Pilih jenis kelamin.');
                 return false;
             }
             
+            const statusAktif = document.querySelector('input[name="statusAktif"]:checked');
+            if (!statusAktif) {
+                showErrorDaftar('Pilih status aktif.');
+                return false;
+            }
+            
+            // Email validation
             const email = document.getElementById('emailMember').value.trim();
-            if (!email.includes('@')) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
                 showErrorDaftar('Format email tidak valid.');
+                document.getElementById('emailMember').focus();
                 return false;
             }
             
+            // Password validation
             const password = document.getElementById('passwordMember').value;
+            const ulangiPassword = document.getElementById('ulangiPassword').value;
+            
             if (password.length < 6) {
                 showErrorDaftar('Password minimal 6 karakter.');
+                document.getElementById('passwordMember').focus();
                 return false;
             }
             
-            if (password !== document.getElementById('ulangiPassword').value) {
+            if (password !== ulangiPassword) {
                 showErrorDaftar('Password tidak sama.');
+                document.getElementById('ulangiPassword').focus();
+                return false;
+            }
+            
+            // WhatsApp validation
+            const whatsapp = document.getElementById('whatsapp').value;
+            const whatsappRegex = /^[0-9]{9,13}$/;
+            if (!whatsappRegex.test(whatsapp)) {
+                showErrorDaftar('WhatsApp harus 9-13 digit angka (tanpa +62).');
+                document.getElementById('whatsapp').focus();
+                return false;
+            }
+            
+            // NIK validation
+            const nik = document.getElementById('nik').value;
+            const nikRegex = /^[0-9]{16}$/;
+            if (!nikRegex.test(nik)) {
+                showErrorDaftar('NIK harus 16 digit angka.');
+                document.getElementById('nik').focus();
+                return false;
+            }
+            
+            // Simpanan validation
+            const simpananPokok = parseFloat(document.getElementById('simpananPokok').value);
+            const simpananWajib = parseFloat(document.getElementById('simpananWajib').value);
+            
+            if (simpananPokok < 200000) {
+                showErrorDaftar('Simpanan pokok minimal Rp 200.000');
+                document.getElementById('simpananPokok').focus();
+                return false;
+            }
+            
+            if (simpananWajib < 20000) {
+                showErrorDaftar('Simpanan wajib minimal Rp 20.000');
+                document.getElementById('simpananWajib').focus();
+                return false;
+            }
+            
+            // Alamat length validation
+            const alamat = document.getElementById('alamat').value;
+            if (alamat.length > 200) {
+                showErrorDaftar('Alamat maksimal 200 karakter.');
+                document.getElementById('alamat').focus();
                 return false;
             }
             
@@ -1903,6 +2164,12 @@
         
         // Console info
         console.log('=== LOGIN SYSTEM READY ===');
+        console.log('User khusus yang tersedia:');
+        console.log('- Ketua: ketua@koperasi.com / Ketua014212');
+        console.log('- Sekretaris: sekretaris@koperasi.com / Sekretaris4212');
+        console.log('- Bendahara: bendahara@koperasi.com / Bendahara4212');
+        console.log('- Pengawas: pengawas@koperasi.com / Pengawas4212');
+        console.log('Firebase status:', firebaseInitialized ? 'Connected' : 'Not connected');
     });
 </script>
 </body>
