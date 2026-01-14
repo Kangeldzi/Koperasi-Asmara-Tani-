@@ -3877,7 +3877,7 @@ class TabunganApp {
                         <i class="fas fa-save"></i> Simpan Perubahan
                     </button>
                 </div>
-            </form>
+            </div>
         `;
         
         this.showModal('Edit Profil Lengkap', html);
@@ -4031,18 +4031,38 @@ class TabunganApp {
         }
     }
     
-    // ===== QR MODAL DENGAN DATA FIREBASE =====
+    // ===== PERUBAHAN: QR MODAL DENGAN DATA FIREBASE - IMPLEMENTASI SCRIPT PERBAIKAN =====
     showQRModal() {
         const completeData = this.getCompleteUserData();
 
-        if (!completeData.nia) {
-            completeData.nia = this.nia || 
-                              completeData.id || 
-                              `KOP-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-        }
-
-        // ===== PENAMBAHAN KODE UNTUK QR CODE =====
-        const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${completeData.nia}&name=${encodeURIComponent(completeData.nama)}&email=${encodeURIComponent(completeData.email)}`;
+        // Pastikan ada data NIA (gunakan berbagai sumber)
+        let userNIA = completeData.nia || 
+                     this.nia || 
+                     completeData.id || 
+                     `KOP${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        
+        // Pastikan nama tidak kosong
+        let userName = completeData.nama || 
+                       this.currentUser.name || 
+                       'Anggota Koperasi';
+        
+        // Pastikan email tidak kosong
+        let userEmail = completeData.email || 
+                        this.currentUser.email || 
+                        'anggota@koperasi.com';
+        
+        // Buat URL QR Code dengan data yang pasti ada
+        const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${userNIA}&name=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}&time=${Date.now()}`;
+        
+        // Tampilkan data untuk debugging
+        console.log('QR Code Data:', {
+            nia: userNIA,
+            name: userName,
+            email: userEmail,
+            url: qrUrl,
+            completeData: completeData,
+            currentUser: this.currentUser
+        });
         
         const html = `
             <div class="qr-modal-design">
@@ -4053,12 +4073,13 @@ class TabunganApp {
                 <div class="qr-card">
                     <div class="qr-person-info">
                         <div class="qr-person-photo">
-                            <img src="${completeData.foto}" alt="Foto Anggota" 
+                            <img src="${completeData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'}" 
+                                 alt="Foto Anggota" 
                                  onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">
                         </div>
                         <div class="qr-person-details">
-                            <h4>${completeData.nama}</h4>
-                            <p><i class="fas fa-id-card"></i> NIA: ${completeData.nia || 'N/A'}</p>
+                            <h4>${userName}</h4>
+                            <p><i class="fas fa-id-card"></i> NIA: ${userNIA}</p>
                             <p><i class="fas fa-briefcase"></i> Posisi: ${completeData.posisi || 'Anggota'}</p>
                             <p><i class="fas fa-check-circle"></i> Status: ${completeData.status || completeData.statusAktif || 'Aktif'}</p>
                         </div>
@@ -4067,46 +4088,44 @@ class TabunganApp {
                     <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
                         <p style="margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-fire" style="color: #FFA000;"></i>
-                            <span>QR Code berisi link Firebase: https://qr-code-hybrid.vercel.app/</span>
+                            <span>QR Code Hybrid untuk data digital</span>
                         </p>
                     </div>
                 </div>
                 
                 <!-- ===== TEMPAT UNTUK QR CODE ===== -->
-                <div id="qrcodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light);">
+                <div id="qrcodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light); min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                     <div style="margin-bottom: 15px;">
                         <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
                     </div>
-                    <p style="color: var(--text-secondary); margin-top: 10px;">Memuat QR Code...</p>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Membuat QR Code...</p>
+                    <div id="qrStatus" style="font-size: 0.8rem; color: #666; margin-top: 10px;"></div>
                 </div>
                 
                 <div style="text-align: center; margin: 20px 0;">
                     <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
-                        <i class="fas fa-info-circle"></i> QR Code Hybrid Features:
+                        <i class="fas fa-info-circle"></i> Cara menggunakan QR Code:
                     </h5>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; text-align: left;">
-                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
-                            <i class="fas fa-check" style="color: #4CAF50;"></i>
-                            <span>Data Firebase</span>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                            <span>Buka aplikasi scanner QR Code di ponsel Anda</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
-                            <i class="fas fa-check" style="color: #4CAF50;"></i>
-                            <span>Link Digital</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                            <span>Arahkan kamera ke QR Code di atas</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
-                            <i class="fas fa-check" style="color: #4CAF50;"></i>
-                            <span>Real-time Update</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
-                            <i class="fas fa-check" style="color: #4CAF50;"></i>
-                            <span>Keamanan Tinggi</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                            <span>Buka link yang muncul untuk melihat data anggota</span>
                         </div>
                     </div>
                 </div>
                 
-                <div style="background: #f0f7f0; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
                     <p style="color: var(--primary); margin: 0; font-size: 0.9rem; text-align: center;">
-                        <i class="fas fa-scan"></i> Scan QR Code di atas untuk melihat data anggota di browser
+                        <i class="fas fa-shield-alt"></i> 
+                        QR Code ini aman dan hanya berisi link ke data publik
                     </p>
                 </div>
                 
@@ -4120,59 +4139,10 @@ class TabunganApp {
         
         this.showModal('QR Code Hybrid Firebase', html);
         
-        // ===== MEMBUAT QR CODE =====
+        // ===== MEMBUAT QR CODE DENGAN TIMEOUT =====
         setTimeout(() => {
-            const qrContainer = document.getElementById('qrcodeContainer');
-            if (qrContainer) {
-                qrContainer.innerHTML = '';
-                try {
-                    // Generate QR Code
-                    new QRCode(qrContainer, {
-                        text: qrUrl,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#1a5f23",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                    
-                    // Tambahkan info di bawah QR Code
-                    qrContainer.innerHTML += `
-                        <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary);">
-                            <p>Scan QR Code ini untuk melihat data anggota di:</p>
-                            <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px; font-size: 0.7rem;">
-                                ${qrUrl}
-                            </p>
-                        </div>
-                    `;
-                    
-                    console.log('✅ QR Code berhasil dibuat untuk URL:', qrUrl);
-                    
-                } catch (e) {
-                    console.error('QR Code error:', e);
-                    qrContainer.innerHTML = `
-                        <div style="color: var(--text-secondary); padding: 20px;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ff9800; margin-bottom: 10px;"></i>
-                            <p>Gagal membuat QR Code</p>
-                            <p style="font-size: 0.8rem; margin-top: 10px;">URL: ${qrUrl.substring(0, 50)}...</p>
-                        </div>
-                    `;
-                    
-                    // Fallback ke QRCode yang lebih sederhana
-                    try {
-                        new QRCode(qrContainer, {
-                            text: qrUrl,
-                            width: 150,
-                            height: 150,
-                            colorDark: "#1a5f23",
-                            colorLight: "#ffffff"
-                        });
-                    } catch (error) {
-                        console.error('Fallback QR Code juga gagal:', error);
-                    }
-                }
-            }
-        }, 100);
+            this.generateQRCode(qrUrl, userNIA, userName);
+        }, 300);
         
         // Event listener untuk tombol tutup
         document.getElementById('closeQRBtn').addEventListener('click', () => {
@@ -4181,7 +4151,100 @@ class TabunganApp {
         
         // Voice notification
         if (window.menuVoiceSystem) {
-            window.menuVoiceSystem.speak("QR Code Hybrid Firebase telah ditampilkan. Scan QR Code untuk melihat data anggota.");
+            setTimeout(() => {
+                window.menuVoiceSystem.speak("QR Code Hybrid telah siap. Silakan scan QR Code dengan ponsel Anda untuk melihat data anggota.");
+            }, 500);
+        }
+    }
+    
+    // ===== FUNGSI UNTUK GENERATE QR CODE =====
+    generateQRCode(qrUrl, nia, name) {
+        const qrContainer = document.getElementById('qrcodeContainer');
+        const qrStatus = document.getElementById('qrStatus');
+        
+        if (!qrContainer) {
+            console.error('QR Container tidak ditemukan');
+            return;
+        }
+        
+        try {
+            // Kosongkan container terlebih dahulu
+            qrContainer.innerHTML = '';
+            
+            // Update status
+            if (qrStatus) {
+                qrStatus.textContent = 'Membuat QR Code...';
+                qrStatus.style.color = '#2196F3';
+            }
+            
+            // Pastikan URL valid
+            if (!qrUrl || qrUrl.length < 10) {
+                throw new Error('URL QR Code terlalu pendek');
+            }
+            
+            console.log('Membuat QR Code untuk URL:', qrUrl);
+            
+            // Buat QR Code
+            new QRCode(qrContainer, {
+                text: qrUrl,
+                width: 200,
+                height: 200,
+                colorDark: "#1a5f23",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.Q
+            });
+            
+            // Tambahkan informasi di bawah QR Code
+            const infoDiv = document.createElement('div');
+            infoDiv.style.marginTop = '15px';
+            infoDiv.style.fontSize = '0.8rem';
+            infoDiv.style.color = 'var(--text-secondary)';
+            infoDiv.innerHTML = `
+                <p>ID: <strong>${nia}</strong></p>
+                <p>Nama: <strong>${name.substring(0, 20)}${name.length > 20 ? '...' : ''}</strong></p>
+                <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.7rem;">
+                    ${qrUrl.substring(0, 50)}...
+                </p>
+            `;
+            qrContainer.appendChild(infoDiv);
+            
+            // Update status sukses
+            if (qrStatus) {
+                qrStatus.innerHTML = '<i class="fas fa-check-circle" style="color: #4CAF50;"></i> QR Code berhasil dibuat';
+                qrStatus.style.color = '#4CAF50';
+            }
+            
+            console.log('✅ QR Code berhasil dibuat');
+            
+            // Tampilkan toast
+            this.showToast('QR Code berhasil dibuat', 'success');
+            
+        } catch (error) {
+            console.error('❌ Error membuat QR Code:', error);
+            
+            // Tampilkan error di container
+            qrContainer.innerHTML = `
+                <div style="color: #f44336; padding: 20px; text-align: center;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p style="font-weight: bold; margin-bottom: 10px;">Gagal membuat QR Code</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 15px;">${error.message}</p>
+                    <div style="background: #ffebee; padding: 10px; border-radius: 5px; font-size: 0.8rem;">
+                        <p style="margin: 5px 0;">Coba:</p>
+                        <p style="margin: 5px 0;">1. Refresh halaman</p>
+                        <p style="margin: 5px 0;">2. Cek koneksi internet</p>
+                        <p style="margin: 5px 0;">3. Isi data profil terlebih dahulu</p>
+                    </div>
+                </div>
+            `;
+            
+            // Update status error
+            if (qrStatus) {
+                qrStatus.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i> Gagal membuat QR Code';
+                qrStatus.style.color = '#f44336';
+            }
+            
+            // Tampilkan toast error
+            this.showToast('Gagal membuat QR Code: ' + error.message, 'error');
         }
     }
     
@@ -5378,7 +5441,7 @@ class PushNotificationSystem {
                     <i class="fas fa-bell-slash" style="font-size: 48px; color: #ccc;"></i>
                     <p>Tidak ada notifikasi</p>
                     <p style="font-size: 0.9rem;">Notifikasi akan muncul di sini</p>
-                </div>
+            </div>
             `;
             return;
         }
