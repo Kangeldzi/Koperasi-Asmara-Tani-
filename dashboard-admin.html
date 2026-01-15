@@ -13,11 +13,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
-    <!-- Google Sheets API -->
-    <script src="https://apis.google.com/js/api.js"></script>
-    
     <style>
-        /* SEMUA CSS DARI SEBELUMNYA TETAP SAMA (tidak diubah) */
+        /* SEMUA CSS DARI SEBELUMNYA TETAP SAMA */
         :root {
             --primary: #2e7d32;
             --primary-light: #4caf50;
@@ -3518,6 +3515,9 @@ async function loadDataFromGoogleSheets() {
                 refreshAnggotaTable();
                 updateDashboardStats();
                 
+                // Isi dropdown untuk simpanan
+                isiDropdownAnggotaSimpanan();
+                
                 showNotification(`Data anggota (${anggotaData.length} record) berhasil dimuat dari Google Sheets!`, 'success');
             }
         }
@@ -3657,9 +3657,11 @@ async function loadDataFromFirebase() {
         // Proses data anggota
         anggotaData = [];
         anggotaSnapshot.forEach(doc => {
+            const data = doc.data();
             anggotaData.push({
                 id: doc.id,
-                ...doc.data()
+                ...data,
+                qr_url: `https://qr-code-hybrid.vercel.app/?id=${doc.id}`
             });
         });
         
@@ -3699,6 +3701,9 @@ async function loadDataFromFirebase() {
         
         updateFirebaseStatus('connected', `Data dimuat: ${anggotaData.length} anggota`);
         
+        // Isi dropdown untuk simpanan
+        isiDropdownAnggotaSimpanan();
+        
         // Setup real-time listeners
         setupRealtimeListeners();
         
@@ -3726,11 +3731,16 @@ function setupRealtimeListeners() {
             // Update data lokal
             anggotaData = [];
             snapshot.forEach(doc => {
+                const data = doc.data();
                 anggotaData.push({
                     id: doc.id,
-                    ...doc.data()
+                    ...data,
+                    qr_url: `https://qr-code-hybrid.vercel.app/?id=${doc.id}`
                 });
             });
+            
+            // Update dropdown untuk simpanan
+            isiDropdownAnggotaSimpanan();
             
             // Update UI
             updateDashboardStats();
@@ -4227,6 +4237,9 @@ function loadLocalStorageData() {
             barang: barangData.length
         });
         
+        // Isi dropdown untuk simpanan
+        isiDropdownAnggotaSimpanan();
+        
         // Check empty tables
         checkEmptyTables();
         
@@ -4374,13 +4387,14 @@ async function saveMemberData() {
     // Update UI (sama untuk Firebase dan localStorage)
     updateDashboardStats();
     refreshAnggotaTable();
+    
+    // Update dropdown untuk simpanan
+    isiDropdownAnggotaSimpanan();
+    
     checkEmptyTables();
     
     return true;
 }
-
-// ===== FUNGSI-FUNGSI UTILITY YANG SAMA DARI SEBELUMNYA TETAP ADA =====
-// [Semua fungsi utility lainnya tetap sama seperti sebelumnya]
 
 // ===== FUNGSI REFRESH TABEL ANGGOTA DENGAN QR CODE =====
 function refreshAnggotaTable() {
@@ -4399,8 +4413,8 @@ function refreshAnggotaTable() {
     anggotaData.forEach(member => {
         const row = document.createElement('tr');
         
-        // Generate QR Code URL untuk Hybrid QR
-        const qrUrl = member.qr_url || `https://qr-code-hybrid.vercel.app/?id=${member.nia || member.id}&name=${encodeURIComponent(member.nama)}&email=${member.email}&phone=${member.whatsapp}`;
+        // Generate QR Code URL untuk Hybrid QR dengan data lengkap
+        const qrUrl = member.qr_url || `https://qr-code-hybrid.vercel.app/?id=${member.nia || member.id}&name=${encodeURIComponent(member.nama || '')}&email=${member.email || ''}&phone=${member.whatsapp || ''}`;
         
         row.innerHTML = `
             <td>${member.nia || member.id}</td>
@@ -4412,19 +4426,19 @@ function refreshAnggotaTable() {
                             <i class="fas fa-user"></i>
                         </div>`
                     }
-                    <span>${member.nama}</span>
+                    <span>${member.nama || ''}</span>
                 </div>
             </td>
             <td>${member.nik || '-'}</td>
-            <td>${member.jenisKelamin}</td>
+            <td>${member.jenisKelamin || member.jenis_kelamin || '-'}</td>
             <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                ${member.alamat}
+                ${member.alamat || ''}
             </td>
-            <td>${member.whatsapp}</td>
-            <td>${member.tanggalDaftar}</td>
+            <td>${member.whatsapp || member.telepon || '-'}</td>
+            <td>${member.tanggalDaftar || member.tanggal_bergabung || '-'}</td>
             <td>
-                <span class="badge ${member.statusAktif === 'Aktif' ? 'badge-success' : member.statusAktif === 'Tidak Aktif' ? 'badge-danger' : 'badge-warning'} badge-responsive">
-                    ${member.statusAktif}
+                <span class="badge ${(member.statusAktif || member.status_aktif || member.status) === 'Aktif' ? 'badge-success' : (member.statusAktif || member.status_aktif || member.status) === 'Tidak Aktif' ? 'badge-danger' : 'badge-warning'} badge-responsive">
+                    ${member.statusAktif || member.status_aktif || member.status || 'Aktif'}
                 </span>
             </td>
             <td>
@@ -4451,6 +4465,44 @@ function refreshAnggotaTable() {
     
     // Attach event listeners untuk aksi
     attachAnggotaActionListeners();
+}
+
+// ===== FUNGSI ISI DROPDOWN ANGGOTA UNTUK SIMPANAN =====
+function isiDropdownAnggotaSimpanan() {
+    const dropdown = document.getElementById('idAnggotaSimpanan');
+    if (!dropdown) return;
+    
+    // Clear existing options except the first one
+    while (dropdown.options.length > 1) {
+        dropdown.remove(1);
+    }
+    
+    // Add options from anggotaData
+    anggotaData.forEach(anggota => {
+        if ((anggota.statusAktif || anggota.status_aktif || anggota.status) === 'Aktif') {
+            const option = document.createElement('option');
+            option.value = anggota.nia || anggota.id;
+            option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama} (${anggota.posisi || 'Anggota'})`;
+            dropdown.appendChild(option);
+        }
+    });
+    
+    // Juga isi dropdown untuk pinjaman
+    const pinjamanDropdown = document.getElementById('idAnggotaPinjaman');
+    if (pinjamanDropdown) {
+        while (pinjamanDropdown.options.length > 1) {
+            pinjamanDropdown.remove(1);
+        }
+        
+        anggotaData.forEach(anggota => {
+            if ((anggota.statusAktif || anggota.status_aktif || anggota.status) === 'Aktif') {
+                const option = document.createElement('option');
+                option.value = anggota.nia || anggota.id;
+                option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama}`;
+                pinjamanDropdown.appendChild(option);
+            }
+        });
+    }
 }
 
 // ===== FUNGSI SYSTEM INITIALIZATION =====
@@ -4587,6 +4639,7 @@ function fixSidebarNavigation() {
                         break;
                     case 'simpanan':
                         refreshSimpananTable();
+                        isiDropdownAnggotaSimpanan();
                         break;
                     case 'pinjaman':
                         refreshPinjamanTable();
@@ -4917,7 +4970,7 @@ function openAddPinjamanModal() {
     dropdown.innerHTML = '<option value="">Pilih Anggota</option>';
     
     anggotaData.forEach(anggota => {
-        if (anggota.statusAktif === 'Aktif') {
+        if ((anggota.statusAktif || anggota.status_aktif || anggota.status) === 'Aktif') {
             const option = document.createElement('option');
             option.value = anggota.nia || anggota.id;
             option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama}`;
@@ -5017,10 +5070,10 @@ function updateMinimalSimpananInfo() {
     
     switch(jenis.value) {
         case 'Pokok':
-            minimal = 0;
+            minimal = 200000;
             break;
         case 'Wajib':
-            minimal = 0;
+            minimal = 20000;
             break;
         case 'Sukarela':
             showInfo = false;
@@ -5077,27 +5130,6 @@ function updateRingkasanBarang() {
     document.getElementById('ringkasanLaba').textContent = `Rp ${laba.toLocaleString('id-ID')}`;
 }
 
-// ===== FUNGSI ISI DROPDOWN =====
-function isiDropdownAnggotaSimpanan() {
-    const dropdown = document.getElementById('idAnggotaSimpanan');
-    if (!dropdown) return;
-    
-    // Clear existing options except the first one
-    while (dropdown.options.length > 1) {
-        dropdown.remove(1);
-    }
-    
-    // Add options from anggotaData
-    anggotaData.forEach(anggota => {
-        if (anggota.statusAktif === 'Aktif') {
-            const option = document.createElement('option');
-            option.value = anggota.nia || anggota.id;
-            option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama} (${anggota.posisi})`;
-            dropdown.appendChild(option);
-        }
-    });
-}
-
 // ===== FUNGSI SAVE DATA LAINNYA =====
 async function saveSimpananData() {
     // Validasi required fields
@@ -5133,6 +5165,16 @@ async function saveSimpananData() {
     if (!idAnggota) {
         showNotification('Pilih anggota!', 'error');
         return false;
+    }
+    
+    // Validasi minimal simpanan
+    const minimalInfo = document.getElementById('minimalAmount');
+    if (minimalInfo && minimalInfo.textContent.includes('Rp')) {
+        const minimal = parseInt(minimalInfo.textContent.replace('Rp ', '').replace(/\./g, ''));
+        if (parseInt(nominal) < minimal) {
+            showNotification(`Nominal terlalu kecil! Minimal: Rp ${minimal.toLocaleString('id-ID')}`, 'error');
+            return false;
+        }
     }
     
     if (!isValid) {
@@ -5543,7 +5585,7 @@ function viewMemberDetail(memberId) {
     if (!member) return;
     
     // Generate QR Code URL lengkap
-    const qrUrl = member.qr_url || `https://qr-code-hybrid.vercel.app/?id=${member.nia || member.id}&name=${encodeURIComponent(member.nama)}&email=${member.email}&phone=${member.whatsapp}&address=${encodeURIComponent(member.alamat)}`;
+    const qrUrl = member.qr_url || `https://qr-code-hybrid.vercel.app/?id=${member.nia || member.id}&name=${encodeURIComponent(member.nama || '')}&email=${member.email || ''}&phone=${member.whatsapp || member.telepon || ''}&address=${encodeURIComponent(member.alamat || '')}`;
     
     const detailHTML = `
         <div class="anggota-detail-section">
@@ -5560,18 +5602,18 @@ function viewMemberDetail(memberId) {
                 
                 <!-- Info Utama -->
                 <div style="flex: 1;">
-                    <h3 style="color: var(--primary-dark); margin-bottom: 10px;">${member.nama}</h3>
+                    <h3 style="color: var(--primary-dark); margin-bottom: 10px;">${member.nama || ''}</h3>
                     <p style="color: var(--gray); margin-bottom: 5px;">
-                        <i class="fas fa-id-card"></i> ${member.nia || member.id} | ${member.posisi}
+                        <i class="fas fa-id-card"></i> ${member.nia || member.id} | ${member.posisi || 'Anggota'}
                     </p>
                     <p style="color: var(--gray); margin-bottom: 5px;">
                         <i class="fas fa-user-check"></i> Status: 
-                        <span class="badge ${member.statusAktif === 'Aktif' ? 'badge-success' : member.statusAktif === 'Tidak Aktif' ? 'badge-danger' : 'badge-warning'}">
-                            ${member.statusAktif}
+                        <span class="badge ${(member.statusAktif || member.status_aktif || member.status) === 'Aktif' ? 'badge-success' : (member.statusAktif || member.status_aktif || member.status) === 'Tidak Aktif' ? 'badge-danger' : 'badge-warning'}">
+                            ${member.statusAktif || member.status_aktif || member.status || 'Aktif'}
                         </span>
                     </p>
                     <p style="color: var(--gray); margin-bottom: 5px;">
-                        <i class="fas fa-calendar-alt"></i> Bergabung: ${member.tanggalDaftar}
+                        <i class="fas fa-calendar-alt"></i> Bergabung: ${member.tanggalDaftar || member.tanggal_bergabung || '-'}
                     </p>
                     <p style="color: var(--gray); margin-bottom: 5px;">
                         <i class="fas fa-qrcode"></i> QR Code Hybrid: 
@@ -5587,11 +5629,11 @@ function viewMemberDetail(memberId) {
                 <div>
                     <div class="detail-item">
                         <div class="detail-label">NIK</div>
-                        <div class="detail-value">${member.nik || '-'}</div>
+                        <div class="detail-value">${member.nik || member.nik_ktp || '-'}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Jenis Kelamin</div>
-                        <div class="detail-value">${member.jenisKelamin}</div>
+                        <div class="detail-value">${member.jenisKelamin || member.jenis_kelamin || '-'}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">Agama</div>
@@ -5602,14 +5644,17 @@ function viewMemberDetail(memberId) {
                 <div>
                     <div class="detail-item">
                         <div class="detail-label">Email</div>
-                        <div class="detail-value">${member.email}</div>
+                        <div class="detail-value">${member.email || '-'}</div>
                     </div>
                     <div class="detail-item">
                         <div class="detail-label">WhatsApp</div>
                         <div class="detail-value">
-                            <a href="https://wa.me/${member.whatsapp}" class="whatsapp-link" target="_blank">
-                                <i class="fab fa-whatsapp"></i> ${member.whatsapp}
-                            </a>
+                            ${member.whatsapp || member.telepon ? 
+                                `<a href="https://wa.me/${member.whatsapp || member.telepon}" class="whatsapp-link" target="_blank">
+                                    <i class="fab fa-whatsapp"></i> ${member.whatsapp || member.telepon}
+                                </a>` : 
+                                '-'
+                            }
                         </div>
                     </div>
                     <div class="detail-item">
@@ -5623,7 +5668,7 @@ function viewMemberDetail(memberId) {
             <div style="margin-top: 20px;">
                 <div class="detail-label">Alamat</div>
                 <div class="detail-value" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
-                    ${member.alamat}
+                    ${member.alamat || ''}
                 </div>
             </div>
             
@@ -5636,7 +5681,7 @@ function viewMemberDetail(memberId) {
                             <i class="fas fa-landmark"></i> Pokok
                         </div>
                         <div style="font-weight: bold; color: var(--primary);">
-                            Rp ${parseInt(member.simpananPokok || 0).toLocaleString('id-ID')}
+                            Rp ${parseInt(member.simpananPokok || member.simpanan_pokok || 0).toLocaleString('id-ID')}
                         </div>
                     </div>
                     
@@ -5645,7 +5690,7 @@ function viewMemberDetail(memberId) {
                             <i class="fas fa-calendar-check"></i> Wajib
                         </div>
                         <div style="font-weight: bold; color: var(--secondary);">
-                            Rp ${parseInt(member.simpananWajib || 0).toLocaleString('id-ID')}
+                            Rp ${parseInt(member.simpananWajib || member.simpanan_wajib || 0).toLocaleString('id-ID')}
                         </div>
                     </div>
                     
@@ -5654,7 +5699,7 @@ function viewMemberDetail(memberId) {
                             <i class="fas fa-hand-holding-heart"></i> Sukarela
                         </div>
                         <div style="font-weight: bold; color: var(--accent);">
-                            Rp ${parseInt(member.simpananSukarela || 0).toLocaleString('id-ID')}
+                            Rp ${parseInt(member.simpananSukarela || member.simpanan_sukarela || 0).toLocaleString('id-ID')}
                         </div>
                     </div>
                 </div>
@@ -5663,7 +5708,7 @@ function viewMemberDetail(memberId) {
                 <div style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: white; border-radius: 8px; text-align: center;">
                     <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">TOTAL SIMPANAN</div>
                     <div style="font-size: 1.5rem; font-weight: bold;">
-                        Rp ${parseInt(member.totalSimpanan || 0).toLocaleString('id-ID')}
+                        Rp ${parseInt(member.totalSimpanan || member.total_simpanan || 0).toLocaleString('id-ID')}
                     </div>
                 </div>
             </div>
@@ -5672,7 +5717,7 @@ function viewMemberDetail(memberId) {
             <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, var(--info), #64b5f6); color: white; border-radius: 8px; text-align: center;">
                 <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">TABUNGAN DIGITAL</div>
                 <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
-                    ${member.nama}
+                    ${member.nama || ''}
                 </div>
                 <a href="tabungan-digital.html?nia=${member.nia || member.id}" target="_blank" style="color: white; text-decoration: underline; font-weight: bold;">
                     Buka Tabungan Digital <i class="fas fa-external-link-alt"></i>
@@ -5683,10 +5728,10 @@ function viewMemberDetail(memberId) {
             <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem; color: var(--gray);">
                 <div style="display: flex; justify-content: space-between;">
                     <div>
-                        <i class="fas fa-clock"></i> Dibuat: ${new Date(member.createdAt || member.created_at).toLocaleString('id-ID')}
+                        <i class="fas fa-clock"></i> Dibuat: ${new Date(member.createdAt || member.created_at || Date.now()).toLocaleString('id-ID')}
                     </div>
                     <div>
-                        <i class="fas fa-sync-alt"></i> Terakhir update: ${new Date(member.lastUpdated || member.updated_at || member.last_update).toLocaleString('id-ID')}
+                        <i class="fas fa-sync-alt"></i> Terakhir update: ${new Date(member.lastUpdated || member.updated_at || member.last_update || Date.now()).toLocaleString('id-ID')}
                     </div>
                 </div>
             </div>
@@ -5755,7 +5800,7 @@ async function editMemberNew(memberId) {
         
         document.getElementById('emailMember').value = member.email || '';
         document.getElementById('whatsapp').value = member.whatsapp || member.telepon || '';
-        document.getElementById('nik').value = member.nik || member.nikKtp || '';
+        document.getElementById('nik').value = member.nik || member.nikKtp || member.nik_ktp || '';
         document.getElementById('agama').value = member.agama || 'Islam';
         document.getElementById('alamat').value = member.alamat || '';
         
@@ -5765,7 +5810,7 @@ async function editMemberNew(memberId) {
         document.getElementById('simpananSukarela').value = member.simpanan_sukarela || member.simpananSukarela || 0;
         
         document.getElementById('passwordMember').value = member.password || '';
-        document.getElementById('tanggalDaftar').value = member.tanggal_daftar || member.tanggalGabung || '';
+        document.getElementById('tanggalDaftar').value = member.tanggal_daftar || member.tanggalGabung || member.tanggal_bergabung || '';
         
         // Set status aktif (gunakan field yang konsisten)
         const statusAktif = member.status || member.status_aktif || member.statusAktif;
@@ -5819,7 +5864,7 @@ function editPinjaman(pinjamanId) {
     dropdown.innerHTML = '<option value="">Pilih Anggota</option>';
     
     anggotaData.forEach(anggota => {
-        if (anggota.statusAktif === 'Aktif') {
+        if ((anggota.statusAktif || anggota.status_aktif || anggota.status) === 'Aktif') {
             const option = document.createElement('option');
             option.value = anggota.nia || anggota.id;
             option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama}`;
@@ -5845,10 +5890,10 @@ function editSimpanan(simpananId) {
     dropdown.innerHTML = '<option value="">Pilih Anggota...</option>';
     
     anggotaData.forEach(anggota => {
-        if (anggota.statusAktif === 'Aktif') {
+        if ((anggota.statusAktif || anggota.status_aktif || anggota.status) === 'Aktif') {
             const option = document.createElement('option');
             option.value = anggota.nia || anggota.id;
-            option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama} (${anggota.posisi})`;
+            option.textContent = `${anggota.nia || anggota.id} - ${anggota.nama} (${anggota.posisi || 'Anggota'})`;
             if ((anggota.nia || anggota.id) === simpanan.idAnggota) {
                 option.selected = true;
             }
@@ -5857,7 +5902,10 @@ function editSimpanan(simpananId) {
     });
     
     // Set jenis simpanan
-    document.querySelector(`input[name="jenisSimpanan"][value="${simpanan.jenisSimpanan}"]`).checked = true;
+    const jenisRadio = document.querySelector(`input[name="jenisSimpanan"][value="${simpanan.jenisSimpanan}"]`);
+    if (jenisRadio) {
+        jenisRadio.checked = true;
+    }
     
     // Set tanggal
     document.getElementById('tanggalSimpanan').value = simpanan.tanggalSetor;
@@ -6003,12 +6051,14 @@ function hideBarangEmptyMessage() {
 // ===== FUNGSI DASHBOARD =====
 function updateDashboardStats() {
     // Total Anggota
-    const totalAnggota = anggotaData.filter(a => a.statusAktif === 'Aktif').length;
+    const totalAnggota = anggotaData.filter(a => 
+        (a.statusAktif || a.status_aktif || a.status) === 'Aktif'
+    ).length;
     document.getElementById('totalAnggota').textContent = totalAnggota;
     
     // Total Simpanan
     const totalSimpanan = anggotaData.reduce((sum, anggota) => {
-        return sum + (parseFloat(anggota.totalSimpanan) || 0);
+        return sum + (parseFloat(anggota.totalSimpanan || anggota.total_simpanan) || 0);
     }, 0);
     document.getElementById('totalSimpanan').textContent = `Rp ${totalSimpanan.toLocaleString('id-ID')}`;
     
@@ -6088,8 +6138,8 @@ function updateDashboardTables() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${anggota.nama}</td>
-                <td>${anggota.tanggalDaftar}</td>
-                <td><span class="badge badge-success">${anggota.statusAktif}</span></td>
+                <td>${anggota.tanggalDaftar || anggota.tanggal_bergabung || '-'}</td>
+                <td><span class="badge badge-success">${anggota.statusAktif || anggota.status_aktif || anggota.status || 'Aktif'}</span></td>
             `;
             anggotaTableBody.appendChild(row);
         });
@@ -6424,7 +6474,7 @@ function refreshLaporanTable() {
     if (!tableBody) return;
     
     // Hitung total aset, kewajiban, dan ekuitas
-    const totalSimpanan = anggotaData.reduce((sum, a) => sum + (parseFloat(a.totalSimpanan) || 0), 0);
+    const totalSimpanan = anggotaData.reduce((sum, a) => sum + (parseFloat(a.totalSimpanan || a.total_simpanan) || 0), 0);
     const totalPinjaman = pinjamanData.reduce((sum, p) => sum + (parseFloat(p.sisaHutang) || 0), 0);
     const totalSHU = totalSimpanan * 0.1; // Contoh: 10% dari total simpanan
     const totalKas = totalSimpanan - totalPinjaman;
@@ -6497,7 +6547,7 @@ function generatePrintLaporan() {
 }
 
 function generateLaporanRows() {
-    const totalSimpanan = anggotaData.reduce((sum, a) => sum + (parseFloat(a.totalSimpanan) || 0), 0);
+    const totalSimpanan = anggotaData.reduce((sum, a) => sum + (parseFloat(a.totalSimpanan || a.total_simpanan) || 0), 0);
     const totalPinjaman = pinjamanData.reduce((sum, p) => sum + (parseFloat(p.sisaHutang) || 0), 0);
     const totalSHU = totalSimpanan * 0.1;
     const totalKas = totalSimpanan - totalPinjaman;
@@ -6523,9 +6573,11 @@ function generateLaporanRows() {
 }
 
 function generateSummaryCards() {
-    const totalSimpanan = anggotaData.reduce((sum, a) => sum + (parseFloat(a.totalSimpanan) || 0), 0);
+    const totalSimpanan = anggotaData.reduce((sum, a) => sum + (parseFloat(a.totalSimpanan || a.total_simpanan) || 0), 0);
     const totalPinjaman = pinjamanData.reduce((sum, p) => sum + (parseFloat(p.sisaHutang) || 0), 0);
-    const totalAnggota = anggotaData.filter(a => a.statusAktif === 'Aktif').length;
+    const totalAnggota = anggotaData.filter(a => 
+        (a.statusAktif || a.status_aktif || a.status) === 'Aktif'
+    ).length;
     const totalSHU = totalSimpanan * 0.1;
     
     return `
@@ -6638,10 +6690,10 @@ function exportDataToExcel() {
                     'Nama': anggota.nama,
                     'Posisi': anggota.posisi,
                     'Email': anggota.email,
-                    'WhatsApp': anggota.whatsapp,
-                    'Tanggal Bergabung': anggota.tanggalDaftar,
-                    'Status': anggota.statusAktif,
-                    'Total Simpanan': `Rp ${(anggota.totalSimpanan || 0).toLocaleString('id-ID')}`,
+                    'WhatsApp': anggota.whatsapp || anggota.telepon,
+                    'Tanggal Bergabung': anggota.tanggalDaftar || anggota.tanggal_bergabung,
+                    'Status': anggota.statusAktif || anggota.status_aktif || anggota.status,
+                    'Total Simpanan': `Rp ${(anggota.totalSimpanan || anggota.total_simpanan || 0).toLocaleString('id-ID')}`,
                     'QR Code URL': anggota.qr_url || `https://qr-code-hybrid.vercel.app/?id=${anggota.nia || anggota.id}`
                 }));
                 fileName = 'Data_Anggota_Koperasi';
@@ -6652,17 +6704,17 @@ function exportDataToExcel() {
                 dataToExport = anggotaData.map(anggota => ({
                     'ID/NIA': anggota.nia || anggota.id,
                     'Nama': anggota.nama,
-                    'NIK': anggota.nik,
-                    'Jenis Kelamin': anggota.jenisKelamin,
+                    'NIK': anggota.nik || anggota.nik_ktp,
+                    'Jenis Kelamin': anggota.jenisKelamin || anggota.jenis_kelamin,
                     'Alamat': anggota.alamat,
                     'Email': anggota.email,
-                    'WhatsApp': anggota.whatsapp,
-                    'Tanggal Bergabung': anggota.tanggalDaftar,
-                    'Status': anggota.statusAktif,
-                    'Simpanan Pokok': `Rp ${(anggota.simpananPokok || 0).toLocaleString('id-ID')}`,
-                    'Simpanan Wajib': `Rp ${(anggota.simpananWajib || 0).toLocaleString('id-ID')}`,
-                    'Simpanan Sukarela': `Rp ${(anggota.simpananSukarela || 0).toLocaleString('id-ID')}`,
-                    'Total Simpanan': `Rp ${(anggota.totalSimpanan || 0).toLocaleString('id-ID')}`,
+                    'WhatsApp': anggota.whatsapp || anggota.telepon,
+                    'Tanggal Bergabung': anggota.tanggalDaftar || anggota.tanggal_bergabung,
+                    'Status': anggota.statusAktif || anggota.status_aktif || anggota.status,
+                    'Simpanan Pokok': `Rp ${(anggota.simpananPokok || anggota.simpanan_pokok || 0).toLocaleString('id-ID')}`,
+                    'Simpanan Wajib': `Rp ${(anggota.simpananWajib || anggota.simpanan_wajib || 0).toLocaleString('id-ID')}`,
+                    'Simpanan Sukarela': `Rp ${(anggota.simpananSukarela || anggota.simpanan_sukarela || 0).toLocaleString('id-ID')}`,
+                    'Total Simpanan': `Rp ${(anggota.totalSimpanan || anggota.total_simpanan || 0).toLocaleString('id-ID')}`,
                     'QR Code URL': anggota.qr_url || `https://qr-code-hybrid.vercel.app/?id=${anggota.nia || anggota.id}`
                 }));
                 fileName = 'Data_Anggota_Lengkap';
@@ -6755,6 +6807,247 @@ function exportDataToExcel() {
         console.error('Error exporting to Excel:', error);
         showNotification('Gagal mengexport data!', 'error');
     }
+}
+
+// ===== FUNGSI KONFIRMASI HAPUS =====
+async function showDeleteConfirm(id, type) {
+    const modal = document.getElementById('confirmModal');
+    const message = document.getElementById('confirmMessage');
+    
+    if (type === 'anggota') {
+        const anggota = anggotaData.find(a => a.id === id || a.nia === id);
+        message.textContent = `Apakah Anda yakin ingin menghapus anggota "${anggota?.nama || id}"? Tindakan ini tidak dapat dibatalkan.`;
+    } else if (type === 'simpanan') {
+        const simpanan = simpananData.find(s => s.id === id);
+        message.textContent = `Apakah Anda yakin ingin menghapus simpanan "${simpanan?.jenisSimpanan || id}"?`;
+    } else {
+        message.textContent = `Apakah Anda yakin ingin menghapus data ini?`;
+    }
+    
+    // Set confirm button action
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    confirmBtn.onclick = async () => {
+        try {
+            if (firebaseInitialized) {
+                await deleteDataFromFirebase(id, type);
+            }
+            
+            // Hapus dari data lokal
+            if (type === 'anggota') {
+                anggotaData = anggotaData.filter(a => a.id !== id && a.nia !== id);
+                localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+                localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+                refreshAnggotaTable();
+            } else if (type === 'simpanan') {
+                simpananData = simpananData.filter(s => s.id !== id);
+                localStorage.setItem('simpananData', JSON.stringify(simpananData));
+                refreshSimpananTable();
+            }
+            
+            checkEmptyTables();
+            updateDashboardStats();
+            
+        } catch (error) {
+            console.error('Error deleting:', error);
+            showNotification('Gagal menghapus data!', 'error');
+        }
+    };
+    
+    modal.style.display = 'flex';
+}
+
+async function confirmDeleteData() {
+    const id = currentEditingId;
+    const type = currentEditingType;
+    
+    if (!id || !type) return;
+    
+    try {
+        if (firebaseInitialized) {
+            await deleteDataFromFirebase(id, type);
+        }
+        
+        // Hapus dari data lokal
+        if (type === 'anggota') {
+            anggotaData = anggotaData.filter(a => a.id !== id);
+            localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+            localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+            refreshAnggotaTable();
+        } else if (type === 'simpanan') {
+            simpananData = simpananData.filter(s => s.id !== id);
+            localStorage.setItem('simpananData', JSON.stringify(simpananData));
+            refreshSimpananTable();
+        } else if (type === 'pinjaman') {
+            pinjamanData = pinjamanData.filter(p => p.id !== id);
+            localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
+            refreshPinjamanTable();
+        } else if (type === 'barang') {
+            barangData = barangData.filter(b => b.id !== id);
+            localStorage.setItem('barangData', JSON.stringify(barangData));
+            refreshBarangTable();
+        }
+        
+        showNotification('Data berhasil dihapus!', 'success');
+        checkEmptyTables();
+        updateDashboardStats();
+        
+    } catch (error) {
+        console.error('Error deleting:', error);
+        showNotification('Gagal menghapus data!', 'error');
+    }
+}
+
+// ===== FUNGSI REFRESH TABEL SIMPANAN =====
+function refreshSimpananTable() {
+    const tableBody = document.querySelector('#simpananTable tbody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (simpananData.length === 0) {
+        showSimpananEmptyMessage();
+        return;
+    }
+    
+    hideSimpananEmptyMessage();
+    
+    // Filter berdasarkan tab aktif
+    const activeTab = document.querySelector('.tabs .tab.active');
+    const tabType = activeTab ? activeTab.getAttribute('data-simpanan-tab') : 'all';
+    
+    let filteredSimpanan = simpananData;
+    if (tabType !== 'all') {
+        filteredSimpanan = simpananData.filter(s => 
+            s.jenisSimpanan.toLowerCase().includes(tabType.toLowerCase())
+        );
+    }
+    
+    filteredSimpanan.forEach(simpanan => {
+        const row = document.createElement('tr');
+        const totalAkumulasi = calculateTotalAkumulasi(simpanan.idAnggota, simpanan.jenisSimpanan);
+        
+        row.innerHTML = `
+            <td>${simpanan.idAnggota}</td>
+            <td>${simpanan.nama}</td>
+            <td>
+                <span class="badge ${
+                    simpanan.jenisSimpanan === 'Pokok' ? 'badge-success' : 
+                    simpanan.jenisSimpanan === 'Wajib' ? 'badge-warning' : 'badge-info'
+                }">
+                    ${simpanan.jenisSimpanan}
+                </span>
+            </td>
+            <td>${simpanan.tanggalSetor}</td>
+            <td>Rp ${parseInt(simpanan.nominal).toLocaleString('id-ID')}</td>
+            <td>Rp ${totalAkumulasi.toLocaleString('id-ID')}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn btn-outline btn-sm view-simpanan" data-id="${simpanan.id}" title="Lihat Detail">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm edit-simpanan" data-id="${simpanan.id}" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm delete-simpanan" data-id="${simpanan.id}" title="Hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+    
+    // Attach event listeners untuk aksi
+    attachSimpananActionListeners();
+}
+
+// ===== FUNGSI REFRESH TABEL PINJAMAN =====
+function refreshPinjamanTable() {
+    const tableBody = document.querySelector('#pinjamanFullTable tbody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (pinjamanData.length === 0) {
+        showPinjamanEmptyMessage();
+        return;
+    }
+    
+    hidePinjamanEmptyMessage();
+    
+    pinjamanData.forEach(pinjaman => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${pinjaman.id}</td>
+            <td>${pinjaman.namaAnggota}</td>
+            <td>Rp ${parseInt(pinjaman.jumlahPinjaman).toLocaleString('id-ID')}</td>
+            <td>${pinjaman.tanggalPinjam}</td>
+            <td>${pinjaman.jangkaWaktu}</td>
+            <td>${pinjaman.bunga}%</td>
+            <td>Rp ${parseInt(pinjaman.sisaHutang).toLocaleString('id-ID')}</td>
+            <td>
+                <span class="badge ${pinjaman.status === 'Aktif' ? 'badge-success' : pinjaman.status === 'Lunas' ? 'badge-info' : 'badge-warning'}">
+                    ${pinjaman.status}
+                </span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn btn-outline btn-sm" onclick="editPinjaman('${pinjaman.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="showDeleteConfirm('${pinjaman.id}', 'pinjaman')" title="Hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// ===== FUNGSI REFRESH TABEL BARANG =====
+function refreshBarangTable() {
+    const tableBody = document.querySelector('#barangTable tbody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (barangData.length === 0) {
+        showBarangEmptyMessage();
+        return;
+    }
+    
+    hideBarangEmptyMessage();
+    
+    barangData.forEach(barang => {
+        const row = document.createElement('tr');
+        const laba = (barang.hargaJual || 0) - (barang.hargaBeli || 0);
+        
+        row.innerHTML = `
+            <td>${barang.kode}</td>
+            <td>${barang.nama}</td>
+            <td>${barang.kategori}</td>
+            <td>${barang.stok}</td>
+            <td>Rp ${parseInt(barang.hargaBeli).toLocaleString('id-ID')}</td>
+            <td>Rp ${parseInt(barang.hargaJual).toLocaleString('id-ID')}</td>
+            <td>
+                <span class="badge ${barang.status === 'Aktif' ? 'badge-success' : barang.status === 'Habis' ? 'badge-danger' : 'badge-warning'}">
+                    ${barang.status}
+                </span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn btn-outline btn-sm" onclick="editBarang('${barang.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="showDeleteConfirm('${barang.id}', 'barang')" title="Hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
 }
 
 // ===== INISIALISASI AKHIR =====
