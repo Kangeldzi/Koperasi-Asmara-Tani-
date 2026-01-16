@@ -4032,10 +4032,15 @@ class TabunganApp {
     }
     
     // ===== PERUBAHAN: QR MODAL DENGAN DATA FIREBASE - IMPLEMENTASI SCRIPT PERBAIKAN =====
-    showQRModal() {
+showQRModal() {
+    // Gunakan QR Hybrid System jika tersedia
+    if (window.qrHybridSystem) {
+        window.qrHybridSystem.showHybridQRModal();
+    } else {
+        // Fallback ke QR lama (tidak usah diubah)
         const completeData = this.getCompleteUserData();
 
-        // Pastikan ada data NIA (gunakan berbagai sumber)
+        // Pastikan ada data NIA
         let userNIA = completeData.nia || 
                      this.nia || 
                      completeData.id || 
@@ -4052,7 +4057,7 @@ class TabunganApp {
                         'anggota@koperasi.com';
         
         // Buat URL QR Code dengan data yang pasti ada
-        const qrUrl = `https://qr-code-hybrid.vercel.app/anggota/?id=${userNIA}&name=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}&time=${Date.now()}`;
+        const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${userNIA}&name=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}&time=${Date.now()}`;
         
         // Tampilkan data untuk debugging
         console.log('QR Code Data:', {
@@ -4156,6 +4161,7 @@ class TabunganApp {
             }, 500);
         }
     }
+}    
     
     // ===== FUNGSI UNTUK GENERATE QR CODE =====
     generateQRCode(qrUrl, nia, name) {
