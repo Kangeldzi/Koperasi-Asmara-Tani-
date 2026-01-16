@@ -5096,7 +5096,447 @@ class TabunganApp {
         }
     }
 }
+// ===== FITUR QR CODE HYBRID =====
+class QRCodeHybridSystem {
+    constructor() {
+        this.currentUser = null;
+        this.vercelBaseUrl = 'https://qr-code-hybrid.vercel.app/anggota';
+        this.qrHistory = [];
+        this.init();
+    }
 
+    init() {
+        console.log('🎫 Initializing QR Code Hybrid System...');
+        
+        try {
+            this.currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
+            this.loadQRHistory();
+            this.setupQRButtonListener();
+            
+            console.log('✅ QR Code Hybrid System Ready');
+        } catch (error) {
+            console.error('Error initializing QR system:', error);
+        }
+    }
+
+    setupQRButtonListener() {
+        const qrButton = document.getElementById('qrButton');
+        if (qrButton) {
+            // Ganti event listener yang ada dengan yang baru
+            qrButton.replaceWith(qrButton.cloneNode(true));
+            
+            document.getElementById('qrButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showHybridQRModal();
+            });
+        }
+    }
+
+    async showHybridQRModal() {
+        try {
+            // Ambil data lengkap anggota
+            const completeData = await this.getCompleteAnggotaData();
+            
+            if (!completeData.nia) {
+                window.app.showToast('Data NIA tidak ditemukan', 'error');
+                return;
+            }
+
+            // Generate URL Vercel dengan parameter lengkap
+            const vercelUrl = this.generateVercelUrl(completeData);
+            
+            // Tampilkan modal QR
+            this.renderQRModal(completeData, vercelUrl);
+            
+            // Generate QR Code
+            setTimeout(() => {
+                this.generateQRCode(vercelUrl, completeData);
+            }, 300);
+            
+        } catch (error) {
+            console.error('Error showing QR modal:', error);
+            window.app.showToast('Gagal memuat data QR: ' + error.message, 'error');
+        }
+    }
+
+    async getCompleteAnggotaData() {
+        // Gabungkan data dari berbagai sumber
+        let completeData = {
+            email: this.currentUser?.email || '',
+            nama: this.currentUser?.name || 'Anggota Koperasi',
+            nia: '',
+            foto: '',
+            status: 'AKTIF'
+        };
+
+        try {
+            // Coba ambil dari Firebase pertama
+            if (window.app && window.app.firebaseUserData) {
+                const firebaseData = window.app.firebaseUserData;
+                completeData = {
+                    ...completeData,
+                    nia: firebaseData.nia || firebaseData.id || '',
+                    nama: firebaseData.nama || completeData.nama,
+                    foto: firebaseData.foto || '',
+                    status: firebaseData.status || 'AKTIF',
+                    posisi: firebaseData.posisi || 'Anggota',
+                    alamat: firebaseData.alamat || '',
+                    whatsapp: firebaseData.whatsapp || '',
+                    simpanan_pokok: firebaseData.simpanan_pokok || 0,
+                    simpanan_wajib: firebaseData.simpanan_wajib || 0,
+                    simpanan_sukarela: firebaseData.simpanan_sukarela || 0,
+                    total_simpanan: firebaseData.total_simpanan || 0,
+                    total_pinjaman: firebaseData.total_pinjaman || 0,
+                    shu_estimasi: firebaseData.shu || 0,
+                    tanggal_bergabung: firebaseData.tanggal_bergabung || ''
+                };
+            } else {
+                // Fallback ke localStorage
+                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                const userData = anggotaData.find(a => a.email === this.currentUser?.email);
+                
+                if (userData) {
+                    completeData = {
+                        ...completeData,
+                        nia: userData.nia || userData.id || `KOP${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
+                        nama: userData.nama || userData.name || completeData.nama,
+                        foto: userData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                        status: userData.status || userData.statusAktif || 'AKTIF',
+                        posisi: userData.posisi || 'Anggota',
+                        alamat: userData.alamat || '',
+                        whatsapp: userData.whatsapp || userData.telepon || '',
+                        simpanan_pokok: userData.simpanan_pokok || userData.simpananPokok || 0,
+                        simpanan_wajib: userData.simpanan_wajib || userData.simpananWajib || 0,
+                        simpanan_sukarela: userData.simpanan_sukarela || userData.simpananSukarela || 0,
+                        total_simpanan: userData.total_simpanan || userData.totalSimpanan || 0,
+                        total_pinjaman: userData.total_pinjaman || userData.totalPinjaman || 0,
+                        shu_estimasi: userData.shu_estimasi || userData.shu || 0,
+                        tanggal_bergabung: userData.tanggal_bergabung || userData.tanggalGabung || ''
+                    };
+                }
+            }
+
+            return completeData;
+
+        } catch (error) {
+            console.error('Error getting complete data:', error);
+            return completeData;
+        }
+    }
+
+    generateVercelUrl(data) {
+        // Buat parameter untuk URL Vercel
+        const params = new URLSearchParams({
+            id: data.nia,
+            name: encodeURIComponent(data.nama.substring(0, 50)),
+            email: encodeURIComponent(data.email.substring(0, 100)),
+            status: data.status,
+            t: Date.now() // timestamp untuk cache busting
+        });
+
+        // URL lengkap ke Vercel
+        return `${this.vercelBaseUrl}/${data.nia}?${params.toString()}`;
+    }
+
+    renderQRModal(data, vercelUrl) {
+        const html = `
+            <div class="qr-modal-design">
+                <div class="qr-title">
+                    <i class="fas fa-qrcode"></i> QR Code Hybrid - Validasi Keanggotaan
+                </div>
+                
+                <div class="qr-card">
+                    <div class="qr-person-info">
+                        <div class="qr-person-photo">
+                            <img src="${data.foto}" 
+                                 alt="Foto Anggota"
+                                 onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">
+                        </div>
+                        <div class="qr-person-details">
+                            <h4>${data.nama}</h4>
+                            <p><i class="fas fa-id-card"></i> NIA: ${data.nia}</p>
+                            <p><i class="fas fa-briefcase"></i> Posisi: ${data.posisi}</p>
+                            <p><i class="fas fa-check-circle"></i> Status: ${data.status}</p>
+                            <p><i class="fas fa-fire" style="color: #FFA000;"></i> Data dari Firebase</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <p style="margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-link" style="color: #2196F3;"></i>
+                            <span>URL: ${vercelUrl.substring(0, 40)}...</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Container untuk QR Code -->
+                <div id="qrCodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light); min-height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="margin-bottom: 15px;">
+                        <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Membuat QR Code Hybrid...</p>
+                    <div id="qrStatus" style="font-size: 0.8rem; color: #666; margin-top: 10px;"></div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-info-circle"></i> Cara menggunakan QR Code Hybrid:
+                    </h5>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                            <span>Scan QR Code dengan aplikasi scanner QR</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                            <span>Anda akan diarahkan ke halaman validasi keanggotaan</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                            <span>Halaman akan menampilkan data lengkap Anda</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <p style="color: var(--primary); margin: 0; font-size: 0.9rem; text-align: center;">
+                        <i class="fas fa-shield-alt"></i> 
+                        QR Code Hybrid aman dan terenkripsi
+                    </p>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="action-btn download" id="downloadQRBtn">
+                        <i class="fas fa-download"></i> Download QR
+                    </button>
+                    <button type="button" class="action-btn whatsapp" id="shareQRBtn">
+                        <i class="fab fa-whatsapp"></i> Bagikan
+                    </button>
+                    <button type="button" class="action-btn secondary" id="refreshQRBtn" style="background: #9C27B0;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 25px;">
+                    <button type="button" class="modal-btn primary" id="closeQRModalBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        window.app.showModal('QR Code Hybrid Validasi', html);
+        
+        this.setupQRModalListeners(data, vercelUrl);
+    }
+
+    setupQRModalListeners(data, vercelUrl) {
+        // Download QR
+        document.getElementById('downloadQRBtn')?.addEventListener('click', () => {
+            this.downloadQRCode(data);
+        });
+        
+        // Share via WhatsApp
+        document.getElementById('shareQRBtn')?.addEventListener('click', () => {
+            this.shareViaWhatsApp(data, vercelUrl);
+        });
+        
+        // Refresh QR
+        document.getElementById('refreshQRBtn')?.addEventListener('click', () => {
+            this.refreshQRCode(data);
+        });
+        
+        // Close modal
+        document.getElementById('closeQRModalBtn')?.addEventListener('click', () => {
+            window.app.closeModal();
+        });
+    }
+
+    generateQRCode(url, data) {
+        const qrContainer = document.getElementById('qrCodeContainer');
+        const qrStatus = document.getElementById('qrStatus');
+        
+        if (!qrContainer) return;
+        
+        try {
+            // Clear previous QR
+            qrContainer.innerHTML = '';
+            
+            if (qrStatus) {
+                qrStatus.textContent = 'Membuat QR Code...';
+                qrStatus.style.color = '#2196F3';
+            }
+            
+            // Validasi URL
+            if (!url || url.length < 10) {
+                throw new Error('URL tidak valid');
+            }
+            
+            console.log('Generating QR for URL:', url);
+            
+            // Create QR Code
+            const qrCode = new QRCode(qrContainer, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark: "#1a5f23",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.Q
+            });
+            
+            // Add info below QR
+            const infoDiv = document.createElement('div');
+            infoDiv.style.marginTop = '15px';
+            infoDiv.style.fontSize = '0.8rem';
+            infoDiv.style.color = 'var(--text-secondary)';
+            infoDiv.innerHTML = `
+                <p><strong>${data.nia}</strong> - ${data.nama.substring(0, 20)}${data.nama.length > 20 ? '...' : ''}</p>
+                <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.7rem;">
+                    ${url.substring(0, 40)}...
+                </p>
+            `;
+            qrContainer.appendChild(infoDiv);
+            
+            // Save QR data
+            this.saveQRData(data, url);
+            
+            if (qrStatus) {
+                qrStatus.innerHTML = '<i class="fas fa-check-circle" style="color: #4CAF50;"></i> QR Code siap digunakan';
+                qrStatus.style.color = '#4CAF50';
+            }
+            
+            // Notify
+            window.app.showToast('QR Code Hybrid berhasil dibuat', 'success');
+            
+        } catch (error) {
+            console.error('Error generating QR:', error);
+            
+            qrContainer.innerHTML = `
+                <div style="color: #f44336; padding: 20px; text-align: center;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p style="font-weight: bold; margin-bottom: 10px;">Gagal membuat QR Code</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 15px;">${error.message}</p>
+                    <button onclick="window.qrHybridSystem.refreshQRCode()" style="
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        margin-top: 10px;
+                    ">
+                        <i class="fas fa-redo"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+            
+            if (qrStatus) {
+                qrStatus.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i> Error: ' + error.message;
+                qrStatus.style.color = '#f44336';
+            }
+        }
+    }
+
+    saveQRData(data, url) {
+        const qrData = {
+            id: `QR-${data.nia}-${Date.now()}`,
+            nia: data.nia,
+            nama: data.nama,
+            url: url,
+            generated: new Date().toISOString(),
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 hari
+        };
+        
+        this.qrHistory.unshift(qrData);
+        
+        if (this.qrHistory.length > 20) {
+            this.qrHistory.length = 20;
+        }
+        
+        this.saveQRHistory();
+    }
+
+    loadQRHistory() {
+        try {
+            const saved = localStorage.getItem(`qr_history_${this.currentUser?.email}`);
+            if (saved) {
+                this.qrHistory = JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error('Error loading QR history:', error);
+        }
+    }
+
+    saveQRHistory() {
+        try {
+            localStorage.setItem(`qr_history_${this.currentUser?.email}`, JSON.stringify(this.qrHistory));
+        } catch (error) {
+            console.error('Error saving QR history:', error);
+        }
+    }
+
+    downloadQRCode(data) {
+        const qrContainer = document.getElementById('qrCodeContainer');
+        if (!qrContainer) {
+            window.app.showToast('QR Code belum dibuat', 'error');
+            return;
+        }
+        
+        const canvas = qrContainer.querySelector('canvas');
+        if (!canvas) {
+            window.app.showToast('Tidak dapat menemukan QR Code', 'error');
+            return;
+        }
+        
+        try {
+            const link = document.createElement('a');
+            link.download = `QR-Hybrid-${data.nia}-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            window.app.showToast('QR Code berhasil diunduh', 'success');
+        } catch (error) {
+            console.error('Error downloading QR:', error);
+            window.app.showToast('Gagal mengunduh QR', 'error');
+        }
+    }
+
+    shareViaWhatsApp(data, url) {
+        const message = `*QR CODE VALIDASI ANGGOTA*\n\n` +
+                       `Koperasi Asmara Tani\n` +
+                       `#koperasijenius\n\n` +
+                       `👤 *Nama:* ${data.nama}\n` +
+                       `🆔 *NIA:* ${data.nia}\n` +
+                       `✅ *Status:* ${data.status}\n` +
+                       `📅 *Update:* ${new Date().toLocaleDateString('id-ID')}\n\n` +
+                       `_Scan QR Code untuk validasi keanggotaan_`;
+        
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        window.app.showToast('QR Code siap dibagikan', 'success');
+    }
+
+    refreshQRCode(data) {
+        const newUrl = this.generateVercelUrl(data) + '&refresh=' + Date.now();
+        const qrContainer = document.getElementById('qrCodeContainer');
+        
+        if (qrContainer) {
+            qrContainer.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <i class="fas fa-sync-alt fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                    <p>Memperbarui QR Code...</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                this.generateQRCode(newUrl, data);
+            }, 500);
+        }
+    }
+}
 // ===== TEXT TO SPEECH SYSTEM =====
 class MenuVoiceSystem {
     constructor() {
@@ -6864,6 +7304,18 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.innerHTML = '';
         document.body.appendChild(errorDiv);
     }
+});
+    // ===== INISIALISASI QR HYBRID SYSTEM =====
+document.addEventListener('DOMContentLoaded', function() {
+    // ... kode yang sudah ada ...
+    
+    // Tunggu hingga app selesai diinisialisasi
+    setTimeout(() => {
+        if (!window.qrHybridSystem) {
+            window.qrHybridSystem = new QRCodeHybridSystem();
+            console.log('✅ QR Hybrid System integrated successfully');
+        }
+    }, 3000);
 });
 </script>
 </body>
