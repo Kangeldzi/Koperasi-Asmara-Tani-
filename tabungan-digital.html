@@ -5124,7 +5124,18 @@ class QRCodeHybridSystem {
             console.error('Error initializing QR system:', error);
         }
     }
-
+‎generateAutoNIA() {
+‎    // Format: KOP-YYYY-MMDD-HHMMSS
+‎    const now = new Date();
+‎    const year = now.getFullYear();
+‎    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+‎    const day = now.getDate().toString().padStart(2, '0');
+‎    const hours = now.getHours().toString().padStart(2, '0');
+‎    const minutes = now.getMinutes().toString().padStart(2, '0');
+‎    const seconds = now.getSeconds().toString().padStart(2, '0');
+‎    
+‎    return `KOP-${year}${month}${day}-${hours}${minutes}${seconds}`;
+‎}
     setupQRButtonListener() {
         const qrButton = document.getElementById('qrButton');
         if (qrButton) {
