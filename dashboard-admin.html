@@ -3580,7 +3580,7 @@ async function syncAnggotaToSheets() {
             anggota.posisi,
             anggota.jenisKelamin || anggota.jenis_kelamin,
             anggota.email,
-            anggota.whatsapp || anggota.telepon,
+            anggota.whatsapp,
             anggota.nik || anggota.nik_ktp,
             anggota.agama,
             anggota.alamat,
@@ -7052,6 +7052,204 @@ function refreshBarangTable() {
 
 // ===== INISIALISASI AKHIR =====
 console.log('🎉 Dashboard Admin script loaded successfully!');
+
+// ===== SISTEM INTEGRASI DATA KEUANGAN =====
+
+// Fungsi untuk sinkronisasi data keuangan antar semua menu
+function syncFinancialData() {
+    console.log('🔄 Memulai sinkronisasi data keuangan...');
+    
+    // 1. Hitung ulang total simpanan untuk setiap anggota
+    anggotaData.forEach(anggota => {
+        // Hitung total simpanan dari data simpanan
+        const totalSimpanan = simpananData
+            .filter(s => s.idAnggota === anggota.id || s.idAnggota === anggota.nia)
+            .reduce((total, s) => total + (parseFloat(s.nominal) || 0), 0);
+        
+        // Update data anggota
+        anggota.totalSimpanan = totalSimpanan;
+        anggota.total_simpanan = totalSimpanan;
+        
+        // Update simpanan per jenis
+        const simpananPokok = simpananData
+            .filter(s => s.idAnggota === anggota.id && s.jenisSimpanan === 'Pokok')
+            .reduce((total, s) => total + (parseFloat(s.nominal) || 0), 0);
+        
+        const simpananWajib = simpananData
+            .filter(s => s.idAnggota === anggota.id && s.jenisSimpanan === 'Wajib')
+            .reduce((total, s) => total + (parseFloat(s.nominal) || 0), 0);
+        
+        const simpananSukarela = simpananData
+            .filter(s => s.idAnggota === anggota.id && s.jenisSimpanan === 'Sukarela')
+            .reduce((total, s) => total + (parseFloat(s.nominal) || 0), 0);
+        
+        anggota.simpananPokok = simpananPokok;
+        anggota.simpanan_pokok = simpananPokok;
+        
+        anggota.simpananWajib = simpananWajib;
+        anggota.simpanan_wajib = simpananWajib;
+        
+        anggota.simpananSukarela = simpananSukarela;
+        anggota.simpanan_sukarela = simpananSukarela;
+        
+        // Hitung SHU (20% dari total simpanan)
+        anggota.shu = Math.round(totalSimpanan * 0.2);
+        anggota.shu_estimasi = Math.round(totalSimpanan * 0.2);
+    });
+    
+    // 2. Simpan ke localStorage
+    localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+    localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+    
+    // 3. Simpan ke Tabungan Digital
+    anggotaData.forEach(anggota => {
+        syncToTabunganDigital(anggota.nia || anggota.id, anggota);
+    });
+    
+    // 4. Update UI
+    updateDashboardStats();
+    refreshAnggotaTable();
+    refreshSimpananTable();
+    
+    // 5. Sync ke Firebase jika tersedia
+    if (firebaseInitialized && db) {
+        anggotaData.forEach(async anggota => {
+            try {
+                await db.collection('anggota').doc(anggota.nia || anggota.id).update({
+                    total_simpanan: anggota.totalSimpanan,
+                    simpanan_pokok: anggota.simpananPokok,
+                    simpanan_wajib: anggota.simpananWajib,
+                    simpanan_sukarela: anggota.simpananSukarela,
+                    shu: anggota.shu,
+                    shu_estimasi: anggota.shu_estimasi,
+                    updated_at: new Date().toISOString(),
+                    last_update: new Date().toLocaleString('id-ID')
+                });
+            } catch (error) {
+                console.error('Error updating Firebase:', error);
+            }
+        });
+    }
+    
+    // 6. Sync ke Google Sheets
+    if (googleSheetsInitialized) {
+        syncAnggotaToSheets();
+    }
+    
+    showNotification('Data keuangan berhasil disinkronisasi!', 'success');
+    console.log('✅ Sinkronisasi data keuangan selesai');
+}
+
+// ===== EVENT LISTENERS UNTUK SINKRONISASI OTOMATIS =====
+
+// Listen untuk perubahan data simpanan
+document.addEventListener('simpananUpdated', function() {
+    console.log('📈 Event: Data simpanan diperbarui, sinkronisasi otomatis...');
+    syncFinancialData();
+});
+
+// Listen untuk perubahan data anggota
+document.addEventListener('anggotaUpdated', function() {
+    console.log('👥 Event: Data anggota diperbarui, sinkronisasi otomatis...');
+    syncFinancialData();
+});
+
+// ===== AUTO SYNC SETIAP 30 DETIK =====
+setInterval(() => {
+    if (anggotaData.length > 0 || simpananData.length > 0) {
+        console.log('⏰ Auto-sync data keuangan...');
+        syncFinancialData();
+    }
+}, 30000);
+
+// ===== FUNGSI UTAMA UNTUK INTEGRASI =====
+
+// Fungsi untuk memastikan semua data terintegrasi
+function ensureDataIntegration() {
+    console.log('🔗 Memastikan integrasi data...');
+    
+    // 1. Pastikan data simpanan konsisten dengan data anggota
+    simpananData.forEach(simpanan => {
+        const anggota = anggotaData.find(a => a.id === simpanan.idAnggota || a.nia === simpanan.idAnggota);
+        if (anggota && !simpanan.nama) {
+            simpanan.nama = anggota.nama;
+        }
+    });
+    
+    // 2. Pastikan semua anggota memiliki field keuangan yang konsisten
+    anggotaData.forEach(anggota => {
+        if (!anggota.totalSimpanan) {
+            anggota.totalSimpanan = 0;
+            anggota.total_simpanan = 0;
+        }
+        if (!anggota.simpananPokok) {
+            anggota.simpananPokok = 0;
+            anggota.simpanan_pokok = 0;
+        }
+        if (!anggota.simpananWajib) {
+            anggota.simpananWajib = 0;
+            anggota.simpanan_wajib = 0;
+        }
+        if (!anggota.simpananSukarela) {
+            anggota.simpananSukarela = 0;
+            anggota.simpanan_sukarela = 0;
+        }
+        if (!anggota.shu) {
+            anggota.shu = 0;
+            anggota.shu_estimasi = 0;
+        }
+    });
+    
+    // 3. Simpan perubahan
+    localStorage.setItem('simpananData', JSON.stringify(simpananData));
+    localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+    localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+    
+    console.log('✅ Integrasi data selesai');
+}
+
+// ===== MODIFIKASI FUNGSI SAVE SIMPANAN UNTUK TRIGGER SYNC =====
+const originalSaveSimpananData = saveSimpananData;
+saveSimpananData = async function() {
+    const result = await originalSaveSimpananData();
+    if (result) {
+        // Trigger sinkronisasi
+        syncFinancialData();
+        
+        // Dispatch event
+        document.dispatchEvent(new CustomEvent('simpananUpdated', {
+            detail: { timestamp: new Date().toISOString() }
+        }));
+    }
+    return result;
+};
+
+// ===== MODIFIKASI FUNGSI SAVE ANGGOTA UNTUK TRIGGER SYNC =====
+const originalSaveMemberData = saveMemberData;
+saveMemberData = async function() {
+    const result = await originalSaveMemberData();
+    if (result) {
+        // Trigger sinkronisasi
+        syncFinancialData();
+        
+        // Dispatch event
+        document.dispatchEvent(new CustomEvent('anggotaUpdated', {
+            detail: { timestamp: new Date().toISOString() }
+        }));
+    }
+    return result;
+};
+
+// ===== RUN INTEGRATION ON LOAD =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Tunggu sedikit untuk memastikan data sudah dimuat
+    setTimeout(() => {
+        ensureDataIntegration();
+        syncFinancialData();
+    }, 2000);
+});
+
+console.log('✅ Sistem integrasi data keuangan telah diaktifkan!');
 </script>
 </body>
 </html>
