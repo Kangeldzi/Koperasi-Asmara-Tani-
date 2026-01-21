@@ -505,7 +505,7 @@
         /* HERO SECTION - SLIDESHOW (3 SLIDES ONLY) */
         .hero {
             position: relative;
-            height: 80vh;
+            height: 70vh;
             overflow: hidden;
         }
 
@@ -1109,12 +1109,13 @@
             background-size: cover;
         }
 
-        /* BERITA & KEGIATAN TERBARU */
+        /* BERITA & KEGIATAN TERBARU - PERBAIKAN */
         .news-section {
             position: relative;
             background: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80') center/cover fixed no-repeat;
             padding: 100px 20px;
             overflow: hidden;
+            min-height: 600px;
         }
 
         .news-overlay {
@@ -1153,6 +1154,7 @@
             overflow: hidden;
             border-radius: 20px;
             margin: 0 auto;
+            padding: 20px 0;
         }
 
         .news-track {
@@ -1171,13 +1173,15 @@
             backdrop-filter: blur(12px);
             transition: all 0.4s ease;
             position: relative;
-            min-width: 300px;
+            min-width: 320px;
+            max-width: 320px;
             flex-shrink: 0;
+            cursor: pointer;
         }
 
         .news-card img {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
@@ -1189,12 +1193,17 @@
         .news-content {
             padding: 18px;
             text-align: left;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .news-content h3 {
             color: #004d66;
             font-size: 1.1rem;
             margin-bottom: 8px;
+            line-height: 1.3;
         }
 
         .news-content p {
@@ -1202,6 +1211,10 @@
             font-size: 0.9rem;
             margin-bottom: 12px;
             line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .news-btn {
@@ -2005,6 +2018,7 @@
             
             .news-card {
                 min-width: 280px;
+                max-width: 280px;
             }
             
             .carousel-arrow {
@@ -2169,7 +2183,8 @@
             }
             
             .news-card {
-                min-width: 260px;
+                min-width: 250px;
+                max-width: 250px;
             }
             
             .news-content h3 {
@@ -2441,7 +2456,7 @@
             </div>
         </section>
 
-        <!-- BERITA & KEGIATAN TERBARU -->
+        <!-- BERITA & KEGIATAN TERBARU - VERSI DIPERBAIKI -->
         <section class="news-section" id="berita">
             <div class="news-overlay"></div>
             <div class="news-container fade-section">
@@ -2451,65 +2466,13 @@
                 <div class="news-carousel">
                     <button class="carousel-arrow prev" id="newsPrev">&#10094;</button>
                     <div class="news-track" id="newsTrack">
-                        <!-- 1 -->
-                        <div class="news-card fade-section">
-                            <img src="https://images.unsplash.com/photo-1522205408450-add114ad53fe?auto=format&fit=crop&w=800&q=80" alt="Rapat Anggota Tahunan">
-                            <div class="news-content">
-                                <h3>Rapat Anggota Tahunan (RAT) 2025</h3>
-                                <p>Kegiatan tahunan untuk membahas laporan keuangan, pembagian SHU, dan rencana kerja koperasi ke depan.</p>
-                                <a href="#berita-rat" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-
-                        <!-- 2 -->
-                        <div class="news-card fade-section">
-                            <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=800&q=80" alt="Kegiatan Sosial">
-                            <div class="news-content">
-                                <h3>Kegiatan Sosial Bersama Anggota</h3>
-                                <p>Koperasi berpartisipasi aktif dalam kegiatan sosial seperti bantuan sembako dan gotong royong masyarakat.</p>
-                                <a href="#berita-sosial" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-
-                        <!-- 3 -->
-                        <div class="news-card fade-section">
-                            <img src="https://images.unsplash.com/photo-1565373678747-0c274a158e86?auto=format&fit=crop&w=800&q=80" alt="Pembagian SHU">
-                            <div class="news-content">
-                                <h3>Pengumuman Pembagian SHU</h3>
-                                <p>Anggota berhak atas Sisa Hasil Usaha (SHU) sesuai kontribusi dan partisipasi selama tahun berjalan.</p>
-                                <a href="#berita-shu" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-
-                        <!-- 4 -->
-                        <div class="news-card fade-section">
-                            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" alt="Pelatihan Anggota">
-                            <div class="news-content">
-                                <h3>Program Pelatihan Anggota</h3>
-                                <p>Peningkatan kapasitas anggota melalui pelatihan digital marketing, manajemen keuangan, dan kewirausahaan.</p>
-                                <a href="#berita-pelatihan" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-
-                        <!-- 5 -->
-                        <div class="news-card fade-section">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg" alt="Artikel Edukatif">
-                            <div class="news-content">
-                                <h3>Kurang Lebih 20 Tahun KUD Asmara Tani Mati Suri Kini KUD Asmara Tani Bangkit Kembali Di Tangan Kreatif Anak Muda Milenialn</h3>
-                                <p>Setelah kurang lebih 20 tahun Koperasi Unit Desa (KUD) Asmara Tani yang meliputi 4 Desa yaitu  Desa Ciasmara, Desa Ciasihan, Desa Purwabakti dan Cibunian Vaccum, kini ditangan kreatif anak-anak muda milenial akhirnya bisa diaktifkan kembali. (Jum'at, 18/09/20)</p>
-                                <a href="https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
-                            </div>
-                        </div>
+                        <!-- Berita akan dimuat secara dinamis melalui JavaScript -->
                     </div>
                     <button class="carousel-arrow next" id="newsNext">&#10095;</button>
                 </div>
                 
                 <div class="carousel-nav" id="newsDots">
-                    <div class="carousel-dot active"></div>
-                    <div class="carousel-dot"></div>
-                    <div class="carousel-dot"></div>
-                    <div class="carousel-dot"></div>
-                    <div class="carousel-dot"></div>
+                    <!-- Dots akan di-generate secara dinamis -->
                 </div>
             </div>
         </section>
@@ -2610,7 +2573,7 @@
             <h2>Hubungi Kami</h2>
             <p>📍 Jl. KH. Abdul Hamid Km. 15 Desa Ciasmara-Pamijahan, Bogor, Jawa Barat</p>
             <p>📞 0852-1848-3129 | ✉️ koperasi@asmaratani.co.id</p>
-            <p>🕒 Senin – Sabtu (08.00 – 16.00 WIB)</p>
+            <p>🕒 Senin - Sabtu (08.00 - 16.00 WIB)</p>
             <div class="Koperasi-sosmed">
                 <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
@@ -2630,7 +2593,7 @@
             <a href="https://yourblog.blogspot.com/p/disclaimer.html" target="_blank" class="footer-link">Disclaimer</a>
             <a href="https://yourblog.blogspot.com/p/privacy_policy.html" target="_blank" class="footer-link">Privacy Policy</a>
         </div>
-        <p>copyright KUD-2025 © Koperasi Unit Desa 'Asmara Tani'</p>
+        <p>copyright KUD-2026 © Koperasi Unit Desa 'Asmara Tani'</p>
     </footer>
 
     <!-- WHATSAPP FLOATING BUTTON -->
@@ -2644,151 +2607,204 @@
     </div>
 
     <script>
-        // DOM ELEMENTS
-        const hamburgerMenu = document.getElementById('hamburgerMenu');
-        const sidebar = document.getElementById('sidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const overlay = document.getElementById('overlay');
-        const loginBtn = document.getElementById('loginBtn');
-        const ctaLoginBtn = document.getElementById('ctaLoginBtn');
-        const ctaGabungBtn = document.getElementById('ctaGabungBtn');
-        const ctaLayananBtn = document.getElementById('ctaLayananBtn');
-        const belanjaHeroBtn = document.getElementById('belanjaHeroBtn');
-        const layananToggle = document.getElementById('layananToggle');
-        const layananMenu = document.getElementById('layananMenu');
+        // =============== SISTEM BERITA DINAMIS ===============
+        // Data berita yang dapat diupdate dengan mudah
+        const beritaData = [
+            {
+                id: 1,
+                title: "Rapat Anggota Tahunan (RAT) 2025",
+                description: "Kegiatan tahunan untuk membahas laporan keuangan, pembagian SHU, dan rencana kerja koperasi ke depan.",
+                image: "https://images.unsplash.com/photo-1522205408450-add114ad53fe?auto=format&fit=crop&w=800&q=80",
+                link: "https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html#rat-2025",
+                date: "15 Januari 2025"
+            },
+            {
+                id: 2,
+                title: "Kegiatan Sosial Bersama Anggota",
+                description: "Koperasi berpartisipasi aktif dalam kegiatan sosial seperti bantuan sembako dan gotong royong masyarakat.",
+                image: "https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=800&q=80",
+                link: "https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html#sosial",
+                date: "10 Januari 2025"
+            },
+            {
+                id: 3,
+                title: "Pengumuman Pembagian SHU",
+                description: "Anggota berhak atas Sisa Hasil Usaha (SHU) sesuai kontribusi dan partisipasi selama tahun berjalan.",
+                image: "https://images.unsplash.com/photo-1565373678747-0c274a158e86?auto=format&fit=crop&w=800&q=80",
+                link: "https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html#shu",
+                date: "5 Januari 2025"
+            },
+            {
+                id: 4,
+                title: "Program Pelatihan Anggota",
+                description: "Peningkatan kapasitas anggota melalui pelatihan digital marketing, manajemen keuangan, dan kewirausahaan.",
+                image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
+                link: "https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html#pelatihan",
+                date: "20 Desember 2024"
+            },
+            {
+                id: 5,
+                title: "KUD Asmara Tani Bangkit Kembali",
+                description: "Setelah kurang lebih 20 tahun KUD Asmara Tani mati suri, kini bangkit kembali di tangan kreatif anak muda milenial.",
+                image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj19WC7wFP17ewyHPYYqw8Wfs-ketGbrPGeu6xzvxKTl8ceNp1XnmEHtOQA9PSpHVouD7Zw3Ib3TR-i6g_i-IPY26hE-12Y74jXglQ2gINPaS20uBx_616sXLkc3a0WhuPU8e_kzYIkPpY/s2048/IMG_20200918_201057.jpg",
+                link: "https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html",
+                date: "18 September 2020"
+            },
+            {
+                id: 6,
+                title: "Launching Website Koperasi Digital",
+                description: "Koperasi Asmara Tani meluncurkan website resmi untuk memudahkan anggota mengakses layanan secara online.",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+                link: "https://koperasi-asmara-tani-p7w59g4xj-kang-ls-projects.vercel.app/portal-berita.html#website",
+                date: "1 Januari 2025"
+            }
+        
+        ];
+
+        // Fungsi untuk memuat berita ke carousel
+        function loadBeritaToCarousel() {
+            const newsTrack = document.getElementById('newsTrack');
+            const newsDots = document.getElementById('newsDots');
+            
+            // Kosongkan konten sebelumnya
+            newsTrack.innerHTML = '';
+            newsDots.innerHTML = '';
+            
+            // Tambahkan setiap berita ke carousel
+            beritaData.forEach((berita, index) => {
+                // Buat card berita
+                const newsCard = document.createElement('div');
+                newsCard.className = 'news-card fade-section';
+                newsCard.innerHTML = `
+                    <img src="${berita.image}" alt="${berita.title}">
+                    <div class="news-content">
+                        <h3>${berita.title}</h3>
+                        <p>${berita.description}</p>
+                        <div class="news-date">${berita.date}</div>
+                        <a href="${berita.link}" target="_blank" class="news-btn">Baca Selengkapnya <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                `;
+                newsTrack.appendChild(newsCard);
+                
+                // Buat dot untuk navigasi
+                const dot = document.createElement('div');
+                dot.className = 'carousel-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+                newsDots.appendChild(dot);
+            });
+            
+            // Inisialisasi carousel setelah data dimuat
+            initNewsCarousel();
+        }
+
+        // =============== CAROUSEL BERITA ===============
+        let currentNewsIndex = 0;
+        let newsInterval;
+        const newsCards = document.querySelectorAll('.news-card');
+        const totalNews = beritaData.length;
+
+        function initNewsCarousel() {
+            const newsTrack = document.getElementById('newsTrack');
+            const newsDots = document.querySelectorAll('.carousel-dot');
+            
+            // Fungsi untuk update carousel
+            function updateCarousel() {
+                const cardWidth = 320 + 25; // Lebar card + gap
+                newsTrack.style.transform = `translateX(-${currentNewsIndex * cardWidth}px)`;
+                
+                // Update dots
+                newsDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentNewsIndex);
+                });
+            }
+            
+            // Fungsi next slide
+            function nextNews() {
+                currentNewsIndex = (currentNewsIndex + 1) % totalNews;
+                updateCarousel();
+            }
+            
+            // Fungsi previous slide
+            function prevNews() {
+                currentNewsIndex = (currentNewsIndex - 1 + totalNews) % totalNews;
+                updateCarousel();
+            }
+            
+            // Fungsi go to specific slide
+            function goToSlide(index) {
+                currentNewsIndex = index;
+                updateCarousel();
+                clearInterval(newsInterval);
+                startAutoSlide();
+            }
+            
+            // Auto slide
+            function startAutoSlide() {
+                newsInterval = setInterval(nextNews, 4000);
+            }
+            
+            function stopAutoSlide() {
+                clearInterval(newsInterval);
+            }
+            
+            // Event listeners untuk tombol
+            document.getElementById('newsNext').addEventListener('click', () => {
+                nextNews();
+                stopAutoSlide();
+                startAutoSlide();
+            });
+            
+            document.getElementById('newsPrev').addEventListener('click', () => {
+                prevNews();
+                stopAutoSlide();
+                startAutoSlide();
+            });
+            
+            // Event listeners untuk hover
+            newsTrack.addEventListener('mouseenter', stopAutoSlide);
+            newsTrack.addEventListener('mouseleave', startAutoSlide);
+            
+            // Swipe functionality untuk mobile
+            let startX = 0;
+            let endX = 0;
+            
+            newsTrack.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                stopAutoSlide();
+            });
+            
+            newsTrack.addEventListener('touchmove', (e) => {
+                endX = e.touches[0].clientX;
+            });
+            
+            newsTrack.addEventListener('touchend', () => {
+                const diff = startX - endX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        nextNews();
+                    } else {
+                        prevNews();
+                    }
+                }
+                startAutoSlide();
+            });
+            
+            // Inisialisasi
+            updateCarousel();
+            startAutoSlide();
+        }
+
+        // =============== SLIDESHOW HERO ===============
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.slide-dot');
         const prevBtn = document.getElementById('prevSlide');
         const nextBtn = document.getElementById('nextSlide');
-        const joinNowBtns = document.querySelectorAll('.btn-join');
-        const featureItems = document.querySelectorAll('.feature-item');
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const submenuLinks = document.querySelectorAll('.submenu-link');
-        const logoutBtn = document.getElementById('logoutBtn'); // TOMBOL LOGOUT BARU
-
-        // VARIABLES
         let currentSlide = 0;
         let slideInterval;
 
-        // WHATSAPP FUNCTION
-        function openWhatsApp() {
-            const phoneNumber = "6285218483129";
-            const message = "Halo admin, saya ingin bertanya tentang layanan koperasi.";
-            
-            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        }
-
-        // TAMBAHAN EFEK INTERAKTIF UNTUK WHATSAPP BUTTON
-        document.querySelector('.whatsapp-button').addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px) scale(1.1) rotate(5deg)';
-        });
-
-        document.querySelector('.whatsapp-button').addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1) rotate(0)';
-        });
-
-        // FUNCTION TO CLOSE SIDEBAR
-        function closeSidebarMenu() {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            hamburgerMenu.classList.remove('active');
-        }
-
-        // LOGIN FUNCTION - REDIRECT KE LOGIN.HTML
-        function handleLogin() {
-            window.location.href = 'login-register.html';
-        }
-
-        // LOGOUT FUNCTION - TAMBAHAN BARU
-        function handleLogout() {
-            // Tampilkan konfirmasi logout
-            if (confirm('Apakah Anda yakin ingin keluar?')) {
-                // Di sini bisa ditambahkan logika logout seperti:
-                // - Menghapus token/session
-                // - Redirect ke halaman login
-                // - Dll.
-                
-                alert('Anda telah berhasil logout');
-                closeSidebarMenu();
-                
-                // Contoh redirect ke halaman login (sesuaikan dengan kebutuhan)
-                // window.location.href = 'login-register.html';
-            }
-        }
-
-        // BELANJA FUNCTION - AKAN DIGANTI DENGAN URL GITHUB NANTI
-        function handleBelanja() {
-            alert('Fitur belanja akan segera tersedia. Nantikan integrasi dengan GitHub!');
-        }
-
-        // JOIN NOW BUTTONS - REDIRECT TO LOGIN
-        joinNowBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                handleLogin();
-            });
-        });
-
-        // TOMBOL GABUNG ANGGOTA DI CTA - BUKA LOGIN
-        ctaGabungBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleLogin();
-        });
-
-        // TOMBOL LOGIN ANGGOTA DI CTA - BUKA LOGIN
-        ctaLoginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleLogin();
-        });
-
-        // TOMBOL LOGIN DI HEADER - BUKA LOGIN
-        loginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleLogin();
-        });
-
-        // TOMBOL LOGOUT BARU - EVENT LISTENER
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleLogout();
-        });
-
-        // TOMBOL BELANJA SEKARANG DI HERO SECTION - BUKA BELANJA
-        belanjaHeroBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleBelanja();
-        });
-
-        // TOMBOL LAYANAN KAMI DI CTA - BUKA HALAMAN BARU
-        ctaLayananBtn.addEventListener('click', (e) => {
-            // LINK SUDAH ADA DI HREF, BIAKKAN DEFAULT BEHAVIOR
-        });
-
-        // TOGGLE SIDEBAR
-        hamburgerMenu.addEventListener('click', () => {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-            hamburgerMenu.classList.add('active');
-        });
-
-        // CLOSE SIDEBAR
-        closeSidebar.addEventListener('click', () => {
-            closeSidebarMenu();
-        });
-
-        // OVERLAY CLICK
-        overlay.addEventListener('click', () => {
-            closeSidebarMenu();
-        });
-
-        // TOGGLE DROPDOWN MENU
-        layananToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            layananMenu.classList.toggle('active');
-            layananToggle.classList.toggle('active');
-        });
-
-        // SLIDESHOW FUNCTIONS
         function showSlide(n) {
             slides.forEach(slide => slide.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
@@ -2815,7 +2831,7 @@
             clearInterval(slideInterval);
         }
 
-        // EVENT LISTENERS FOR SLIDESHOW
+        // Event listeners untuk slideshow
         prevBtn.addEventListener('click', () => {
             prevSlide();
             stopSlideShow();
@@ -2836,19 +2852,154 @@
             });
         });
 
-        // PAUSE SLIDESHOW WHEN HOVERING
+        // Pause slideshow saat hover
         const slideshow = document.querySelector('.slideshow');
         slideshow.addEventListener('mouseenter', stopSlideShow);
         slideshow.addEventListener('mouseleave', startSlideShow);
 
-        // SCROLL ANIMATION FOR FEATURE ITEMS
+        // =============== SIDEBAR NAVIGATION ===============
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const overlay = document.getElementById('overlay');
+        const loginBtn = document.getElementById('loginBtn');
+        const ctaLoginBtn = document.getElementById('ctaLoginBtn');
+        const ctaGabungBtn = document.getElementById('ctaGabungBtn');
+        const ctaLayananBtn = document.getElementById('ctaLayananBtn');
+        const belanjaHeroBtn = document.getElementById('belanjaHeroBtn');
+        const layananToggle = document.getElementById('layananToggle');
+        const layananMenu = document.getElementById('layananMenu');
+        const joinNowBtns = document.querySelectorAll('.btn-join');
+        const featureItems = document.querySelectorAll('.feature-item');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const submenuLinks = document.querySelectorAll('.submenu-link');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Function to close sidebar
+        function closeSidebarMenu() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            hamburgerMenu.classList.remove('active');
+        }
+
+        // Login function
+        function handleLogin() {
+            window.location.href = 'login-register.html';
+        }
+
+        // Logout function
+        function handleLogout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                alert('Anda telah berhasil logout');
+                closeSidebarMenu();
+            }
+        }
+
+        // Belanja function
+        function handleBelanja() {
+            alert('Fitur belanja akan segera tersedia. Nantikan integrasi dengan GitHub!');
+        }
+
+        // Join now buttons
+        joinNowBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                handleLogin();
+            });
+        });
+
+        // Event listeners
+        ctaGabungBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        ctaLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogin();
+        });
+
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
+        });
+
+        belanjaHeroBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleBelanja();
+        });
+
+        // Toggle sidebar
+        hamburgerMenu.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            hamburgerMenu.classList.add('active');
+        });
+
+        // Close sidebar
+        closeSidebar.addEventListener('click', () => {
+            closeSidebarMenu();
+        });
+
+        // Overlay click
+        overlay.addEventListener('click', () => {
+            closeSidebarMenu();
+        });
+
+        // Toggle dropdown menu
+        layananToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            layananMenu.classList.toggle('active');
+            layananToggle.classList.toggle('active');
+        });
+
+        // Sidebar link click handler
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (link.id === 'layananToggle' || link.classList.contains('submenu-link') || link.id === 'logoutBtn') {
+                    return;
+                }
+                closeSidebarMenu();
+            });
+        });
+
+        // Submenu link click handler
+        submenuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                closeSidebarMenu();
+            });
+        });
+
+        // =============== WHATSAPP FUNCTION ===============
+        function openWhatsApp() {
+            const phoneNumber = "6285218483129";
+            const message = "Halo admin, saya ingin bertanya tentang layanan koperasi.";
+            
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // Tambahan efek interaktif untuk WhatsApp button
+        document.querySelector('.whatsapp-button').addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.1) rotate(5deg)';
+        });
+
+        document.querySelector('.whatsapp-button').addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1) rotate(0)';
+        });
+
+        // =============== SCROLL ANIMATION ===============
         function handleScrollAnimation() {
             const heroSection = document.querySelector('.hero-section');
             const heroPosition = heroSection.getBoundingClientRect().top;
             const screenPosition = window.innerHeight / 1.3;
 
             if (heroPosition < screenPosition) {
-                // ANIMATE FEATURE ITEMS WITH DELAY
+                // Animate feature items with delay
                 featureItems.forEach((item, index) => {
                     setTimeout(() => {
                         item.classList.add('visible');
@@ -2857,46 +3008,7 @@
             }
         }
 
-        // EVENT LISTENERS FOR SCROLL
-        window.addEventListener('scroll', () => {
-            handleScrollAnimation();
-        });
-
-        // SIDEBAR LINK CLICK HANDLER - CLOSE SIDEBAR
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                // SKIP IF IT'S THE LAYANAN KAMI DROPDOWN TOGGLE
-                if (link.id === 'layananToggle') {
-                    return;
-                }
-                
-                // SKIP IF IT'S A SUBMENU LINK (THEY WILL BE HANDLED SEPARATELY)
-                if (link.classList.contains('submenu-link')) {
-                    return;
-                }
-                
-                // SKIP IF IT'S THE LOGOUT BUTTON
-                if (link.id === 'logoutBtn') {
-                    return;
-                }
-                
-                // CLOSE SIDEBAR FOR ALL OTHER LINKS
-                closeSidebarMenu();
-            });
-        });
-
-        // SUBMENU LINK CLICK HANDLER - CLOSE SIDEBAR
-        submenuLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                closeSidebarMenu();
-            });
-        });
-
-        // INITIALIZE
-        startSlideShow();
-        handleScrollAnimation(); // CHECK ON LOAD IN CASE ALREADY IN VIEW
-
-        // SCRIPT UNTUK SECTION PROFIL KOPERASI
+        // =============== SECTION PROFIL KOPERASI ===============
         document.addEventListener("DOMContentLoaded", function() {
             const fadeSection = document.querySelector('.fade-section');
             const observer = new IntersectionObserver(entries => {
@@ -2908,7 +3020,7 @@
             }, { threshold: 0.3 });
             observer.observe(fadeSection);
 
-            // PARALLAX RINGAN
+            // Parallax effect
             window.addEventListener('scroll', function() {
                 const section = document.querySelector('.koperasi-profile');
                 let offset = window.pageYOffset;
@@ -2916,154 +3028,36 @@
             });
         });
 
-        // NEWS CAROUSEL FUNCTIONALITY
-        document.addEventListener("DOMContentLoaded", function() {
-            const newsTrack = document.getElementById('newsTrack');
-            const newsCards = document.querySelectorAll('.news-card');
-            const newsDots = document.querySelectorAll('.carousel-dot');
-            const newsPrev = document.getElementById('newsPrev');
-            const newsNext = document.getElementById('newsNext');
-            
-            let currentNewsIndex = 0;
-            let autoScrollInterval;
-            const cardWidth = 300 + 25; // CARD WIDTH + GAP
-            const totalCards = newsCards.length;
-            
-            // INITIALIZE CAROUSEL
-            function updateCarousel() {
-                newsTrack.style.transform = `translateX(-${currentNewsIndex * cardWidth}px)`;
-                
-                // UPDATE DOTS
-                newsDots.forEach((dot, index) => {
-                    dot.classList.toggle('active', index === currentNewsIndex);
-                });
-            }
-            
-            // NEXT SLIDE
-            function nextNews() {
-                currentNewsIndex = (currentNewsIndex + 1) % totalCards;
-                updateCarousel();
-            }
-            
-            // PREVIOUS SLIDE
-            function prevNews() {
-                currentNewsIndex = (currentNewsIndex - 1 + totalCards) % totalCards;
-                updateCarousel();
-            }
-            
-            // AUTO SCROLL
-            function startAutoScroll() {
-                autoScrollInterval = setInterval(nextNews, 4000);
-            }
-            
-            function stopAutoScroll() {
-                clearInterval(autoScrollInterval);
-            }
-            
-            // EVENT LISTENERS
-            newsNext.addEventListener('click', () => {
-                nextNews();
-                stopAutoScroll();
-                startAutoScroll();
-            });
-            
-            newsPrev.addEventListener('click', () => {
-                prevNews();
-                stopAutoScroll();
-                startAutoScroll();
-            });
-            
-            // DOT NAVIGATION
-            newsDots.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    currentNewsIndex = index;
-                    updateCarousel();
-                    stopAutoScroll();
-                    startAutoScroll();
-                });
-            });
-            
-            // TOUCH/SWIPE FUNCTIONALITY
-            let startX = 0;
-            let endX = 0;
-            
-            newsTrack.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-                stopAutoScroll();
-            });
-            
-            newsTrack.addEventListener('touchmove', (e) => {
-                endX = e.touches[0].clientX;
-            });
-            
-            newsTrack.addEventListener('touchend', () => {
-                const diff = startX - endX;
-                if (Math.abs(diff) > 50) { // MINIMUM SWIPE DISTANCE
-                    if (diff > 0) {
-                        nextNews();
-                    } else {
-                        prevNews();
-                    }
+        // =============== NEWS SECTION FADE ANIMATION ===============
+        const newsFadeElements = document.querySelectorAll('.news-section .fade-section');
+        const newsObserver = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                    obs.unobserve(entry.target);
                 }
-                startAutoScroll();
+            });
+        }, { threshold: 0.25 });
+        
+        newsFadeElements.forEach(el => newsObserver.observe(el));
+
+        // =============== INITIALIZE EVERYTHING ===============
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load berita ke carousel
+            loadBeritaToCarousel();
+            
+            // Start slideshow
+            startSlideShow();
+            
+            // Check scroll animation on load
+            handleScrollAnimation();
+            
+            // Event listener for scroll
+            window.addEventListener('scroll', () => {
+                handleScrollAnimation();
             });
             
-            // PAUSE AUTO-SCROLL ON HOVER
-            newsTrack.addEventListener('mouseenter', stopAutoScroll);
-            newsTrack.addEventListener('mouseleave', startAutoScroll);
-            
-            // INITIALIZE
-            updateCarousel();
-            startAutoScroll();
-            
-            // FADE-UP ANIMATION FOR NEWS SECTION
-            const newsFadeElements = document.querySelectorAll('.news-section .fade-section');
-            const newsObserver = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('show');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.25 });
-            
-            newsFadeElements.forEach(el => newsObserver.observe(el));
-            
-            // PARALLAX EFFECT FOR NEWS SECTION
-            const newsSection = document.querySelector('.news-section');
-            let latestScroll = 0, ticking = false;
-            
-            function onScroll() {
-                latestScroll = window.scrollY;
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        newsSection.style.backgroundPosition = `center ${latestScroll * 0.35}px`;
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            }
-            
-            window.addEventListener('scroll', onScroll, { passive: true });
-        });
-
-        // PERATURAN KOPERASI SCRIPT
-        document.addEventListener("DOMContentLoaded", function() {
-            // EFEK PARALLAX PADA SHAPES
-            document.addEventListener('mousemove', (e) => {
-                const shapes = document.querySelectorAll('.shape');
-                const mouseX = e.clientX / window.innerWidth;
-                const mouseY = e.clientY / window.innerHeight;
-                
-                shapes.forEach((shape, index) => {
-                    const speed = (index + 1) * 0.3;
-                    const x = (mouseX * speed * 20) - 10;
-                    const y = (mouseY * speed * 20) - 10;
-                    shape.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
-                });
-            });
-
-            // EFEK HOVER UNTUK CARDS
+            // Peraturan koperasi script
             const cards = document.querySelectorAll('.regulation-card');
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.2}s`;
@@ -3079,7 +3073,7 @@
                 });
             });
 
-            // EFEK INTERAKTIF PADA ACCENT DOTS
+            // Efek interaktif pada accent dots
             const accentDots = document.querySelectorAll('.accent-dot, .card-accent-dot');
             setInterval(() => {
                 accentDots.forEach(dot => {
