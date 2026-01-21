@@ -1362,7 +1362,7 @@
                             <i class="fas fa-user"></i> Sosial
                         </div>
                         <div class="dropdown-item" data-category="kegiatan">
-                            <i class="fas fa-calendar-alt"></i> Kegiatan Koperasi
+                            <i class="fas fa-calendar-check"></i> Kegiatan Koperasi
                         </div>
                     </div>
                 </div>
@@ -1419,6 +1419,10 @@
     <script>
         // Konfigurasi
         const ARTICLES_PER_PAGE = 9;
+        const STORAGE_KEY = 'koperasi_news_articles_v2'; // KEY yang diupdate
+        const COMMENTS_KEY = (id) => `article_${id}_comments_v2`;
+        const REACTIONS_KEY = (id) => `article_${id}_reactions_v2`;
+        
         let currentPage = 1;
         let currentCategory = 'all';
         let currentSearch = '';
@@ -1451,14 +1455,30 @@
             // Update statistik
             updateStats();
             
+            // Setup real-time sync
+            setupStorageSync();
+            
             // Sembunyikan loading indicator
             setTimeout(() => {
                 document.getElementById('loading-indicator').style.display = 'none';
             }, 1000);
-            
-            // Listen untuk perubahan dari admin panel
-            setupStorageListener();
         });
+
+        // Setup real-time storage sync
+        function setupStorageSync() {
+            // Cek perubahan di localStorage setiap 2 detik
+            setInterval(() => {
+                const storedData = localStorage.getItem(STORAGE_KEY);
+                if (storedData) {
+                    const newArticles = JSON.parse(storedData);
+                    if (JSON.stringify(articles) !== JSON.stringify(newArticles)) {
+                        articles = newArticles;
+                        filterAndDisplayArticles();
+                        updateStats();
+                    }
+                }
+            }, 2000);
+        }
 
         // Setup event listeners
         function setupEventListeners() {
@@ -1481,63 +1501,6 @@
                     closeModal();
                 }
             });
-        }
-
-        // Setup listener untuk perubahan dari admin
-        function setupStorageListener() {
-            window.addEventListener('storage', function(event) {
-                if (event.key === 'koperasi_news_articles') {
-                    console.log('Artikel diperbarui dari admin panel');
-                    loadArticlesFromStorage();
-                    updateStats();
-                    
-                    // Tampilkan notifikasi
-                    showNotification('Artikel telah diperbarui!');
-                }
-            });
-        }
-
-        // Tampilkan notifikasi
-        function showNotification(message) {
-            // Hapus notifikasi sebelumnya jika ada
-            const existingNotification = document.querySelector('.update-notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            
-            // Buat notifikasi baru
-            const notification = document.createElement('div');
-            notification.className = 'update-notification';
-            notification.innerHTML = `
-                <div style="
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: var(--primary-gradient);
-                    color: white;
-                    padding: 15px 30px;
-                    border-radius: 50px;
-                    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-                    z-index: 10000;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    animation: fadeInUp 0.3s ease;
-                ">
-                    <i class="fas fa-sync-alt"></i>
-                    ${message}
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Hapus notifikasi setelah 3 detik
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(-50%) translateY(-20px)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
         }
 
         // Setup dropdown kategori
@@ -1597,20 +1560,17 @@
 
         // Load artikel dari localStorage
         function loadArticlesFromStorage() {
-            const storedArticles = localStorage.getItem('koperasi_news_articles');
+            const storedArticles = localStorage.getItem(STORAGE_KEY);
             
             if (storedArticles) {
                 articles = JSON.parse(storedArticles);
-                console.log('Artikel dimuat dari localStorage:', articles.length, 'artikel');
+                // Sort by date descending (newest first)
+                articles.sort((a, b) => new Date(b.date) - new Date(a.date));
             } else {
                 // Load artikel sample jika tidak ada data
-                console.log('Tidak ada artikel di localStorage, memuat artikel sample');
                 loadSampleArticles();
                 saveArticlesToStorage();
             }
-            
-            // Urutkan artikel berdasarkan tanggal (terbaru pertama)
-            articles.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             // Load reaksi dari localStorage
             loadReactionsFromStorage();
@@ -1697,17 +1657,17 @@
                 },
                 {
                     id: 3,
-                    title: "Kegiatan Rutin Bulanan Anggota Koperasi",
+                    title: "Pelatihan Pengelolaan Koperasi Modern",
                     category: "kegiatan",
-                    image: "https://images.unsplash.com/photo-1559028012-481c04fa702d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                    sourceUrl: "",
-                    content: `<p>Kegiatan rutin bulanan anggota koperasi merupakan salah satu agenda penting untuk mempererat hubungan antar anggota dan membahas perkembangan terkini. Setiap bulan, anggota berkumpul untuk berdiskusi, berbagi informasi, dan merencanakan kegiatan mendatang.</p>
-                             <h3>Agenda Kegiatan</h3>
-                             <p>Dalam pertemuan rutin ini, dibahas berbagai topik penting seperti laporan keuangan bulanan, rencana kegiatan, evaluasi program, serta penyelesaian masalah yang dihadapi oleh anggota.</p>
-                             <h3>Tujuan Kegiatan</h3>
-                             <p>Tujuan utama dari kegiatan ini adalah untuk meningkatkan partisipasi anggota, memperkuat solidaritas, serta memastikan transparansi dalam pengelolaan koperasi.</p>`,
-                    date: "2024-03-13",
-                    author: "Divisi Kegiatan",
+                    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    sourceUrl: "https://example.com/pelatihan-koperasi",
+                    content: `<p>Koperasi Asmara Tani menyelenggarakan pelatihan pengelolaan koperasi modern untuk seluruh pengurus dan anggota. Kegiatan ini bertujuan meningkatkan kapasitas manajerial dalam mengelola koperasi secara profesional.</p>
+                             <h3>Materi Pelatihan</h3>
+                             <p>Pelatihan mencakup materi tentang administrasi koperasi, pengelolaan keuangan, strategi pemasaran produk koperasi, dan pemanfaatan teknologi digital dalam operasional koperasi.</p>
+                             <h3>Peserta dan Instruktur</h3>
+                             <p>Kegiatan ini diikuti oleh 50 peserta dari berbagai koperasi se-derah. Sebagai instruktur, kami menghadirkan pakar koperasi dari Universitas ternama dan praktisi yang telah berpengalaman.</p>`,
+                    date: "2024-03-10",
+                    author: "Tim Pelatihan",
                     views: 0,
                     reactions: { ...defaultReactions },
                     comments: []
@@ -1717,19 +1677,18 @@
 
         // Save artikel ke localStorage
         function saveArticlesToStorage() {
-            localStorage.setItem('koperasi_news_articles', JSON.stringify(articles));
-            console.log('Artikel disimpan ke localStorage:', articles.length, 'artikel');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
         }
 
         // Load reaksi dari localStorage
         function loadReactionsFromStorage() {
             articles.forEach(article => {
-                const storedReactions = localStorage.getItem(`article_${article.id}_reactions`);
+                const storedReactions = localStorage.getItem(REACTIONS_KEY(article.id));
                 if (storedReactions) {
                     article.reactions = JSON.parse(storedReactions);
                 } else {
                     article.reactions = { ...defaultReactions };
-                    localStorage.setItem(`article_${article.id}_reactions`, JSON.stringify(article.reactions));
+                    localStorage.setItem(REACTIONS_KEY(article.id), JSON.stringify(article.reactions));
                 }
             });
         }
@@ -1737,7 +1696,7 @@
         // Load komentar dari localStorage
         function loadCommentsFromStorage() {
             articles.forEach(article => {
-                const storedComments = localStorage.getItem(`article_${article.id}_comments`);
+                const storedComments = localStorage.getItem(COMMENTS_KEY(article.id));
                 if (storedComments) {
                     article.comments = JSON.parse(storedComments);
                 } else {
@@ -1745,7 +1704,7 @@
                     if (!article.comments) {
                         article.comments = [];
                     }
-                    localStorage.setItem(`article_${article.id}_comments`, JSON.stringify(article.comments));
+                    localStorage.setItem(COMMENTS_KEY(article.id), JSON.stringify(article.comments));
                 }
             });
         }
@@ -2175,8 +2134,7 @@
             article.reactions[reactionType] = (article.reactions[reactionType] || 0) + 1;
             
             // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_reactions`, JSON.stringify(article.reactions));
-            saveArticlesToStorage(); // Simpan juga ke artikel utama
+            localStorage.setItem(REACTIONS_KEY(currentArticleId), JSON.stringify(article.reactions));
             
             // Update display
             const reactionBtn = event.target.closest('.reaction-btn');
@@ -2218,8 +2176,7 @@
             }
             
             // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
-            saveArticlesToStorage(); // Simpan juga ke artikel utama
+            localStorage.setItem(COMMENTS_KEY(currentArticleId), JSON.stringify(article.comments));
             
             // Update display
             const likeBtn = document.querySelector(`[data-comment-id="${commentId}"] .like-btn`);
@@ -2306,8 +2263,8 @@
             article.comments.push(newComment);
             
             // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
-            saveArticlesToStorage(); // Simpan juga ke artikel utama
+            localStorage.setItem(COMMENTS_KEY(currentArticleId), JSON.stringify(article.comments));
+            saveArticlesToStorage(); // Update artikel juga
             
             // Update display
             updateCommentsDisplay(article.comments);
@@ -2352,8 +2309,8 @@
             article.comments = article.comments.filter(comment => comment.id !== commentId);
             
             // Save to localStorage
-            localStorage.setItem(`article_${currentArticleId}_comments`, JSON.stringify(article.comments));
-            saveArticlesToStorage(); // Simpan juga ke artikel utama
+            localStorage.setItem(COMMENTS_KEY(currentArticleId), JSON.stringify(article.comments));
+            saveArticlesToStorage(); // Update artikel juga
             
             // Update display
             updateCommentsDisplay(article.comments);
@@ -2374,10 +2331,12 @@
         function getCategoryName(category) {
             const categories = {
                 'all': 'Semua',
-                'rat': 'RAT',
                 'ekonomi': 'Ekonomi',
+                'keuangan': 'Keuangan',
                 'teknologi': 'Teknologi',
                 'pendidikan': 'Pendidikan',
+                'hukum': 'Hukum',
+                'rat': 'RAT',
                 'program': 'Program',
                 'sosial': 'Sosial',
                 'kegiatan': 'Kegiatan Koperasi'
@@ -2401,53 +2360,7 @@
                 return total + (article.views || 0);
             }, 0);
             document.getElementById('total-views').textContent = totalViews.toLocaleString();
-            
-            // Log untuk debugging
-            console.log('Stats updated:', {
-                articles: articles.length,
-                comments: totalComments,
-                views: totalViews
-            });
         }
-
-        // Fungsi untuk menerima update dari admin editor - DIPERBARUI
-        window.addEventListener('storage', function(event) {
-            if (event.key === 'koperasi_news_articles') {
-                console.log('Update diterima dari admin panel');
-                loadArticlesFromStorage();
-                updateStats();
-                
-                // Tampilkan notifikasi
-                showNotification('Artikel telah diperbarui!');
-            }
-        });
-        
-        // Fungsi untuk manual refresh jika diperlukan
-        window.refreshArticles = function() {
-            loadArticlesFromStorage();
-            updateStats();
-            showNotification('Artikel direfresh!');
-        };
-        
-        // Tambah CSS untuk animasi notifikasi
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateX(-50%) translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(-50%) translateY(0);
-                }
-            }
-            
-            .update-notification {
-                animation: fadeInUp 0.3s ease;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
