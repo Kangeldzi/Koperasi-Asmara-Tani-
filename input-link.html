@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Input Link QR Code Hybrid | Koperasi Asmara Tani</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js"></script>
+    <style>
+        :root {
+            --primary: #1a5f23;
+            --primary-light: #2e7d32;
+            --primary-dark: #0d4014;
+            --secondary: #ff9800;
+            --accent-blue: #2196f3;
+            --accent-purple: #9c27b0;
+            --danger: #f44336;
+            --warning: #ffc107;
+            --success: #4caf50;
+            --info: #2196f3;
+            
+            --bg-light: #f5f6fa;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #888888;
+            --border-color: #eeeeee;
+            
+            --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d4014 0%, #1a5f23 50%, #2e7d32 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .admin-details h2 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .admin-details p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.dashboard {
+            background: var(--accent-blue);
+        }
+
+        .nav-btn.dashboard:hover {
+            background: #1976D2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .admin-sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow-medium);
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid rgba(26, 95, 35, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            border-radius: 10px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-link:hover {
+            background: #f0f7f0;
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-light);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .admin-main {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(26, 95, 35, 0.1);
+        }
+
+        .content-header h2 {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-badge {
+            background: var(--warning);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* ===== FORM INPUT LINK ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 95, 35, 0.1);
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .url-prefix {
+            padding: 15px;
+            background: #f5f5f5;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            min-width: 120px;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .form-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ===== URL PREVIEW ===== */
+        .url-preview-card {
+            background: #f0f7f0;
+            border: 2px solid var(--primary-light);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            display: none;
+        }
+
+        .url-preview-card.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .url-preview-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-display {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+
+        .copy-url-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-url-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        /* ===== BUTTONS ===== */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 95, 35, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #388E3C;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(26, 95, 35, 0.1);
+        }
+
+        /* ===== QR PREVIEW ===== */
+        .qr-preview-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(26, 95, 35, 0.05) 0%, rgba(46, 125, 50, 0.03) 100%);
+            border-radius: 15px;
+            border: 2px solid rgba(26, 95, 35, 0.1);
+            display: none;
+        }
+
+        .qr-preview-section.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-preview-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        #qrcodePreview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            min-height: 250px;
+            align-items: center;
+        }
+
+        .qr-info {
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .qr-info h4 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qr-info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .qr-info-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-info-value {
+            color: var(--text-secondary);
+            word-break: break-all;
+            font-size: 0.95rem;
+        }
+
+        /* ===== LINKS TABLE ===== */
+        .links-table-section {
+            margin-top: 50px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+        }
+
+        .links-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .links-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .links-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .links-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .link-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .table-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .table-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .table-btn.view {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .table-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-dark);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .toast.info {
+            background: var(--info);
+        }
+
+        .toast.warning {
+            background: var(--warning);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .qr-preview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .admin-nav {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            .url-input-group {
+                flex-direction: column;
+            }
+            
+            .url-prefix {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .admin-badge {
+                align-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ADMIN HEADER -->
+    <div class="admin-header">
+        <div class="admin-info">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="admin-details">
+                <h2 id="adminName">Administrator System</h2>
+                <p id="adminEmail">Loading...</p>
+                <p style="font-size: 0.8rem; color: var(--primary);">
+                    <i class="fas fa-shield-alt"></i> Dashboard Admin - QR Code Hybrid Manager
+                </p>
+            </div>
+        </div>
+        <div class="admin-nav">
+            <a href="dashboard-admin.html" class="nav-btn dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard Utama
+            </a>
+            <a href="logout.html" class="nav-btn" style="background: var(--danger);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-qrcode"></i>
+                Admin - Input Link QR Code Hybrid
+                <span style="font-size: 1rem; background: white; color: var(--primary); padding: 8px 20px; border-radius: 25px;">
+                    <i class="fas fa-lock"></i> Akses Terbatas
+                </span>
+            </h1>
+            <p>
+                Kelola link yang akan muncul di QR Code Hybrid Tabungan Digital. 
+                Hanya Admin yang dapat mengakses halaman ini.
+            </p>
+        </div>
+
+        <div class="admin-container">
+            <!-- SIDEBAR -->
+            <div class="admin-sidebar">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-bars"></i>
+                    Menu Admin
+                </h3>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="dashboard-admin.html" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="admin-manage-anggota.html" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            Kelola Anggota
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="admin-input-link.html" class="sidebar-link active">
+                            <i class="fas fa-link"></i>
+                            Input Link QR Code
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="admin-laporan.html" class="sidebar-link">
+                            <i class="fas fa-chart-bar"></i>
+                            Laporan Keuangan
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="admin-settings.html" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            Pengaturan
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="admin-audit-log.html" class="sidebar-link">
+                            <i class="fas fa-history"></i>
+                            Audit Log
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="admin-main">
+                <div class="content-header">
+                    <h2>
+                        <i class="fas fa-plus-circle"></i>
+                        Tambah Link Baru
+                        <span class="admin-badge">Admin Only</span>
+                    </h2>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">
+                        <i class="fas fa-calendar"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+
+                <!-- FORM INPUT -->
+                <form id="linkForm">
+                    <div class="form-grid">
+                        <!-- Kolom 1 -->
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label" for="linkTitle">
+                                    <i class="fas fa-heading"></i>
+                                    Judul Link *
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="linkTitle" 
+                                       placeholder="Contoh: Profil Anggota El Di, Promo Spesial, dll"
+                                       maxlength="60"
+                                       required>
+                                <div class="form-hint">
+                                    <i class="fas fa-info-circle"></i>
+                                    Nama yang akan muncul di Tabungan Digital
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="linkType">
+                                    <i class="fas fa-globe"></i>
+                                    Tipe Link *
+                                </label>
+                                <select class="form-control" id="linkType" required>
+                                    <option value="">Pilih Tipe Link</option>
+                                    <option value="github">GitHub Pages</option>
+                                    <option value="external">Website Eksternal</option>
+                                    <option value="internal">Internal Koperasi</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="other">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="linkCategory">
+                                    <i class="fas fa-tags"></i>
+                                    Kategori *
+                                </label>
+                                <select class="form-control" id="linkCategory" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="anggota">👤 Profil Anggota</option>
+                                    <option value="promotion">🎯 Promo & Penawaran</option>
+                                    <option value="information">ℹ️ Informasi</option>
+                                    <option value="document">📄 Dokumen</option>
+                                    <option value="social">📱 Media Sosial</option>
+                                    <option value="service">🔧 Layanan</option>
+                                    <option value="event">📅 Event</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Kolom 2 -->
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-link"></i>
+                                    URL Lengkap *
+                                </label>
+                                
+                                <!-- GitHub Pages -->
+                                <div id="githubInput" style="display: none;">
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">
+                                            Base URL GitHub Pages:
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="githubBaseUrl"
+                                               placeholder="https://username.github.io/repo/">
+                                        <div class="form-hint">
+                                            Contoh: https://asmara-tani.github.io/koperasi-data/
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">
+                                            Nama File:
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="githubFilename"
+                                               placeholder="eldi-anggota.html">
+                                        <div class="form-hint">
+                                            Contoh: eldi-anggota.html, budi-profile.html
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- External URL -->
+                                <div id="externalInput" style="display: none;">
+                                    <input type="url" 
+                                           class="form-control" 
+                                           id="externalUrl"
+                                           placeholder="https://contoh.com/path">
+                                    <div class="form-hint">
+                                        Pastikan URL lengkap dengan http:// atau https://
+                                    </div>
+                                </div>
+
+                                <!-- Internal URL -->
+                                <div id="internalInput" style="display: none;">
+                                    <select class="form-control" id="internalUrl">
+                                        <option value="">Pilih Halaman Internal</option>
+                                        <option value="/anggota/dashboard">Dashboard Anggota</option>
+                                        <option value="/anggota/profil">Profil Anggota</option>
+                                        <option value="/anggota/simpanan">Data Simpanan</option>
+                                        <option value="/anggota/pinjaman">Data Pinjaman</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="linkDescription">
+                                    <i class="fas fa-align-left"></i>
+                                    Deskripsi Link
+                                </label>
+                                <textarea class="form-control" 
+                                          id="linkDescription" 
+                                          rows="3"
+                                          placeholder="Jelaskan tujuan link ini..."
+                                          maxlength="200"></textarea>
+                                <div class="form-hint">
+                                    Deskripsi akan membantu anggota memahami tujuan link
+                                </div>
+                            </div>
+
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="isFeatured">
+                                <label for="isFeatured" style="font-weight: 500;">
+                                    <i class="fas fa-star" style="color: var(--warning);"></i>
+                                    Tandai sebagai Link Unggulan
+                                </label>
+                            </div>
+
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="isActive" checked>
+                                <label for="isActive" style="font-weight: 500;">
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                    Aktifkan link ini
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL PREVIEW -->
+                    <div id="urlPreviewCard" class="url-preview-card">
+                        <div class="url-preview-label">
+                            <i class="fas fa-external-link-alt"></i>
+                            URL Final yang akan di-generate:
+                        </div>
+                        <div id="generatedUrl" class="url-display">
+                            URL akan muncul di sini...
+                        </div>
+                        <button type="button" class="copy-url-btn" id="copyUrlBtn">
+                            <i class="fas fa-copy"></i>
+                            Salin URL
+                        </button>
+                    </div>
+
+                    <!-- BUTTONS -->
+                    <div class="button-group">
+                        <button type="button" class="btn btn-outline" id="previewBtn">
+                            <i class="fas fa-eye"></i>
+                            Preview QR Code
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="fas fa-save"></i>
+                            Simpan & Generate QR
+                        </button>
+                        <button type="button" class="btn btn-danger" id="resetBtn">
+                            <i class="fas fa-redo"></i>
+                            Reset Form
+                        </button>
+                    </div>
+                </form>
+
+                <!-- QR PREVIEW SECTION -->
+                <div class="qr-preview-section" id="qrPreviewSection">
+                    <h3 style="color: var(--primary); margin-bottom: 20px;">
+                        <i class="fas fa-qrcode"></i>
+                        Preview QR Code Hybrid
+                    </h3>
+                    
+                    <div class="qr-preview-grid">
+                        <div class="qr-container">
+                            <div id="qrcodePreview">
+                                <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                                    <p style="margin-top: 15px;">Membuat QR Code...</p>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 10px;">
+                                <i class="fas fa-info-circle"></i>
+                                QR Code ini akan otomatis muncul di Tabungan Digital
+                            </p>
+                        </div>
+                        
+                        <div class="qr-info">
+                            <h4>
+                                <i class="fas fa-info-circle"></i>
+                                Informasi Link
+                            </h4>
+                            <div class="qr-info-item">
+                                <div class="qr-info-label">
+                                    <i class="fas fa-heading"></i>
+                                    Judul:
+                                </div>
+                                <div class="qr-info-value" id="previewTitle">-</div>
+                            </div>
+                            <div class="qr-info-item">
+                                <div class="qr-info-label">
+                                    <i class="fas fa-link"></i>
+                                    URL Tujuan:
+                                </div>
+                                <div class="qr-info-value" id="previewUrl">-</div>
+                            </div>
+                            <div class="qr-info-item">
+                                <div class="qr-info-label">
+                                    <i class="fas fa-qrcode"></i>
+                                    QR Code URL:
+                                </div>
+                                <div class="qr-info-value" id="previewQrUrl">-</div>
+                            </div>
+                            <div class="qr-info-item">
+                                <div class="qr-info-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Waktu Generate:
+                                </div>
+                                <div class="qr-info-value" id="previewTime">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group" style="margin-top: 30px;">
+                        <button type="button" class="btn btn-outline" id="editPreviewBtn">
+                            <i class="fas fa-edit"></i>
+                            Edit Kembali
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="testLinkBtn">
+                            <i class="fas fa-external-link-alt"></i>
+                            Test Link
+                        </button>
+                        <button type="button" class="btn btn-success" id="saveToFirebaseBtn">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Simpan ke Firebase
+                        </button>
+                        <button type="button" class="btn btn-primary" id="finishBtn">
+                            <i class="fas fa-check-double"></i>
+                            Selesai
+                        </button>
+                    </div>
+                </div>
+
+                <!-- LINKS TABLE -->
+                <div class="links-table-section">
+                    <h3 style="color: var(--primary); margin-bottom: 20px;">
+                        <i class="fas fa-list"></i>
+                        Daftar Link Tersimpan
+                    </h3>
+                    
+                    <div class="table-responsive">
+                        <table class="links-table">
+                            <thead>
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>URL</th>
+                                    <th>Kategori</th>
+                                    <th>Status</th>
+                                    <th>Dibuat</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="linksTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                        <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                        Belum ada link yang tersimpan
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage">Pesan notifikasi</span>
+    </div>
+
+    <script>
+        // ===== ADMIN QR CODE HYBRID SYSTEM =====
+        class AdminQRCodeSystem {
+            constructor() {
+                this.adminData = this.getAdminData();
+                this.links = this.loadLinks();
+                this.editingLinkId = null;
+                this.currentQRUrl = '';
+                this.qrCodeInstance = null;
+                this.vercelBaseUrl = 'https://qr-code-hybrid.vercel.app/';
+                
+                this.init();
+            }
+
+            init() {
+                this.setupAdminUI();
+                this.setupEventListeners();
+                this.renderLinksTable();
+                this.updateDate();
+                
+                console.log('✅ Admin QR Code System initialized');
+                this.showToast('Sistem Admin QR Code Hybrid siap!', 'info');
+            }
+
+            setupAdminUI() {
+                // Set admin name and email
+                document.getElementById('adminName').textContent = 
+                    this.adminData.name || 'Administrator';
+                document.getElementById('adminEmail').textContent = 
+                    this.adminData.email || 'admin@koperasi.com';
+                
+                // Setup link type switcher
+                document.getElementById('linkType').addEventListener('change', (e) => {
+                    this.handleLinkTypeChange(e.target.value);
+                });
+            }
+
+            handleLinkTypeChange(type) {
+                // Hide all input groups
+                document.getElementById('githubInput').style.display = 'none';
+                document.getElementById('externalInput').style.display = 'none';
+                document.getElementById('internalInput').style.display = 'none';
+                
+                // Show selected input group
+                if (type === 'github') {
+                    document.getElementById('githubInput').style.display = 'block';
+                } else if (type === 'external') {
+                    document.getElementById('externalInput').style.display = 'block';
+                } else if (type === 'internal') {
+                    document.getElementById('internalInput').style.display = 'block';
+                }
+                
+                this.updateUrlPreview();
+            }
+
+            getAdminData() {
+                try {
+                    // Cek jika ada data admin di localStorage
+                    const admin = localStorage.getItem('koperasi_admin') || 
+                                 localStorage.getItem('koperasi_current_user');
+                    
+                    if (admin) {
+                        const data = JSON.parse(admin);
+                        return {
+                            name: data.name || 'Admin Koperasi',
+                            email: data.email || 'admin@koperasi.com',
+                            role: 'admin'
+                        };
+                    }
+                    
+                    // Default admin data
+                    return {
+                        name: 'Administrator',
+                        email: 'admin@koperasi.com',
+                        role: 'admin'
+                    };
+                    
+                } catch (error) {
+                    console.error('Error getting admin data:', error);
+                    return {
+                        name: 'Admin Koperasi',
+                        email: 'admin@koperasi.com',
+                        role: 'admin'
+                    };
+                }
+            }
+
+            setupEventListeners() {
+                // Form submission
+                document.getElementById('linkForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.previewQRCode();
+                });
+
+                // Preview button
+                document.getElementById('previewBtn').addEventListener('click', () => {
+                    this.previewQRCode();
+                });
+
+                // Reset button
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.resetForm();
+                });
+
+                // Edit preview button
+                document.getElementById('editPreviewBtn').addEventListener('click', () => {
+                    this.showForm();
+                });
+
+                // Test link button
+                document.getElementById('testLinkBtn').addEventListener('click', () => {
+                    this.testCurrentLink();
+                });
+
+                // Save to Firebase button
+                document.getElementById('saveToFirebaseBtn').addEventListener('click', () => {
+                    this.saveLinkToFirebase();
+                });
+
+                // Finish button
+                document.getElementById('finishBtn').addEventListener('click', () => {
+                    this.finishProcess();
+                });
+
+                // Copy URL button
+                document.getElementById('copyUrlBtn').addEventListener('click', () => {
+                    this.copyUrlToClipboard();
+                });
+
+                // Input changes
+                document.getElementById('linkTitle').addEventListener('input', () => {
+                    this.updateUrlPreview();
+                });
+                
+                document.getElementById('githubBaseUrl').addEventListener('input', () => {
+                    this.updateUrlPreview();
+                });
+                
+                document.getElementById('githubFilename').addEventListener('input', () => {
+                    this.updateUrlPreview();
+                });
+                
+                document.getElementById('externalUrl').addEventListener('input', () => {
+                    this.updateUrlPreview();
+                });
+                
+                document.getElementById('internalUrl').addEventListener('input', () => {
+                    this.updateUrlPreview();
+                });
+            }
+
+            updateUrlPreview() {
+                const linkType = document.getElementById('linkType').value;
+                let targetUrl = '';
+                
+                if (linkType === 'github') {
+                    const baseUrl = document.getElementById('githubBaseUrl').value.trim();
+                    const filename = document.getElementById('githubFilename').value.trim();
+                    
+                    if (baseUrl && filename) {
+                        // Bersihkan base URL (hapus trailing slash jika ada)
+                        const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+                        targetUrl = `${cleanBaseUrl}/${filename}`;
+                    }
+                } else if (linkType === 'external') {
+                    targetUrl = document.getElementById('externalUrl').value.trim();
+                } else if (linkType === 'internal') {
+                    const internalPath = document.getElementById('internalUrl').value;
+                    if (internalPath) {
+                        targetUrl = `https://koperasi-asmara-tani.com${internalPath}`;
+                    }
+                }
+                
+                if (targetUrl) {
+                    const qrUrl = this.generateQRHybridUrl(targetUrl);
+                    
+                    document.getElementById('generatedUrl').textContent = qrUrl;
+                    document.getElementById('urlPreviewCard').classList.add('active');
+                    this.currentQRUrl = qrUrl;
+                } else {
+                    document.getElementById('urlPreviewCard').classList.remove('active');
+                    this.currentQRUrl = '';
+                }
+            }
+
+            generateQRHybridUrl(targetUrl) {
+                // Format: https://qr-code-hybrid.vercel.app/redirect?params
+                const params = new URLSearchParams({
+                    // Metadata admin
+                    admin_id: this.adminData.email || 'admin',
+                    admin_name: encodeURIComponent(this.adminData.name || 'Admin'),
+                    
+                    // Data link
+                    redirect: encodeURIComponent(targetUrl),
+                    link_title: encodeURIComponent(document.getElementById('linkTitle').value.trim() || 'Link Custom'),
+                    link_type: document.getElementById('linkType').value,
+                    link_category: document.getElementById('linkCategory').value,
+                    
+                    // Target untuk Tabungan Digital
+                    target: 'tabungan_digital',
+                    feature: 'admin_generated_link',
+                    
+                    // Timestamp
+                    timestamp: Date.now(),
+                    version: 'admin_v1.0'
+                });
+
+                return `${this.vercelBaseUrl}redirect?${params.toString()}`;
+            }
+
+            async previewQRCode() {
+                const title = document.getElementById('linkTitle').value.trim();
+                const linkType = document.getElementById('linkType').value;
+                const category = document.getElementById('linkCategory').value;
+                
+                // Validasi
+                if (!title) {
+                    this.showToast('Judul link harus diisi', 'error');
+                    return;
+                }
+
+                if (!linkType) {
+                    this.showToast('Pilih tipe link', 'error');
+                    return;
+                }
+
+                if (!category) {
+                    this.showToast('Pilih kategori link', 'error');
+                    return;
+                }
+
+                // Get target URL berdasarkan tipe
+                let targetUrl = '';
+                let isValid = false;
+                
+                if (linkType === 'github') {
+                    const baseUrl = document.getElementById('githubBaseUrl').value.trim();
+                    const filename = document.getElementById('githubFilename').value.trim();
+                    
+                    if (!baseUrl || !filename) {
+                        this.showToast('Base URL dan Nama File GitHub harus diisi', 'error');
+                        return;
+                    }
+                    
+                    const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+                    targetUrl = `${cleanBaseUrl}/${filename}`;
+                    isValid = this.isValidUrl(targetUrl);
+                    
+                } else if (linkType === 'external') {
+                    targetUrl = document.getElementById('externalUrl').value.trim();
+                    isValid = this.isValidUrl(targetUrl);
+                    
+                } else if (linkType === 'internal') {
+                    const internalPath = document.getElementById('internalUrl').value;
+                    if (!internalPath) {
+                        this.showToast('Pilih halaman internal', 'error');
+                        return;
+                    }
+                    targetUrl = `https://koperasi-asmara-tani.com${internalPath}`;
+                    isValid = true;
+                }
+
+                if (!isValid) {
+                    this.showToast('URL tidak valid', 'error');
+                    return;
+                }
+
+                // Generate QR Code URL
+                const qrUrl = this.generateQRHybridUrl(targetUrl);
+                this.currentQRUrl = qrUrl;
+
+                // Update preview section
+                document.getElementById('previewTitle').textContent = title;
+                document.getElementById('previewUrl').textContent = targetUrl;
+                document.getElementById('previewQrUrl').textContent = qrUrl;
+                document.getElementById('previewTime').textContent = new Date().toLocaleString('id-ID');
+                
+                // Generate QR Code
+                this.generateQRPreview(qrUrl);
+
+                // Show preview section
+                document.getElementById('qrPreviewSection').classList.add('active');
+                document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
+                
+                this.showToast('QR Code Hybrid berhasil digenerate!', 'success');
+            }
+
+            isValidUrl(url) {
+                try {
+                    new URL(url);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            generateQRPreview(url) {
+                const container = document.getElementById('qrcodePreview');
+                container.innerHTML = '';
+
+                if (this.qrCodeInstance) {
+                    this.qrCodeInstance.clear();
+                }
+
+                try {
+                    this.qrCodeInstance = new QRCode(container, {
+                        text: url,
+                        width: 250,
+                        height: 250,
+                        colorDark: "#1a5f23",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.Q
+                    });
+                } catch (error) {
+                    console.error('Error generating QR:', error);
+                    container.innerHTML = `
+                        <div style="color: var(--danger); text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            <p style="margin-top: 10px;">Gagal membuat QR Code</p>
+                        </div>
+                    `;
+                }
+            }
+
+            async saveLinkToFirebase() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Generate QR Code terlebih dahulu', 'error');
+                    return;
+                }
+
+                try {
+                    const linkData = this.collectLinkData();
+                    
+                    // Simpan ke Firebase
+                    if (window.KoperasiDB && window.KoperasiDB.db) {
+                        const db = window.KoperasiDB.db;
+                        
+                        await db.collection('admin_qr_links').add({
+                            ...linkData,
+                            admin_email: this.adminData.email,
+                            created_at: new Date().toISOString(),
+                            status: 'active'
+                        });
+                        
+                        this.showToast('Link berhasil disimpan ke Firebase!', 'success');
+                    } else {
+                        this.showToast('Firebase tidak tersedia, simpan ke local storage', 'warning');
+                        this.saveLinkToLocal(linkData);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error saving to Firebase:', error);
+                    this.showToast('Gagal menyimpan ke Firebase', 'error');
+                }
+            }
+
+            collectLinkData() {
+                const title = document.getElementById('linkTitle').value.trim();
+                const linkType = document.getElementById('linkType').value;
+                const category = document.getElementById('linkCategory').value;
+                const description = document.getElementById('linkDescription').value.trim();
+                const isFeatured = document.getElementById('isFeatured').checked;
+                const isActive = document.getElementById('isActive').checked;
+                
+                // Get target URL
+                let targetUrl = '';
+                if (linkType === 'github') {
+                    const baseUrl = document.getElementById('githubBaseUrl').value.trim();
+                    const filename = document.getElementById('githubFilename').value.trim();
+                    const cleanBaseUrl = baseUrl.replace(/\/$/, '');
+                    targetUrl = `${cleanBaseUrl}/${filename}`;
+                } else if (linkType === 'external') {
+                    targetUrl = document.getElementById('externalUrl').value.trim();
+                } else if (linkType === 'internal') {
+                    const internalPath = document.getElementById('internalUrl').value;
+                    targetUrl = `https://koperasi-asmara-tani.com${internalPath}`;
+                }
+
+                return {
+                    id: `admin_link_${Date.now()}`,
+                    title,
+                    type: linkType,
+                    category,
+                    description,
+                    target_url: targetUrl,
+                    qr_url: this.currentQRUrl,
+                    is_featured: isFeatured,
+                    is_active: isActive,
+                    created_by: this.adminData.email,
+                    created_at: new Date().toISOString()
+                };
+            }
+
+            saveLinkToLocal(linkData) {
+                try {
+                    this.links.unshift(linkData);
+                    localStorage.setItem('admin_qr_links', JSON.stringify(this.links));
+                    
+                    // Juga simpan untuk diakses oleh Tabungan Digital
+                    this.saveLinkForTabunganDigital(linkData);
+                    
+                    this.renderLinksTable();
+                    this.showToast('Link berhasil disimpan!', 'success');
+                    
+                } catch (error) {
+                    console.error('Error saving link:', error);
+                    this.showToast('Gagal menyimpan link', 'error');
+                }
+            }
+
+            saveLinkForTabunganDigital(linkData) {
+                try {
+                    // Load existing links for Tabungan Digital
+                    const existingLinks = JSON.parse(localStorage.getItem('qr_hybrid_links_tabungan') || '[]');
+                    
+                    // Add new link
+                    existingLinks.unshift({
+                        id: linkData.id,
+                        title: linkData.title,
+                        qr_url: linkData.qr_url,
+                        category: linkData.category,
+                        is_featured: linkData.is_featured,
+                        created_at: linkData.created_at
+                    });
+                    
+                    // Keep only last 20 links
+                    if (existingLinks.length > 20) {
+                        existingLinks.length = 20;
+                    }
+                    
+                    // Save for Tabungan Digital
+                    localStorage.setItem('qr_hybrid_links_tabungan', JSON.stringify(existingLinks));
+                    
+                    console.log('✅ Link saved for Tabungan Digital:', linkData.title);
+                    
+                } catch (error) {
+                    console.error('Error saving for Tabungan Digital:', error);
+                }
+            }
+
+            loadLinks() {
+                try {
+                    const links = localStorage.getItem('admin_qr_links');
+                    return links ? JSON.parse(links) : [];
+                } catch (error) {
+                    console.error('Error loading links:', error);
+                    return [];
+                }
+            }
+
+            renderLinksTable() {
+                const tbody = document.getElementById('linksTableBody');
+                
+                if (this.links.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                Belum ada link yang tersimpan
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = this.links.map(link => `
+                    <tr>
+                        <td>
+                            <strong>${link.title}</strong>
+                            ${link.is_featured ? '<br><small style="color: var(--warning);"><i class="fas fa-star"></i> Unggulan</small>' : ''}
+                        </td>
+                        <td>
+                            <div style="max-width: 300px; word-break: break-all; font-size: 0.85rem;">
+                                ${link.target_url}
+                            </div>
+                        </td>
+                        <td>${this.getCategoryLabel(link.category)}</td>
+                        <td>
+                            <span class="link-status ${link.is_active ? 'status-active' : 'status-inactive'}">
+                                ${link.is_active ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                        </td>
+                        <td>${new Date(link.created_at).toLocaleDateString('id-ID')}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="table-btn view" onclick="adminSystem.viewLink('${link.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="table-btn edit" onclick="adminSystem.editLink('${link.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="table-btn delete" onclick="adminSystem.deleteLink('${link.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            getCategoryLabel(category) {
+                const categories = {
+                    'anggota': '👤 Profil Anggota',
+                    'promotion': '🎯 Promo & Penawaran',
+                    'information': 'ℹ️ Informasi',
+                    'document': '📄 Dokumen',
+                    'social': '📱 Media Sosial',
+                    'service': '🔧 Layanan',
+                    'event': '📅 Event'
+                };
+                return categories[category] || '📌 Lainnya';
+            }
+
+            viewLink(linkId) {
+                const link = this.links.find(l => l.id === linkId);
+                if (!link) return;
+
+                // Tampilkan detail link di preview
+                document.getElementById('previewTitle').textContent = link.title;
+                document.getElementById('previewUrl').textContent = link.target_url;
+                document.getElementById('previewQrUrl').textContent = link.qr_url;
+                document.getElementById('previewTime').textContent = new Date(link.created_at).toLocaleString('id-ID');
+                
+                // Generate QR Code
+                this.generateQRPreview(link.qr_url);
+                
+                // Show preview section
+                document.getElementById('qrPreviewSection').classList.add('active');
+                document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
+                
+                this.showToast(`Melihat link: "${link.title}"`, 'info');
+            }
+
+            editLink(linkId) {
+                const link = this.links.find(l => l.id === linkId);
+                if (!link) return;
+
+                this.editingLinkId = linkId;
+                
+                // Fill form dengan data link
+                document.getElementById('linkTitle').value = link.title;
+                document.getElementById('linkType').value = link.type;
+                document.getElementById('linkCategory').value = link.category;
+                document.getElementById('linkDescription').value = link.description || '';
+                document.getElementById('isFeatured').checked = link.is_featured || false;
+                document.getElementById('isActive').checked = link.is_active !== false;
+                
+                // Handle type-specific fields
+                this.handleLinkTypeChange(link.type);
+                
+                if (link.type === 'github') {
+                    // Parse GitHub URL
+                    const parts = link.target_url.split('/');
+                    if (parts.length >= 4) {
+                        const baseUrl = parts.slice(0, parts.length - 1).join('/');
+                        const filename = parts[parts.length - 1];
+                        document.getElementById('githubBaseUrl').value = baseUrl;
+                        document.getElementById('githubFilename').value = filename;
+                    }
+                } else if (link.type === 'external') {
+                    document.getElementById('externalUrl').value = link.target_url;
+                } else if (link.type === 'internal') {
+                    // Parse internal path
+                    const path = link.target_url.replace('https://koperasi-asmara-tani.com', '');
+                    document.getElementById('internalUrl').value = path;
+                }
+                
+                // Update button text
+                document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Update Link';
+                document.getElementById('saveBtn').classList.add('btn-success');
+                document.getElementById('saveBtn').classList.remove('btn-primary');
+                
+                // Update preview URL
+                this.updateUrlPreview();
+                
+                // Scroll to form
+                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+                
+                this.showToast(`Mengedit link: "${link.title}"`, 'info');
+            }
+
+            deleteLink(linkId) {
+                if (!confirm('Apakah Anda yakin ingin menghapus link ini?')) return;
+
+                const linkIndex = this.links.findIndex(l => l.id === linkId);
+                if (linkIndex !== -1) {
+                    const linkTitle = this.links[linkIndex].title;
+                    this.links.splice(linkIndex, 1);
+                    
+                    // Update localStorage
+                    localStorage.setItem('admin_qr_links', JSON.stringify(this.links));
+                    
+                    // Juga hapus dari Tabungan Digital
+                    this.removeFromTabunganDigital(linkId);
+                    
+                    this.renderLinksTable();
+                    this.showToast(`Link "${linkTitle}" berhasil dihapus`, 'success');
+                }
+            }
+
+            removeFromTabunganDigital(linkId) {
+                try {
+                    const existingLinks = JSON.parse(localStorage.getItem('qr_hybrid_links_tabungan') || '[]');
+                    const updatedLinks = existingLinks.filter(link => link.id !== linkId);
+                    localStorage.setItem('qr_hybrid_links_tabungan', JSON.stringify(updatedLinks));
+                } catch (error) {
+                    console.error('Error removing from Tabungan Digital:', error);
+                }
+            }
+
+            testCurrentLink() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Generate QR Code terlebih dahulu', 'error');
+                    return;
+                }
+
+                window.open(this.currentQRUrl, '_blank');
+                this.showToast('Membuka QR Code di tab baru...', 'info');
+            }
+
+            copyUrlToClipboard() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Tidak ada URL untuk disalin', 'error');
+                    return;
+                }
+
+                navigator.clipboard.writeText(this.currentQRUrl).then(() => {
+                    this.showToast('URL berhasil disalin ke clipboard', 'success');
+                }).catch(err => {
+                    console.error('Error copying URL:', err);
+                    this.showToast('Gagal menyalin URL', 'error');
+                });
+            }
+
+            resetForm() {
+                document.getElementById('linkForm').reset();
+                document.getElementById('urlPreviewCard').classList.remove('active');
+                document.getElementById('qrPreviewSection').classList.remove('active');
+                document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Simpan & Generate QR';
+                document.getElementById('saveBtn').classList.remove('btn-success');
+                document.getElementById('saveBtn').classList.add('btn-primary');
+                this.editingLinkId = null;
+                this.currentQRUrl = '';
+                
+                // Reset type-specific displays
+                document.getElementById('githubInput').style.display = 'none';
+                document.getElementById('externalInput').style.display = 'none';
+                document.getElementById('internalInput').style.display = 'none';
+                
+                this.showToast('Form telah direset', 'info');
+            }
+
+            showForm() {
+                document.getElementById('qrPreviewSection').classList.remove('active');
+                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            finishProcess() {
+                this.resetForm();
+                this.showToast('Proses selesai! Link sudah tersimpan.', 'success');
+            }
+
+            updateDate() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                document.getElementById('currentDate').textContent = 
+                    now.toLocaleDateString('id-ID', options);
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toastMessage');
+                
+                toast.className = `toast ${type} show`;
+                toastMsg.textContent = message;
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // ===== INISIALISASI =====
+        let adminSystem;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Cek jika user adalah admin
+                const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
+                const isAdmin = currentUser && (
+                    currentUser.role === 'admin' || 
+                    currentUser.email === 'admin@koperasi.com' ||
+                    currentUser.email === 'koperasi@gmail.com'
+                );
+
+                if (!isAdmin) {
+                    alert('Akses ditolak! Halaman ini hanya untuk Admin.');
+                    window.location.href = 'tabungan-digital.html';
+                    return;
+                }
+
+                // Initialize admin system
+                adminSystem = new AdminQRCodeSystem();
+                window.adminSystem = adminSystem;
+                
+                console.log('✅ Admin QR Code System Application Ready');
+                
+            } catch (error) {
+                console.error('❌ Error initializing admin system:', error);
+                alert('Terjadi kesalahan saat memuat sistem admin.');
+            }
+        });
+    </script>
+</body>
+</html>
