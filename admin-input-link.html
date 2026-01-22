@@ -1523,629 +1523,207 @@
                 }
             }
 
-            generateQRHybridUrl(targetUrl) {
-                const params = new URLSearchParams({
-                    // Metadata admin
-                    admin_id: this.adminData.email || 'admin',
-                    admin_name: encodeURIComponent(this.adminData.name || 'Admin'),
-                    
-                    // Data link
-                    redirect: encodeURIComponent(targetUrl),
-                    link_title: encodeURIComponent(document.getElementById('linkTitle').value.trim() || 'Link Custom'),
-                    link_type: document.getElementById('linkType').value,
-                    link_category: document.getElementById('linkCategory').value,
-                    
-                    // Target untuk Tabungan Digital
-                    target: 'tabungan_digital',
-                    feature: 'admin_generated_link',
-                    
-                    // Timestamp
-                    timestamp: Date.now(),
-                    version: 'admin_v2.0'
-                });
+    generateQRHybridUrl(targetUrl) {
+        // PERBAIKAN 1: Encode URL dengan benar
+        const encodedRedirect = encodeURIComponent(targetUrl);
+        
+        const params = new URLSearchParams({
+            // Metadata admin
+            admin_id: this.adminData.email || 'admin',
+            admin_name: encodeURIComponent(this.adminData.name || 'Admin'),
+            
+            // Data link
+            redirect: encodedRedirect,
+            link_title: encodeURIComponent(document.getElementById('linkTitle').value.trim() || 'Link Custom'),
+            link_type: document.getElementById('linkType').value,
+            link_category: document.getElementById('linkCategory').value,
+            
+            // Target untuk Tabungan Digital
+            target: 'tabungan_digital',
+            feature: 'admin_generated_link',
+            
+            // Timestamp
+            timestamp: Date.now(),
+            version: 'admin_v2.0'
+        });
 
-                return `${this.vercelBaseUrl}redirect?${params.toString()}`;
+        return `${this.vercelBaseUrl}redirect?${params.toString()}`;
+    }
+
+    async previewQRCode() {
+        // ... kode sebelumnya ...
+
+        // Get target URL berdasarkan tipe
+        let targetUrl = '';
+        let isValid = false;
+        
+        if (linkType === 'github') {
+            const repoUrl = document.getElementById('githubRepoUrl').value.trim();
+            const filename = document.getElementById('githubFilename').value.trim();
+            
+            if (!repoUrl || !filename) {
+                this.showToast('Repository URL dan Nama File harus diisi', 'error');
+                return;
             }
-
-            async previewQRCode() {
-                const title = document.getElementById('linkTitle').value.trim();
-                const linkType = document.getElementById('linkType').value;
-                const category = document.getElementById('linkCategory').value;
+            
+            try {
+                const url = new URL(repoUrl);
+                const pathParts = url.pathname.split('/').filter(p => p);
                 
-                // Validasi
-                if (!title) {
-                    this.showToast('Judul link harus diisi', 'error');
-                    return;
-                }
-
-                if (!linkType) {
-                    this.showToast('Pilih tipe link', 'error');
-                    return;
-                }
-
-                if (!category) {
-                    this.showToast('Pilih kategori link', 'error');
-                    return;
-                }
-
-                // Get target URL berdasarkan tipe
-                let targetUrl = '';
-                let isValid = false;
-                
-                if (linkType === 'github') {
-                    const repoUrl = document.getElementById('githubRepoUrl').value.trim();
-                    const filename = document.getElementById('githubFilename').value.trim();
+                if (pathParts.length >= 2) {
+                    const username = pathParts[0].toLowerCase(); // PERBAIKAN: lowercase username
+                    const repoName = pathParts[1]; // PERBAIKAN: jangan ubah case repo
                     
-                    if (!repoUrl || !filename) {
-                        this.showToast('Repository URL dan Nama File harus diisi', 'error');
-                        return;
-                    }
-                    
-                    try {
-                        const url = new URL(repoUrl);
-                        const pathParts = url.pathname.split('/').filter(p => p);
-                        
-                        if (pathParts.length >= 2) {
-                            const username = pathParts[0];
-                            const repoName = pathParts[1];
-                            targetUrl = `https://${username}.github.io/${repoName}/${filename}`;
-                            isValid = true;
-                        } else {
-                            this.showToast('GitHub URL tidak valid', 'error');
-                            return;
-                        }
-                    } catch (e) {
-                        this.showToast('GitHub URL tidak valid', 'error');
-                        return;
-                    }
-                    
-                } else if (linkType === 'external') {
-                    targetUrl = document.getElementById('externalUrl').value.trim();
-                    isValid = this.isValidUrl(targetUrl);
-                    
-                } else if (linkType === 'whatsapp') {
-                    const number = document.getElementById('whatsappNumber').value.trim();
-                    if (!number) {
-                        this.showToast('Nomor WhatsApp harus diisi', 'error');
-                        return;
-                    }
-                    targetUrl = `https://wa.me/${number}`;
+                    // PERBAIKAN: Format URL GitHub Pages yang benar
+                    targetUrl = `https://${username}.github.io/${repoName}/${filename}`;
+                    console.log('GitHub Pages URL generated:', targetUrl);
                     isValid = true;
                     
-                } else if (linkType === 'youtube') {
-                    const videoId = document.getElementById('youtubeId').value.trim();
-                    if (!videoId) {
-                        this.showToast('ID video YouTube harus diisi', 'error');
+                    // PERBAIKAN: Test URL format
+                    const testUrl = new URL(targetUrl);
+                    if (!testUrl.protocol.startsWith('http')) {
+                        this.showToast('Format URL GitHub Pages salah', 'error');
                         return;
                     }
-                    targetUrl = `https://youtu.be/${videoId}`;
-                    isValid = true;
-                    
-                } else if (linkType === 'other') {
-                    targetUrl = document.getElementById('otherUrl').value.trim();
-                    isValid = this.isValidUrl(targetUrl);
-                }
-
-                if (!isValid) {
-                    this.showToast('URL tidak valid', 'error');
+                } else {
+                    this.showToast('GitHub URL tidak valid', 'error');
                     return;
                 }
-
-                // Generate QR Code URL
-                const qrUrl = this.generateQRHybridUrl(targetUrl);
-                this.currentQRUrl = qrUrl;
-
-                // Update preview section
-                document.getElementById('previewTitle').textContent = title;
-                document.getElementById('previewUrl').textContent = targetUrl;
-                document.getElementById('previewQrUrl').textContent = qrUrl;
-                document.getElementById('previewTime').textContent = new Date().toLocaleString('id-ID');
-                
-                // Generate QR Code
-                this.generateQRPreview(qrUrl);
-
-                // Show preview section
-                document.getElementById('qrPreviewSection').classList.add('active');
-                document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
-                
-                this.showToast('QR Code Hybrid berhasil digenerate!', 'success');
+            } catch (e) {
+                console.error('GitHub URL error:', e);
+                this.showToast('GitHub URL tidak valid. Format: https://github.com/username/repo', 'error');
+                return;
             }
-
-            isValidUrl(url) {
-                try {
-                    new URL(url);
-                    return true;
-                } catch (e) {
-                    return false;
-                }
+            
+        } else if (linkType === 'external') {
+            targetUrl = document.getElementById('externalUrl').value.trim();
+            isValid = this.isValidUrl(targetUrl);
+            
+        } else if (linkType === 'whatsapp') {
+            const number = document.getElementById('whatsappNumber').value.trim();
+            if (!number) {
+                this.showToast('Nomor WhatsApp harus diisi', 'error');
+                return;
             }
-
-            generateQRPreview(url) {
-                const container = document.getElementById('qrcodePreview');
-                container.innerHTML = '';
-
-                if (this.qrCodeInstance) {
-                    this.qrCodeInstance.clear();
-                }
-
-                try {
-                    this.qrCodeInstance = new QRCode(container, {
-                        text: url,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#1a5f23",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.Q
-                    });
-                } catch (error) {
-                    container.innerHTML = `
-                        <div style="color: var(--danger); text-align: center; padding: 20px;">
-                            <i class="fas fa-exclamation-triangle fa-2x"></i>
-                            <p style="margin-top: 10px; font-size: 0.9rem;">Gagal membuat QR Code</p>
-                        </div>
-                    `;
-                }
+            targetUrl = `https://wa.me/${number}`;
+            isValid = true;
+            
+        } else if (linkType === 'youtube') {
+            const videoId = document.getElementById('youtubeId').value.trim();
+            if (!videoId) {
+                this.showToast('ID video YouTube harus diisi', 'error');
+                return;
             }
-
-            async saveLinkToFirebase() {
-                if (!this.currentQRUrl) {
-                    this.showToast('Generate QR Code terlebih dahulu', 'error');
-                    return;
-                }
-
-                try {
-                    const linkData = this.collectLinkData();
-                    
-                    // Simpan ke Firebase
-                    if (window.KoperasiDB && window.KoperasiDB.db) {
-                        const db = window.KoperasiDB.db;
-                        
-                        await db.collection('admin_qr_links').add({
-                            ...linkData,
-                            admin_email: this.adminData.email,
-                            created_at: new Date().toISOString(),
-                            status: 'active'
-                        });
-                        
-                        this.showToast('Link berhasil disimpan ke Firebase!', 'success');
-                        this.updateStats();
-                    } else {
-                        this.showToast('Firebase tidak tersedia', 'warning');
-                    }
-                    
-                } catch (error) {
-                    console.error('Error saving to Firebase:', error);
-                    this.showToast('Gagal menyimpan ke Firebase', 'error');
-                }
-            }
-
-            collectLinkData() {
-                const title = document.getElementById('linkTitle').value.trim();
-                const linkType = document.getElementById('linkType').value;
-                const category = document.getElementById('linkCategory').value;
-                const description = document.getElementById('linkDescription').value.trim();
-                const isFeatured = document.getElementById('isFeatured').checked;
-                const isActive = document.getElementById('isActive').checked;
-                
-                // Get target URL
-                let targetUrl = '';
-                if (linkType === 'github') {
-                    const repoUrl = document.getElementById('githubRepoUrl').value.trim();
-                    const filename = document.getElementById('githubFilename').value.trim();
-                    try {
-                        const url = new URL(repoUrl);
-                        const pathParts = url.pathname.split('/').filter(p => p);
-                        if (pathParts.length >= 2) {
-                            const username = pathParts[0];
-                            const repoName = pathParts[1];
-                            targetUrl = `https://${username}.github.io/${repoName}/${filename}`;
-                        }
-                    } catch (e) {
-                        targetUrl = '';
-                    }
-                } else if (linkType === 'external') {
-                    targetUrl = document.getElementById('externalUrl').value.trim();
-                } else if (linkType === 'whatsapp') {
-                    const number = document.getElementById('whatsappNumber').value.trim();
-                    targetUrl = `https://wa.me/${number}`;
-                } else if (linkType === 'youtube') {
-                    const videoId = document.getElementById('youtubeId').value.trim();
-                    targetUrl = `https://youtu.be/${videoId}`;
-                } else if (linkType === 'other') {
-                    targetUrl = document.getElementById('otherUrl').value.trim();
-                }
-
-                const linkData = {
-                    id: `admin_link_${Date.now()}`,
-                    title,
-                    type: linkType,
-                    category,
-                    description,
-                    target_url: targetUrl,
-                    qr_url: this.currentQRUrl,
-                    is_featured: isFeatured,
-                    is_active: isActive,
-                    created_by: this.adminData.email,
-                    created_at: new Date().toISOString()
-                };
-
-                // Save to local storage
-                this.links.unshift(linkData);
-                localStorage.setItem('admin_qr_links', JSON.stringify(this.links));
-                
-                // Save for Tabungan Digital
-                this.saveLinkForTabunganDigital(linkData);
-                
-                // Update UI
-                this.renderLinksTable();
-                this.updateStats();
-                this.showToast('Link berhasil disimpan!', 'success');
-                this.resetForm();
-                
-                return linkData;
-            }
-
-            saveLinkForTabunganDigital(linkData) {
-                try {
-                    // Load existing links for Tabungan Digital
-                    const existingLinks = JSON.parse(localStorage.getItem('qr_hybrid_links_tabungan') || '[]');
-                    
-                    // Add new link
-                    existingLinks.unshift({
-                        id: linkData.id,
-                        title: linkData.title,
-                        qr_url: linkData.qr_url,
-                        category: linkData.category,
-                        is_featured: linkData.is_featured,
-                        created_at: linkData.created_at
-                    });
-                    
-                    // Keep only last 20 links
-                    if (existingLinks.length > 20) {
-                        existingLinks.length = 20;
-                    }
-                    
-                    // Save for Tabungan Digital
-                    localStorage.setItem('qr_hybrid_links_tabungan', JSON.stringify(existingLinks));
-                    
-                    console.log('✅ Link saved for Tabungan Digital:', linkData.title);
-                    
-                } catch (error) {
-                    console.error('Error saving for Tabungan Digital:', error);
-                }
-            }
-
-            loadLinks() {
-                try {
-                    const links = localStorage.getItem('admin_qr_links');
-                    return links ? JSON.parse(links) : [];
-                } catch (error) {
-                    return [];
-                }
-            }
-
-            renderLinksTable() {
-                const tbody = document.getElementById('linksTableBody');
-                
-                if (this.links.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">
-                                <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
-                                Belum ada link yang tersimpan
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                tbody.innerHTML = this.links.slice(0, 10).map(link => `
-                    <tr>
-                        <td>
-                            <strong style="font-size: 0.9rem;">${link.title}</strong>
-                            ${link.is_featured ? '<br><small style="color: var(--warning); font-size: 0.75rem;"><i class="fas fa-star"></i> Unggulan</small>' : ''}
-                            ${link.description ? `<br><small style="color: var(--text-muted); font-size: 0.8rem;">${link.description.substring(0, 40)}${link.description.length > 40 ? '...' : ''}</small>` : ''}
-                        </td>
-                        <td>
-                            <div style="font-size: 0.85rem;">
-                                ${this.getLinkTypeIcon(link.type)} ${this.getLinkTypeLabel(link.type)}
-                            </div>
-                        </td>
-                        <td>
-                            <span class="link-status ${link.is_active ? 'status-active' : 'status-inactive'}">
-                                ${link.is_active ? 'Aktif' : 'Nonaktif'}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <button class="table-btn view" onclick="adminSystem.viewLink('${link.id}')" title="Lihat">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="table-btn edit" onclick="adminSystem.editLink('${link.id}')" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="table-btn delete" onclick="adminSystem.deleteLink('${link.id}')" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            getLinkTypeIcon(type) {
-                const icons = {
-                    'github': 'fab fa-github',
-                    'external': 'fas fa-external-link-alt',
-                    'whatsapp': 'fab fa-whatsapp',
-                    'youtube': 'fab fa-youtube',
-                    'other': 'fas fa-link'
-                };
-                return `<i class="${icons[type] || 'fas fa-link'}"></i>`;
-            }
-
-            getLinkTypeLabel(type) {
-                const labels = {
-                    'github': 'GitHub',
-                    'external': 'Website',
-                    'whatsapp': 'WhatsApp',
-                    'youtube': 'YouTube',
-                    'other': 'Lainnya'
-                };
-                return labels[type] || 'Lainnya';
-            }
-
-            viewLink(linkId) {
-                const link = this.links.find(l => l.id === linkId);
-                if (!link) return;
-
-                // Tampilkan detail link di preview
-                document.getElementById('previewTitle').textContent = link.title;
-                document.getElementById('previewUrl').textContent = link.target_url;
-                document.getElementById('previewQrUrl').textContent = link.qr_url;
-                document.getElementById('previewTime').textContent = new Date(link.created_at).toLocaleString('id-ID');
-                
-                // Generate QR Code
-                this.generateQRPreview(link.qr_url);
-                
-                // Show preview section
-                document.getElementById('qrPreviewSection').classList.add('active');
-                document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
-                
-                this.showToast(`Melihat link: "${link.title}"`, 'info');
-            }
-
-            editLink(linkId) {
-                const link = this.links.find(l => l.id === linkId);
-                if (!link) return;
-
-                this.editingLinkId = linkId;
-                
-                // Fill form dengan data link
-                document.getElementById('linkTitle').value = link.title;
-                document.getElementById('linkType').value = link.type;
-                document.getElementById('linkCategory').value = link.category;
-                document.getElementById('linkDescription').value = link.description || '';
-                document.getElementById('isFeatured').checked = link.is_featured || false;
-                document.getElementById('isActive').checked = link.is_active !== false;
-                
-                // Handle type-specific fields
-                this.handleLinkTypeChange(link.type);
-                
-                if (link.type === 'github') {
-                    // Extract GitHub info from URL
-                    try {
-                        const url = new URL(link.target_url);
-                        const pathParts = url.hostname.split('.');
-                        if (pathParts.length === 3 && pathParts[1] === 'github' && pathParts[2] === 'io') {
-                            const username = pathParts[0];
-                            const path = url.pathname.split('/').filter(p => p);
-                            if (path.length >= 2) {
-                                const repoName = path[0];
-                                const filename = path[path.length - 1];
-                                document.getElementById('githubRepoUrl').value = `https://github.com/${username}/${repoName}`;
-                                document.getElementById('githubFilename').value = filename;
-                            }
-                        }
-                    } catch (e) {
-                        // Invalid URL
-                    }
-                } else if (link.type === 'external') {
-                    document.getElementById('externalUrl').value = link.target_url;
-                } else if (link.type === 'whatsapp') {
-                    const number = link.target_url.replace('https://wa.me/', '');
-                    document.getElementById('whatsappNumber').value = number;
-                } else if (link.type === 'youtube') {
-                    const videoId = link.target_url.replace('https://youtu.be/', '');
-                    document.getElementById('youtubeId').value = videoId;
-                } else if (link.type === 'other') {
-                    document.getElementById('otherUrl').value = link.target_url;
-                }
-                
-                // Update button text
-                document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Update Link';
-                
-                // Update preview URL
-                this.updateUrlPreview();
-                
-                // Scroll to form
-                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
-                
-                this.showToast(`Mengedit link: "${link.title}"`, 'info');
-            }
-
-            deleteLink(linkId) {
-                if (!confirm('Apakah Anda yakin ingin menghapus link ini?')) return;
-
-                const linkIndex = this.links.findIndex(l => l.id === linkId);
-                if (linkIndex !== -1) {
-                    const linkTitle = this.links[linkIndex].title;
-                    this.links.splice(linkIndex, 1);
-                    
-                    // Update localStorage
-                    localStorage.setItem('admin_qr_links', JSON.stringify(this.links));
-                    
-                    // Juga hapus dari Tabungan Digital
-                    this.removeFromTabunganDigital(linkId);
-                    
-                    this.renderLinksTable();
-                    this.updateStats();
-                    this.showToast(`Link "${linkTitle}" berhasil dihapus`, 'success');
-                }
-            }
-
-            removeFromTabunganDigital(linkId) {
-                try {
-                    const existingLinks = JSON.parse(localStorage.getItem('qr_hybrid_links_tabungan') || '[]');
-                    const updatedLinks = existingLinks.filter(link => link.id !== linkId);
-                    localStorage.setItem('qr_hybrid_links_tabungan', JSON.stringify(updatedLinks));
-                } catch (error) {
-                    console.error('Error removing from Tabungan Digital:', error);
-                }
-            }
-
-            testCurrentLink() {
-                if (!this.currentQRUrl) {
-                    this.showToast('Generate QR Code terlebih dahulu', 'error');
-                    return;
-                }
-
-                window.open(this.currentQRUrl, '_blank');
-                this.showToast('Membuka QR Code di tab baru...', 'info');
-            }
-
-            copyUrlToClipboard() {
-                if (!this.currentQRUrl) {
-                    this.showToast('Tidak ada URL untuk disalin', 'error');
-                    return;
-                }
-
-                navigator.clipboard.writeText(this.currentQRUrl).then(() => {
-                    this.showToast('URL berhasil disalin ke clipboard', 'success');
-                }).catch(err => {
-                    console.error('Error copying URL:', err);
-                    this.showToast('Gagal menyalin URL', 'error');
-                });
-            }
-
-            resetForm() {
-                document.getElementById('linkForm').reset();
-                document.getElementById('urlPreviewCard').classList.remove('active');
-                document.getElementById('qrPreviewSection').classList.remove('active');
-                document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Simpan & Generate QR';
-                this.editingLinkId = null;
-                this.currentQRUrl = '';
-                
-                // Reset type-specific displays
-                const groups = ['githubInput', 'externalInput', 'whatsappInput', 'youtubeInput', 'otherInput'];
-                groups.forEach(group => {
-                    const el = document.getElementById(group);
-                    if (el) el.classList.remove('active');
-                });
-                
-                document.getElementById('githubPreview').textContent = 'isi repository URL dan nama file';
-                
-                this.showToast('Form telah direset', 'info');
-            }
-
-            showForm() {
-                document.getElementById('qrPreviewSection').classList.remove('active');
-                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
-            }
-
-            updateDate() {
-                const now = new Date();
-                const options = { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                };
-                document.getElementById('currentDate').textContent = 
-                    now.toLocaleDateString('id-ID', options);
-            }
-
-            updateStats() {
-                // Total links
-                document.getElementById('totalLinks').textContent = this.links.length;
-                
-                // Active QR codes
-                const activeLinks = this.links.filter(link => link.is_active !== false);
-                document.getElementById('activeQRs').textContent = activeLinks.length;
-                
-                // Featured links
-                const featuredLinks = this.links.filter(link => link.is_featured);
-                document.getElementById('featuredLinks').textContent = featuredLinks.length;
-                
-                // Links in Firebase (dummy value - in real app, fetch from Firebase)
-                const firebaseLinks = this.links.filter(link => link.qr_url.includes('firebase') || link.type === 'github');
-                document.getElementById('firebaseLinks').textContent = firebaseLinks.length;
-            }
-
-            showToast(message, type = 'info') {
-                const toast = document.getElementById('toast');
-                const toastMsg = document.getElementById('toastMessage');
-                
-                toast.className = `toast ${type} show`;
-                toastMsg.textContent = message;
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
+            targetUrl = `https://youtu.be/${videoId}`;
+            isValid = true;
+            
+        } else if (linkType === 'other') {
+            targetUrl = document.getElementById('otherUrl').value.trim();
+            isValid = this.isValidUrl(targetUrl);
         }
 
-        // ===== INISIALISASI =====
-        let adminSystem;
+        if (!isValid) {
+            this.showToast('URL tidak valid', 'error');
+            return;
+        }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                // Cek jika user adalah admin
-                const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
-                const isAdmin = currentUser && (
-                    currentUser.role === 'admin' || 
-                    currentUser.email === 'admin@koperasi.com' ||
-                    currentUser.email === 'koperasi@gmail.com' ||
-                    (currentUser.email && currentUser.email.includes('admin'))
-                );
+        // PERBAIKAN: Debug log
+        console.log('Target URL:', targetUrl);
+        console.log('QR Code URL akan dibuat untuk:', targetUrl);
 
-                if (!isAdmin) {
-                    alert('⚠️ Akses ditolak! Halaman ini hanya untuk Admin.');
-                    window.location.href = 'tabungan-digital.html';
-                    return;
-                }
+        // Generate QR Code URL
+        const qrUrl = this.generateQRHybridUrl(targetUrl);
+        this.currentQRUrl = qrUrl;
 
-                // Initialize admin system
-                adminSystem = new AdminQRCodeSystem();
-                window.adminSystem = adminSystem;
-                
-                console.log('✅ Admin QR Code System Application Ready');
-                
-            } catch (error) {
-                console.error('❌ Error initializing admin system:', error);
-                
-                // Fallback error handling
-                const errorDiv = document.createElement('div');
-                errorDiv.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: white; z-index: 10000; display: flex; flex-direction: column;
-                    align-items: center; justify-content: center; padding: 20px; text-align: center;
-                `;
-                errorDiv.innerHTML = `
-                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f44336; margin-bottom: 20px;"></i>
-                    <h2 style="color: #333; margin-bottom: 15px;">Terjadi Kesalahan</h2>
-                    <p style="color: #666; margin-bottom: 25px;">Gagal memuat sistem admin</p>
-                    <button onclick="window.location.href='dashboard-admin.html'" style="
-                        background: #1a5f23; color: white; border: none; padding: 12px 24px;
-                        border-radius: 8px; font-size: 16px; cursor: pointer; margin: 10px;
-                    ">
-                        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
-                    </button>
-                `;
-                document.body.innerHTML = '';
-                document.body.appendChild(errorDiv);
+        // Update preview section
+        document.getElementById('previewTitle').textContent = title;
+        document.getElementById('previewUrl').textContent = targetUrl;
+        document.getElementById('previewQrUrl').textContent = qrUrl;
+        document.getElementById('previewTime').textContent = new Date().toLocaleString('id-ID');
+        
+        // Generate QR Code
+        this.generateQRPreview(qrUrl);
+
+        // Show preview section
+        document.getElementById('qrPreviewSection').classList.add('active');
+        document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
+        
+        this.showToast('QR Code Hybrid berhasil digenerate!', 'success');
+    }
+
+    // TAMBAHKAN FUNGSI TEST URL
+    testCurrentLink() {
+        if (!this.currentQRUrl) {
+            this.showToast('Generate QR Code terlebih dahulu', 'error');
+            return;
+        }
+
+        // PERBAIKAN: Decode URL untuk debugging
+        const url = new URL(this.currentQRUrl);
+        const params = new URLSearchParams(url.search);
+        const redirectUrl = decodeURIComponent(params.get('redirect') || '');
+        
+        console.log('Testing QR Code URL:', this.currentQRUrl);
+        console.log('Redirect to:', redirectUrl);
+        
+        // PERBAIKAN: Test redirect URL terlebih dahulu
+        if (redirectUrl) {
+            // Buka redirect URL di tab baru untuk testing
+            const testWindow = window.open(redirectUrl, '_blank');
+            
+            if (!testWindow) {
+                this.showToast('Popup diblokir. Izinkan popup untuk testing.', 'warning');
+                // Alternatif: redirect di tab yang sama
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 1000);
             }
-        });
-    </script>
+        } else {
+            // Jika tidak ada redirect, buka QR Code URL
+            window.open(this.currentQRUrl, '_blank');
+        }
+        
+        this.showToast('Membuka QR Code di tab baru...', 'info');
+    }
+
+    // TAMBAHKAN FUNGSI VALIDASI KHUSUS GITHUB
+    validateGitHubUrl(repoUrl, filename) {
+        try {
+            // Validasi format GitHub URL
+            if (!repoUrl.startsWith('https://github.com/')) {
+                return { valid: false, error: 'URL harus dimulai dengan https://github.com/' };
+            }
+            
+            const url = new URL(repoUrl);
+            const pathParts = url.pathname.split('/').filter(p => p);
+            
+            if (pathParts.length < 2) {
+                return { valid: false, error: 'Format: https://github.com/username/repository' };
+            }
+            
+            const username = pathParts[0];
+            const repoName = pathParts[1];
+            
+            // Validasi filename
+            if (!filename || !filename.endsWith('.html')) {
+                return { valid: false, error: 'Nama file harus berakhir dengan .html' };
+            }
+            
+            // Build GitHub Pages URL
+            const ghPagesUrl = `https://${username.toLowerCase()}.github.io/${repoName}/${filename}`;
+            
+            return {
+                valid: true,
+                username: username,
+                repoName: repoName,
+                ghPagesUrl: ghPagesUrl
+            };
+            
+        } catch (error) {
+            return { valid: false, error: 'URL tidak valid: ' + error.message };
+        }
+    }
+}                                      
+</script>
 </body>
 </html>
