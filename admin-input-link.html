@@ -366,10 +366,33 @@
             gap: 5px;
         }
 
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .form-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-checkbox label {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        /* ===== URL INPUT - PERBAIKAN UTAMA ===== */
+        .url-input-wrapper {
+            margin-bottom: 20px;
+        }
+
         .url-input-group {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 8px;
         }
 
         @media (min-width: 576px) {
@@ -388,23 +411,25 @@
             min-width: 120px;
             text-align: center;
             white-space: nowrap;
-        }
-
-        .form-checkbox {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 12px 0;
+            justify-content: center;
         }
 
-        .form-checkbox input {
-            width: 18px;
-            height: 18px;
+        .url-input-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .form-checkbox label {
-            font-weight: 500;
-            font-size: 0.95rem;
+        .url-example {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-blue);
         }
 
         /* ===== URL PREVIEW ===== */
@@ -841,28 +866,6 @@
             background: var(--warning);
         }
 
-        /* ===== FORM TYPE SPECIFIC ===== */
-        .form-type-group {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .form-type-group.active {
-            display: block;
-        }
-
-        .github-input-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        @media (min-width: 576px) {
-            .github-input-grid {
-                grid-template-columns: 2fr 1fr;
-            }
-        }
-
         /* ===== CURRENT DATE ===== */
         .current-date {
             font-size: 0.85rem;
@@ -895,11 +898,6 @@
         .empty-state p {
             margin-bottom: 10px;
             font-size: 0.95rem;
-        }
-
-        /* ===== HIDDEN MENU ADMIN (Dihapus sesuai permintaan) ===== */
-        .admin-sidebar {
-            display: none;
         }
     </style>
 </head>
@@ -1019,14 +1017,15 @@
                                 </label>
                                 <select class="form-control" id="linkType" required>
                                     <option value="">Pilih Tipe Link</option>
-                                    <option value="github">GitHub Pages</option>
-                                    <option value="external">Website Eksternal</option>
-                                    <option value="whatsapp">WhatsApp</option>
-                                    <option value="youtube">YouTube</option>
-                                    <option value="other">Lainnya</option>
+                                    <option value="external" selected>🌐 Website Eksternal</option>
+                                    <option value="github">💻 GitHub Pages</option>
+                                    <option value="whatsapp">📱 WhatsApp</option>
+                                    <option value="youtube">📺 YouTube</option>
+                                    <option value="pdf">📄 PDF/Dokumen</option>
+                                    <option value="other">🔗 Lainnya</option>
                                 </select>
                                 <div class="form-hint">
-                                    Pilih GitHub Pages untuk file HTML di GitHub
+                                    Pilih tipe link untuk format URL yang sesuai
                                 </div>
                             </div>
 
@@ -1049,94 +1048,30 @@
 
                         <!-- Kolom 2 -->
                         <div>
-                            <div class="form-group">
+                            <!-- ===== URL INPUT - PERBAIKAN UTAMA ===== -->
+                            <div class="form-group url-input-wrapper">
                                 <label class="form-label">
                                     <i class="fas fa-link"></i>
                                     URL Target *
                                 </label>
                                 
-                                <!-- GitHub Pages Input -->
-                                <div id="githubInput" class="form-type-group">
-                                    <div class="github-input-grid">
-                                        <div>
-                                            <label style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem;">
-                                                Repository URL:
-                                            </label>
-                                            <input type="text" 
+                                <!-- URL Input Dinamis -->
+                                <div id="urlInputContainer">
+                                    <!-- Default: External URL -->
+                                    <div class="url-input-group" id="externalUrlGroup">
+                                        <div class="url-prefix">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </div>
+                                        <div class="url-input-field">
+                                            <input type="url" 
                                                    class="form-control" 
-                                                   id="githubRepoUrl"
-                                                   placeholder="https://github.com/username/repo">
-                                            <div class="form-hint">
-                                                Contoh: https://github.com/Kangeldzi/Koperasi-Asmara-Tani-
+                                                   id="externalUrl"
+                                                   placeholder="https://contoh.com/path"
+                                                   required>
+                                            <div class="url-example">
+                                                Contoh: https://koperasi-asmara-tani.com/profil-anggota
                                             </div>
                                         </div>
-                                        <div>
-                                            <label style="display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem;">
-                                                Nama File:
-                                            </label>
-                                            <input type="text" 
-                                                   class="form-control" 
-                                                   id="githubFilename"
-                                                   placeholder="eldi-sugianto.html">
-                                            <div class="form-hint">
-                                                Contoh: eldi-sugianto.html
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-hint" style="margin-top: 10px;">
-                                        <i class="fas fa-lightbulb"></i>
-                                        File akan diambil dari: <span id="githubPreview" style="color: var(--primary);"></span>
-                                    </div>
-                                </div>
-
-                                <!-- External URL Input -->
-                                <div id="externalInput" class="form-type-group">
-                                    <input type="url" 
-                                           class="form-control" 
-                                           id="externalUrl"
-                                           placeholder="https://contoh.com/path">
-                                    <div class="form-hint">
-                                        Pastikan URL lengkap dengan http:// atau https://
-                                    </div>
-                                </div>
-
-                                <!-- WhatsApp Input -->
-                                <div id="whatsappInput" class="form-type-group">
-                                    <div class="url-input-group">
-                                        <span class="url-prefix">https://wa.me/</span>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="whatsappNumber"
-                                               placeholder="6285218483129"
-                                               pattern="[0-9]*">
-                                    </div>
-                                    <div class="form-hint">
-                                        Masukkan nomor WhatsApp tanpa tanda + atau spasi
-                                    </div>
-                                </div>
-
-                                <!-- YouTube Input -->
-                                <div id="youtubeInput" class="form-type-group">
-                                    <div class="url-input-group">
-                                        <span class="url-prefix">https://youtu.be/</span>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="youtubeId"
-                                               placeholder="dQw4w9WgXcQ">
-                                    </div>
-                                    <div class="form-hint">
-                                        Masukkan ID video YouTube (setelah watch?v=)
-                                    </div>
-                                </div>
-
-                                <!-- Other Input -->
-                                <div id="otherInput" class="form-type-group">
-                                    <input type="url" 
-                                           class="form-control" 
-                                           id="otherUrl"
-                                           placeholder="https://contoh.com">
-                                    <div class="form-hint">
-                                        URL lengkap untuk link lainnya
                                     </div>
                                 </div>
                             </div>
@@ -1293,13 +1228,14 @@
                             <tr>
                                 <th>Judul</th>
                                 <th>Tipe</th>
+                                <th>URL Target</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="linksTableBody">
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                <td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">
                                     <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
                                     Belum ada link yang tersimpan
                                 </td>
@@ -1318,7 +1254,7 @@
     </div>
 
     <script>
-        // ===== ADMIN QR CODE HYBRID SYSTEM =====
+        // ===== ADMIN QR CODE HYBRID SYSTEM - PERBAIKAN LENGKAP =====
         class AdminQRCodeSystem {
             constructor() {
                 this.adminData = this.getAdminData();
@@ -1354,56 +1290,132 @@
                     this.handleLinkTypeChange(e.target.value);
                 });
                 
-                // Auto-update GitHub preview
-                document.getElementById('githubRepoUrl').addEventListener('input', () => {
-                    this.updateGitHubPreview();
-                });
-                document.getElementById('githubFilename').addEventListener('input', () => {
-                    this.updateGitHubPreview();
-                });
+                // Set default URL input
+                this.setupDefaultUrlInput();
+            }
+
+            setupDefaultUrlInput() {
+                // Default input untuk external URL
+                const container = document.getElementById('urlInputContainer');
+                container.innerHTML = this.getUrlInputTemplate('external');
+            }
+
+            getUrlInputTemplate(type) {
+                const templates = {
+                    'external': `
+                        <div class="url-input-group" id="externalUrlGroup">
+                            <div class="url-prefix">
+                                <i class="fas fa-external-link-alt"></i>
+                            </div>
+                            <div class="url-input-field">
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="https://contoh.com/path"
+                                       required>
+                                <div class="url-example">
+                                    Contoh: https://koperasi-asmara-tani.com/profil-anggota
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    'github': `
+                        <div class="url-input-group" id="githubUrlGroup">
+                            <div class="url-prefix">
+                                <i class="fab fa-github"></i>
+                            </div>
+                            <div class="url-input-field">
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="https://username.github.io/repository/file.html"
+                                       required>
+                                <div class="url-example">
+                                    Contoh: https://kangeldzi.github.io/Koperasi-Asmara-Tani-/eldi-sugianto.html
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    'whatsapp': `
+                        <div class="url-input-group" id="whatsappUrlGroup">
+                            <div class="url-prefix">
+                                https://wa.me/
+                            </div>
+                            <div class="url-input-field">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="6285218483129"
+                                       pattern="[0-9]*"
+                                       required>
+                                <div class="url-example">
+                                    Contoh: 6285218483129 (tanpa + atau spasi)
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    'youtube': `
+                        <div class="url-input-group" id="youtubeUrlGroup">
+                            <div class="url-prefix">
+                                https://youtu.be/
+                            </div>
+                            <div class="url-input-field">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="dQw4w9WgXcQ"
+                                       required>
+                                <div class="url-example">
+                                    Contoh: dQw4w9WgXcQ (ID video YouTube)
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    'pdf': `
+                        <div class="url-input-group" id="pdfUrlGroup">
+                            <div class="url-prefix">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="url-input-field">
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="https://contoh.com/dokumen.pdf"
+                                       required>
+                                <div class="url-example">
+                                    Contoh: https://koperasi-asmara-tani.com/dokumen/anggaran-dasar.pdf
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    'other': `
+                        <div class="url-input-group" id="otherUrlGroup">
+                            <div class="url-prefix">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="url-input-field">
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="https://contoh.com"
+                                       required>
+                                <div class="url-example">
+                                    Masukkan URL lengkap dengan http:// atau https://
+                                </div>
+                            </div>
+                        </div>
+                    `
+                };
+
+                return templates[type] || templates['external'];
             }
 
             handleLinkTypeChange(type) {
-                // Hide all input groups
-                const groups = ['githubInput', 'externalInput', 'whatsappInput', 'youtubeInput', 'otherInput'];
-                groups.forEach(group => {
-                    const el = document.getElementById(group);
-                    if (el) el.classList.remove('active');
-                });
+                const container = document.getElementById('urlInputContainer');
+                container.innerHTML = this.getUrlInputTemplate(type);
                 
-                // Show selected input group
-                if (type) {
-                    const groupId = `${type}Input`;
-                    const el = document.getElementById(groupId);
-                    if (el) el.classList.add('active');
-                }
-                
+                // Update URL preview jika sudah ada input
                 this.updateUrlPreview();
-            }
-
-            updateGitHubPreview() {
-                const repoUrl = document.getElementById('githubRepoUrl').value.trim();
-                const filename = document.getElementById('githubFilename').value.trim();
-                
-                if (repoUrl && filename) {
-                    try {
-                        // Convert GitHub repo URL to GitHub Pages URL
-                        // https://github.com/username/repo -> https://username.github.io/repo/
-                        const url = new URL(repoUrl);
-                        const pathParts = url.pathname.split('/').filter(p => p);
-                        
-                        if (pathParts.length >= 2) {
-                            const username = pathParts[0];
-                            const repoName = pathParts[1];
-                            const ghPagesUrl = `https://${username}.github.io/${repoName}/${filename}`;
-                            document.getElementById('githubPreview').textContent = ghPagesUrl;
-                        }
-                    } catch (e) {
-                        document.getElementById('githubPreview').textContent = 'URL tidak valid';
-                    }
-                } else {
-                    document.getElementById('githubPreview').textContent = 'isi repository URL dan nama file';
-                }
             }
 
             getAdminData() {
@@ -1471,259 +1483,601 @@
                 document.getElementById('copyUrlBtn').addEventListener('click', () => {
                     this.copyUrlToClipboard();
                 });
+
+                // Listen to URL input changes
+                document.addEventListener('input', (e) => {
+                    if (e.target.id === 'targetUrl' || e.target.id === 'linkTitle') {
+                        this.updateUrlPreview();
+                    }
+                });
             }
 
             updateUrlPreview() {
-                const linkType = document.getElementById('linkType').value;
-                let targetUrl = '';
+                const urlInput = document.getElementById('targetUrl');
+                const titleInput = document.getElementById('linkTitle').value.trim();
                 
-                if (linkType === 'github') {
-                    const repoUrl = document.getElementById('githubRepoUrl').value.trim();
-                    const filename = document.getElementById('githubFilename').value.trim();
+                if (urlInput && urlInput.value.trim() && titleInput) {
+                    const targetUrl = this.formatTargetUrl(urlInput.value.trim());
                     
-                    if (repoUrl && filename) {
-                        try {
-                            const url = new URL(repoUrl);
-                            const pathParts = url.pathname.split('/').filter(p => p);
-                            
-                            if (pathParts.length >= 2) {
-                                const username = pathParts[0];
-                                const repoName = pathParts[1];
-                                targetUrl = `https://${username}.github.io/${repoName}/${filename}`;
-                            }
-                        } catch (e) {
-                            // Invalid URL
-                        }
-                    }
-                } else if (linkType === 'external') {
-                    targetUrl = document.getElementById('externalUrl').value.trim();
-                } else if (linkType === 'whatsapp') {
-                    const number = document.getElementById('whatsappNumber').value.trim();
-                    if (number) {
-                        targetUrl = `https://wa.me/${number}`;
-                    }
-                } else if (linkType === 'youtube') {
-                    const videoId = document.getElementById('youtubeId').value.trim();
-                    if (videoId) {
-                        targetUrl = `https://youtu.be/${videoId}`;
-                    }
-                } else if (linkType === 'other') {
-                    targetUrl = document.getElementById('otherUrl').value.trim();
-                }
-                
-                if (targetUrl && this.isValidUrl(targetUrl)) {
-                    const qrUrl = this.generateQRHybridUrl(targetUrl);
-                    
-                    document.getElementById('generatedUrl').textContent = qrUrl;
-                    document.getElementById('urlPreviewCard').classList.add('active');
-                    this.currentQRUrl = qrUrl;
-                } else {
-                    document.getElementById('urlPreviewCard').classList.remove('active');
-                    this.currentQRUrl = '';
-                }
-            }
-
-    generateQRHybridUrl(targetUrl) {
-        // PERBAIKAN 1: Encode URL dengan benar
-        const encodedRedirect = encodeURIComponent(targetUrl);
-        
-        const params = new URLSearchParams({
-            // Metadata admin
-            admin_id: this.adminData.email || 'admin',
-            admin_name: encodeURIComponent(this.adminData.name || 'Admin'),
-            
-            // Data link
-            redirect: encodedRedirect,
-            link_title: encodeURIComponent(document.getElementById('linkTitle').value.trim() || 'Link Custom'),
-            link_type: document.getElementById('linkType').value,
-            link_category: document.getElementById('linkCategory').value,
-            
-            // Target untuk Tabungan Digital
-            target: 'tabungan_digital',
-            feature: 'admin_generated_link',
-            
-            // Timestamp
-            timestamp: Date.now(),
-            version: 'admin_v2.0'
-        });
-
-        return `${this.vercelBaseUrl}redirect?${params.toString()}`;
-    }
-
-    async previewQRCode() {
-        // ... kode sebelumnya ...
-
-        // Get target URL berdasarkan tipe
-        let targetUrl = '';
-        let isValid = false;
-        
-        if (linkType === 'github') {
-            const repoUrl = document.getElementById('githubRepoUrl').value.trim();
-            const filename = document.getElementById('githubFilename').value.trim();
-            
-            if (!repoUrl || !filename) {
-                this.showToast('Repository URL dan Nama File harus diisi', 'error');
-                return;
-            }
-            
-            try {
-                const url = new URL(repoUrl);
-                const pathParts = url.pathname.split('/').filter(p => p);
-                
-                if (pathParts.length >= 2) {
-                    const username = pathParts[0].toLowerCase(); // PERBAIKAN: lowercase username
-                    const repoName = pathParts[1]; // PERBAIKAN: jangan ubah case repo
-                    
-                    // PERBAIKAN: Format URL GitHub Pages yang benar
-                    targetUrl = `https://${username}.github.io/${repoName}/${filename}`;
-                    console.log('GitHub Pages URL generated:', targetUrl);
-                    isValid = true;
-                    
-                    // PERBAIKAN: Test URL format
-                    const testUrl = new URL(targetUrl);
-                    if (!testUrl.protocol.startsWith('http')) {
-                        this.showToast('Format URL GitHub Pages salah', 'error');
+                    if (targetUrl && this.isValidUrl(targetUrl)) {
+                        const qrUrl = this.generateQRHybridUrl(targetUrl);
+                        
+                        document.getElementById('generatedUrl').textContent = qrUrl;
+                        document.getElementById('urlPreviewCard').classList.add('active');
+                        this.currentQRUrl = qrUrl;
                         return;
                     }
+                }
+                
+                document.getElementById('urlPreviewCard').classList.remove('active');
+                this.currentQRUrl = '';
+            }
+
+            formatTargetUrl(inputUrl) {
+                const type = document.getElementById('linkType').value;
+                
+                if (type === 'whatsapp') {
+                    // Format WhatsApp URL
+                    const number = inputUrl.replace(/\D/g, '');
+                    return `https://wa.me/${number}`;
+                } else if (type === 'youtube') {
+                    // Format YouTube URL
+                    const videoId = inputUrl.replace(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/, '$2');
+                    return `https://youtu.be/${videoId}`;
                 } else {
-                    this.showToast('GitHub URL tidak valid', 'error');
+                    // Untuk tipe lain, return URL as-is
+                    return inputUrl;
+                }
+            }
+
+            generateQRHybridUrl(targetUrl) {
+                // Encode URL dengan benar
+                const encodedRedirect = encodeURIComponent(targetUrl);
+                const title = document.getElementById('linkTitle').value.trim() || 'Link Custom';
+                const type = document.getElementById('linkType').value;
+                const category = document.getElementById('linkCategory').value;
+                
+                const params = new URLSearchParams({
+                    // Metadata admin
+                    admin_id: this.adminData.email || 'admin',
+                    admin_name: encodeURIComponent(this.adminData.name || 'Admin'),
+                    
+                    // Data link
+                    redirect: encodedRedirect,
+                    link_title: encodeURIComponent(title),
+                    link_type: type,
+                    link_category: category,
+                    
+                    // Target untuk Tabungan Digital
+                    target: 'tabungan_digital',
+                    feature: 'admin_generated_link',
+                    
+                    // Timestamp
+                    timestamp: Date.now(),
+                    version: 'admin_v2.0'
+                });
+
+                return `${this.vercelBaseUrl}redirect?${params.toString()}`;
+            }
+
+            async previewQRCode() {
+                const title = document.getElementById('linkTitle').value.trim();
+                const type = document.getElementById('linkType').value;
+                const category = document.getElementById('linkCategory').value;
+                const urlInput = document.getElementById('targetUrl');
+                
+                // Validasi
+                if (!title) {
+                    this.showToast('Judul link harus diisi', 'error');
                     return;
                 }
-            } catch (e) {
-                console.error('GitHub URL error:', e);
-                this.showToast('GitHub URL tidak valid. Format: https://github.com/username/repo', 'error');
-                return;
+
+                if (!type) {
+                    this.showToast('Pilih tipe link', 'error');
+                    return;
+                }
+
+                if (!category) {
+                    this.showToast('Pilih kategori link', 'error');
+                    return;
+                }
+
+                if (!urlInput || !urlInput.value.trim()) {
+                    this.showToast('URL target harus diisi', 'error');
+                    return;
+                }
+
+                // Format dan validasi URL
+                const targetUrl = this.formatTargetUrl(urlInput.value.trim());
+                
+                if (!this.isValidUrl(targetUrl)) {
+                    this.showToast('URL tidak valid. Pastikan format benar!', 'error');
+                    return;
+                }
+
+                // Generate QR Code URL
+                const qrUrl = this.generateQRHybridUrl(targetUrl);
+                this.currentQRUrl = qrUrl;
+
+                // Update preview section
+                document.getElementById('previewTitle').textContent = title;
+                document.getElementById('previewUrl').textContent = targetUrl;
+                document.getElementById('previewQrUrl').textContent = qrUrl;
+                document.getElementById('previewTime').textContent = new Date().toLocaleString('id-ID');
+                
+                // Generate QR Code
+                this.generateQRPreview(qrUrl);
+
+                // Show preview section
+                document.getElementById('qrPreviewSection').classList.add('active');
+                document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
+                
+                this.showToast('QR Code Hybrid berhasil digenerate!', 'success');
             }
-            
-        } else if (linkType === 'external') {
-            targetUrl = document.getElementById('externalUrl').value.trim();
-            isValid = this.isValidUrl(targetUrl);
-            
-        } else if (linkType === 'whatsapp') {
-            const number = document.getElementById('whatsappNumber').value.trim();
-            if (!number) {
-                this.showToast('Nomor WhatsApp harus diisi', 'error');
-                return;
+
+            isValidUrl(url) {
+                try {
+                    new URL(url);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
             }
-            targetUrl = `https://wa.me/${number}`;
-            isValid = true;
-            
-        } else if (linkType === 'youtube') {
-            const videoId = document.getElementById('youtubeId').value.trim();
-            if (!videoId) {
-                this.showToast('ID video YouTube harus diisi', 'error');
-                return;
+
+            generateQRPreview(url) {
+                const container = document.getElementById('qrcodePreview');
+                container.innerHTML = '';
+
+                if (this.qrCodeInstance) {
+                    this.qrCodeInstance.clear();
+                }
+
+                try {
+                    this.qrCodeInstance = new QRCode(container, {
+                        text: url,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#1a5f23",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.Q
+                    });
+                } catch (error) {
+                    container.innerHTML = `
+                        <div style="color: var(--danger); text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">Gagal membuat QR Code</p>
+                        </div>
+                    `;
+                }
             }
-            targetUrl = `https://youtu.be/${videoId}`;
-            isValid = true;
-            
-        } else if (linkType === 'other') {
-            targetUrl = document.getElementById('otherUrl').value.trim();
-            isValid = this.isValidUrl(targetUrl);
-        }
 
-        if (!isValid) {
-            this.showToast('URL tidak valid', 'error');
-            return;
-        }
+            async saveLinkToFirebase() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Generate QR Code terlebih dahulu', 'error');
+                    return;
+                }
 
-        // PERBAIKAN: Debug log
-        console.log('Target URL:', targetUrl);
-        console.log('QR Code URL akan dibuat untuk:', targetUrl);
+                try {
+                    const linkData = this.collectLinkData();
+                    
+                    // Simpan ke Firebase
+                    if (window.KoperasiDB && window.KoperasiDB.db) {
+                        const db = window.KoperasiDB.db;
+                        
+                        await db.collection('admin_qr_links').add({
+                            ...linkData,
+                            admin_email: this.adminData.email,
+                            created_at: new Date().toISOString(),
+                            status: 'active'
+                        });
+                        
+                        this.showToast('Link berhasil disimpan ke Firebase!', 'success');
+                        this.updateStats();
+                    } else {
+                        this.showToast('Firebase tidak tersedia', 'warning');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error saving to Firebase:', error);
+                    this.showToast('Gagal menyimpan ke Firebase', 'error');
+                }
+            }
 
-        // Generate QR Code URL
-        const qrUrl = this.generateQRHybridUrl(targetUrl);
-        this.currentQRUrl = qrUrl;
+            collectLinkData() {
+                const title = document.getElementById('linkTitle').value.trim();
+                const type = document.getElementById('linkType').value;
+                const category = document.getElementById('linkCategory').value;
+                const description = document.getElementById('linkDescription').value.trim();
+                const isFeatured = document.getElementById('isFeatured').checked;
+                const isActive = document.getElementById('isActive').checked;
+                const urlInput = document.getElementById('targetUrl');
+                
+                // Get target URL
+                const targetUrl = urlInput ? this.formatTargetUrl(urlInput.value.trim()) : '';
 
-        // Update preview section
-        document.getElementById('previewTitle').textContent = title;
-        document.getElementById('previewUrl').textContent = targetUrl;
-        document.getElementById('previewQrUrl').textContent = qrUrl;
-        document.getElementById('previewTime').textContent = new Date().toLocaleString('id-ID');
-        
-        // Generate QR Code
-        this.generateQRPreview(qrUrl);
+                const linkData = {
+                    id: `admin_link_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    title,
+                    type,
+                    category,
+                    description,
+                    target_url: targetUrl,
+                    qr_url: this.currentQRUrl,
+                    is_featured: isFeatured,
+                    is_active: isActive,
+                    created_by: this.adminData.email,
+                    created_by_name: this.adminData.name,
+                    created_at: new Date().toISOString()
+                };
 
-        // Show preview section
-        document.getElementById('qrPreviewSection').classList.add('active');
-        document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
-        
-        this.showToast('QR Code Hybrid berhasil digenerate!', 'success');
-    }
+                // Save to local storage
+                this.links.unshift(linkData);
+                localStorage.setItem('admin_qr_links', JSON.stringify(this.links));
+                
+                // Save for Tabungan Digital
+                this.saveLinkForTabunganDigital(linkData);
+                
+                // Update UI
+                this.renderLinksTable();
+                this.updateStats();
+                this.showToast('Link berhasil disimpan!', 'success');
+                this.resetForm();
+                
+                return linkData;
+            }
 
-    // TAMBAHKAN FUNGSI TEST URL
-    testCurrentLink() {
-        if (!this.currentQRUrl) {
-            this.showToast('Generate QR Code terlebih dahulu', 'error');
-            return;
-        }
+            saveLinkForTabunganDigital(linkData) {
+                try {
+                    // Load existing links for Tabungan Digital
+                    const existingLinks = JSON.parse(localStorage.getItem('qr_hybrid_links_tabungan') || '[]');
+                    
+                    // Add new link
+                    existingLinks.unshift({
+                        id: linkData.id,
+                        title: linkData.title,
+                        qr_url: linkData.qr_url,
+                        category: linkData.category,
+                        is_featured: linkData.is_featured,
+                        created_at: linkData.created_at
+                    });
+                    
+                    // Keep only last 20 links
+                    if (existingLinks.length > 20) {
+                        existingLinks.length = 20;
+                    }
+                    
+                    // Save for Tabungan Digital
+                    localStorage.setItem('qr_hybrid_links_tabungan', JSON.stringify(existingLinks));
+                    
+                    console.log('✅ Link saved for Tabungan Digital:', linkData.title);
+                    
+                } catch (error) {
+                    console.error('Error saving for Tabungan Digital:', error);
+                }
+            }
 
-        // PERBAIKAN: Decode URL untuk debugging
-        const url = new URL(this.currentQRUrl);
-        const params = new URLSearchParams(url.search);
-        const redirectUrl = decodeURIComponent(params.get('redirect') || '');
-        
-        console.log('Testing QR Code URL:', this.currentQRUrl);
-        console.log('Redirect to:', redirectUrl);
-        
-        // PERBAIKAN: Test redirect URL terlebih dahulu
-        if (redirectUrl) {
-            // Buka redirect URL di tab baru untuk testing
-            const testWindow = window.open(redirectUrl, '_blank');
-            
-            if (!testWindow) {
-                this.showToast('Popup diblokir. Izinkan popup untuk testing.', 'warning');
-                // Alternatif: redirect di tab yang sama
+            loadLinks() {
+                try {
+                    const links = localStorage.getItem('admin_qr_links');
+                    return links ? JSON.parse(links) : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            renderLinksTable() {
+                const tbody = document.getElementById('linksTableBody');
+                
+                if (this.links.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
+                                Belum ada link yang tersimpan
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = this.links.slice(0, 10).map(link => `
+                    <tr>
+                        <td>
+                            <strong style="font-size: 0.9rem;">${link.title}</strong>
+                            ${link.is_featured ? '<br><small style="color: var(--warning); font-size: 0.75rem;"><i class="fas fa-star"></i> Unggulan</small>' : ''}
+                            ${link.description ? `<br><small style="color: var(--text-muted); font-size: 0.8rem;">${link.description.substring(0, 40)}${link.description.length > 40 ? '...' : ''}</small>` : ''}
+                        </td>
+                        <td>
+                            <div style="font-size: 0.85rem;">
+                                ${this.getLinkTypeIcon(link.type)} ${this.getLinkTypeLabel(link.type)}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                ${link.target_url.substring(0, 40)}${link.target_url.length > 40 ? '...' : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="link-status ${link.is_active ? 'status-active' : 'status-inactive'}">
+                                ${link.is_active ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="table-btn view" onclick="adminSystem.viewLink('${link.id}')" title="Lihat QR">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="table-btn edit" onclick="adminSystem.editLink('${link.id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="table-btn delete" onclick="adminSystem.deleteLink('${link.id}')" title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            getLinkTypeIcon(type) {
+                const icons = {
+                    'github': 'fab fa-github',
+                    'external': 'fas fa-external-link-alt',
+                    'whatsapp': 'fab fa-whatsapp',
+                    'youtube': 'fab fa-youtube',
+                    'pdf': 'fas fa-file-pdf',
+                    'other': 'fas fa-link'
+                };
+                return `<i class="${icons[type] || 'fas fa-link'}"></i>`;
+            }
+
+            getLinkTypeLabel(type) {
+                const labels = {
+                    'github': 'GitHub',
+                    'external': 'Website',
+                    'whatsapp': 'WhatsApp',
+                    'youtube': 'YouTube',
+                    'pdf': 'PDF',
+                    'other': 'Lainnya'
+                };
+                return labels[type] || 'Lainnya';
+            }
+
+            viewLink(linkId) {
+                const link = this.links.find(l => l.id === linkId);
+                if (!link) return;
+
+                // Tampilkan detail link di preview
+                document.getElementById('previewTitle').textContent = link.title;
+                document.getElementById('previewUrl').textContent = link.target_url;
+                document.getElementById('previewQrUrl').textContent = link.qr_url;
+                document.getElementById('previewTime').textContent = new Date(link.created_at).toLocaleString('id-ID');
+                
+                // Set current QR URL
+                this.currentQRUrl = link.qr_url;
+                
+                // Generate QR Code
+                this.generateQRPreview(link.qr_url);
+                
+                // Show preview section
+                document.getElementById('qrPreviewSection').classList.add('active');
+                document.getElementById('qrPreviewSection').scrollIntoView({ behavior: 'smooth' });
+                
+                this.showToast(`Melihat link: "${link.title}"`, 'info');
+            }
+
+            editLink(linkId) {
+                const link = this.links.find(l => l.id === linkId);
+                if (!link) return;
+
+                this.editingLinkId = linkId;
+                
+                // Fill form dengan data link
+                document.getElementById('linkTitle').value = link.title;
+                document.getElementById('linkType').value = link.type;
+                document.getElementById('linkCategory').value = link.category;
+                document.getElementById('linkDescription').value = link.description || '';
+                document.getElementById('isFeatured').checked = link.is_featured || false;
+                document.getElementById('isActive').checked = link.is_active !== false;
+                
+                // Handle type-specific fields
+                this.handleLinkTypeChange(link.type);
+                
+                // Set URL input value
                 setTimeout(() => {
-                    window.location.href = redirectUrl;
-                }, 1000);
+                    const urlInput = document.getElementById('targetUrl');
+                    if (urlInput) {
+                        // Format URL sesuai tipe untuk display
+                        if (link.type === 'whatsapp') {
+                            const number = link.target_url.replace('https://wa.me/', '');
+                            urlInput.value = number;
+                        } else if (link.type === 'youtube') {
+                            const videoId = link.target_url.replace('https://youtu.be/', '');
+                            urlInput.value = videoId;
+                        } else {
+                            urlInput.value = link.target_url;
+                        }
+                    }
+                }, 100);
+                
+                // Update button text
+                document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Update Link';
+                
+                // Update preview URL
+                setTimeout(() => this.updateUrlPreview(), 150);
+                
+                // Scroll to form
+                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+                
+                this.showToast(`Mengedit link: "${link.title}"`, 'info');
             }
-        } else {
-            // Jika tidak ada redirect, buka QR Code URL
-            window.open(this.currentQRUrl, '_blank');
-        }
-        
-        this.showToast('Membuka QR Code di tab baru...', 'info');
-    }
 
-    // TAMBAHKAN FUNGSI VALIDASI KHUSUS GITHUB
-    validateGitHubUrl(repoUrl, filename) {
-        try {
-            // Validasi format GitHub URL
-            if (!repoUrl.startsWith('https://github.com/')) {
-                return { valid: false, error: 'URL harus dimulai dengan https://github.com/' };
+            deleteLink(linkId) {
+                if (!confirm('Apakah Anda yakin ingin menghapus link ini?')) return;
+
+                const linkIndex = this.links.findIndex(l => l.id === linkId);
+                if (linkIndex !== -1) {
+                    const linkTitle = this.links[linkIndex].title;
+                    this.links.splice(linkIndex, 1);
+                    
+                    // Update localStorage
+                    localStorage.setItem('admin_qr_links', JSON.stringify(this.links));
+                    
+                    // Juga hapus dari Tabungan Digital
+                    this.removeFromTabunganDigital(linkId);
+                    
+                    this.renderLinksTable();
+                    this.updateStats();
+                    this.showToast(`Link "${linkTitle}" berhasil dihapus`, 'success');
+                }
             }
-            
-            const url = new URL(repoUrl);
-            const pathParts = url.pathname.split('/').filter(p => p);
-            
-            if (pathParts.length < 2) {
-                return { valid: false, error: 'Format: https://github.com/username/repository' };
+
+            removeFromTabunganDigital(linkId) {
+                try {
+                    const existingLinks = JSON.parse(localStorage.getItem('qr_hybrid_links_tabungan') || '[]');
+                    const updatedLinks = existingLinks.filter(link => link.id !== linkId);
+                    localStorage.setItem('qr_hybrid_links_tabungan', JSON.stringify(updatedLinks));
+                } catch (error) {
+                    console.error('Error removing from Tabungan Digital:', error);
+                }
             }
-            
-            const username = pathParts[0];
-            const repoName = pathParts[1];
-            
-            // Validasi filename
-            if (!filename || !filename.endsWith('.html')) {
-                return { valid: false, error: 'Nama file harus berakhir dengan .html' };
+
+            testCurrentLink() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Generate QR Code terlebih dahulu', 'error');
+                    return;
+                }
+
+                window.open(this.currentQRUrl, '_blank');
+                this.showToast('Membuka QR Code di tab baru...', 'info');
             }
-            
-            // Build GitHub Pages URL
-            const ghPagesUrl = `https://${username.toLowerCase()}.github.io/${repoName}/${filename}`;
-            
-            return {
-                valid: true,
-                username: username,
-                repoName: repoName,
-                ghPagesUrl: ghPagesUrl
-            };
-            
-        } catch (error) {
-            return { valid: false, error: 'URL tidak valid: ' + error.message };
+
+            copyUrlToClipboard() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Tidak ada URL untuk disalin', 'error');
+                    return;
+                }
+
+                navigator.clipboard.writeText(this.currentQRUrl).then(() => {
+                    this.showToast('URL berhasil disalin ke clipboard', 'success');
+                }).catch(err => {
+                    console.error('Error copying URL:', err);
+                    this.showToast('Gagal menyalin URL', 'error');
+                });
+            }
+
+            resetForm() {
+                document.getElementById('linkForm').reset();
+                document.getElementById('urlPreviewCard').classList.remove('active');
+                document.getElementById('qrPreviewSection').classList.remove('active');
+                document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Simpan & Generate QR';
+                this.editingLinkId = null;
+                this.currentQRUrl = '';
+                
+                // Reset ke default input
+                this.setupDefaultUrlInput();
+                
+                this.showToast('Form telah direset', 'info');
+            }
+
+            showForm() {
+                document.getElementById('qrPreviewSection').classList.remove('active');
+                document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            updateDate() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                document.getElementById('currentDate').textContent = 
+                    now.toLocaleDateString('id-ID', options);
+            }
+
+            updateStats() {
+                // Total links
+                document.getElementById('totalLinks').textContent = this.links.length;
+                
+                // Active QR codes
+                const activeLinks = this.links.filter(link => link.is_active !== false);
+                document.getElementById('activeQRs').textContent = activeLinks.length;
+                
+                // Featured links
+                const featuredLinks = this.links.filter(link => link.is_featured);
+                document.getElementById('featuredLinks').textContent = featuredLinks.length;
+                
+                // Links in Firebase (dummy value - in real app, fetch from Firebase)
+                const firebaseLinks = this.links.filter(link => link.qr_url.includes('firebase') || link.type === 'github');
+                document.getElementById('firebaseLinks').textContent = firebaseLinks.length;
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toastMessage');
+                
+                toast.className = `toast ${type} show`;
+                toastMsg.textContent = message;
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
         }
-    }
-}                                      
-</script>
+
+        // ===== INISIALISASI =====
+        let adminSystem;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Cek jika user adalah admin
+                const currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
+                const isAdmin = currentUser && (
+                    currentUser.role === 'admin' || 
+                    currentUser.email === 'admin@koperasi.com' ||
+                    currentUser.email === 'koperasi@gmail.com' ||
+                    (currentUser.email && currentUser.email.includes('admin'))
+                );
+
+                if (!isAdmin) {
+                    alert('⚠️ Akses ditolak! Halaman ini hanya untuk Admin.');
+                    window.location.href = 'tabungan-digital.html';
+                    return;
+                }
+
+                // Initialize admin system
+                adminSystem = new AdminQRCodeSystem();
+                window.adminSystem = adminSystem;
+                
+                console.log('✅ Admin QR Code System Application Ready');
+                
+            } catch (error) {
+                console.error('❌ Error initializing admin system:', error);
+                
+                // Fallback error handling
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: white; z-index: 10000; display: flex; flex-direction: column;
+                    align-items: center; justify-content: center; padding: 20px; text-align: center;
+                `;
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f44336; margin-bottom: 20px;"></i>
+                    <h2 style="color: #333; margin-bottom: 15px;">Terjadi Kesalahan</h2>
+                    <p style="color: #666; margin-bottom: 25px;">Gagal memuat sistem admin</p>
+                    <button onclick="window.location.href='dashboard-admin.html'" style="
+                        background: #1a5f23; color: white; border: none; padding: 12px 24px;
+                        border-radius: 8px; font-size: 16px; cursor: pointer; margin: 10px;
+                    ">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+                    </button>
+                `;
+                document.body.innerHTML = '';
+                document.body.appendChild(errorDiv);
+            }
+        });
+    </script>
 </body>
 </html>
