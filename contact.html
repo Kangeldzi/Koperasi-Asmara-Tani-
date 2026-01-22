@@ -37,13 +37,13 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: var(--dark-bg);
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 255, 157, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 20%);
+            /* BACKGROUND BARU: GRADIASI HIJAU LEMBUT TEMA KOPERASI */
+            background: linear-gradient(135deg, #0a3d2a 0%, #1e6b4e 25%, #2e8b66 50%, #3da87c 75%, #4bc592 100%);
+            background-attachment: fixed;
+            background-size: cover;
             position: relative;
         }
         
@@ -646,6 +646,8 @@
             color: #a0f0d0;
             font-size: 0.9rem;
             letter-spacing: 1px;
+            background: rgba(10, 58, 42, 0.5);
+            backdrop-filter: blur(5px);
         }
         
         .footer-logo {
