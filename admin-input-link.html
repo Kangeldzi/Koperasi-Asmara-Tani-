@@ -432,6 +432,53 @@
             border-left: 3px solid var(--accent-blue);
         }
 
+        /* GitHub Detection Section */
+        .github-detection-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+        }
+
+        .detection-result {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            border-left: 4px solid var(--success);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .detection-result.error {
+            background: #ffebee;
+            border-left: 4px solid var(--danger);
+        }
+
+        .detection-result.warning {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+        }
+
+        .detection-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .detection-url {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+            word-break: break-all;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
         /* ===== URL PREVIEW ===== */
         .url-preview-card {
             background: #f0f7f0;
@@ -576,6 +623,15 @@
 
         .btn-outline:hover {
             background: rgba(26, 95, 35, 0.1);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #f57c00;
         }
 
         .copy-url-btn {
@@ -882,6 +938,21 @@
             }
         }
 
+        /* ===== LOADING SPINNER ===== */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
@@ -1065,7 +1136,7 @@
                                         <div class="url-input-field">
                                             <input type="url" 
                                                    class="form-control" 
-                                                   id="externalUrl"
+                                                   id="targetUrl"
                                                    placeholder="https://contoh.com/path"
                                                    required>
                                             <div class="url-example">
@@ -1073,6 +1144,50 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- GitHub Detection Section -->
+                            <div id="githubDetectionSection" class="github-detection-section" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fab fa-github"></i>
+                                        GitHub Repository URL
+                                    </label>
+                                    <input type="url" 
+                                           class="form-control" 
+                                           id="githubRepoUrl"
+                                           placeholder="https://github.com/kangeldzi/operasi-asmara-tani-/eldi-sugianto.html"
+                                           value="https://github.com/kangeldzi/operasi-asmara-tani-/eldi-sugianto.html">
+                                    <div class="form-hint">
+                                        Masukkan URL lengkap dari GitHub repository
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="button" 
+                                            class="btn btn-warning"
+                                            id="autoDetectBtn"
+                                            style="width: 100%;">
+                                        <i class="fas fa-magic"></i> Auto-Deteksi GitHub Pages
+                                    </button>
+                                </div>
+                                
+                                <!-- Hasil deteksi -->
+                                <div id="detectionResult" class="detection-result">
+                                    <div class="detection-header">
+                                        <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                                        <div>
+                                            <strong style="color: var(--primary);">URL GitHub Pages Ditemukan!</strong>
+                                        </div>
+                                    </div>
+                                    <div class="detection-url" id="activeGithubUrl"></div>
+                                    <button type="button" 
+                                            class="btn btn-success"
+                                            id="useDetectedUrlBtn"
+                                            style="margin-top: 10px; width: 100%;">
+                                        <i class="fas fa-check"></i> Gunakan URL Ini
+                                    </button>
                                 </div>
                             </div>
 
@@ -1254,6 +1369,227 @@
     </div>
 
     <script>
+        // ===== GITHUB AUTO DETECTOR =====
+        class GitHubAutoDetector {
+            constructor() {
+                this.githubCache = {};
+                this.proxies = [
+                    'https://corsproxy.io/?',
+                    'https://api.codetabs.com/v1/proxy?quest=',
+                    'https://cors-anywhere.herokuapp.com/'
+                ];
+            }
+
+            async detectGitHubUrl(githubUrl) {
+                console.log('🔍 Starting GitHub detection for:', githubUrl);
+                
+                let normalizedUrl = githubUrl.trim();
+                
+                // Cache check
+                if (this.githubCache[normalizedUrl]) {
+                    console.log('✅ Using cached URL');
+                    return this.githubCache[normalizedUrl];
+                }
+                
+                // Jika URL sudah langsung ke GitHub Pages, kembalikan langsung
+                if (normalizedUrl.includes('.github.io')) {
+                    console.log('✅ Already GitHub Pages URL');
+                    this.githubCache[normalizedUrl] = normalizedUrl;
+                    return normalizedUrl;
+                }
+                
+                // Parse GitHub repository URL
+                let parsed = this.parseGitHubUrl(normalizedUrl);
+                if (!parsed) {
+                    console.log('❌ Invalid GitHub URL');
+                    return null;
+                }
+                
+                console.log('📦 Parsed GitHub info:', parsed);
+                
+                // Coba berbagai format GitHub Pages
+                const testUrls = [
+                    // GitHub Pages format (paling umum)
+                    `https://${parsed.username}.github.io/${parsed.repo}/${parsed.path}`,
+                    `https://${parsed.username}.github.io/${parsed.repo}`,
+                    
+                    // Jika repo mengandung dash ganda
+                    `https://${parsed.username}.github.io/${parsed.repo.replace('--', '-')}/${parsed.path}`,
+                    
+                    // Versi dengan branch
+                    `https://${parsed.username}.github.io/${parsed.repo}/main/${parsed.path}`,
+                    `https://${parsed.username}.github.io/${parsed.repo}/master/${parsed.path}`,
+                    `https://${parsed.username}.github.io/${parsed.repo}/gh-pages/${parsed.path}`,
+                    
+                    // Raw content (alternatif)
+                    `https://raw.githubusercontent.com/${parsed.username}/${parsed.repo}/main/${parsed.path}`,
+                    `https://raw.githubusercontent.com/${parsed.username}/${parsed.repo}/master/${parsed.path}`,
+                ];
+                
+                console.log('🔍 Testing URLs:', testUrls);
+                
+                // Test setiap URL
+                for (let i = 0; i < testUrls.length; i++) {
+                    const url = testUrls[i];
+                    console.log(`Testing ${i + 1}/${testUrls.length}: ${url}`);
+                    
+                    try {
+                        const isValid = await this.testUrl(url);
+                        if (isValid) {
+                            console.log(`✅ Found working URL: ${url}`);
+                            this.githubCache[normalizedUrl] = url;
+                            return url;
+                        }
+                    } catch (error) {
+                        console.log(`❌ Failed: ${url}`, error.message);
+                        continue;
+                    }
+                    
+                    // Delay antara request
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                // Jika tidak ditemukan, buat URL GitHub Pages secara otomatis
+                const autoUrl = `https://${parsed.username}.github.io/${parsed.repo}/${parsed.path}`;
+                console.log(`⚠️ Using auto-generated URL: ${autoUrl}`);
+                this.githubCache[normalizedUrl] = autoUrl;
+                return autoUrl;
+            }
+
+            parseGitHubUrl(url) {
+                // Pattern untuk berbagai format GitHub URL
+                const patterns = [
+                    /github\.com\/([^\/]+)\/([^\/]+)\/(?:blob\/[^\/]+\/)?(.+)/,
+                    /github\.com\/([^\/]+)\/([^\/]+)/,
+                    /github\.com\/([^\/]+)\/([^\/]+)\/tree\/[^\/]+\/(.+)/
+                ];
+                
+                for (let pattern of patterns) {
+                    const match = url.match(pattern);
+                    if (match) {
+                        const username = match[1];
+                        let repo = match[2];
+                        let path = match[3] || '';
+                        
+                        // Handle kustomisasi khusus untuk repo Anda
+                        if (repo === 'operasi-asmara-tani-') {
+                            repo = repo.replace(/--?$/, '');
+                        }
+                        
+                        // Bersihkan path
+                        if (path && !path.match(/\.(html|htm|pdf|md)$/i)) {
+                            path = path + '.html';
+                        }
+                        
+                        return { username, repo, path };
+                    }
+                }
+                
+                return null;
+            }
+
+            async testUrl(url) {
+                try {
+                    // Coba tanpa proxy dulu
+                    const response = await fetch(url, {
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        cache: 'no-cache'
+                    });
+                    
+                    // Jika response bisa diakses (meski CORS error), anggap valid
+                    console.log(`✅ URL accessible (HEAD): ${url}`);
+                    return true;
+                    
+                } catch (error) {
+                    // Jika gagal, coba dengan GET request sederhana
+                    try {
+                        const img = new Image();
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                            img.src = url;
+                        });
+                        console.log(`✅ URL accessible (Image): ${url}`);
+                        return true;
+                    } catch (imgError) {
+                        console.log(`❌ URL not accessible: ${url}`);
+                        return false;
+                    }
+                }
+            }
+
+            setupGitHubDetection() {
+                const autoDetectBtn = document.getElementById('autoDetectBtn');
+                const useDetectedUrlBtn = document.getElementById('useDetectedUrlBtn');
+                const detectionResult = document.getElementById('detectionResult');
+                const activeGithubUrl = document.getElementById('activeGithubUrl');
+
+                if (autoDetectBtn) {
+                    autoDetectBtn.addEventListener('click', async () => {
+                        const githubUrl = document.getElementById('githubRepoUrl').value.trim();
+                        
+                        if (!githubUrl || !githubUrl.includes('github.com')) {
+                            this.showToast('Masukkan URL GitHub yang valid', 'error');
+                            return;
+                        }
+                        
+                        // Show loading
+                        const btn = autoDetectBtn;
+                        const originalHtml = btn.innerHTML;
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari URL Aktif...';
+                        btn.disabled = true;
+                        
+                        // Reset result
+                        detectionResult.style.display = 'none';
+                        detectionResult.className = 'detection-result';
+                        
+                        // Deteksi URL aktif
+                        const activeUrl = await this.detectGitHubUrl(githubUrl);
+                        
+                        // Reset button
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                        
+                        if (activeUrl) {
+                            // Tampilkan hasil
+                            activeGithubUrl.textContent = activeUrl;
+                            detectionResult.style.display = 'block';
+                            detectionResult.classList.add('success');
+                            
+                            this.showToast('URL GitHub Pages ditemukan!', 'success');
+                        } else {
+                            detectionResult.style.display = 'block';
+                            detectionResult.classList.add('warning');
+                            activeGithubUrl.textContent = 'Tidak dapat mendeteksi URL aktif. Gunakan URL manual.';
+                            this.showToast('URL tidak ditemukan. Masukkan manual.', 'warning');
+                        }
+                    });
+                }
+
+                if (useDetectedUrlBtn) {
+                    useDetectedUrlBtn.addEventListener('click', () => {
+                        const detectedUrl = activeGithubUrl.textContent;
+                        if (detectedUrl && !detectedUrl.includes('Tidak dapat')) {
+                            document.getElementById('targetUrl').value = detectedUrl;
+                            if (window.adminSystem) {
+                                window.adminSystem.updateUrlPreview();
+                            }
+                            this.showToast('URL berhasil dimasukkan ke form!', 'success');
+                        }
+                    });
+                }
+            }
+
+            showToast(message, type = 'info') {
+                if (window.adminSystem && window.adminSystem.showToast) {
+                    window.adminSystem.showToast(message, type);
+                } else {
+                    console.log(`[${type.toUpperCase()}] ${message}`);
+                }
+            }
+        }
+
         // ===== ADMIN QR CODE HYBRID SYSTEM - PERBAIKAN LENGKAP =====
         class AdminQRCodeSystem {
             constructor() {
@@ -1263,6 +1599,7 @@
                 this.currentQRUrl = '';
                 this.qrCodeInstance = null;
                 this.vercelBaseUrl = 'https://qr-code-hybrid.vercel.app/';
+                this.githubDetector = new GitHubAutoDetector();
                 
                 this.init();
             }
@@ -1301,6 +1638,26 @@
             }
 
             getUrlInputTemplate(type) {
+                if (type === 'github') {
+                    return `
+                        <div class="url-input-group" id="githubUrlGroup">
+                            <div class="url-prefix">
+                                <i class="fab fa-github"></i>
+                            </div>
+                            <div class="url-input-field">
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="targetUrl"
+                                       placeholder="https://username.github.io/repository/file.html"
+                                       required>
+                                <div class="url-example">
+                                    Contoh: https://kangeldzi.github.io/koperasi-asmara-tani/eldi-sugianto.html
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
                 const templates = {
                     'external': `
                         <div class="url-input-group" id="externalUrlGroup">
@@ -1315,23 +1672,6 @@
                                        required>
                                 <div class="url-example">
                                     Contoh: https://koperasi-asmara-tani.com/profil-anggota
-                                </div>
-                            </div>
-                        </div>
-                    `,
-                    'github': `
-                        <div class="url-input-group" id="githubUrlGroup">
-                            <div class="url-prefix">
-                                <i class="fab fa-github"></i>
-                            </div>
-                            <div class="url-input-field">
-                                <input type="url" 
-                                       class="form-control" 
-                                       id="targetUrl"
-                                       placeholder="https://username.github.io/repository/file.html"
-                                       required>
-                                <div class="url-example">
-                                    Contoh: https://kangeldzi.github.io/Koperasi-Asmara-Tani-/eldi-sugianto.html
                                 </div>
                             </div>
                         </div>
@@ -1412,9 +1752,26 @@
 
             handleLinkTypeChange(type) {
                 const container = document.getElementById('urlInputContainer');
-                container.innerHTML = this.getUrlInputTemplate(type);
+                const githubSection = document.getElementById('githubDetectionSection');
                 
-                // Update URL preview jika sudah ada input
+                if (type === 'github') {
+                    // Tampilkan input GitHub dan section deteksi
+                    container.innerHTML = this.getUrlInputTemplate(type);
+                    githubSection.style.display = 'block';
+                    
+                    // Setup GitHub detection
+                    setTimeout(() => {
+                        this.githubDetector.setupGitHubDetection();
+                    }, 100);
+                    
+                    // Auto-fill contoh URL
+                    document.getElementById('githubRepoUrl').value = 
+                        'https://github.com/kangeldzi/operasi-asmara-tani-/eldi-sugianto.html';
+                } else {
+                    container.innerHTML = this.getUrlInputTemplate(type);
+                    githubSection.style.display = 'none';
+                }
+                
                 this.updateUrlPreview();
             }
 
@@ -1887,16 +2244,7 @@
                 setTimeout(() => {
                     const urlInput = document.getElementById('targetUrl');
                     if (urlInput) {
-                        // Format URL sesuai tipe untuk display
-                        if (link.type === 'whatsapp') {
-                            const number = link.target_url.replace('https://wa.me/', '');
-                            urlInput.value = number;
-                        } else if (link.type === 'youtube') {
-                            const videoId = link.target_url.replace('https://youtu.be/', '');
-                            urlInput.value = videoId;
-                        } else {
-                            urlInput.value = link.target_url;
-                        }
+                        urlInput.value = link.target_url;
                     }
                 }, 100);
                 
@@ -1973,6 +2321,10 @@
                 document.getElementById('saveBtn').innerHTML = '<i class="fas fa-save"></i> Simpan & Generate QR';
                 this.editingLinkId = null;
                 this.currentQRUrl = '';
+                
+                // Reset GitHub section
+                document.getElementById('githubDetectionSection').style.display = 'none';
+                document.getElementById('detectionResult').style.display = 'none';
                 
                 // Reset ke default input
                 this.setupDefaultUrlInput();
