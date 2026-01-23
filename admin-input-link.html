@@ -1369,15 +1369,10 @@
     </div>
 
     <script>
-        // ===== GITHUB AUTO DETECTOR =====
+        // ===== GITHUB AUTO DETECTOR - FIXED VERSION =====
         class GitHubAutoDetector {
             constructor() {
                 this.githubCache = {};
-                this.proxies = [
-                    'https://corsproxy.io/?',
-                    'https://api.codetabs.com/v1/proxy?quest=',
-                    'https://cors-anywhere.herokuapp.com/'
-                ];
             }
 
             async detectGitHubUrl(githubUrl) {
@@ -1407,116 +1402,72 @@
                 
                 console.log('📦 Parsed GitHub info:', parsed);
                 
-                // Coba berbagai format GitHub Pages
-                const testUrls = [
-                    // GitHub Pages format (paling umum)
-                    `https://${parsed.username}.github.io/${parsed.repo}/${parsed.path}`,
-                    `https://${parsed.username}.github.io/${parsed.repo}`,
-                    
-                    // Jika repo mengandung dash ganda
-                    `https://${parsed.username}.github.io/${parsed.repo.replace('--', '-')}/${parsed.path}`,
-                    
-                    // Versi dengan branch
-                    `https://${parsed.username}.github.io/${parsed.repo}/main/${parsed.path}`,
-                    `https://${parsed.username}.github.io/${parsed.repo}/master/${parsed.path}`,
-                    `https://${parsed.username}.github.io/${parsed.repo}/gh-pages/${parsed.path}`,
-                    
-                    // Raw content (alternatif)
-                    `https://raw.githubusercontent.com/${parsed.username}/${parsed.repo}/main/${parsed.path}`,
-                    `https://raw.githubusercontent.com/${parsed.username}/${parsed.repo}/master/${parsed.path}`,
-                ];
+                // Untuk URL spesifik Anda, kita tahu formatnya
+                const targetUrl = `https://${parsed.username}.github.io/${parsed.repo}/${parsed.path}`;
                 
-                console.log('🔍 Testing URLs:', testUrls);
+                // Coba akses URL untuk verifikasi
+                const isAccessible = await this.testUrl(targetUrl);
                 
-                // Test setiap URL
-                for (let i = 0; i < testUrls.length; i++) {
-                    const url = testUrls[i];
-                    console.log(`Testing ${i + 1}/${testUrls.length}: ${url}`);
-                    
-                    try {
-                        const isValid = await this.testUrl(url);
-                        if (isValid) {
-                            console.log(`✅ Found working URL: ${url}`);
-                            this.githubCache[normalizedUrl] = url;
-                            return url;
-                        }
-                    } catch (error) {
-                        console.log(`❌ Failed: ${url}`, error.message);
-                        continue;
-                    }
-                    
-                    // Delay antara request
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                if (isAccessible) {
+                    console.log(`✅ GitHub Pages accessible: ${targetUrl}`);
+                    this.githubCache[normalizedUrl] = targetUrl;
+                    return targetUrl;
+                } else {
+                    console.log(`⚠️ GitHub Pages may not be accessible: ${targetUrl}`);
+                    // Tetap return URL karena mungkin hanya masalah CORS
+                    this.githubCache[normalizedUrl] = targetUrl;
+                    return targetUrl;
                 }
-                
-                // Jika tidak ditemukan, buat URL GitHub Pages secara otomatis
-                const autoUrl = `https://${parsed.username}.github.io/${parsed.repo}/${parsed.path}`;
-                console.log(`⚠️ Using auto-generated URL: ${autoUrl}`);
-                this.githubCache[normalizedUrl] = autoUrl;
-                return autoUrl;
             }
 
             parseGitHubUrl(url) {
-                // Pattern untuk berbagai format GitHub URL
-                const patterns = [
-                    /github\.com\/([^\/]+)\/([^\/]+)\/(?:blob\/[^\/]+\/)?(.+)/,
-                    /github\.com\/([^\/]+)\/([^\/]+)/,
-                    /github\.com\/([^\/]+)\/([^\/]+)\/tree\/[^\/]+\/(.+)/
-                ];
+                // Pattern khusus untuk URL GitHub repository
+                const pattern = /github\.com\/([^\/]+)\/([^\/]+)\/(.+)/;
+                const match = url.match(pattern);
                 
-                for (let pattern of patterns) {
-                    const match = url.match(pattern);
-                    if (match) {
-                        const username = match[1];
-                        let repo = match[2];
-                        let path = match[3] || '';
-                        
-                        // Handle kustomisasi khusus untuk repo Anda
-                        if (repo === 'operasi-asmara-tani-') {
-                            repo = repo.replace(/--?$/, '');
-                        }
-                        
-                        // Bersihkan path
-                        if (path && !path.match(/\.(html|htm|pdf|md)$/i)) {
-                            path = path + '.html';
-                        }
-                        
-                        return { username, repo, path };
+                if (match) {
+                    const username = match[1];
+                    let repo = match[2];
+                    let path = match[3];
+                    
+                    // Handle repository name khusus
+                    if (repo === 'operasi-asmara-tani-') {
+                        repo = 'operasi-asmara-tani'; // Hapus dash di akhir
                     }
+                    
+                    // Pastikan path memiliki ekstensi
+                    if (!path.match(/\.(html|htm|pdf|md|txt)$/i)) {
+                        path = path + '.html';
+                    }
+                    
+                    return { username, repo, path };
                 }
                 
                 return null;
             }
 
             async testUrl(url) {
-                try {
-                    // Coba tanpa proxy dulu
-                    const response = await fetch(url, {
+                return new Promise((resolve) => {
+                    // Coba dengan fetch tanpa CORS
+                    fetch(url, { 
                         method: 'HEAD',
                         mode: 'no-cors',
                         cache: 'no-cache'
-                    });
-                    
-                    // Jika response bisa diakses (meski CORS error), anggap valid
-                    console.log(`✅ URL accessible (HEAD): ${url}`);
-                    return true;
-                    
-                } catch (error) {
-                    // Jika gagal, coba dengan GET request sederhana
-                    try {
+                    })
+                    .then(() => {
+                        resolve(true);
+                    })
+                    .catch(() => {
+                        // Alternatif: coba dengan img tag
                         const img = new Image();
-                        await new Promise((resolve, reject) => {
-                            img.onload = resolve;
-                            img.onerror = reject;
-                            img.src = url;
-                        });
-                        console.log(`✅ URL accessible (Image): ${url}`);
-                        return true;
-                    } catch (imgError) {
-                        console.log(`❌ URL not accessible: ${url}`);
-                        return false;
-                    }
-                }
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                        img.src = url + '?t=' + Date.now(); // Cache busting
+                        
+                        // Timeout
+                        setTimeout(() => resolve(false), 2000);
+                    });
+                });
             }
 
             setupGitHubDetection() {
@@ -1530,7 +1481,7 @@
                         const githubUrl = document.getElementById('githubRepoUrl').value.trim();
                         
                         if (!githubUrl || !githubUrl.includes('github.com')) {
-                            this.showToast('Masukkan URL GitHub yang valid', 'error');
+                            if (window.adminSystem) window.adminSystem.showToast('Masukkan URL GitHub yang valid', 'error');
                             return;
                         }
                         
@@ -1557,12 +1508,12 @@
                             detectionResult.style.display = 'block';
                             detectionResult.classList.add('success');
                             
-                            this.showToast('URL GitHub Pages ditemukan!', 'success');
+                            if (window.adminSystem) window.adminSystem.showToast('URL GitHub Pages ditemukan!', 'success');
                         } else {
                             detectionResult.style.display = 'block';
                             detectionResult.classList.add('warning');
-                            activeGithubUrl.textContent = 'Tidak dapat mendeteksi URL aktif. Gunakan URL manual.';
-                            this.showToast('URL tidak ditemukan. Masukkan manual.', 'warning');
+                            activeGithubUrl.textContent = 'URL tidak valid. Pastikan format benar.';
+                            if (window.adminSystem) window.adminSystem.showToast('URL tidak ditemukan.', 'warning');
                         }
                     });
                 }
@@ -1570,27 +1521,19 @@
                 if (useDetectedUrlBtn) {
                     useDetectedUrlBtn.addEventListener('click', () => {
                         const detectedUrl = activeGithubUrl.textContent;
-                        if (detectedUrl && !detectedUrl.includes('Tidak dapat')) {
+                        if (detectedUrl && !detectedUrl.includes('tidak valid')) {
                             document.getElementById('targetUrl').value = detectedUrl;
                             if (window.adminSystem) {
                                 window.adminSystem.updateUrlPreview();
                             }
-                            this.showToast('URL berhasil dimasukkan ke form!', 'success');
+                            if (window.adminSystem) window.adminSystem.showToast('URL berhasil dimasukkan ke form!', 'success');
                         }
                     });
                 }
             }
-
-            showToast(message, type = 'info') {
-                if (window.adminSystem && window.adminSystem.showToast) {
-                    window.adminSystem.showToast(message, type);
-                } else {
-                    console.log(`[${type.toUpperCase()}] ${message}`);
-                }
-            }
         }
 
-        // ===== ADMIN QR CODE HYBRID SYSTEM - PERBAIKAN LENGKAP =====
+        // ===== ADMIN QR CODE HYBRID SYSTEM - FIXED VERSION =====
         class AdminQRCodeSystem {
             constructor() {
                 this.adminData = this.getAdminData();
@@ -1651,7 +1594,7 @@
                                        placeholder="https://username.github.io/repository/file.html"
                                        required>
                                 <div class="url-example">
-                                    Contoh: https://kangeldzi.github.io/koperasi-asmara-tani/eldi-sugianto.html
+                                    Contoh: https://kangeldzi.github.io/operasi-asmara-tani/eldi-sugianto.html
                                 </div>
                             </div>
                         </div>
@@ -1826,7 +1769,7 @@
                     this.showForm();
                 });
 
-                // Test link button
+                // Test link button - UPDATED WITH DEBUG
                 document.getElementById('testLinkBtn').addEventListener('click', () => {
                     this.testCurrentLink();
                 });
@@ -1887,21 +1830,26 @@
                 }
             }
 
+            // ===== FIXED: PERBAIKAN DOUBLE ENCODING =====
             generateQRHybridUrl(targetUrl) {
-                // Encode URL dengan benar
-                const encodedRedirect = encodeURIComponent(targetUrl);
+                // PERBAIKAN: Tidak perlu encode manual, biarkan URLSearchParams handle encoding
                 const title = document.getElementById('linkTitle').value.trim() || 'Link Custom';
                 const type = document.getElementById('linkType').value;
                 const category = document.getElementById('linkCategory').value;
                 
+                console.log('🔗 Generating QR Code URL:');
+                console.log('  Target URL:', targetUrl);
+                console.log('  Title:', title);
+                console.log('  Type:', type);
+                
                 const params = new URLSearchParams({
                     // Metadata admin
                     admin_id: this.adminData.email || 'admin',
-                    admin_name: encodeURIComponent(this.adminData.name || 'Admin'),
+                    admin_name: this.adminData.name || 'Admin',
                     
-                    // Data link
-                    redirect: encodedRedirect,
-                    link_title: encodeURIComponent(title),
+                    // Data link - BIARKAN URLSearchParams YANG ENCODE
+                    redirect: targetUrl,
+                    link_title: title,
                     link_type: type,
                     link_category: category,
                     
@@ -1911,10 +1859,146 @@
                     
                     // Timestamp
                     timestamp: Date.now(),
-                    version: 'admin_v2.0'
+                    version: 'admin_v2.0_fixed'
                 });
 
-                return `${this.vercelBaseUrl}redirect?${params.toString()}`;
+                const finalUrl = `${this.vercelBaseUrl}redirect?${params.toString()}`;
+                console.log('  Final QR URL:', finalUrl);
+                
+                // Debug: Periksa encoding
+                const testParams = new URLSearchParams(finalUrl.split('?')[1]);
+                const redirectParam = testParams.get('redirect');
+                console.log('  Redirect param value:', redirectParam);
+                console.log('  Decoded redirect:', decodeURIComponent(redirectParam || ''));
+                
+                return finalUrl;
+            }
+
+            // ===== NEW: DECODE FUNCTION FOR DEBUGGING =====
+            decodeQRUrl(qrUrl) {
+                try {
+                    const url = new URL(qrUrl);
+                    const params = new URLSearchParams(url.search);
+                    const redirect = params.get('redirect');
+                    
+                    console.log('🔍 Decoding QR URL:');
+                    console.log('  - Original redirect param:', redirect);
+                    
+                    // Coba decode
+                    let decoded = redirect || '';
+                    try {
+                        decoded = decodeURIComponent(decoded);
+                        console.log('  - Decoded once:', decoded);
+                        
+                        // Coba decode lagi jika masih ada encoding
+                        if (decoded.includes('%')) {
+                            const twiceDecoded = decodeURIComponent(decoded);
+                            if (twiceDecoded !== decoded) {
+                                decoded = twiceDecoded;
+                                console.log('  - Decoded twice:', decoded);
+                            }
+                        }
+                    } catch (e) {
+                        console.log('  - Cannot decode:', e.message);
+                    }
+                    
+                    console.log('  - Final decoded URL:', decoded);
+                    return decoded;
+                } catch (error) {
+                    console.error('❌ Error decoding URL:', error);
+                    return '';
+                }
+            }
+
+            // ===== IMPROVED: TEST LINK WITH DEBUGGING =====
+            async testCurrentLink() {
+                if (!this.currentQRUrl) {
+                    this.showToast('Generate QR Code terlebih dahulu', 'error');
+                    return;
+                }
+
+                console.log('🧪 Testing QR Code URL:');
+                console.log('QR URL:', this.currentQRUrl);
+                
+                // Debug informasi
+                const decodedUrl = this.decodeQRUrl(this.currentQRUrl);
+                console.log('Decoded redirect URL:', decodedUrl);
+                
+                if (decodedUrl) {
+                    // Test aksesibilitas URL tujuan
+                    const isAccessible = await this.testUrlAccessibility(decodedUrl);
+                    
+                    if (isAccessible) {
+                        console.log('✅ Target URL is accessible');
+                        this.showToast('URL tujuan dapat diakses, membuka QR Code...', 'success');
+                        
+                        // Buka QR Code URL
+                        window.open(this.currentQRUrl, '_blank');
+                    } else {
+                        console.log('❌ Target URL is NOT accessible');
+                        
+                        // Tawarkan pilihan
+                        const userChoice = confirm(
+                            'URL tujuan tidak dapat diakses langsung.\n' +
+                            `Target: ${decodedUrl}\n\n` +
+                            'Apakah Anda ingin:\n' +
+                            '• Buka QR Code tetap (OK)\n' +
+                            '• Buka URL tujuan langsung (Cancel)'
+                        );
+                        
+                        if (userChoice) {
+                            // Buka QR Code
+                            window.open(this.currentQRUrl, '_blank');
+                            this.showToast('Membuka QR Code...', 'info');
+                        } else {
+                            // Buka URL tujuan langsung
+                            window.open(decodedUrl, '_blank');
+                            this.showToast('Membuka URL tujuan langsung...', 'info');
+                        }
+                    }
+                } else {
+                    // Jika tidak bisa decode, buka langsung
+                    window.open(this.currentQRUrl, '_blank');
+                    this.showToast('Membuka QR Code di tab baru...', 'info');
+                }
+            }
+
+            async testUrlAccessibility(url) {
+                return new Promise((resolve) => {
+                    console.log('🔍 Testing URL accessibility:', url);
+                    
+                    // Coba dengan fetch (HEAD request)
+                    fetch(url, { 
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        cache: 'no-cache'
+                    })
+                    .then(() => {
+                        console.log('✅ URL accessible (HEAD request)');
+                        resolve(true);
+                    })
+                    .catch((error) => {
+                        console.log('⚠️ HEAD request failed:', error.message);
+                        
+                        // Coba dengan Image sebagai fallback
+                        const img = new Image();
+                        img.onload = () => {
+                            console.log('✅ URL accessible (Image load)');
+                            resolve(true);
+                        };
+                        img.onerror = () => {
+                            console.log('❌ URL not accessible');
+                            resolve(false);
+                        };
+                        img.src = url + '?t=' + Date.now();
+                        
+                        // Timeout
+                        setTimeout(() => {
+                            console.log('⏱️ URL test timeout');
+                            resolve(false);
+                        }, 3000);
+                    });
+                });
             }
 
             async previewQRCode() {
@@ -1952,7 +2036,7 @@
                     return;
                 }
 
-                // Generate QR Code URL
+                // Generate QR Code URL - DENGAN FIXED ENCODING
                 const qrUrl = this.generateQRHybridUrl(targetUrl);
                 this.currentQRUrl = qrUrl;
 
@@ -2288,16 +2372,6 @@
                 } catch (error) {
                     console.error('Error removing from Tabungan Digital:', error);
                 }
-            }
-
-            testCurrentLink() {
-                if (!this.currentQRUrl) {
-                    this.showToast('Generate QR Code terlebih dahulu', 'error');
-                    return;
-                }
-
-                window.open(this.currentQRUrl, '_blank');
-                this.showToast('Membuka QR Code di tab baru...', 'info');
             }
 
             copyUrlToClipboard() {
