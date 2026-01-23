@@ -478,7 +478,184 @@
             border-radius: 4px;
             border: 1px solid var(--border-color);
         }
+/* ===== GITHUB DETECTION UI ===== */
+.github-detection-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+}
 
+.detection-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.detection-header h4 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.detection-result {
+    display: none;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+.detection-result.success {
+    background: #e8f5e9;
+    border-left: 4px solid var(--success);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.detection-result.warning {
+    background: #fff8e1;
+    border-left: 4px solid var(--warning);
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.detection-result.error {
+    background: #ffebee;
+    border-left: 4px solid var(--danger);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+}
+
+.detection-result.info {
+    background: #e3f2fd;
+    border-left: 4px solid var(--info);
+    border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.detection-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.detection-message i {
+    font-size: 1.2rem;
+}
+
+.detection-urls {
+    display: none;
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.detection-url-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.detection-url-item:hover {
+    background: #f5f5f5;
+    transform: translateX(3px);
+}
+
+.detection-url-item input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.detection-url-item label {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.url-text {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    word-break: break-all;
+    flex: 1;
+}
+
+.url-score {
+    font-size: 0.75rem;
+    color: var(--success);
+    background: rgba(76, 175, 80, 0.1);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.detection-stats {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Loading state */
+.detection-loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-top: 15px;
+}
+
+.detection-loading.active {
+    display: flex;
+}
+
+.detection-progress {
+    flex: 1;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.detection-progress-bar {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
         /* ===== URL PREVIEW ===== */
         .url-preview-card {
             background: #f0f7f0;
@@ -1148,47 +1325,86 @@
                             </div>
 
                             <!-- GitHub Detection Section -->
-                            <div id="githubDetectionSection" class="github-detection-section" style="display: none;">
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="fab fa-github"></i>
-                                        GitHub Repository URL
-                                    </label>
-                                    <input type="url" 
-                                           class="form-control" 
-                                           id="githubRepoUrl"
-                                           placeholder="https://github.com/kangeldzi/operasi-asmara-tani-/eldi-sugianto.html"
-                                           value="https://github.com/kangeldzi/operasi-asmara-tani-/eldi-sugianto.html">
-                                    <div class="form-hint">
-                                        Masukkan URL lengkap dari GitHub repository
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <button type="button" 
-                                            class="btn btn-warning"
-                                            id="autoDetectBtn"
-                                            style="width: 100%;">
-                                        <i class="fas fa-magic"></i> Auto-Deteksi GitHub Pages
-                                    </button>
-                                </div>
-                                
-                                <!-- Hasil deteksi -->
-                                <div id="detectionResult" class="detection-result">
-                                    <div class="detection-header">
-                                        <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
-                                        <div>
-                                            <strong style="color: var(--primary);">URL GitHub Pages Ditemukan!</strong>
-                                        </div>
-                                    </div>
-                                    <div class="detection-url" id="activeGithubUrl"></div>
-                                    <button type="button" 
-                                            class="btn btn-success"
-                                            id="useDetectedUrlBtn"
-                                            style="margin-top: 10px; width: 100%;">
-                                        <i class="fas fa-check"></i> Gunakan URL Ini
-                                    </button>
-                                </div>
+                            
+<div id="githubDetectionSection" class="github-detection-section" style="display: none;">
+    <div class="detection-header">
+        <h4><i class="fab fa-github"></i> Deteksi Otomatis GitHub Pages</h4>
+        <span class="admin-badge" style="background: var(--accent-purple);">AI Detection</span>
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label">
+            <i class="fas fa-code-branch"></i>
+            URL Repository GitHub
+        </label>
+        <input type="url" 
+               class="form-control" 
+               id="githubRepoUrl"
+               placeholder="https://github.com/username/repository/blob/main/file.html"
+               value="https://github.com/Kangeldzi/Koperasi-Asmara-Tani-/blob/main/eldi-sugianto.html">
+        <div class="form-hint">
+            <i class="fas fa-lightbulb"></i>
+            Tempel URL lengkap dari repository GitHub Anda
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <button type="button" 
+                class="btn btn-warning"
+                id="autoDetectBtn"
+                style="width: 100%;">
+            <i class="fas fa-satellite-dish"></i> Auto-Deteksi GitHub Pages
+        </button>
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div id="detectionLoading" class="detection-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <div style="flex: 1;">
+            <div style="font-size: 0.9rem; font-weight: 500; margin-bottom: 5px;">
+                Mendeteksi struktur GitHub Pages...
+            </div>
+            <div class="detection-progress">
+                <div class="detection-progress-bar" id="detectionProgressBar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hasil Deteksi -->
+    <div id="detectionResult" class="detection-result">
+        <div class="detection-message" id="detectionMessage">
+            <i class="fas fa-info-circle"></i>
+            <span id="detectionMessageText">Hasil deteksi akan muncul di sini...</span>
+        </div>
+        
+        <!-- Daftar URL yang ditemukan -->
+        <div id="detectionUrls" class="detection-urls">
+            <!-- URL list akan diisi oleh JavaScript -->
+        </div>
+        
+        <div class="detection-stats">
+            <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <span>Status: <span class="stat-value" id="detectionStatus">Menunggu</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-link"></i>
+                <span>URL Valid: <span class="stat-value" id="detectionCount">0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-bolt"></i>
+                <span>Waktu: <span class="stat-value" id="detectionTime">0s</span></span>
+            </div>
+        </div>
+        
+        <button type="button" 
+                class="btn btn-success"
+                id="useDetectedUrlBtn"
+                style="margin-top: 15px; width: 100%;">
+            <i class="fas fa-check"></i> Gunakan URL Terpilih
+           </button>
+        </div>
+      </div>
                             </div>
 
                             <div class="form-group">
@@ -1369,169 +1585,505 @@
     </div>
 
     <script>
-        // ===== GITHUB AUTO DETECTOR - FIXED VERSION =====
-        class GitHubAutoDetector {
-            constructor() {
-                this.githubCache = {};
-            }
+        // ===== GITHUB PAGES DETECTOR =====
+        
+class GitHubPagesDetector {
+    constructor() {
+        this.cache = {};
+        this.testUrls = [];
+        this.detectionResults = {};
+        this.startTime = null;
+    }
 
-            async detectGitHubUrl(githubUrl) {
-                console.log('🔍 Starting GitHub detection for:', githubUrl);
-                
-                let normalizedUrl = githubUrl.trim();
-                
-                // Cache check
-                if (this.githubCache[normalizedUrl]) {
-                    console.log('✅ Using cached URL');
-                    return this.githubCache[normalizedUrl];
-                }
-                
-                // Jika URL sudah langsung ke GitHub Pages, kembalikan langsung
-                if (normalizedUrl.includes('.github.io')) {
-                    console.log('✅ Already GitHub Pages URL');
-                    this.githubCache[normalizedUrl] = normalizedUrl;
-                    return normalizedUrl;
-                }
-                
-                // Parse GitHub repository URL
-                let parsed = this.parseGitHubUrl(normalizedUrl);
-                if (!parsed) {
-                    console.log('❌ Invalid GitHub URL');
-                    return null;
-                }
-                
-                console.log('📦 Parsed GitHub info:', parsed);
-                
-                // Untuk URL spesifik Anda, kita tahu formatnya
-                const targetUrl = `https://${parsed.username}.github.io/${parsed.repo}/${parsed.path}`;
-                
-                // Coba akses URL untuk verifikasi
-                const isAccessible = await this.testUrl(targetUrl);
-                
-                if (isAccessible) {
-                    console.log(`✅ GitHub Pages accessible: ${targetUrl}`);
-                    this.githubCache[normalizedUrl] = targetUrl;
-                    return targetUrl;
-                } else {
-                    console.log(`⚠️ GitHub Pages may not be accessible: ${targetUrl}`);
-                    // Tetap return URL karena mungkin hanya masalah CORS
-                    this.githubCache[normalizedUrl] = targetUrl;
-                    return targetUrl;
-                }
-            }
+    /**
+     * Deteksi struktur GitHub Pages dari URL repository
+     */
+    async detectGitHubPages(githubRepoUrl) {
+        console.log('🔍 [GitHubPagesDetector] Memulai deteksi untuk:', githubRepoUrl);
+        this.startTime = Date.now();
+        
+        // Cache check
+        if (this.cache[githubRepoUrl]) {
+            console.log('✅ Menggunakan hasil cache');
+            return this.cache[githubRepoUrl];
+        }
+        
+        // Parse repository info
+        const repoInfo = this.parseGitHubRepoUrl(githubRepoUrl);
+        if (!repoInfo) {
+            console.log('❌ URL repository tidak valid');
+            return null;
+        }
+        
+        console.log('📦 Informasi repository:', repoInfo);
+        
+        // Generate kemungkinan URL GitHub Pages
+        this.testUrls = this.generatePossibleUrls(repoInfo);
+        console.log('🔍 URL yang akan di-test:', this.testUrls);
+        
+        // Update progress UI
+        this.updateProgressUI(0, this.testUrls.length);
+        
+        // Test semua URL
+        const validUrls = await this.testAllUrls();
+        
+        // Update stats
+        const detectionTime = ((Date.now() - this.startTime) / 1000).toFixed(1);
+        document.getElementById('detectionTime').textContent = `${detectionTime}s`;
+        document.getElementById('detectionCount').textContent = validUrls.length;
+        
+        if (validUrls.length > 0) {
+            // Pilih URL terbaik
+            const bestUrl = this.selectBestUrl(validUrls);
+            console.log('✅ URL terpilih:', bestUrl);
+            
+            // Simpan ke cache
+            this.cache[githubRepoUrl] = {
+                url: bestUrl,
+                status: 'found',
+                alternatives: validUrls,
+                repoInfo: repoInfo,
+                detectionTime: detectionTime
+            };
+            
+            return this.cache[githubRepoUrl];
+        } else {
+            console.log('❌ Tidak ada URL GitHub Pages yang valid');
+            
+            // Buat URL default berdasarkan konvensi GitHub Pages
+            const defaultUrl = this.createDefaultUrl(repoInfo);
+            console.log('⚠️ Menggunakan URL default:', defaultUrl);
+            
+            this.cache[githubRepoUrl] = {
+                url: defaultUrl,
+                status: 'default',
+                alternatives: [],
+                repoInfo: repoInfo,
+                detectionTime: detectionTime,
+                warning: 'GitHub Pages mungkin belum diaktifkan'
+            };
+            
+            return this.cache[githubRepoUrl];
+        }
+    }
 
-            parseGitHubUrl(url) {
-                // Pattern khusus untuk URL GitHub repository
-                const pattern = /github\.com\/([^\/]+)\/([^\/]+)\/(.+)/;
-                const match = url.match(pattern);
+    /**
+     * Parse URL repository GitHub
+     */
+    parseGitHubRepoUrl(url) {
+        const cleanUrl = url.trim();
+        
+        // Pattern untuk berbagai format GitHub URL
+        const patterns = [
+            /github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)/,
+            /github\.com\/([^\/]+)\/([^\/]+)\/tree\/([^\/]+)\/(.+)/,
+            /github\.com\/([^\/]+)\/([^\/]+)\/(.+)/,
+            /github\.com\/([^\/]+)\/([^\/]+)/
+        ];
+        
+        for (const pattern of patterns) {
+            const match = cleanUrl.match(pattern);
+            if (match) {
+                const username = match[1];
+                let repository = match[2];
+                let branch = match[3] || 'main';
+                let path = match[4] || '';
                 
-                if (match) {
-                    const username = match[1];
-                    let repo = match[2];
-                    let path = match[3];
+                // Normalisasi nama repository
+                if (repository.endsWith('-')) {
+                    repository = repository.slice(0, -1);
+                }
+                
+                // Jika ada path, ekstrak nama file
+                let filename = '';
+                if (path) {
+                    const pathParts = path.split('/');
+                    filename = pathParts[pathParts.length - 1];
                     
-                    // Handle repository name khusus
-                    if (repo === 'operasi-asmara-tani-') {
-                        repo = 'operasi-asmara-tani'; // Hapus dash di akhir
-                    }
-                    
-                    // Pastikan path memiliki ekstensi
-                    if (!path.match(/\.(html|htm|pdf|md|txt)$/i)) {
-                        path = path + '.html';
-                    }
-                    
-                    return { username, repo, path };
+                    // Hapus nama file dari path
+                    pathParts.pop();
+                    path = pathParts.join('/');
                 }
                 
-                return null;
-            }
-
-            async testUrl(url) {
-                return new Promise((resolve) => {
-                    // Coba dengan fetch tanpa CORS
-                    fetch(url, { 
-                        method: 'HEAD',
-                        mode: 'no-cors',
-                        cache: 'no-cache'
-                    })
-                    .then(() => {
-                        resolve(true);
-                    })
-                    .catch(() => {
-                        // Alternatif: coba dengan img tag
-                        const img = new Image();
-                        img.onload = () => resolve(true);
-                        img.onerror = () => resolve(false);
-                        img.src = url + '?t=' + Date.now(); // Cache busting
-                        
-                        // Timeout
-                        setTimeout(() => resolve(false), 2000);
-                    });
-                });
-            }
-
-            setupGitHubDetection() {
-                const autoDetectBtn = document.getElementById('autoDetectBtn');
-                const useDetectedUrlBtn = document.getElementById('useDetectedUrlBtn');
-                const detectionResult = document.getElementById('detectionResult');
-                const activeGithubUrl = document.getElementById('activeGithubUrl');
-
-                if (autoDetectBtn) {
-                    autoDetectBtn.addEventListener('click', async () => {
-                        const githubUrl = document.getElementById('githubRepoUrl').value.trim();
-                        
-                        if (!githubUrl || !githubUrl.includes('github.com')) {
-                            if (window.adminSystem) window.adminSystem.showToast('Masukkan URL GitHub yang valid', 'error');
-                            return;
-                        }
-                        
-                        // Show loading
-                        const btn = autoDetectBtn;
-                        const originalHtml = btn.innerHTML;
-                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari URL Aktif...';
-                        btn.disabled = true;
-                        
-                        // Reset result
-                        detectionResult.style.display = 'none';
-                        detectionResult.className = 'detection-result';
-                        
-                        // Deteksi URL aktif
-                        const activeUrl = await this.detectGitHubUrl(githubUrl);
-                        
-                        // Reset button
-                        btn.innerHTML = originalHtml;
-                        btn.disabled = false;
-                        
-                        if (activeUrl) {
-                            // Tampilkan hasil
-                            activeGithubUrl.textContent = activeUrl;
-                            detectionResult.style.display = 'block';
-                            detectionResult.classList.add('success');
-                            
-                            if (window.adminSystem) window.adminSystem.showToast('URL GitHub Pages ditemukan!', 'success');
-                        } else {
-                            detectionResult.style.display = 'block';
-                            detectionResult.classList.add('warning');
-                            activeGithubUrl.textContent = 'URL tidak valid. Pastikan format benar.';
-                            if (window.adminSystem) window.adminSystem.showToast('URL tidak ditemukan.', 'warning');
-                        }
-                    });
-                }
-
-                if (useDetectedUrlBtn) {
-                    useDetectedUrlBtn.addEventListener('click', () => {
-                        const detectedUrl = activeGithubUrl.textContent;
-                        if (detectedUrl && !detectedUrl.includes('tidak valid')) {
-                            document.getElementById('targetUrl').value = detectedUrl;
-                            if (window.adminSystem) {
-                                window.adminSystem.updateUrlPreview();
-                            }
-                            if (window.adminSystem) window.adminSystem.showToast('URL berhasil dimasukkan ke form!', 'success');
-                        }
-                    });
-                }
+                return {
+                    username,
+                    repository,
+                    branch,
+                    path,
+                    filename,
+                    originalUrl: cleanUrl
+                };
             }
         }
+        
+        return null;
+    }
+
+    /**
+     * Generate semua kemungkinan URL GitHub Pages
+     */
+    generatePossibleUrls(repoInfo) {
+        const urls = [];
+        const { username, repository, path, filename } = repoInfo;
+        
+        // Base URL GitHub Pages
+        const baseUrl = `https://${username}.github.io/${repository}`;
+        
+        // 1. File spesifik dari URL
+        if (filename) {
+            urls.push(`${baseUrl}/${filename}`);
+            if (path) urls.push(`${baseUrl}/${path}/${filename}`);
+            if (filename !== 'index.html') {
+                const folderPath = path ? `${path}/${filename.replace('.html', '')}` : filename.replace('.html', '');
+                urls.push(`${baseUrl}/${folderPath}/index.html`);
+            }
+        }
+        
+        // 2. index.html di berbagai lokasi
+        urls.push(`${baseUrl}/index.html`);
+        urls.push(`${baseUrl}/main/index.html`);
+        urls.push(`${baseUrl}/master/index.html`);
+        if (path) urls.push(`${baseUrl}/${path}/index.html`);
+        
+        // 3. Nama file umum
+        const commonFiles = ['index.html', 'home.html', 'main.html', 'default.html', 
+                           'eldi-sugianto.html', 'profile.html', 'anggota.html'];
+        
+        commonFiles.forEach(file => {
+            urls.push(`${baseUrl}/${file}`);
+            if (path) urls.push(`${baseUrl}/${path}/${file}`);
+        });
+        
+        // 4. URL tanpa file (akses folder)
+        urls.push(baseUrl);
+        if (path) urls.push(`${baseUrl}/${path}`);
+        
+        // Hapus duplikat
+        return [...new Set(urls.filter(url => url && url.includes('.github.io')))];
+    }
+
+    /**
+     * Test semua URL
+     */
+    async testAllUrls() {
+        const validUrls = [];
+        const totalUrls = this.testUrls.length;
+        
+        for (let i = 0; i < totalUrls; i++) {
+            const url = this.testUrls[i];
+            
+            // Update progress
+            this.updateProgressUI(i + 1, totalUrls);
+            console.log(`🔍 Testing (${i + 1}/${totalUrls}): ${url}`);
+            
+            try {
+                const isAccessible = await this.testUrl(url);
+                
+                if (isAccessible) {
+                    console.log(`✅ Accessible: ${url}`);
+                    validUrls.push({
+                        url,
+                        score: this.calculateUrlScore(url),
+                        responseTime: isAccessible.responseTime || 0
+                    });
+                }
+            } catch (error) {
+                console.log(`⚠️ Error testing ${url}:`, error.message);
+            }
+            
+            // Delay untuk hindari rate limiting
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
+        // Urutkan berdasarkan score tertinggi
+        return validUrls.sort((a, b) => b.score - a.score);
+    }
+
+    /**
+     * Test akses URL
+     */
+    async testUrl(url) {
+        return new Promise((resolve) => {
+            const startTime = Date.now();
+            
+            fetch(url, {
+                method: 'HEAD',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: {
+                    'Accept': 'text/html',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+            })
+            .then(() => {
+                resolve({
+                    accessible: true,
+                    responseTime: Date.now() - startTime,
+                    method: 'HEAD'
+                });
+            })
+            .catch(() => {
+                // Fallback: Coba dengan Image
+                const img = new Image();
+                img.onload = () => {
+                    resolve({
+                        accessible: true,
+                        responseTime: Date.now() - startTime,
+                        method: 'Image'
+                    });
+                };
+                img.onerror = () => resolve(false);
+                img.src = url + '?t=' + Date.now();
+                
+                setTimeout(() => resolve(false), 2000);
+            });
+        });
+    }
+
+    /**
+     * Hitung score untuk URL
+     */
+    calculateUrlScore(url) {
+        let score = 0;
+        
+        // Prioritas tinggi: index.html di root atau tanpa file
+        if (url.endsWith('/index.html') || url.endsWith('.github.io/') || !url.includes('.html')) {
+            score += 10;
+        }
+        
+        // Prioritas: mengandung 'index'
+        if (url.includes('index')) {
+            score += 5;
+        }
+        
+        // Prioritas: nama file spesifik (eldi-sugianto.html)
+        if (url.includes('eldi-sugianto')) {
+            score += 8;
+        }
+        
+        // Prioritas: URL pendek lebih baik
+        const pathLength = new URL(url).pathname.length;
+        score += Math.max(0, 20 - pathLength);
+        
+        return score;
+    }
+
+    /**
+     * Pilih URL terbaik
+     */
+    selectBestUrl(validUrls) {
+        if (validUrls.length === 0) return null;
+        return validUrls[0].url;
+    }
+
+    /**
+     * Buat URL default
+     */
+    createDefaultUrl(repoInfo) {
+        const { username, repository, filename } = repoInfo;
+        if (filename) {
+            return `https://${username}.github.io/${repository}/${filename}`;
+        } else {
+            return `https://${username}.github.io/${repository}/`;
+        }
+    }
+
+    /**
+     * Update progress UI
+     */
+    updateProgressUI(current, total) {
+        const progressBar = document.getElementById('detectionProgressBar');
+        if (progressBar) {
+            const percentage = (current / total) * 100;
+            progressBar.style.width = `${percentage}%`;
+        }
+    }
+
+    /**
+     * Setup UI untuk deteksi
+     */
+    setupDetectionUI() {
+        console.log('🔧 Setup GitHub Pages Detection UI');
+        
+        // Setup tombol deteksi
+        const detectBtn = document.getElementById('autoDetectBtn');
+        if (detectBtn) {
+            detectBtn.addEventListener('click', async () => {
+                await this.runDetection();
+            });
+        }
+        
+        // Setup tombol gunakan URL
+        const useUrlBtn = document.getElementById('useDetectedUrlBtn');
+        if (useUrlBtn) {
+            useUrlBtn.addEventListener('click', () => {
+                this.applyDetectedUrl();
+            });
+        }
+    }
+
+    /**
+     * Update detection UI
+     */
+    updateDetectionUI(status, message, urls = []) {
+        const resultDiv = document.getElementById('detectionResult');
+        const messageText = document.getElementById('detectionMessageText');
+        const statusEl = document.getElementById('detectionStatus');
+        const urlsDiv = document.getElementById('detectionUrls');
+        const loadingDiv = document.getElementById('detectionLoading');
+        
+        if (!resultDiv || !messageText) return;
+        
+        // Hide loading
+        if (loadingDiv) loadingDiv.classList.remove('active');
+        
+        // Show result
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'detection-result';
+        
+        // Set status text
+        statusEl.textContent = this.getStatusText(status);
+        
+        // Set message and styling
+        switch (status) {
+            case 'success':
+                resultDiv.classList.add('success');
+                messageText.innerHTML = `<strong>${message}</strong>`;
+                break;
+            case 'warning':
+                resultDiv.classList.add('warning');
+                messageText.innerHTML = `<strong>${message}</strong>`;
+                break;
+            case 'error':
+                resultDiv.classList.add('error');
+                messageText.innerHTML = `<strong>${message}</strong>`;
+                break;
+            default:
+                messageText.innerHTML = message;
+        }
+        
+        // Tampilkan daftar URL jika ada
+        if (urlsDiv && urls.length > 0) {
+            urlsDiv.innerHTML = urls.map((url, index) => `
+                <div class="detection-url-item">
+                    <input type="radio" name="selectedUrl" value="${url.url}" 
+                           id="url_${index}" ${index === 0 ? 'checked' : ''}>
+                    <label for="url_${index}">
+                        <span class="url-text">${url.url}</span>
+                        <span class="url-score">Score: ${url.score}</span>
+                    </label>
+                </div>
+            `).join('');
+            urlsDiv.style.display = 'block';
+        } else {
+            urlsDiv.style.display = 'none';
+        }
+    }
+
+    /**
+     * Get status text
+     */
+    getStatusText(status) {
+        const statusMap = {
+            'success': 'Berhasil',
+            'warning': 'Peringatan',
+            'error': 'Error',
+            'info': 'Informasi'
+        };
+        return statusMap[status] || 'Unknown';
+    }
+
+    /**
+     * Jalankan proses deteksi
+     */
+    async runDetection() {
+        const githubRepoUrl = document.getElementById('githubRepoUrl').value.trim();
+        
+        if (!githubRepoUrl || !githubRepoUrl.includes('github.com')) {
+            this.updateDetectionUI('error', 'Masukkan URL repository GitHub yang valid');
+            return;
+        }
+        
+        // Tampilkan loading
+        const btn = document.getElementById('autoDetectBtn');
+        const loadingDiv = document.getElementById('detectionLoading');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mendeteksi...';
+        btn.disabled = true;
+        
+        if (loadingDiv) loadingDiv.classList.add('active');
+        
+        // Reset UI
+        this.updateDetectionUI('info', 'Memulai deteksi struktur GitHub Pages...');
+        document.getElementById('detectionCount').textContent = '0';
+        document.getElementById('detectionTime').textContent = '0s';
+        
+        try {
+            const result = await this.detectGitHubPages(githubRepoUrl);
+            
+            if (result && result.url) {
+                if (result.status === 'found') {
+                    this.updateDetectionUI(
+                        'success',
+                        `🎉 Ditemukan ${result.alternatives.length} URL GitHub Pages yang valid!`,
+                        result.alternatives
+                    );
+                    
+                    // Auto-apply URL terbaik
+                    document.getElementById('targetUrl').value = result.url;
+                    
+                    // Update preview
+                    if (window.adminSystem) {
+                        window.adminSystem.updateUrlPreview();
+                    }
+                    
+                } else if (result.status === 'default') {
+                    this.updateDetectionUI(
+                        'warning',
+                        '⚠️ GitHub Pages mungkin belum aktif. Menggunakan URL default.',
+                        []
+                    );
+                    
+                    document.getElementById('targetUrl').value = result.url;
+                    
+                    if (window.adminSystem) {
+                        window.adminSystem.updateUrlPreview();
+                    }
+                }
+            } else {
+                this.updateDetectionUI('error', '❌ Tidak dapat mendeteksi GitHub Pages');
+            }
+        } catch (error) {
+            console.error('❌ Detection error:', error);
+            this.updateDetectionUI('error', `❌ Error: ${error.message}`);
+        } finally {
+            // Restore button
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    /**
+     * Terapkan URL yang terdeteksi
+     */
+    applyDetectedUrl() {
+        const selectedUrl = document.querySelector('input[name="selectedUrl"]:checked');
+        
+        if (selectedUrl) {
+            const url = selectedUrl.value;
+            document.getElementById('targetUrl').value = url;
+            
+            if (window.adminSystem) {
+                window.adminSystem.updateUrlPreview();
+            }
+            
+            this.updateDetectionUI('success', '✅ URL berhasil diterapkan!');
+        } else {
+            this.updateDetectionUI('warning', '⚠️ Pilih URL terlebih dahulu');
+        }
+    }
+}
 
         // ===== ADMIN QR CODE HYBRID SYSTEM - FIXED VERSION =====
         class AdminQRCodeSystem {
@@ -1542,10 +2094,10 @@
                 this.currentQRUrl = '';
                 this.qrCodeInstance = null;
                 this.vercelBaseUrl = 'https://qr-code-hybrid.vercel.app/';
-                this.githubDetector = new GitHubAutoDetector();
-                
+                this.githubPagesDetector = new GitHubPagesDetector();
+    
                 this.init();
-            }
+             }
 
             init() {
                 this.setupAdminUI();
@@ -1694,29 +2246,31 @@
             }
 
             handleLinkTypeChange(type) {
-                const container = document.getElementById('urlInputContainer');
-                const githubSection = document.getElementById('githubDetectionSection');
-                
-                if (type === 'github') {
-                    // Tampilkan input GitHub dan section deteksi
-                    container.innerHTML = this.getUrlInputTemplate(type);
-                    githubSection.style.display = 'block';
-                    
-                    // Setup GitHub detection
-                    setTimeout(() => {
-                        this.githubDetector.setupGitHubDetection();
-                    }, 100);
-                    
-                    // Auto-fill contoh URL
-                    document.getElementById('githubRepoUrl').value = 
-                        'https://github.com/kangeldzi/operasi-asmara-tani-/eldi-sugianto.html';
-                } else {
-                    container.innerHTML = this.getUrlInputTemplate(type);
-                    githubSection.style.display = 'none';
-                }
-                
-                this.updateUrlPreview();
+    const container = document.getElementById('urlInputContainer');
+    const githubSection = document.getElementById('githubDetectionSection');
+    
+    if (type === 'github') {
+        // Tampilkan input GitHub dengan fitur deteksi
+        container.innerHTML = this.getUrlInputTemplate(type);
+        githubSection.style.display = 'block';
+        
+        // Setup detector UI
+        setTimeout(() => {
+            if (window.githubPagesDetector) {
+                window.githubPagesDetector.setupDetectionUI();
             }
+        }, 100);
+        
+        // Auto-fill contoh URL
+        document.getElementById('githubRepoUrl').value = 
+            'https://github.com/Kangeldzi/Koperasi-Asmara-Tani-/blob/main/eldi-sugianto.html';
+    } else {
+        container.innerHTML = this.getUrlInputTemplate(type);
+        githubSection.style.display = 'none';
+    }
+    
+    this.updateUrlPreview();
+}
 
             getAdminData() {
                 try {
@@ -2455,7 +3009,7 @@
 
         // ===== INISIALISASI =====
         let adminSystem;
-
+        let githubPagesDetector;
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 // Cek jika user adalah admin
@@ -2473,11 +3027,16 @@
                     return;
                 }
 
-                // Initialize admin system
-                adminSystem = new AdminQRCodeSystem();
-                window.adminSystem = adminSystem;
+                // Initialize systems
+        adminSystem = new AdminQRCodeSystem();
+        githubPagesDetector = new GitHubPagesDetector(); // ← BARU DITAMBAH
+        
+        // Make available globally
+        window.adminSystem = adminSystem;
+        window.githubPagesDetector = githubPagesDetector; // ← BARU DITAMBAH
                 
                 console.log('✅ Admin QR Code System Application Ready');
+                console.log('✅ GitHub Pages Detector Ready'); // ← Optional: tambah log ini
                 
             } catch (error) {
                 console.error('❌ Error initializing admin system:', error);
