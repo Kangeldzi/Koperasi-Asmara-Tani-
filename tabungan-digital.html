@@ -15,8 +15,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="firebase-data.js"></script>
     <style>
         :root {
             --primary: #1a5f23;
@@ -1855,6 +1853,18 @@
     </div>
 
 <script>
+// ===== FIREBASE CONFIGURATION =====
+// Template untuk firebase-config.js
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
+};
+
 // ===== FIREBASE INITIALIZATION =====
 let firebaseInitialized = false;
 let firebaseInitializationPromise = null;
@@ -2174,10 +2184,106 @@ function createMockKoperasiDB() {
     return mockDB;
 }
 
-// ===== FIREBASE INTEGRATED TABUNGAN APP =====
+// ===== GENERATOR QR CODE SISTEM =====
+class QRGeneratorSystem {
+    constructor() {
+        console.log('🎫 Initializing QR Generator System...');
+        this.currentUser = null;
+        this.init();
+    }
+    
+    init() {
+        try {
+            this.currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
+            console.log('✅ QR Generator System Ready');
+        } catch (error) {
+            console.error('Error initializing QR generator:', error);
+        }
+    }
+    
+    generateQRCode(text, containerId, options = {}) {
+        return new Promise((resolve, reject) => {
+            try {
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    reject(new Error('Container not found'));
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                const defaultOptions = {
+                    text: text,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#1a5f23",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.Q
+                };
+                
+                const qrOptions = { ...defaultOptions, ...options };
+                
+                new QRCode(container, qrOptions);
+                
+                setTimeout(() => {
+                    const canvas = container.querySelector('canvas');
+                    if (canvas) {
+                        resolve(canvas.toDataURL('image/png'));
+                    } else {
+                        reject(new Error('QR Code generation failed'));
+                    }
+                }, 100);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+    
+    generateAnggotaQRCode(anggotaData) {
+        const qrData = {
+            type: 'anggota_koperasi',
+            id: anggotaData.nia || anggotaData.id,
+            nama: anggotaData.nama,
+            email: anggotaData.email || this.currentUser?.email,
+            status: anggotaData.status || 'AKTIF',
+            posisi: anggotaData.posisi || 'Anggota',
+            total_simpanan: anggotaData.total_simpanan || anggotaData.totalSimpanan || 0,
+            total_pinjaman: anggotaData.total_pinjaman || anggotaData.totalPinjaman || 0,
+            timestamp: new Date().toISOString(),
+            source: 'Koperasi Asmara Tani Digital'
+        };
+        
+        return JSON.stringify(qrData);
+    }
+    
+    downloadQRCode(imageData, filename = 'qr_code.png') {
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = imageData;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    shareQRCode(imageData, title = 'QR Code Koperasi') {
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                text: 'QR Code Anggota Koperasi Asmara Tani',
+                url: imageData
+            }).catch(error => {
+                console.log('Error sharing:', error);
+            });
+        } else {
+            this.downloadQRCode(imageData);
+        }
+    }
+}
+
+// ===== TABUNGAN APP DENGAN GENERATOR QR CODE =====
 class TabunganApp {
     constructor() {
-        console.log('🚀 Memulai TabunganApp dengan perbaikan event delegation...');
+        console.log('🚀 Memulai TabunganApp dengan Generator QR Code...');
         
         this.currentUser = this.getCurrentUser();
         if (!this.currentUser) {
@@ -2549,7 +2655,6 @@ class TabunganApp {
         }
     }
     
-    // ===== PERBAIKAN: getCompleteAnggotaData() =====
     getCompleteAnggotaData() {
         try {
             let completeData = {
@@ -2671,6 +2776,7 @@ class TabunganApp {
         window.pushNotificationSystem = new PushNotificationSystem();
         window.arExperience = new ARExperienceSystem();
         window.voiceCommandSystem = new VoiceCommandSystem();
+        window.qrGeneratorSystem = new QRGeneratorSystem();
         
         this.resetSessionTimeout();
         document.addEventListener('click', () => this.resetSessionTimeout());
@@ -2691,7 +2797,7 @@ class TabunganApp {
         this.initHologramSystem();
         this.setupARButtonAnimation();
         
-        this.showToast('Sistem Tabungan Digital Firebase siap!', 'success');
+        this.showToast('Sistem Tabungan Digital dengan Generator QR Code siap!', 'success');
         
         setTimeout(() => {
             window.pushNotificationSystem.showNotification(
@@ -2745,7 +2851,6 @@ class TabunganApp {
         };
     }
     
-    // ===== PERBAIKAN: Event Listener dengan Event Delegation =====
     setupEventListeners() {
         this.setupSyncControlsToggle();
         
@@ -3077,13 +3182,460 @@ class TabunganApp {
         return new Intl.NumberFormat('id-ID').format(num);
     }
     
-    // ===== PERBAIKAN: showEditProfileModal() dengan foto ukuran awal =====
+    // ===== QR CODE MODAL DENGAN GENERATOR =====
+    showQRModal() {
+        const completeData = this.getCompleteAnggotaData();
+        
+        const html = `
+            <div class="qr-modal-design">
+                <div class="qr-title">
+                    <i class="fas fa-qrcode"></i> QR Code Generator - Data Anggota
+                </div>
+                
+                <div class="qr-card">
+                    <div class="qr-person-info">
+                        <div class="qr-person-photo">
+                            <img src="${completeData.foto}" alt="Foto Anggota" 
+                                 onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">
+                        </div>
+                        <div class="qr-person-details">
+                            <h4>${completeData.nama}</h4>
+                            <p><i class="fas fa-id-card"></i> NIA: ${completeData.nia || 'N/A'}</p>
+                            <p><i class="fas fa-briefcase"></i> Posisi: ${completeData.posisi || 'Anggota'}</p>
+                            <p><i class="fas fa-check-circle"></i> Status: ${completeData.status || 'Aktif'}</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <p style="margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-qrcode" style="color: #FFD700;"></i>
+                            <span>QR Code ini berisi data keanggotaan digital</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- QR Code Generator Container -->
+                <div style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light); min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center;" id="qrGeneratorContainer">
+                    <div style="margin-bottom: 15px;">
+                        <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">Siap untuk membuat QR Code...</p>
+                    <div id="qrStatus" style="font-size: 0.8rem; color: #666; margin-top: 10px;"></div>
+                </div>
+                
+                <!-- QR Code Customization Options -->
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-paint-brush"></i> Kustomisasi QR Code
+                    </h5>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-size: 0.8rem; color: #666;">Ukuran</label>
+                            <select class="form-control" id="qrSize" style="padding: 8px; font-size: 0.9rem;">
+                                <option value="200">Kecil (200px)</option>
+                                <option value="300" selected>Sedang (300px)</option>
+                                <option value="400">Besar (400px)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: #666;">Warna</label>
+                            <select class="form-control" id="qrColor" style="padding: 8px; font-size: 0.9rem;">
+                                <option value="#1a5f23">Hijau (Default)</option>
+                                <option value="#2196F3">Biru</option>
+                                <option value="#9C27B0">Ungu</option>
+                                <option value="#FF9800">Oranye</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button class="action-btn download" id="generateQRBtn" style="width: 100%;">
+                            <i class="fas fa-sync-alt"></i> Generate QR Code
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-info-circle"></i> Cara menggunakan QR Code:
+                    </h5>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                            <span>Scan QR Code dengan aplikasi scanner QR di ponsel</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                            <span>Data keanggotaan akan ditampilkan dalam format JSON</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                            <span>Gunakan untuk validasi keanggotaan digital</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="action-btn download" id="downloadQRBtn">
+                        <i class="fas fa-download"></i> Download QR
+                    </button>
+                    <button type="button" class="action-btn whatsapp" id="shareQRBtn">
+                        <i class="fab fa-whatsapp"></i> Bagikan
+                    </button>
+                    <button type="button" class="action-btn secondary" id="printQRBtn" style="background: #4CAF50;">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 25px;">
+                    <button type="button" class="modal-btn primary" id="closeQRBtn" style="width: 100%;">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.showModal('QR Code Generator', html);
+        
+        // Generate QR Code pertama kali
+        this.generateQRCodeForModal(completeData);
+        
+        // Setup event listeners
+        this.setupQRModalListeners(completeData);
+    }
+    
+    async generateQRCodeForModal(completeData) {
+        const qrStatus = document.getElementById('qrStatus');
+        const qrContainer = document.getElementById('qrGeneratorContainer');
+        
+        if (qrStatus) {
+            qrStatus.textContent = 'Membuat QR Code...';
+            qrStatus.style.color = '#2196F3';
+        }
+        
+        try {
+            // Generate QR data
+            const qrData = window.qrGeneratorSystem.generateAnggotaQRCode(completeData);
+            
+            // Get customization options
+            const size = document.getElementById('qrSize') ? document.getElementById('qrSize').value : 300;
+            const color = document.getElementById('qrColor') ? document.getElementById('qrColor').value : '#1a5f23';
+            
+            // Generate QR code
+            await window.qrGeneratorSystem.generateQRCode(qrData, 'qrGeneratorContainer', {
+                width: parseInt(size),
+                height: parseInt(size),
+                colorDark: color
+            });
+            
+            if (qrStatus) {
+                qrStatus.innerHTML = '<i class="fas fa-check-circle" style="color: #4CAF50;"></i> QR Code berhasil dibuat';
+                qrStatus.style.color = '#4CAF50';
+            }
+            
+            // Save QR data for download
+            qrContainer.dataset.qrData = qrData;
+            qrContainer.dataset.qrImage = qrContainer.querySelector('canvas').toDataURL('image/png');
+            
+            this.showToast('QR Code berhasil dibuat', 'success');
+            
+        } catch (error) {
+            console.error('Error generating QR code:', error);
+            
+            if (qrStatus) {
+                qrStatus.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i> Gagal membuat QR Code';
+                qrStatus.style.color = '#f44336';
+            }
+            
+            qrContainer.innerHTML = `
+                <div style="color: #f44336; padding: 20px; text-align: center;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p style="font-weight: bold; margin-bottom: 10px;">Gagal membuat QR Code</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 15px;">${error.message}</p>
+                    <button class="action-btn download" onclick="window.app.regenerateQRCode()" style="margin-top: 10px;">
+                        <i class="fas fa-redo"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+        }
+    }
+    
+    setupQRModalListeners(completeData) {
+        document.getElementById('generateQRBtn')?.addEventListener('click', () => {
+            this.generateQRCodeForModal(completeData);
+        });
+        
+        document.getElementById('downloadQRBtn')?.addEventListener('click', () => {
+            this.downloadQRCode(completeData);
+        });
+        
+        document.getElementById('shareQRBtn')?.addEventListener('click', () => {
+            this.shareQRCode(completeData);
+        });
+        
+        document.getElementById('printQRBtn')?.addEventListener('click', () => {
+            this.printQRCode();
+        });
+        
+        document.getElementById('closeQRBtn')?.addEventListener('click', () => {
+            this.closeModal();
+        });
+        
+        // Add change listeners for customization options
+        document.getElementById('qrSize')?.addEventListener('change', () => {
+            this.generateQRCodeForModal(completeData);
+        });
+        
+        document.getElementById('qrColor')?.addEventListener('change', () => {
+            this.generateQRCodeForModal(completeData);
+        });
+    }
+    
+    downloadQRCode(completeData) {
+        const qrContainer = document.getElementById('qrGeneratorContainer');
+        if (!qrContainer || !qrContainer.dataset.qrImage) {
+            this.showToast('QR Code belum dibuat', 'error');
+            return;
+        }
+        
+        try {
+            window.qrGeneratorSystem.downloadQRCode(
+                qrContainer.dataset.qrImage,
+                `QR_Code_${completeData.nia || 'anggota'}_${Date.now()}.png`
+            );
+            
+            this.showToast('QR Code berhasil diunduh', 'success');
+            
+        } catch (error) {
+            console.error('Error downloading QR code:', error);
+            this.showToast('Gagal mengunduh QR Code', 'error');
+        }
+    }
+    
+    shareQRCode(completeData) {
+        const qrContainer = document.getElementById('qrGeneratorContainer');
+        if (!qrContainer || !qrContainer.dataset.qrImage) {
+            this.showToast('QR Code belum dibuat', 'error');
+            return;
+        }
+        
+        const message = `*QR CODE ANGGOTA KOPERASI ASMARA TANI* #koperasijenius\n\n` +
+                       `👤 *Nama:* ${completeData.nama}\n` +
+                       `🆔 *NIA:* ${completeData.nia || 'N/A'}\n` +
+                       `✅ *Status:* ${completeData.status}\n` +
+                       `💼 *Posisi:* ${completeData.posisi || 'Anggota'}\n` +
+                       `💰 *Total Simpanan:* ${AdminDataExtractor.formatRupiah(completeData.totalSimpanan || 0)}\n` +
+                       `📅 *Update:* ${new Date().toLocaleDateString('id-ID')}\n\n` +
+                       `_Scan QR Code untuk verifikasi keanggotaan digital_`;
+        
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        this.showToast('QR Code siap dibagikan', 'success');
+    }
+    
+    printQRCode() {
+        const qrContainer = document.getElementById('qrGeneratorContainer');
+        if (!qrContainer) {
+            this.showToast('QR Code belum dibuat', 'error');
+            return;
+        }
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>QR Code Anggota - Koperasi Asmara Tani</title>
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        text-align: center; 
+                        padding: 40px 20px;
+                        background: white;
+                    }
+                    .print-container { 
+                        max-width: 500px; 
+                        margin: 0 auto; 
+                    }
+                    .qr-code { 
+                        margin: 20px 0; 
+                    }
+                    .info { 
+                        margin-top: 20px; 
+                        font-size: 14px; 
+                        color: #666;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-container">
+                    <h2>QR Code Anggota Koperasi</h2>
+                    <div class="qr-code">
+                        ${qrContainer.innerHTML}
+                    </div>
+                    <div class="info">
+                        <p><strong>Koperasi Asmara Tani</strong></p>
+                        <p>QR Code untuk verifikasi keanggotaan digital</p>
+                        <p>Dicetak: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(() => {
+                            window.print();
+                            setTimeout(() => {
+                                window.close();
+                            }, 500);
+                        }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        
+        this.showToast('Membuka jendela cetak...', 'info');
+    }
+    
+    regenerateQRCode() {
+        const completeData = this.getCompleteAnggotaData();
+        this.generateQRCodeForModal(completeData);
+    }
+    
+    // ===== FUNGSI-FUNGSI LAINNYA =====
+    async saveProfileChanges() {
+        try {
+            const nama = document.getElementById('editNama').value.trim();
+            const telepon = document.getElementById('editTelepon').value.trim();
+            const alamat = document.getElementById('editAlamat').value.trim();
+            const foto = document.getElementById('editFoto').value;
+            const jenisKelamin = document.getElementById('editJenisKelamin').value;
+            const agama = document.getElementById('editAgama').value;
+            const nik = document.getElementById('editNIK').value.trim();
+            
+            if (!nama) {
+                this.showToast('Nama lengkap harus diisi', 'error');
+                return;
+            }
+            
+            if (!telepon) {
+                this.showToast('Nomor WhatsApp harus diisi', 'error');
+                return;
+            }
+            
+            if (!this.validatePhone(telepon)) {
+                this.showToast('Format WhatsApp tidak valid. Contoh: 628123456789', 'error');
+                return;
+            }
+            
+            this.userData.nama = nama;
+            this.userData.telepon = telepon;
+            this.userData.whatsapp = telepon;
+            this.userData.alamat = alamat;
+            this.userData.foto = foto || this.userData.foto;
+            this.userData.jenisKelamin = jenisKelamin;
+            this.userData.agama = agama;
+            this.userData.nik = nik;
+            this.userData.lastUpdated = new Date().toISOString();
+            this.userData.lastUpdatedBy = 'user';
+            
+            const completeData = this.getCompleteAnggotaData();
+            this.userData.nia = completeData.nia || this.userData.nia;
+            this.userData.posisi = completeData.posisi || this.userData.posisi;
+            this.userData.email = completeData.email || this.currentUser.email;
+            this.userData.tanggalGabung = completeData.tanggalGabung || this.userData.tanggalGabung;
+            this.userData.simpananPokok = completeData.simpananPokok || 0;
+            this.userData.simpananWajib = completeData.simpananWajib || 0;
+            this.userData.simpananSukarela = completeData.simpananSukarela || 0;
+            this.userData.totalSimpanan = completeData.totalSimpanan || 0;
+            this.userData.totalPinjaman = completeData.totalPinjaman || 0;
+            this.userData.shuEstimasi = completeData.shuEstimasi || 0;
+            
+            if (window.KoperasiDB && window.KoperasiDB.updateProfile && this.nia) {
+                try {
+                    await window.KoperasiDB.updateProfile(this.nia, {
+                        nama: nama,
+                        whatsapp: telepon,
+                        telepon: telepon,
+                        alamat: alamat,
+                        foto: foto,
+                        jenis_kelamin: jenisKelamin,
+                        agama: agama,
+                        nik: nik,
+                        updated_at: new Date().toISOString()
+                    });
+                    console.log('✅ Profile updated in Firebase');
+                } catch (error) {
+                    console.error('Error updating profile in Firebase:', error);
+                }
+            }
+            
+            this.saveToLocalStorage();
+            this.updateUI();
+            localStorage.removeItem('temp_profile_photo');
+            this.closeModal();
+            this.showToast('Profil berhasil diperbarui!', 'success');
+            
+            window.pushNotificationSystem.showNotification(
+                'Profil Diperbarui',
+                'Perubahan pada profil Anda telah disimpan.',
+                'info',
+                false
+            );
+            
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            this.showToast('Gagal menyimpan perubahan', 'error');
+        }
+    }
+    
+    validatePhone(phone) {
+        const phoneRegex = /^[0-9]{10,15}$/;
+        return phoneRegex.test(phone.replace(/^\+?62/, ''));
+    }
+    
+    saveToLocalStorage() {
+        try {
+            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+            const index = allAnggota.findIndex(a => a.email === this.currentUser.email);
+            
+            if (index >= 0) {
+                allAnggota[index] = { ...allAnggota[index], ...this.userData };
+            } else {
+                allAnggota.push(this.userData);
+            }
+            
+            localStorage.setItem('koperasi_anggota', JSON.stringify(allAnggota));
+            
+            const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
+            if (!koperasiData.userUpdates) {
+                koperasiData.userUpdates = {};
+            }
+            
+            koperasiData.userUpdates[this.currentUser.email] = {
+                personal: {
+                    nama: this.userData.nama,
+                    telepon: this.userData.telepon,
+                    alamat: this.userData.alamat,
+                    foto: this.userData.foto,
+                    lastUpdated: this.userData.lastUpdated
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
+            
+        } catch (error) {
+            console.error('Error saving data:', error);
+        }
+    }
+    
     showEditProfileModal() {
         const completeData = this.getCompleteAnggotaData();
         
         const html = `
             <form id="editForm">
-                <!-- Foto Upload - PERBAIKAN: ukuran foto kembali ke awal -->
+                <!-- Foto Upload -->
                 <div class="photo-upload-container">
                     <div class="photo-preview">
                         <img src="${completeData.foto}" alt="Foto Profil" id="currentPhoto"
@@ -3261,331 +3813,6 @@ class TabunganApp {
         }
     }
     
-    async saveProfileChanges() {
-        try {
-            const nama = document.getElementById('editNama').value.trim();
-            const telepon = document.getElementById('editTelepon').value.trim();
-            const alamat = document.getElementById('editAlamat').value.trim();
-            const foto = document.getElementById('editFoto').value;
-            const jenisKelamin = document.getElementById('editJenisKelamin').value;
-            const agama = document.getElementById('editAgama').value;
-            const nik = document.getElementById('editNIK').value.trim();
-            
-            if (!nama) {
-                this.showToast('Nama lengkap harus diisi', 'error');
-                return;
-            }
-            
-            if (!telepon) {
-                this.showToast('Nomor WhatsApp harus diisi', 'error');
-                return;
-            }
-            
-            if (!this.validatePhone(telepon)) {
-                this.showToast('Format WhatsApp tidak valid. Contoh: 628123456789', 'error');
-                return;
-            }
-            
-            this.userData.nama = nama;
-            this.userData.telepon = telepon;
-            this.userData.whatsapp = telepon;
-            this.userData.alamat = alamat;
-            this.userData.foto = foto || this.userData.foto;
-            this.userData.jenisKelamin = jenisKelamin;
-            this.userData.agama = agama;
-            this.userData.nik = nik;
-            this.userData.lastUpdated = new Date().toISOString();
-            this.userData.lastUpdatedBy = 'user';
-            
-            const completeData = this.getCompleteAnggotaData();
-            this.userData.nia = completeData.nia || this.userData.nia;
-            this.userData.posisi = completeData.posisi || this.userData.posisi;
-            this.userData.email = completeData.email || this.currentUser.email;
-            this.userData.tanggalGabung = completeData.tanggalGabung || this.userData.tanggalGabung;
-            this.userData.simpananPokok = completeData.simpananPokok || 0;
-            this.userData.simpananWajib = completeData.simpananWajib || 0;
-            this.userData.simpananSukarela = completeData.simpananSukarela || 0;
-            this.userData.totalSimpanan = completeData.totalSimpanan || 0;
-            this.userData.totalPinjaman = completeData.totalPinjaman || 0;
-            this.userData.shuEstimasi = completeData.shuEstimasi || 0;
-            
-            if (window.KoperasiDB && window.KoperasiDB.updateProfile && this.nia) {
-                try {
-                    await window.KoperasiDB.updateProfile(this.nia, {
-                        nama: nama,
-                        whatsapp: telepon,
-                        telepon: telepon,
-                        alamat: alamat,
-                        foto: foto,
-                        jenis_kelamin: jenisKelamin,
-                        agama: agama,
-                        nik: nik,
-                        updated_at: new Date().toISOString()
-                    });
-                    console.log('✅ Profile updated in Firebase');
-                } catch (error) {
-                    console.error('Error updating profile in Firebase:', error);
-                }
-            }
-            
-            this.saveToLocalStorage();
-            this.updateUI();
-            localStorage.removeItem('temp_profile_photo');
-            this.closeModal();
-            this.showToast('Profil berhasil diperbarui!', 'success');
-            
-            window.pushNotificationSystem.showNotification(
-                'Profil Diperbarui',
-                'Perubahan pada profil Anda telah disimpan.',
-                'info',
-                false
-            );
-            
-        } catch (error) {
-            console.error('Error saving profile:', error);
-            this.showToast('Gagal menyimpan perubahan', 'error');
-        }
-    }
-    
-    validatePhone(phone) {
-        const phoneRegex = /^[0-9]{10,15}$/;
-        return phoneRegex.test(phone.replace(/^\+?62/, ''));
-    }
-    
-    saveToLocalStorage() {
-        try {
-            const allAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-            const index = allAnggota.findIndex(a => a.email === this.currentUser.email);
-            
-            if (index >= 0) {
-                allAnggota[index] = { ...allAnggota[index], ...this.userData };
-            } else {
-                allAnggota.push(this.userData);
-            }
-            
-            localStorage.setItem('koperasi_anggota', JSON.stringify(allAnggota));
-            
-            const koperasiData = JSON.parse(localStorage.getItem('koperasiData') || '{}');
-            if (!koperasiData.userUpdates) {
-                koperasiData.userUpdates = {};
-            }
-            
-            koperasiData.userUpdates[this.currentUser.email] = {
-                personal: {
-                    nama: this.userData.nama,
-                    telepon: this.userData.telepon,
-                    alamat: this.userData.alamat,
-                    foto: this.userData.foto,
-                    lastUpdated: this.userData.lastUpdated
-                },
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('koperasiData', JSON.stringify(koperasiData));
-            
-        } catch (error) {
-            console.error('Error saving data:', error);
-        }
-    }
-    
-    // ===== PERBAIKAN: showQRModal() =====
-    showQRModal() {
-        if (window.qrHybridSystem) {
-            window.qrHybridSystem.showHybridQRModal();
-        } else {
-            const completeData = this.getCompleteAnggotaData();
-            let userNIA = completeData.nia || 
-                         this.nia || 
-                         completeData.id || 
-                         `KOP${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-            
-            let userName = completeData.nama || 
-                           this.currentUser.name || 
-                           'Anggota Koperasi';
-            
-            let userEmail = completeData.email || 
-                            this.currentUser.email || 
-                            'anggota@koperasi.com';
-            
-            const qrUrl = `https://qr-code-hybrid.vercel.app/?id=${userNIA}&name=${encodeURIComponent(userName)}&email=${encodeURIComponent(userEmail)}&time=${Date.now()}`;
-            
-            console.log('QR Code Data:', {
-                nia: userNIA,
-                name: userName,
-                email: userEmail,
-                url: qrUrl
-            });
-            
-            const html = `
-                <div class="qr-modal-design">
-                    <div class="qr-title">
-                        <i class="fas fa-qrcode"></i> QR Code Hybrid Firebase
-                    </div>
-                    
-                    <div class="qr-card">
-                        <div class="qr-person-info">
-                            <div class="qr-person-photo">
-                                <img src="${completeData.foto}" 
-                                     alt="Foto Anggota" 
-                                     onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">
-                            </div>
-                            <div class="qr-person-details">
-                                <h4>${userName}</h4>
-                                <p><i class="fas fa-id-card"></i> NIA: ${userNIA}</p>
-                                <p><i class="fas fa-briefcase"></i> Posisi: ${completeData.posisi || 'Anggota'}</p>
-                                <p><i class="fas fa-check-circle"></i> Status: ${completeData.status || completeData.statusAktif || 'Aktif'}</p>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                            <p style="margin: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-                                <i class="fas fa-fire" style="color: #FFA000;"></i>
-                                <span>QR Code Hybrid untuk data digital</span>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div id="qrcodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light); min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                        <div style="margin-bottom: 15px;">
-                            <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
-                        </div>
-                        <p style="color: var(--text-secondary); margin-top: 10px;">Membuat QR Code...</p>
-                        <div id="qrStatus" style="font-size: 0.8rem; color: #666; margin-top: 10px;"></div>
-                    </div>
-                    
-                    <div style="text-align: center; margin: 20px 0;">
-                        <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
-                            <i class="fas fa-info-circle"></i> Cara menggunakan QR Code:
-                        </h5>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 10px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
-                                <span>Buka aplikasi scanner QR Code di ponsel Anda</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
-                                <span>Arahkan kamera ke QR Code di atas</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
-                                <span>Buka link yang muncul untuk melihat data anggota</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
-                        <p style="color: var(--primary); margin: 0; font-size: 0.9rem; text-align: center;">
-                            <i class="fas fa-shield-alt"></i> 
-                            QR Code ini aman dan hanya berisi link ke data publik
-                        </p>
-                    </div>
-                    
-                    <div class="modal-actions" style="margin-top: 25px;">
-                        <button type="button" class="modal-btn primary" id="closeQRBtn" style="width: 100%;">
-                            <i class="fas fa-times"></i> Tutup QR Code
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            this.showModal('QR Code Hybrid Firebase', html);
-            
-            setTimeout(() => {
-                this.generateQRCode(qrUrl, userNIA, userName);
-            }, 300);
-            
-            document.getElementById('closeQRBtn').addEventListener('click', () => {
-                this.closeModal();
-            });
-            
-            if (window.menuVoiceSystem) {
-                setTimeout(() => {
-                    window.menuVoiceSystem.speak("QR Code Hybrid telah siap. Silakan scan QR Code dengan ponsel Anda untuk melihat data anggota.");
-                }, 500);
-            }
-        }
-    }
-    
-    generateQRCode(qrUrl, nia, name) {
-        const qrContainer = document.getElementById('qrcodeContainer');
-        const qrStatus = document.getElementById('qrStatus');
-        
-        if (!qrContainer) {
-            console.error('QR Container tidak ditemukan');
-            return;
-        }
-        
-        try {
-            qrContainer.innerHTML = '';
-            
-            if (qrStatus) {
-                qrStatus.textContent = 'Membuat QR Code...';
-                qrStatus.style.color = '#2196F3';
-            }
-            
-            if (!qrUrl || qrUrl.length < 10) {
-                throw new Error('URL QR Code terlalu pendek');
-            }
-            
-            console.log('Membuat QR Code untuk URL:', qrUrl);
-            
-            new QRCode(qrContainer, {
-                text: qrUrl,
-                width: 200,
-                height: 200,
-                colorDark: "#1a5f23",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.Q
-            });
-            
-            const infoDiv = document.createElement('div');
-            infoDiv.style.marginTop = '15px';
-            infoDiv.style.fontSize = '0.8rem';
-            infoDiv.style.color = 'var(--text-secondary)';
-            infoDiv.innerHTML = `
-                <p>ID: <strong>${nia}</strong></p>
-                <p>Nama: <strong>${name.substring(0, 20)}${name.length > 20 ? '...' : ''}</strong></p>
-                <p style="word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.7rem;">
-                    ${qrUrl.substring(0, 50)}...
-                </p>
-            `;
-            qrContainer.appendChild(infoDiv);
-            
-            if (qrStatus) {
-                qrStatus.innerHTML = '<i class="fas fa-check-circle" style="color: #4CAF50;"></i> QR Code berhasil dibuat';
-                qrStatus.style.color = '#4CAF50';
-            }
-            
-            console.log('✅ QR Code berhasil dibuat');
-            this.showToast('QR Code berhasil dibuat', 'success');
-            
-        } catch (error) {
-            console.error('❌ Error membuat QR Code:', error);
-            
-            qrContainer.innerHTML = `
-                <div style="color: #f44336; padding: 20px; text-align: center;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                    <p style="font-weight: bold; margin-bottom: 10px;">Gagal membuat QR Code</p>
-                    <p style="font-size: 0.9rem; margin-bottom: 15px;">${error.message}</p>
-                    <div style="background: #ffebee; padding: 10px; border-radius: 5px; font-size: 0.8rem;">
-                        <p style="margin: 5px 0;">Coba:</p>
-                        <p style="margin: 5px 0;">1. Refresh halaman</p>
-                        <p style="margin: 5px 0;">2. Cek koneksi internet</p>
-                        <p style="margin: 5px 0;">3. Isi data profil terlebih dahulu</p>
-                    </div>
-                </div>
-            `;
-            
-            if (qrStatus) {
-                qrStatus.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i> Gagal membuat QR Code';
-                qrStatus.style.color = '#f44336';
-            }
-            
-            this.showToast('Gagal membuat QR Code: ' + error.message, 'error');
-        }
-    }
-    
-    // ===== PERBAIKAN: showKartuModal() dengan foto ukuran awal =====
     showKartuModal() {
         const completeData = this.getCompleteAnggotaData();
         const saldoBersih = (completeData.totalSimpanan || 0) - (completeData.totalPinjaman || 0);
@@ -3596,7 +3823,7 @@ class TabunganApp {
                     <i class="fas fa-id-card"></i> KARTU ANGGOTA DIGITAL
                 </h4>
                 
-                <!-- Kartu Design - PERBAIKAN: foto ukuran awal -->
+                <!-- Kartu Design -->
                 <div style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; position: relative; overflow: hidden;" id="kartuDisplay">
                     <!-- Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 15px;">
@@ -3609,7 +3836,7 @@ class TabunganApp {
                         </span>
                     </div>
                     
-                    <!-- Info Anggota - PERBAIKAN: foto ukuran awal -->
+                    <!-- Info Anggota -->
                     <div class="kartu-info">
                         <div class="kartu-photo">
                             <img src="${completeData.foto}" 
@@ -3811,7 +4038,6 @@ class TabunganApp {
         }
     }
     
-    // ===== MODAL FUNGSI LAINNYA (Setor, Pinjam, Riwayat) =====
     showSetorModal() {
         const completeData = this.getCompleteAnggotaData();
         
@@ -4432,7 +4658,7 @@ class TabunganApp {
     }
 }
 
-// ===== PERBAIKAN: HOLOGRAM STATIC SYSTEM =====
+// ===== SISTEM-SISTEM LAINNYA =====
 class HologramStaticSystem {
     constructor() {
         this.currentUser = null;
@@ -4689,7 +4915,6 @@ class HologramStaticSystem {
         });
     }
     
-    // ===== PERBAIKAN: showDetailModal() dengan CSS yang diperbaiki =====
     showDetailModal() {
         if (!this.data) return;
         
@@ -4971,7 +5196,6 @@ class HologramStaticSystem {
     }
 }
 
-// ===== SISTEM LAINNYA (MenuVoiceSystem, PushNotificationSystem, dll) =====
 class MenuVoiceSystem {
     constructor() {
         this.speechSynthesis = window.speechSynthesis;
@@ -5337,585 +5561,6 @@ class PushNotificationSystem {
     }
 }
 
-// ===== PERBAIKAN: QR CODE HYBRID SYSTEM DENGAN LINK VERCEL YANG BISA DIKLIK =====
-class QRCodeHybridSystem {
-    constructor() {
-        console.log('🎫 Initializing QR Code Hybrid System with clickable Vercel link...');
-        this.currentUser = null;
-        this.vercelBaseUrl = 'https://qr-code-hybrid.vercel.app/anggota';
-        this.qrHistory = [];
-        this.init();
-    }
-
-    init() {
-        try {
-            this.currentUser = JSON.parse(localStorage.getItem('koperasi_current_user') || 'null');
-            this.loadQRHistory();
-            this.setupQRButtonListener();
-            console.log('✅ QR Code Hybrid System Ready with clickable Vercel link');
-        } catch (error) {
-            console.error('Error initializing QR system:', error);
-        }
-    }
-
-    setupQRButtonListener() {
-        const qrButton = document.getElementById('qrButton');
-        if (qrButton) {
-            const newQrButton = qrButton.cloneNode(true);
-            qrButton.parentNode.replaceChild(newQrButton, qrButton);
-            
-            document.getElementById('qrButton').addEventListener('click', (e) => {
-                e.preventDefault();
-                this.showHybridQRModal();
-            });
-        }
-    }
-
-    async showHybridQRModal() {
-        try {
-            const completeData = await this.getCompleteAnggotaData();
-            
-            if (!completeData.nia) {
-                window.app.showToast('Data NIA tidak ditemukan', 'error');
-                return;
-            }
-
-            // Generate Vercel URL dengan data lengkap
-            const vercelUrl = this.generateVercelUrl(completeData);
-            this.renderQRModal(completeData, vercelUrl);
-            
-            setTimeout(() => {
-                this.generateQRCode(vercelUrl, completeData);
-            }, 300);
-            
-        } catch (error) {
-            console.error('Error showing QR modal:', error);
-            window.app.showToast('Gagal memuat data QR: ' + error.message, 'error');
-        }
-    }
-
-    async getCompleteAnggotaData() {
-        let completeData = {
-            email: this.currentUser?.email || '',
-            nama: this.currentUser?.name || 'Anggota Koperasi',
-            nia: '',
-            foto: '',
-            status: 'AKTIF',
-            posisi: 'Anggota',
-            alamat: '',
-            whatsapp: '',
-            jenis_kelamin: '',
-            agama: '',
-            nik: '',
-            tanggal_bergabung: '',
-            simpanan_pokok: 0,
-            simpanan_wajib: 0,
-            simpanan_sukarela: 0,
-            total_simpanan: 0,
-            total_pinjaman: 0,
-            shu_estimasi: 0
-        };
-
-        try {
-            if (window.app && window.app.firebaseUserData) {
-                const firebaseData = window.app.firebaseUserData;
-                completeData = {
-                    ...completeData,
-                    nia: firebaseData.nia || firebaseData.id || '',
-                    nama: firebaseData.nama || completeData.nama,
-                    foto: firebaseData.foto || '',
-                    status: firebaseData.status || 'AKTIF',
-                    posisi: firebaseData.posisi || 'Anggota',
-                    alamat: firebaseData.alamat || '',
-                    whatsapp: firebaseData.whatsapp || '',
-                    jenis_kelamin: firebaseData.jenis_kelamin || '',
-                    agama: firebaseData.agama || '',
-                    nik: firebaseData.nik || '',
-                    tanggal_bergabung: firebaseData.tanggal_bergabung || firebaseData.tanggal_gabung || '',
-                    simpanan_pokok: parseFloat(firebaseData.simpanan_pokok || 0),
-                    simpanan_wajib: parseFloat(firebaseData.simpanan_wajib || 0),
-                    simpanan_sukarela: parseFloat(firebaseData.simpanan_sukarela || 0),
-                    total_simpanan: parseFloat(firebaseData.total_simpanan || 0),
-                    total_pinjaman: parseFloat(firebaseData.total_pinjaman || 0),
-                    shu_estimasi: parseFloat(firebaseData.shu || 0)
-                };
-            } else {
-                const anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                const userData = anggotaData.find(a => a.email === this.currentUser?.email);
-                
-                if (userData) {
-                    completeData = {
-                        ...completeData,
-                        nia: userData.nia || userData.id || `KOP${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
-                        nama: userData.nama || userData.name || completeData.nama,
-                        foto: userData.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
-                        status: userData.status || userData.statusAktif || 'AKTIF',
-                        posisi: userData.posisi || 'Anggota',
-                        alamat: userData.alamat || '',
-                        whatsapp: userData.whatsapp || userData.telepon || '',
-                        jenis_kelamin: userData.jenis_kelamin || userData.jenisKelamin || '',
-                        agama: userData.agama || '',
-                        nik: userData.nik || userData.nik_ktp || '',
-                        tanggal_bergabung: userData.tanggal_bergabung || userData.tanggalGabung || userData.tanggal_daftar || '',
-                        simpanan_pokok: parseFloat(userData.simpanan_pokok || userData.simpananPokok || 0),
-                        simpanan_wajib: parseFloat(userData.simpanan_wajib || userData.simpananWajib || 0),
-                        simpanan_sukarela: parseFloat(userData.simpanan_sukarela || userData.simpananSukarela || 0),
-                        total_simpanan: parseFloat(userData.total_simpanan || userData.totalSimpanan || 0),
-                        total_pinjaman: parseFloat(userData.total_pinjaman || userData.totalPinjaman || 0),
-                        shu_estimasi: parseFloat(userData.shu_estimasi || userData.shu || 0)
-                    };
-                }
-            }
-
-            return completeData;
-
-        } catch (error) {
-            console.error('Error getting complete data:', error);
-            return completeData;
-        }
-    }
-
-    generateVercelUrl(data) {
-        // Membuat URL Vercel dengan parameter lengkap
-        const params = new URLSearchParams({
-            id: data.nia,
-            name: encodeURIComponent(data.nama),
-            email: encodeURIComponent(data.email || this.currentUser?.email || ''),
-            status: data.status,
-            posisi: encodeURIComponent(data.posisi),
-            alamat: encodeURIComponent(data.alamat || ''),
-            whatsapp: encodeURIComponent(data.whatsapp || ''),
-            jenis_kelamin: encodeURIComponent(data.jenis_kelamin || ''),
-            agama: encodeURIComponent(data.agama || ''),
-            nik: encodeURIComponent(data.nik || ''),
-            tanggal_bergabung: encodeURIComponent(data.tanggal_bergabung || ''),
-            simpanan_pokok: data.simpanan_pokok || 0,
-            simpanan_wajib: data.simpanan_wajib || 0,
-            simpanan_sukarela: data.simpanan_sukarela || 0,
-            total_simpanan: data.total_simpanan || 0,
-            total_pinjaman: data.total_pinjaman || 0,
-            shu_estimasi: data.shu_estimasi || 0,
-            foto: encodeURIComponent(data.foto || ''),
-            source: 'koperasi-tabungan-digital',
-            timestamp: Date.now()
-        });
-
-        return `${this.vercelBaseUrl}?${params.toString()}`;
-    }
-
-    renderQRModal(data, vercelUrl) {
-        const html = `
-            <div class="qr-modal-design">
-                <div class="qr-title">
-                    <i class="fas fa-qrcode"></i> QR Code Hybrid - Validasi Keanggotaan Digital
-                </div>
-                
-                <div class="qr-card">
-                    <div class="qr-person-info">
-                        <div class="qr-person-photo">
-                            <img src="${data.foto}" 
-                                 alt="Foto Anggota"
-                                 onerror="this.src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'">
-                        </div>
-                        <div class="qr-person-details">
-                            <h4>${data.nama}</h4>
-                            <p><i class="fas fa-id-card"></i> NIA: ${data.nia}</p>
-                            <p><i class="fas fa-briefcase"></i> Posisi: ${data.posisi}</p>
-                            <p><i class="fas fa-check-circle"></i> Status: ${data.status}</p>
-                            <p><i class="fas fa-fire" style="color: #FFA000;"></i> Data dari Firebase</p>
-                        </div>
-                    </div>
-                    
-                    <!-- PERBAIKAN: Link Vercel yang bisa diklik -->
-                    <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                        <p style="margin: 0 0 10px 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-link" style="color: #2196F3;"></i>
-                            <span>Link Digital Profil:</span>
-                        </p>
-                        <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-top: 5px;">
-                            <a href="${vercelUrl}" 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               style="color: #FFD700; text-decoration: none; font-size: 0.85rem; word-break: break-all; display: block; padding: 5px;"
-                               onmouseover="this.style.textDecoration='underline'"
-                               onmouseout="this.style.textDecoration='none'">
-                                <i class="fas fa-external-link-alt" style="margin-right: 5px;"></i>
-                                ${vercelUrl.substring(0, 50)}...
-                            </a>
-                            <p style="margin: 8px 0 0 0; font-size: 0.75rem; color: rgba(255,255,255,0.8);">
-                                <i class="fas fa-info-circle"></i> Klik link di atas untuk membuka halaman profil digital di browser baru
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center;">
-                        <p style="margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.9);">
-                            <i class="fas fa-shield-alt" style="color: #4CAF50;"></i>
-                            QR Code ini akan mengarahkan ke halaman profil digital yang aman
-                        </p>
-                    </div>
-                </div>
-                
-                <div id="qrCodeContainer" style="text-align: center; margin: 25px 0; padding: 20px; background: white; border-radius: 12px; box-shadow: var(--shadow-light); min-height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <div style="margin-bottom: 15px;">
-                        <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
-                    </div>
-                    <p style="color: var(--text-secondary); margin-top: 10px;">Membuat QR Code Hybrid...</p>
-                    <div id="qrStatus" style="font-size: 0.8rem; color: #666; margin-top: 10px;"></div>
-                </div>
-                
-                <!-- Informasi tentang halaman Vercel -->
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin: 20px 0;">
-                    <h5 style="color: #1976d2; margin-bottom: 10px; font-size: 1rem;">
-                        <i class="fas fa-external-link-alt"></i> Apa yang ada di halaman Vercel?
-                    </h5>
-                    <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: #1976d2;">
-                        <li>Profil lengkap anggota</li>
-                        <li>Data keuangan terbaru</li>
-                        <li>Status keanggotaan</li>
-                        <li>Informasi kontak</li>
-                        <li>QR Code untuk validasi</li>
-                    </ul>
-                    <p style="margin: 10px 0 0 0; font-size: 0.8rem; color: #666;">
-                        <i class="fas fa-lock" style="color: #4CAF50;"></i>
-                        Halaman aman dan hanya menampilkan data publik
-                    </p>
-                </div>
-                
-                <div style="text-align: center; margin: 20px 0;">
-                    <h5 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
-                        <i class="fas fa-info-circle"></i> Cara menggunakan QR Code Hybrid:
-                    </h5>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
-                            <span>Scan QR Code dengan aplikasi scanner QR</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
-                            <span>Anda akan diarahkan ke halaman profil digital Vercel</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
-                            <span>Halaman akan menampilkan data lengkap Anda</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 24px; height: 24px; background: #2196F3; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">4</div>
-                            <span><strong>Atau klik link di atas</strong> untuk langsung membuka halaman</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin: 20px 0;">
-                    <p style="color: var(--primary); margin: 0; font-size: 0.9rem; text-align: center;">
-                        <i class="fas fa-shield-alt"></i> 
-                        QR Code Hybrid aman dan terenkripsi - mengarah ke halaman Vercel yang valid
-                    </p>
-                </div>
-                
-                <div class="action-buttons">
-                    <button type="button" class="action-btn download" id="downloadQRBtn">
-                        <i class="fas fa-download"></i> Download QR
-                    </button>
-                    <button type="button" class="action-btn whatsapp" id="shareQRBtn">
-                        <i class="fab fa-whatsapp"></i> Bagikan
-                    </button>
-                    <!-- PERBAIKAN: Tombol untuk membuka halaman Vercel -->
-                    <button type="button" class="action-btn secondary" id="openVercelBtn" style="background: #2196F3;">
-                        <i class="fas fa-external-link-alt"></i> Buka Halaman
-                    </button>
-                </div>
-                
-                <div class="modal-actions" style="margin-top: 25px;">
-                    <button type="button" class="modal-btn primary" id="closeQRModalBtn" style="width: 100%;">
-                        <i class="fas fa-times"></i> Tutup
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        window.app.showModal('QR Code Hybrid - Profil Digital', html);
-        this.setupQRModalListeners(data, vercelUrl);
-    }
-
-    setupQRModalListeners(data, vercelUrl) {
-        document.getElementById('downloadQRBtn')?.addEventListener('click', () => {
-            this.downloadQRCode(data);
-        });
-        
-        document.getElementById('shareQRBtn')?.addEventListener('click', () => {
-            this.shareViaWhatsApp(data, vercelUrl);
-        });
-        
-        // PERBAIKAN: Tambah listener untuk tombol buka halaman Vercel
-        document.getElementById('openVercelBtn')?.addEventListener('click', () => {
-            this.openVercelPage(vercelUrl);
-        });
-        
-        document.getElementById('refreshQRBtn')?.addEventListener('click', () => {
-            this.refreshQRCode(data);
-        });
-        
-        document.getElementById('closeQRModalBtn')?.addEventListener('click', () => {
-            window.app.closeModal();
-        });
-    }
-
-    generateQRCode(url, data) {
-        const qrContainer = document.getElementById('qrCodeContainer');
-        const qrStatus = document.getElementById('qrStatus');
-        
-        if (!qrContainer) return;
-        
-        try {
-            qrContainer.innerHTML = '';
-            
-            if (qrStatus) {
-                qrStatus.textContent = 'Membuat QR Code...';
-                qrStatus.style.color = '#2196F3';
-            }
-            
-            if (!url || url.length < 10) {
-                throw new Error('URL tidak valid');
-            }
-            
-            console.log('Generating QR for Vercel URL:', url);
-            
-            // Buat QR Code
-            const qrCode = new QRCode(qrContainer, {
-                text: url,
-                width: 200,
-                height: 200,
-                colorDark: "#1a5f23",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.Q
-            });
-            
-            // Tambah informasi link yang bisa diklik
-            const infoDiv = document.createElement('div');
-            infoDiv.style.marginTop = '15px';
-            infoDiv.style.fontSize = '0.85rem';
-            infoDiv.style.color = 'var(--text-secondary)';
-            infoDiv.style.textAlign = 'center';
-            infoDiv.style.width = '100%';
-            
-            infoDiv.innerHTML = `
-                <p><strong>${data.nia}</strong> - ${data.nama.substring(0, 20)}${data.nama.length > 20 ? '...' : ''}</p>
-                <div style="margin-top: 10px; padding: 8px; background: #f5f5f5; border-radius: 5px;">
-                    <p style="margin: 0 0 5px 0; font-size: 0.8rem; color: #666;">Link Vercel:</p>
-                    <a href="${url}" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       style="color: #2196F3; text-decoration: none; font-size: 0.75rem; word-break: break-all;"
-                       onmouseover="this.style.textDecoration='underline'"
-                       onmouseout="this.style.textDecoration='none'">
-                        <i class="fas fa-external-link-alt" style="margin-right: 3px;"></i>
-                        ${url.substring(0, 40)}...
-                    </a>
-                    <p style="margin: 5px 0 0 0; font-size: 0.7rem; color: #888;">
-                        <i class="fas fa-mouse-pointer"></i> Klik link untuk membuka halaman profil
-                    </p>
-                </div>
-            `;
-            qrContainer.appendChild(infoDiv);
-            
-            this.saveQRData(data, url);
-            
-            if (qrStatus) {
-                qrStatus.innerHTML = '<i class="fas fa-check-circle" style="color: #4CAF50;"></i> QR Code siap digunakan';
-                qrStatus.style.color = '#4CAF50';
-            }
-            
-            window.app.showToast('QR Code Hybrid berhasil dibuat dengan link Vercel', 'success');
-            
-        } catch (error) {
-            console.error('Error generating QR:', error);
-            
-            qrContainer.innerHTML = `
-                <div style="color: #f44336; padding: 20px; text-align: center;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                    <p style="font-weight: bold; margin-bottom: 10px;">Gagal membuat QR Code</p>
-                    <p style="font-size: 0.9rem; margin-bottom: 15px;">${error.message}</p>
-                    <div style="margin-top: 15px;">
-                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Alternatif:</p>
-                        <a href="https://qr-code-hybrid.vercel.app/?id=${data.nia}&name=${encodeURIComponent(data.nama)}" 
-                           target="_blank"
-                           style="color: #2196F3; text-decoration: none; font-weight: 500;"
-                           onmouseover="this.style.textDecoration='underline'"
-                           onmouseout="this.style.textDecoration='none'">
-                            <i class="fas fa-external-link-alt"></i> Buka halaman profil langsung
-                        </a>
-                    </div>
-                </div>
-            `;
-            
-            if (qrStatus) {
-                qrStatus.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i> Error: ' + error.message;
-                qrStatus.style.color = '#f44336';
-            }
-        }
-    }
-
-    // PERBAIKAN: Fungsi untuk membuka halaman Vercel
-    openVercelPage(url) {
-        if (!url || url.length < 10) {
-            window.app.showToast('URL Vercel tidak valid', 'error');
-            return;
-        }
-        
-        try {
-            // Buka halaman Vercel di tab baru
-            window.open(url, '_blank', 'noopener,noreferrer');
-            
-            // Tampilkan pesan konfirmasi
-            window.app.showToast('Membuka halaman profil digital di browser baru...', 'info');
-            
-            // Log untuk debugging
-            console.log('Opening Vercel page:', url);
-            
-        } catch (error) {
-            console.error('Error opening Vercel page:', error);
-            window.app.showToast('Gagal membuka halaman: ' + error.message, 'error');
-        }
-    }
-
-    saveQRData(data, url) {
-        const qrData = {
-            id: `QR-${data.nia}-${Date.now()}`,
-            nia: data.nia,
-            nama: data.nama,
-            url: url,
-            vercel_url: url,
-            generated: new Date().toISOString(),
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            data: {
-                nama: data.nama,
-                posisi: data.posisi,
-                status: data.status,
-                total_simpanan: data.total_simpanan,
-                total_pinjaman: data.total_pinjaman,
-                shu_estimasi: data.shu_estimasi
-            }
-        };
-        
-        this.qrHistory.unshift(qrData);
-        
-        if (this.qrHistory.length > 20) {
-            this.qrHistory.length = 20;
-        }
-        
-        this.saveQRHistory();
-    }
-
-    loadQRHistory() {
-        try {
-            const saved = localStorage.getItem(`qr_history_${this.currentUser?.email}`);
-            if (saved) {
-                this.qrHistory = JSON.parse(saved);
-            }
-        } catch (error) {
-            console.error('Error loading QR history:', error);
-        }
-    }
-
-    saveQRHistory() {
-        try {
-            localStorage.setItem(`qr_history_${this.currentUser?.email}`, JSON.stringify(this.qrHistory));
-        } catch (error) {
-            console.error('Error saving QR history:', error);
-        }
-    }
-
-    downloadQRCode(data) {
-        const qrContainer = document.getElementById('qrCodeContainer');
-        if (!qrContainer) {
-            window.app.showToast('QR Code belum dibuat', 'error');
-            return;
-        }
-        
-        const canvas = qrContainer.querySelector('canvas');
-        if (!canvas) {
-            window.app.showToast('Tidak dapat menemukan QR Code', 'error');
-            return;
-        }
-        
-        try {
-            const link = document.createElement('a');
-            link.download = `QR-Vercel-${data.nia}-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            window.app.showToast('QR Code berhasil diunduh', 'success');
-            
-            // Juga simpan URL Vercel di clipboard
-            const vercelUrl = this.getCurrentVercelUrl();
-            if (vercelUrl) {
-                navigator.clipboard.writeText(vercelUrl).then(() => {
-                    console.log('Vercel URL copied to clipboard');
-                });
-            }
-            
-        } catch (error) {
-            console.error('Error downloading QR:', error);
-            window.app.showToast('Gagal mengunduh QR', 'error');
-        }
-    }
-
-    shareViaWhatsApp(data, url) {
-        const message = `*QR CODE PROFIL DIGITAL - KOPERASI ASMARA TANI*\n\n` +
-                       `#koperasijenius\n\n` +
-                       `👤 *Nama:* ${data.nama}\n` +
-                       `🆔 *NIA:* ${data.nia}\n` +
-                       `✅ *Status:* ${data.status}\n` +
-                       `💼 *Posisi:* ${data.posisi}\n` +
-                       `💰 *Total Simpanan:* ${AdminDataExtractor.formatRupiah(data.total_simpanan || 0)}\n` +
-                       `📅 *Update:* ${new Date().toLocaleDateString('id-ID')}\n\n` +
-                       `_Scan QR Code untuk melihat profil digital lengkap_\n` +
-                       `🔗 ${url}\n\n` +
-                       `*Atau klik link di atas untuk langsung membuka halaman profil*`;
-        
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-        
-        window.app.showToast('QR Code siap dibagikan dengan link Vercel', 'success');
-    }
-
-    refreshQRCode(data) {
-        const newUrl = this.generateVercelUrl(data) + '&refresh=' + Date.now();
-        const qrContainer = document.getElementById('qrCodeContainer');
-        
-        if (qrContainer) {
-            qrContainer.innerHTML = `
-                <div style="padding: 20px; text-align: center;">
-                    <i class="fas fa-sync-alt fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
-                    <p>Memperbarui QR Code dan link Vercel...</p>
-                    <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">
-                        <i class="fas fa-external-link-alt"></i> Membuat link profil digital terbaru
-                    </p>
-                </div>
-            `;
-            
-            setTimeout(() => {
-                this.generateQRCode(newUrl, data);
-                window.app.showToast('QR Code dan link Vercel diperbarui', 'success');
-            }, 500);
-        }
-    }
-
-    getCurrentVercelUrl() {
-        // Mengambil URL Vercel dari QR yang sedang ditampilkan
-        const qrContainer = document.getElementById('qrCodeContainer');
-        if (qrContainer) {
-            const linkElement = qrContainer.querySelector('a[href*="vercel.app"]');
-            if (linkElement) {
-                return linkElement.href;
-            }
-        }
-        return null;
-    }
-}
 class ARExperienceSystem {
     constructor() {
         this.isARActive = false;
@@ -6666,7 +6311,7 @@ function resetPhoto() {
 
 // ===== INISIALISASI APLIKASI =====
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM siap, memulai aplikasi Firebase dengan error handling...');
+    console.log('DOM siap, memulai aplikasi Tabungan Digital dengan Generator QR Code...');
     
     try {
         window.addEventListener('error', function(event) {
@@ -6707,14 +6352,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.app = new TabunganApp();
         clearTimeout(appInitTimeout);
         
-        console.log('✅ Aplikasi Firebase berhasil dimulai dengan perbaikan!');
-        
-        setTimeout(() => {
-            if (!window.qrHybridSystem) {
-                window.qrHybridSystem = new QRCodeHybridSystem();
-                console.log('✅ QR Hybrid System integrated successfully');
-            }
-        }, 3000);
+        console.log('✅ Aplikasi Tabungan Digital dengan Generator QR Code berhasil dimulai!');
         
     } catch (error) {
         console.error('❌ Error initializing app:', error);
