@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Kartu Digital Anggota</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  background:linear-gradient(180deg,#061b12,#020b07);
+  font-family:'Poppins',sans-serif;
+  display:flex;
+  justify-content:center;
+  padding:16px;
+  color:#fff;
+}
+
+/* KARTU */
+.card{
+  width:100%;
+  max-width:390px;
+  background:linear-gradient(160deg,#0f3d28,#062015);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 0 35px rgba(0,255,160,.35);
+  border:1px solid rgba(0,255,160,.35);
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  border-bottom:1px dashed rgba(255,255,255,.25);
+  padding-bottom:14px;
+}
+
+/* LOGO GLASS */
+.logo-wrap{
+  width:86px;
+  height:86px;
+  margin:0 auto 10px;
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 0 18px rgba(0,255,160,.6),
+    inset 0 0 12px rgba(255,255,255,.25);
+  transition:.4s ease;
+  animation:float 4s ease-in-out infinite;
+}
+.logo-wrap:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 28px rgba(0,255,160,.9);
+}
+.logo-wrap img{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+.header h1{
+  font-size:16px;
+  margin:0;
+  font-weight:700;
+  color:#7dffb2;
+}
+.header small{
+  font-size:11px;
+  opacity:.85;
+}
+
+/* STATUS */
+.status{
+  margin:12px auto;
+  text-align:center;
+}
+.status span{
+  padding:6px 18px;
+  border-radius:20px;
+  background:#00ff9d33;
+  color:#00ff9d;
+  font-size:12px;
+  font-weight:600;
+}
+.status-inactive{
+  background:#ff3d0033 !important;
+  color:#ffa000 !important;
+}
+
+/* IDENTITAS */
+.identity{
+  text-align:center;
+  margin:14px 0;
+}
+.identity h2{
+  margin:4px 0;
+  font-size:17px;
+}
+.identity p{
+  margin:0;
+  font-size:12px;
+  color:#a9ffd1;
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:16px 0;
+}
+.stat{
+  background:rgba(0,255,160,.15);
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+}
+.stat small{
+  font-size:10px;
+  opacity:.9;
+}
+.stat b{
+  display:block;
+  margin-top:6px;
+  font-size:13px;
+}
+
+/* DATA */
+.data{
+  font-size:12px;
+}
+.data div{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px dashed rgba(255,255,255,.25);
+}
+.data span{
+  color:#b6ffd9;
+}
+
+/* ACTION BUTTON */
+.actions{
+  display:flex;
+  gap:12px;
+  margin:18px 0 6px;
+}
+.actions button{
+  flex:1;
+  border:none;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(0,255,160,.2);
+  color:#00ff9d;
+  font-weight:600;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 14px rgba(0,255,160,.5);
+  transition:.3s;
+  cursor:pointer;
+  font-family:'Poppins',sans-serif;
+}
+.actions button:hover{
+  background:#00ff9d;
+  color:#003a24;
+  transform:translateY(-2px);
+}
+
+/* FOOTER */
+.footer{
+  margin-top:10px;
+  text-align:center;
+  font-size:10px;
+  opacity:.75;
+}
+
+/* LOADING */
+.loading{
+  text-align:center;
+  padding:30px;
+}
+.spinner{
+  width:40px;
+  height:40px;
+  border:3px solid rgba(0,255,160,.3);
+  border-top:3px solid #00ff9d;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:0 auto 15px;
+}
+@keyframes spin{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+
+/* ERROR MESSAGE */
+.error-message{
+  background:rgba(255,160,0,0.1);
+  border:1px solid rgba(255,160,0,0.3);
+  border-radius:12px;
+  padding:12px;
+  margin:10px 0;
+  text-align:center;
+  font-size:12px;
+  color:#ffa000;
+}
+
+/* LAST UPDATE */
+.last-update{
+  font-size:9px;
+  text-align:center;
+  margin-top:5px;
+  opacity:.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="cardContent">
+  <!-- LOADING STATE -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Memuat data anggota...</p>
+  </div>
+  
+  <!-- CONTENT (hidden by default) -->
+  <div id="content" style="display:none;">
+    <div class="header">
+      <div class="logo-wrap">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg" id="fotoAnggota">
+      </div>
+      <h1>KOPERASI ASMARA TANI</h1>
+      <small>Kartu Anggota Digital (Mobile-Only)</small>
+    </div>
+
+    <div class="status">
+      <span id="statusText">AKTIF</span>
+    </div>
+
+    <div class="identity">
+      <h2 id="nama">Kang L</h2>
+      <p id="nia">NIA : KOP-001</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><small>Simpanan Pokok</small><b id="pokok">Rp 0</b></div>
+      <div class="stat"><small>Simpanan Wajib</small><b id="wajib">Rp 0</b></div>
+      <div class="stat"><small>Simpanan Sukarela</small><b id="sukarela">Rp 0</b></div>
+    </div>
+
+    <div class="data">
+      <div><span>Alamat</span><b id="alamat">Pamijahan, Bogor</b></div>
+      <div><span>Jenis Kelamin</span><b id="jk">Laki-laki</b></div>
+      <div><span>Agama</span><b id="agama">Islam</b></div>
+      <div><span>NIK</span><b id="nik">3201171212810011</b></div>
+      <div><span>Email</span><b id="email">anggota@email.com</b></div>
+      <div><span>Telepon</span><b id="telepon">085218483129</b></div>
+      <div><span>Tanggal Daftar</span><b id="tglDaftar">18-09-2025</b></div>
+      <div><span>Total Simpanan</span><b id="totalSimpanan">Rp 0</b></div>
+      <div><span>Total Pinjaman</span><b id="totalPinjaman">Rp 0</b></div>
+      <div><span>Estimasi SHU</span><b id="shu">Rp 0</b></div>
+    </div>
+
+    <div class="actions">
+      <button onclick="window.print()">Cetak</button>
+      <button onclick="exportPDF()">Export PDF</button>
+    </div>
+
+    <div class="footer">
+      Data tersinkronisasi dari Dashboard Admin<br>
+      © Koperasi Asmara Tani 2026
+      <div class="last-update" id="lastUpdate">Terakhir update: -</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =================== KONFIGURASI ===================
+const CONFIG = {
+  DEFAULT_ID: 'KOP-001',
+  DATA_SOURCE: 'googleAppsScript',
+  GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxZtNu-nEfVM6Fv0w4iHXTPixTBlp-pJHuhvngytbGlCpmDBqV2uG8_JgNGtJtWkLd_/exec',
+  AUTO_REFRESH_INTERVAL: 30000 // 30 detik
+};
+
+// =================== DATA DEFAULT ===================
+const DEFAULT_DATA = {
+  "KOP-001": {
+    "Foto": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg",
+    "nama": "Kang L",
+    "nia": "KOP-001",
+    "Posisi": "Anggota",
+    "Nama_Lengkap": "Kang L",
+    "Alamat_Lengkap": "Pamijahan, Bogor",
+    "Jenis_Kelamin": "Laki-laki",
+    "Email": "siliwangi@email.com",
+    "WhatsApp": "085218483129",
+    "NIK": "3201171212810011",
+    "Agama": "Islam",
+    "Status": "AKTIF",
+    "Tanggal_Bergabung": "18-09-2025",
+    "Simpanan_Pokok": 200000,
+    "Simpanan_Wajib": 0,
+    "Simpanan_Sukarela": 0,
+    "Total_Simpanan": 200000,
+    "Total_Pinjaman": 0,
+    "SHU_Estimasi": 0,
+    "LastUpdated": new Date().toLocaleString('id-ID')
+  }
+};
+
+// =================== FUNGSI BANTU ===================
+function formatRupiah(angka) {
+  if (!angka && angka !== 0) return 'Rp 0';
+  const numberValue = parseInt(angka);
+  return 'Rp ' + numberValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  // Coba format tanggal jika dalam format yang berbeda
+  const date = new Date(dateString);
+  if (!isNaN(date.getTime())) {
+    return date.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+  return dateString;
+}
+
+function getParameterByName(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+}
+
+function showError(message) {
+  const loadingElement = document.getElementById('loading');
+  loadingElement.innerHTML = `
+    <div class="error-message">
+      <p><strong>Error:</strong> ${message}</p>
+      <p style="margin-top:8px; font-size:11px;">Menggunakan data default...</p>
+    </div>
+  `;
+  
+  setTimeout(() => {
+    loadDefaultData();
+  }, 2000);
+}
+
+// =================== LOAD DATA ===================
+async function loadMemberData() {
+    const loadingElement = document.getElementById('loading');
+    const contentElement = document.getElementById('content');
+
+    try {
+        // 1. Ambil ID anggota dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const memberId = urlParams.get('id') || CONFIG.DEFAULT_ID;
+        
+        console.log('Mengambil data untuk ID:', memberId);
+
+        // 2. Buat URL ke Google Apps Script
+        const scriptUrl = `${CONFIG.GOOGLE_SCRIPT_URL}?id=${encodeURIComponent(memberId)}`;
+        console.log('URL GAS:', scriptUrl);
+
+        // 3. Ambil data dari Google Apps Script dengan timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
+        const response = await fetch(scriptUrl, {
+          method: 'GET',
+          mode: 'cors',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // 4. Parse data JSON
+        const responseText = await response.text();
+        console.log('Raw response:', responseText.substring(0, 200) + '...');
+        
+        let memberData;
+        try {
+            memberData = JSON.parse(responseText);
+            console.log('Parsed data:', memberData);
+        } catch (parseError) {
+            console.error('Parse error:', parseError);
+            // Coba cek jika respons adalah HTML
+            if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
+                throw new Error('GAS mengembalikan HTML, bukan JSON. Periksa deployment GAS.');
+            }
+            throw new Error('Format data tidak valid (bukan JSON)');
+        }
+
+        // 5. Validasi data minimal
+        if (!memberData || (Object.keys(memberData).length === 0 && memberData.constructor === Object)) {
+            throw new Error('Data kosong diterima dari server');
+        }
+
+        // 6. Update UI dengan data
+        updateUI(memberData);
+
+        // 7. Sembunyikan loading, tampilkan konten
+        loadingElement.style.display = 'none';
+        contentElement.style.display = 'block';
+
+    } catch (error) {
+        console.error('Kesalahan saat load data:', error);
+        
+        // Tampilkan pesan error spesifik
+        let errorMessage = 'Gagal memuat data. ';
+        
+        if (error.name === 'AbortError') {
+            errorMessage += 'Timeout: Server tidak merespons dalam 10 detik.';
+        } else if (error.message.includes('HTTP error')) {
+            errorMessage += 'Error koneksi ke server.';
+        } else if (error.message.includes('Format data')) {
+            errorMessage += 'Format data dari server tidak valid.';
+        } else if (error.message.includes('Data kosong')) {
+            errorMessage += 'Data tidak ditemukan untuk ID ini.';
+        } else {
+            errorMessage += error.message;
+        }
+        
+        showError(errorMessage);
+    }
+}
+
+function loadDefaultData() {
+  const memberId = CONFIG.DEFAULT_ID;
+  const memberData = DEFAULT_DATA[memberId];
+  updateUI(memberData);
+  
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+}
+
+function updateUI(data) {
+  if (!data) {
+    console.error('Data kosong di updateUI');
+    return;
+  }
+  
+  console.log('Updating UI with data:', data);
+  
+  // Helper untuk mendapatkan nilai dengan berbagai kemungkinan key
+  function getValue(...keys) {
+    for (const key of keys) {
+      if (data[key] !== undefined && data[key] !== null && data[key] !== '') {
+        return data[key];
+      }
+    }
+    return '-';
+  }
+  
+  // Update basic info
+  document.getElementById('nama').textContent = getValue('Nama_Lengkap', 'nama_lengkap', 'nama', 'Nama');
+  document.getElementById('nia').textContent = `NIA : ${getValue('ID/NIA', 'ID_NIA', 'NIA', 'nia', 'id')}`;
+  
+  // Update status dengan class yang benar
+  const statusElement = document.getElementById('statusText');
+  const statusValue = getValue('Status', 'status');
+  statusElement.textContent = statusValue;
+  
+  // Reset class dulu
+  statusElement.classList.remove('status-inactive');
+  
+  // Tambah class jika status tidak aktif
+  if (typeof statusValue === 'string' && statusValue.toUpperCase().includes('TIDAK')) {
+    statusElement.classList.add('status-inactive');
+  }
+  
+  // Update foto jika ada
+  const fotoUrl = getValue('Foto', 'foto', 'photo');
+  if (fotoUrl && fotoUrl !== '-' && !fotoUrl.includes('undefined')) {
+    document.getElementById('fotoAnggota').src = fotoUrl;
+    document.getElementById('fotoAnggota').alt = `Foto ${getValue('Nama_Lengkap', 'nama')}`;
+  }
+  
+  // Update simpanan
+  document.getElementById('pokok').textContent = formatRupiah(getValue('Simpanan_Pokok', 'simpanan_pokok', 'pokok'));
+  document.getElementById('wajib').textContent = formatRupiah(getValue('Simpanan_Wajib', 'simpanan_wajib', 'wajib'));
+  document.getElementById('sukarela').textContent = formatRupiah(getValue('Simpanan_Sukarela', 'simpanan_sukarela', 'sukarela'));
+  
+  // Update data pribadi
+  document.getElementById('alamat').textContent = getValue('Alamat_Lengkap', 'alamat_lengkap', 'Alamat', 'alamat');
+  document.getElementById('jk').textContent = getValue('Jenis_Kelamin', 'jenis_kelamin', 'JK', 'jk');
+  document.getElementById('agama').textContent = getValue('Agama', 'agama');
+  document.getElementById('nik').textContent = getValue('NIK', 'nik');
+  document.getElementById('email').textContent = getValue('Email', 'email');
+  document.getElementById('telepon').textContent = getValue('WhatsApp', 'whatsapp', 'Telepon', 'telepon', 'No_HP', 'no_hp');
+  document.getElementById('tglDaftar').textContent = formatDate(getValue('Tanggal_Bergabung', 'tanggal_bergabung', 'tgl_daftar', 'Tanggal_Daftar'));
+  
+  // Hitung total simpanan jika tidak disediakan
+  const pokok = parseInt(getValue('Simpanan_Pokok', 'simpanan_pokok')) || 0;
+  const wajib = parseInt(getValue('Simpanan_Wajib', 'simpanan_wajib')) || 0;
+  const sukarela = parseInt(getValue('Simpanan_Sukarela', 'simpanan_sukarela')) || 0;
+  const totalSimpanan = pokok + wajib + sukarela;
+  
+  // Update keuangan
+  document.getElementById('totalSimpanan').textContent = formatRupiah(
+    getValue('Total_Simpanan', 'total_simpanan') || totalSimpanan
+  );
+  document.getElementById('totalPinjaman').textContent = formatRupiah(getValue('Total_Pinjaman', 'total_pinjaman', 'Pinjaman'));
+  document.getElementById('shu').textContent = formatRupiah(getValue('SHU_Estimasi', 'shu_estimasi', 'SHU', 'shu'));
+  
+  // Update timestamp
+  const lastUpdate = getValue('LastUpdated', 'last_updated', 'last_update', 'updated_at');
+  document.getElementById('lastUpdate').textContent = 
+    `Terakhir update: ${lastUpdate !== '-' ? lastUpdate : new Date().toLocaleString('id-ID')}`;
+}
+
+// =================== EXPORT FUNCTION ===================
+function exportPDF() {
+  // Untuk sementara gunakan print, nanti bisa diintegrasikan dengan library PDF
+  alert('Fitur Export PDF akan diintegrasikan dengan Dashboard Admin.\nUntuk saat ini, gunakan fitur Print/Cetak.');
+  // window.print() bisa digunakan sebagai alternatif
+}
+
+// =================== AUTO REFRESH ===================
+let refreshInterval;
+function startAutoRefresh() {
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(loadMemberData, CONFIG.AUTO_REFRESH_INTERVAL);
+}
+
+function stopAutoRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+}
+
+// =================== SYNC WITH DASHBOARD ===================
+window.updateMemberData = function(memberId, newData) {
+  // Simpan ke localStorage sebagai cache
+  const savedData = localStorage.getItem('koperasiData');
+  let allData = savedData ? JSON.parse(savedData) : {};
+  
+  allData[memberId] = {
+    ...allData[memberId],
+    ...newData,
+    LastUpdated: new Date().toLocaleString('id-ID')
+  };
+  
+  localStorage.setItem('koperasiData', JSON.stringify(allData));
+  
+  // Jika ID yang diupdate sama dengan yang sedang dilihat
+  const currentId = getParameterByName('id') || CONFIG.DEFAULT_ID;
+  if (currentId === memberId) {
+    loadMemberData(); // Refresh tampilan
+  }
+  
+  return true;
+};
+
+// =================== DEBUG / TEST ===================
+window.debugUpdate = function() {
+  const testData = {
+    Foto: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg",
+    Nama_Lengkap: "Kang L (Test Update)",
+    "ID/NIA": "KOP-001",
+    Status: "AKTIF",
+    Simpanan_Pokok: 250000,
+    Simpanan_Wajib: 50000,
+    Simpanan_Sukarela: 100000,
+    Total_Simpanan: 400000,
+    Total_Pinjaman: 1500000,
+    SHU_Estimasi: 75000,
+    LastUpdated: new Date().toLocaleString('id-ID')
+  };
+  
+  const memberId = getParameterByName('id') || CONFIG.DEFAULT_ID;
+  window.updateMemberData(memberId, testData);
+  alert(`Data test telah diupdate untuk ID: ${memberId}!`);
+};
+
+// =================== INITIAL LOAD ===================
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, starting data load...');
+  loadMemberData();
+  startAutoRefresh();
+  
+  // Tambah event listener untuk visibility change
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      // Jika tab menjadi aktif lagi, refresh data
+      loadMemberData();
+    }
+  });
+});
+
+// =================== UNLOAD CLEANUP ===================
+window.addEventListener('beforeunload', function() {
+  stopAutoRefresh();
+});
+</script>
+
+</body>
+</html>
