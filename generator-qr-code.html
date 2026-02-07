@@ -43,58 +43,56 @@
             display: flex;
             flex-direction: column;
             height: 95vh;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            padding: 25px 25px 25px 120px;
-            text-align: center;
             position: relative;
-            min-height: 130px;
         }
         
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .back-button-container {
+        .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
-            z-index: 2;
-            width: auto;
+            z-index: 10;
         }
         
         .btn-back {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 15px;
-            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 10px 18px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
-            backdrop-filter: blur(5px);
+            gap: 8px;
+            text-decoration: none;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             white-space: nowrap;
-            max-width: 140px;
         }
         
         .btn-back:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: var(--primary);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 18px rgba(26, 95, 35, 0.25);
         }
         
         .btn-back i {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
         
         h1 {
@@ -480,7 +478,6 @@
             background: var(--accent-blue);
         }
         
-        /* Responsive styles */
         @media (max-width: 768px) {
             .content {
                 flex-direction: column;
@@ -502,143 +499,63 @@
                 grid-template-columns: 1fr;
             }
             
-            header {
-                padding: 25px 20px 25px 110px;
-                min-height: 120px;
-            }
-            
-            .back-button-container {
-                top: 15px;
-                left: 15px;
+            h1 {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 10px;
+                padding-top: 10px;
             }
             
             .btn-back {
-                padding: 6px 12px;
+                padding: 8px 14px;
                 font-size: 0.8rem;
-                max-width: 130px;
             }
             
             .btn-back i {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             
-            h1 {
-                font-size: 1.7rem;
-                margin-top: 5px;
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .subtitle {
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            header {
-                padding: 25px 15px 25px 100px;
-                min-height: 115px;
-            }
-            
-            .btn-back {
-                padding: 5px 10px;
-                font-size: 0.75rem;
-                max-width: 120px;
-            }
-            
-            .btn-back span {
-                display: inline-block;
-                max-width: 90px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .subtitle {
-                font-size: 0.85rem;
+            .header-content {
+                padding-top: 15px;
             }
         }
         
         @media (max-width: 480px) {
-            header {
-                padding: 20px 15px 20px 85px;
-                min-height: 110px;
-            }
-            
-            .back-button-container {
-                top: 12px;
-                left: 12px;
-            }
-            
-            .btn-back {
-                padding: 4px 8px;
-                font-size: 0.7rem;
-                max-width: 110px;
-                gap: 4px;
-            }
-            
-            .btn-back i {
-                font-size: 0.7rem;
-            }
-            
             h1 {
-                font-size: 1.4rem;
-                gap: 5px;
+                font-size: 1.6rem;
             }
             
-            h1 i {
-                font-size: 1.3rem;
-            }
-        }
-        
-        @media (max-width: 400px) {
             .btn-back {
-                max-width: 100px;
+                padding: 7px 12px;
+                font-size: 0.75rem;
             }
             
             .btn-back span {
-                max-width: 75px;
+                display: none;
+            }
+            
+            .btn-back:after {
+                content: "Dashboard";
+                font-size: 0.75rem;
             }
             
             header {
-                padding-left: 80px;
-            }
-        }
-        
-        /* Very small screens */
-        @media (max-width: 360px) {
-            .btn-back {
-                padding: 3px 6px;
-                font-size: 0.65rem;
-                max-width: 95px;
-            }
-            
-            .btn-back span {
-                max-width: 70px;
-            }
-            
-            header {
-                padding-left: 75px;
-                min-height: 105px;
-            }
-            
-            h1 {
-                font-size: 1.3rem;
+                padding: 20px 15px 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Tombol Back/Kembali Ke Dashboard -->
+        <div class="back-button">
+            <a href="dashboard-admin.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                <span>Kembali Ke Dashboard</span>
+            </a>
+        </div>
+        
         <header>
-            <div class="back-button-container">
-                <button class="btn-back" id="backBtn">
-                    <i class="fas fa-arrow-left"></i> <span>Kembali Ke Dashboard</span>
-                </button>
-            </div>
             <div class="header-content">
                 <h1><i class="fas fa-qrcode"></i> Generator QR Code Dashboard</h1>
                 <p class="subtitle">Buat QR Code untuk ditampilkan di Tabungan Digital</p>
@@ -769,7 +686,6 @@
         const sizeOptions = document.querySelectorAll('.size-option');
         const generateBtn = document.getElementById('generateBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const backBtn = document.getElementById('backBtn');
         const qrCanvas = document.getElementById('qrCanvas');
         const qrPlaceholder = document.getElementById('qrPlaceholder');
         const qrDisplayContainer = document.getElementById('qrDisplayContainer');
@@ -819,7 +735,6 @@
             // Button events
             generateBtn.addEventListener('click', generateQRCode);
             resetBtn.addEventListener('click', resetGenerator);
-            backBtn.addEventListener('click', goBackToDashboard);
             downloadBtn.addEventListener('click', downloadQRCode);
             copyBtn.addEventListener('click', copyQRCodeToClipboard);
             openTabunganBtn.addEventListener('click', openTabunganDigital);
@@ -839,20 +754,17 @@
             // Load any existing QR code from storage
             loadExistingQRCode();
             
-            // Adjust header padding based on button width
-            adjustHeaderPadding();
+            // Add back button hover effect
+            const backButton = document.querySelector('.btn-back');
+            backButton.addEventListener('mouseenter', () => {
+                backButton.style.transform = 'translateY(-2px)';
+            });
+            
+            backButton.addEventListener('mouseleave', () => {
+                backButton.style.transform = 'translateY(0)';
+            });
             
             console.log('✅ Generator QR Code Dashboard initialized');
-        }
-        
-        function adjustHeaderPadding() {
-            // Calculate required padding based on button width
-            const backButton = document.querySelector('.back-button-container');
-            const buttonWidth = backButton.offsetWidth;
-            
-            // Add extra padding to header
-            const header = document.querySelector('header');
-            header.style.paddingLeft = (buttonWidth + 35) + 'px';
         }
         
         function generateQRCode() {
@@ -1125,30 +1037,6 @@
             showToast('Membuka Tabungan Digital...', 'info');
         }
         
-        function goBackToDashboard() {
-            // Show confirmation if there are unsaved changes
-            if (currentQRCode) {
-                const confirmBack = confirm('Apakah Anda yakin ingin kembali ke Dashboard? QR Code yang dibuat akan tetap tersimpan untuk Tabungan Digital.');
-                if (!confirmBack) return;
-            }
-            
-            // Simulate navigation to dashboard
-            showToast('Mengarahkan ke Dashboard...', 'info');
-            
-            // In a real application, you would use:
-            // window.location.href = 'dashboard-admin.html';
-            // For demo purposes, we'll log to console
-            console.log('Navigating back to Dashboard...');
-            
-            // If you want to actually navigate, uncomment the line below:
-            // window.location.href = 'dashboard-admin.html';
-            
-            // For now, we'll just show a message
-            setTimeout(() => {
-                showToast('Kembali ke halaman Dashboard Admin', 'info');
-            }, 1000);
-        }
-        
         function resetGenerator() {
             qrDataInput.value = 'https://koperasi-asmara-tani-7vlgm8ct1-kang-ls-projects.vercel.app/';
             fgColorInput.value = '#000000';
@@ -1187,9 +1075,6 @@
         
         // Initialize on load
         document.addEventListener('DOMContentLoaded', init);
-        
-        // Adjust padding on window resize
-        window.addEventListener('resize', adjustHeaderPadding);
     </script>
 </body>
 </html>
