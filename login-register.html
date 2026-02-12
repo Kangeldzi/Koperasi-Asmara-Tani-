@@ -449,90 +449,70 @@
             background: var(--light);
         }
         
-        /* New styles for NIA display - MANUAL INPUT */
-        .nia-manual {
-            background: linear-gradient(145deg, #fff9e6, #fff3cd);
-            border: 2px solid var(--warning);
+        /* NIA Display - Untuk Register (Manual Input) */
+        .nia-manual-container {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border: 2px solid var(--primary);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             position: relative;
-            overflow: hidden;
         }
         
-        .nia-manual::before {
-            content: '⚠️ WAJIB DIISI';
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 0.7rem;
-            color: var(--warning);
-            font-weight: 700;
-            letter-spacing: 2px;
-            background: rgba(0,0,0,0.05);
-            padding: 3px 8px;
-            border-radius: 20px;
-        }
-        
-        .nia-label {
+        .nia-manual-title {
             font-size: 0.9rem;
-            color: var(--dark);
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 700;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
         
-        .nia-input-group {
+        .nia-manual-title i {
+            color: var(--info);
+        }
+        
+        .nia-manual-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            color: var(--primary-dark);
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .nia-manual-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+            outline: none;
+        }
+        
+        .nia-manual-info {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--info);
+            background: rgba(33, 150, 243, 0.05);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--info);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        .nia-input {
-            flex: 1;
-            padding: 16px 20px;
-            border: 2px solid var(--warning);
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
+        .nia-manual-info i {
+            font-size: 1.2rem;
+            color: var(--info);
         }
         
-        .nia-input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
-        }
-        
-        .nia-input.error {
-            border-color: var(--danger);
-            background-color: rgba(244, 67, 54, 0.05);
-        }
-        
-        .nia-info {
-            margin-top: 8px;
-            font-size: 0.8rem;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .nia-example {
-            display: inline-block;
-            background: var(--light);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        /* New styles for optional label */
+        /* Optional label */
         .optional-label {
             font-size: 0.85rem;
             color: var(--gray);
@@ -687,6 +667,20 @@
                         </div>
                     </div>
                     
+                    <div class="form-group" id="niaLoginGroup" style="display: none;">
+                        <label for="niaLogin">
+                            ID/NIA <span class="required">*</span>
+                            <span style="font-size: 0.8rem; color: var(--gray); margin-left: 8px;">(Dari Admin)</span>
+                        </label>
+                        <input type="text" id="niaLogin" class="form-control" 
+                               placeholder="Contoh: #01-****-***" 
+                               pattern="^#01-2026-[0-9]{3}$"
+                               title="Format: #01-2026-XXX (XXX adalah 3 digit angka)">
+                        <div style="font-size: 0.8rem; color: var(--info); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-shield-alt"></i> ID/NIA bersifat rahasia dan unik. Hubungi Admin untuk mendapatkan NIA.
+                        </div>
+                    </div>
+                    
                     <div class="form-options">
                         <div class="remember-me">
                             <input type="checkbox" id="remember">
@@ -706,24 +700,10 @@
                 <div class="login-footer">
                     <p id="registerText">Belum punya akun? <a href="#" id="registerLink">Daftar sebagai Anggota</a></p>
                 </div>
-
-                <!-- INFO: Data default anggota TIDAK DITAMPILKAN untuk keamanan -->
-                <!-- Hanya menampilkan informasi kontak admin -->
-                <div style="margin-top: 20px; padding: 15px; background: rgba(33, 150, 243, 0.05); border-radius: 10px; border-left: 5px solid var(--info);">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--info); font-weight: 600;">
-                        <i class="fas fa-info-circle"></i> Informasi Penting:
-                    </div>
-                    <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 5px;">
-                        <i class="fas fa-id-card"></i> ID/NIA diberikan oleh Admin Koperasi
-                    </p>
-                    <p style="font-size: 0.85rem; color: var(--gray);">
-                        <i class="fas fa-phone-alt"></i> Hubungi Admin: 0852-1848-3129
-                    </p>
-                </div>
             </div>
         </div>
         
-        <!-- Container Daftar Anggota -->
+        <!-- Container Daftar Anggota (MANUAL INPUT NIA - DARI ADMIN) -->
         <div class="register-container" id="registerContainer">
             <div class="header">
                 <h1>Daftar Sebagai Anggota</h1>
@@ -731,25 +711,30 @@
             </div>
             
             <div class="form-container">
-                <!-- NIA Manual Input - WAJIB DIISI, TIDAK DIGENERATE OTOMATIS -->
-                <div class="nia-manual">
-                    <div class="nia-label">
-                        <i class="fas fa-id-card"></i> ID/NIA Anggota <span class="required">*</span>
-                        <span style="font-size: 0.8rem; color: var(--warning); margin-left: 8px;">
-                            <i class="fas fa-exclamation-triangle"></i> Diperoleh dari Admin
-                        </span>
-                    </div>
-                    <div class="nia-input-group">
-                        <input type="text" id="niaManual" class="nia-input" 
-                               placeholder="Contoh: ***-****-**" 
-                               maxlength="15" 
-                               autocomplete="off">
-                    </div>
-                    <div class="nia-info">
-                        <i class="fas fa-info-circle"></i> 
-                        <span>ID/NIA bersifat unik dan diberikan oleh Admin Koperasi. Hubungi Admin untuk mendapatkan NIA.</span>
+                <!-- MANUAL NIA INPUT - HANYA ADMIN YANG MEMBERIKAN -->
+                <div class="nia-manual-container">
+                    <div class="nia-manual-title">
+                        <i class="fas fa-id-card"></i> ID/NIA Anggota (Dari Admin)
+                        <span style="color: var(--danger); margin-left: 5px;">*WAJIB</span>
                     </div>
                     
+                    <input type="text" id="niaManual" class="nia-manual-input" 
+                           placeholder="Contoh: #01-****-***" 
+                           required
+                           pattern="^#01-2026-[0-9]{3}$"
+                           title="Format NIA: #01-2026-XXX (XXX adalah 3 digit angka, contoh: #01-2026-001)"
+                           maxlength="13">
+                    
+                    <div class="nia-manual-info">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <strong>ID/NIA bersifat RAHASIA dan Personal.</strong><br>
+                            Hanya Admin yang berhak memberikan NIA. Hubungi Admin Koperasi untuk mendapatkan NIA Anda.
+                            <div style="margin-top: 8px; font-size: 0.8rem; color: var(--primary);">
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <form id="registrationForm">
@@ -1003,13 +988,17 @@
     </script>
 
     <script>
-    // ===== MAIN APPLICATION - REVISI: NIA MANUAL INPUT, TIDAK ADA AUTO GENERATE =====
+    // ===== MAIN APPLICATION - REVISI TOTAL SESUAI PERMINTAAN =====
+    // ===== FITUR LENGKAP: MANUAL NIA, TIDAK ADA AUTO GENERATE, TIDAK ADA LIST NIA =====
+    
     document.addEventListener('DOMContentLoaded', async function() {
-        console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM REVISI ===');
-        console.log('✅ NIA WAJIB DIISI MANUAL - Tidak ada Auto Generate');
-        console.log('✅ Data default anggota TIDAK DITAMPILKAN di halaman login');
-        console.log('✅ Role Admin: admin@koperasi.com / admin014212');
-        console.log('✅ Redirect: Anggota → akun-anggota.html, Admin → dashboard-admin.html');
+        console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM (REVISI TOTAL) ===');
+        console.log('✅ FORMAT NIA: #01-2026-001 s/d #01-2026-1000 (MANUAL INPUT)');
+        console.log('✅ NIA BERSIFAT RAHASIA - HANYA ADMIN YANG MEMBERIKAN');
+        console.log('✅ TIDAK ADA AUTO GENERATE NIA');
+        console.log('✅ TIDAK ADA LIST/DATA DEFAULT ANGGOTA DITAMPILKAN');
+        console.log('✅ ADMIN: #01-2026-001 bisa akses akun-anggota.html');
+        console.log('✅ ANGGOTA: #01-2026-002 s/d #01-2026-1000 bisa akses akun-anggota.html');
         
         // Initialize Firebase
         await initializeFirebase();
@@ -1021,17 +1010,22 @@
         const closeBtn = document.getElementById('closeBtn');
         const backToLoginLink = document.getElementById('backToLogin');
         const registerLink = document.getElementById('registerLink');
+        const niaLoginGroup = document.getElementById('niaLoginGroup');
+        const niaLoginInput = document.getElementById('niaLogin');
+        const niaManualInput = document.getElementById('niaManual');
         
         // ===== CONSTANTS =====
+        const NIA_PREFIX = '#01-2026-';
+        const NIA_REGEX = /^#01-2026-[0-9]{3}$/;
         const ADMIN_EMAIL = 'admin@koperasi.com';
         const ADMIN_PASSWORD = 'admin014212';
         const REDIRECT_ANGGOTA = 'akun-anggota.html';
         const REDIRECT_ADMIN = 'dashboard-admin.html';
         
-        // ===== INITIALIZE DEFAULT DATA (HANYA ADMIN, TIDAK ADA DEFAULT ANGGOTA) =====
+        // ===== INITIALIZE DEFAULT ADMIN ONLY (TIDAK ADA DATA ANGGOTA DEFAULT) =====
         async function initializeDefaultData() {
             try {
-                // Default Admin User - TETAP ADA
+                // Default Admin User - HANYA ADMIN, TIDAK ADA ANGGOTA DEFAULT
                 const adminData = {
                     email: ADMIN_EMAIL,
                     password: ADMIN_PASSWORD,
@@ -1041,37 +1035,29 @@
                     foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
                     access: 'dashboard',
                     isSuperAdmin: true,
+                    nia: 'ADMIN-001',
                     createdAt: new Date().toISOString(),
-                    lastLogin: null,
-                    nia: 'ADMIN-001'
+                    lastLogin: null
                 };
                 
-                // HANYA ADMIN - TIDAK ADA DEFAULT ANGGOTA
-                // Data anggota default TIDAK DIMASUKKAN untuk keamanan
-                
-                // Save to LocalStorage
+                // Save Admin to LocalStorage
                 const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                
-                // Save Admin
                 if (!localUsers[ADMIN_EMAIL]) {
                     localUsers[ADMIN_EMAIL] = adminData;
+                    localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
                 }
                 
-                localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
-                
-                // Save to Firebase if available
+                // Save Admin to Firebase
                 if (firebaseInitialized && db) {
                     try {
-                        const adminRef = db.collection('users').doc(ADMIN_EMAIL);
-                        await adminRef.set(adminData);
+                        await db.collection('users').doc(ADMIN_EMAIL).set(adminData);
                         console.log('✅ Admin data saved to Firebase');
                     } catch (error) {
                         console.warn('⚠️ Firebase save warning:', error);
                     }
                 }
                 
-                console.log('✅ Default admin initialized');
-                console.log('⚠️ Default anggota TIDAK ADA - NIA harus diisi manual');
+                console.log('✅ Default Admin initialized (TIDAK ADA DATA ANGGOTA DEFAULT)');
                 
             } catch (error) {
                 console.error('❌ Error initializing default data:', error);
@@ -1114,6 +1100,9 @@
             // Reset form
             document.getElementById('registrationForm').reset();
             
+            // Reset NIA Manual Input
+            if (niaManualInput) niaManualInput.value = '';
+            
             // Reset file names
             document.getElementById('foto-name').textContent = 'Belum ada file dipilih';
             
@@ -1124,10 +1113,6 @@
             // Reset alamat counter
             document.getElementById('alamatCounter').textContent = '0/200 karakter';
             document.getElementById('alamatCounter').style.color = 'var(--gray)';
-            
-            // Reset NIA input
-            document.getElementById('niaManual').value = '';
-            document.getElementById('niaManual').classList.remove('error');
         }
         
         // Register link click
@@ -1193,12 +1178,18 @@
             if (userType === 'admin') {
                 loginHeader.textContent = 'Masuk sebagai Admin/Pengurus';
                 loginSubtitle.textContent = 'Silakan masuk dengan akun Admin/Pengurus';
+                niaLoginGroup.style.display = 'none';
+                if (niaLoginInput) niaLoginInput.required = false;
+                
                 if (registerText) {
                     registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai Anggota</a>';
                 }
             } else {
                 loginHeader.textContent = 'Masuk sebagai Anggota';
                 loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
+                niaLoginGroup.style.display = 'block';
+                if (niaLoginInput) niaLoginInput.required = true;
+                
                 if (registerText) {
                     registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai Anggota</a>';
                 }
@@ -1211,6 +1202,43 @@
                     e.preventDefault();
                     showRegisterForm();
                 });
+            }
+        }
+        
+        // ===== VALIDASI NIA FUNCTION =====
+        function isValidNIA(nia) {
+            if (!nia) return false;
+            
+            // Format harus #01-2026-XXX (XXX = 3 digit angka)
+            const regex = /^#01-2026-[0-9]{3}$/;
+            if (!regex.test(nia)) return false;
+            
+            // Extract angka NIA
+            const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
+            
+            // Valid range: 001 - 1000
+            return niaNumber >= 1 && niaNumber <= 1000;
+        }
+        
+        // ===== CHECK NIA EXISTENCE IN DATABASE =====
+        async function isNIAExists(nia) {
+            try {
+                // Check Firebase first
+                if (firebaseInitialized && db) {
+                    const anggotaRef = db.collection('anggota').doc(nia);
+                    const doc = await anggotaRef.get();
+                    if (doc.exists) {
+                        return true;
+                    }
+                }
+                
+                // Check LocalStorage
+                const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                return localAnggota.some(anggota => anggota.nia === nia);
+                
+            } catch (error) {
+                console.error('Error checking NIA:', error);
+                return false;
             }
         }
         
@@ -1227,6 +1255,7 @@
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
                 const remember = document.getElementById('remember').checked;
+                const nia = niaLoginInput ? niaLoginInput.value.trim() : '';
                 
                 if (!email || !password) {
                     showError('Harap isi semua field yang diperlukan.');
@@ -1240,7 +1269,7 @@
                 submitBtn.disabled = true;
                 
                 try {
-                    // Check Admin Login
+                    // ===== ADMIN LOGIN =====
                     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
                         // Admin login successful
                         showSuccess('Login Admin berhasil! Mengarahkan ke Dashboard Admin...');
@@ -1266,81 +1295,106 @@
                         return;
                     }
                     
-                    // Check Anggota Login - Try Firebase first
-                    if (firebaseInitialized && db) {
-                        try {
-                            const usersRef = db.collection('users');
-                            const querySnapshot = await usersRef.where('email', '==', email).get();
-                            
-                            if (!querySnapshot.empty) {
-                                const userDoc = querySnapshot.docs[0];
-                                const userData = userDoc.data();
+                    // ===== ANGGOTA LOGIN =====
+                    if (currentUserType === 'anggota') {
+                        // Validasi NIA wajib diisi
+                        if (!nia) {
+                            showError('ID/NIA wajib diisi. Hubungi Admin untuk mendapatkan NIA Anda.');
+                            return;
+                        }
+                        
+                        // Validasi format NIA
+                        if (!isValidNIA(nia)) {
+                            showError('Format ID/NIA tidak valid. Format yang benar: #01-2026-XXX (XXX = 001-1000)');
+                            return;
+                        }
+                        
+                        // Ekstrak nomor NIA
+                        const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
+                        
+                        // CEK AKSES BERDASARKAN NIA:
+                        // NIA #01-2026-001 = Admin (bisa akses akun-anggota.html)
+                        // NIA #01-2026-002 s/d 1000 = Anggota Biasa
+                        
+                        // Cek apakah NIA terdaftar di database
+                        const exists = await isNIAExists(nia);
+                        
+                        if (!exists) {
+                            showError('ID/NIA tidak terdaftar. Silakan hubungi Admin untuk pendaftaran.');
+                            return;
+                        }
+                        
+                        // Try Firebase authentication
+                        if (firebaseInitialized && db) {
+                            try {
+                                const usersRef = db.collection('users');
+                                const querySnapshot = await usersRef.where('email', '==', email).get();
                                 
-                                if (userData.password === password) {
-                                    // Check if trying to login as admin with anggota account
-                                    if (currentUserType === 'admin' && userData.access === 'anggota') {
-                                        showError('Akses ditolak. Akun ini adalah anggota, bukan admin.');
+                                if (!querySnapshot.empty) {
+                                    const userDoc = querySnapshot.docs[0];
+                                    const userData = userDoc.data();
+                                    
+                                    if (userData.password === password && userData.nia === nia) {
+                                        // Login successful
+                                        showSuccess('Login berhasil! Mengarahkan ke halaman anggota...');
+                                        
+                                        localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
+                                        
+                                        if (remember) {
+                                            localStorage.setItem('koperasi_remembered_email', email);
+                                        }
+                                        
+                                        setTimeout(() => {
+                                            window.location.href = REDIRECT_ANGGOTA;
+                                        }, 1000);
                                         return;
                                     }
-                                    
-                                    showSuccess('Login berhasil! Mengarahkan ke halaman anggota...');
-                                    
-                                    localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
-                                    
-                                    if (remember) {
-                                        localStorage.setItem('koperasi_remembered_email', email);
-                                    }
-                                    
-                                    setTimeout(() => {
-                                        window.location.href = REDIRECT_ANGGOTA;
-                                    }, 1000);
-                                    return;
                                 }
+                            } catch (firebaseError) {
+                                console.log('Firebase auth failed, trying local storage:', firebaseError);
                             }
-                        } catch (firebaseError) {
-                            console.log('Firebase auth failed, trying local storage:', firebaseError);
                         }
-                    }
-                    
-                    // Fallback to local storage authentication
-                    const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                    const user = localUsers[email];
-                    
-                    if (!user) {
-                        showError('Email tidak terdaftar.');
-                        return;
-                    }
-                    
-                    if (user.password !== password) {
-                        showError('Password salah.');
-                        return;
-                    }
-                    
-                    // Check access based on user type
-                    if (currentUserType === 'admin' && user.access !== 'dashboard') {
-                        showError('Akses ditolak. Silakan login sebagai anggota.');
-                        return;
-                    }
-                    
-                    // Login successful
-                    showSuccess('Login berhasil! Mengarahkan ke halaman...');
-                    
-                    localStorage.setItem('koperasi_current_user', JSON.stringify(user));
-                    
-                    if (remember) {
-                        localStorage.setItem('koperasi_remembered_email', email);
-                    } else {
-                        localStorage.removeItem('koperasi_remembered_email');
-                    }
-                    
-                    // Redirect based on role
-                    setTimeout(() => {
-                        if (user.access === 'dashboard' || user.role === 'Admin' || user.role === 'Ketua' || user.role === 'Sekretaris' || user.role === 'Bendahara' || user.role === 'Pengawas') {
-                            window.location.href = REDIRECT_ADMIN;
-                        } else {
+                        
+                        // Fallback to local storage authentication
+                        const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
+                        const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                        
+                        // Cari user berdasarkan email
+                        const user = localUsers[email];
+                        
+                        if (!user) {
+                            showError('Email tidak terdaftar.');
+                            return;
+                        }
+                        
+                        if (user.password !== password) {
+                            showError('Password salah.');
+                            return;
+                        }
+                        
+                        // Verifikasi NIA cocok
+                        if (user.nia !== nia) {
+                            showError('ID/NIA tidak sesuai dengan akun ini.');
+                            return;
+                        }
+                        
+                        // Login successful
+                        showSuccess('Login berhasil! Mengarahkan ke halaman anggota...');
+                        
+                        localStorage.setItem('koperasi_current_user', JSON.stringify(user));
+                        
+                        if (remember) {
+                            localStorage.setItem('koperasi_remembered_email', email);
+                        }
+                        
+                        setTimeout(() => {
                             window.location.href = REDIRECT_ANGGOTA;
-                        }
-                    }, 1000);
+                        }, 1000);
+                        
+                    } else {
+                        // Admin login with wrong credentials
+                        showError('Email atau password Admin salah.');
+                    }
                     
                 } catch (error) {
                     showError('Terjadi kesalahan: ' + error.message);
@@ -1391,12 +1445,12 @@
             forgotPassword.addEventListener('click', function(e) {
                 e.preventDefault();
                 alert('🔐 Lupa Password?\n\n' +
-                      'Untuk Admin: admin@koperasi.com / admin014212\n' +
-                      'Untuk Anggota: Hubungi Administrator Koperasi\n\n' +
-                      '📞 Kontak Admin:\n' +
-                      'Email: admin@koperasiasmaratani.id\n' +
-                      'WhatsApp: 0852-1848-3129\n\n' +
-                      'Atau datang langsung ke kantor Koperasi KUD Asmara Tani.');
+                      'Untuk Admin: admin@koperasi.com / admin014212\n\n' +
+                      'Untuk Anggota:\n' +
+                      '1. Hubungi Administrator Koperasi\n' +
+                      '2. Email: admin@koperasiasmaratani.id\n' +
+                      '3. WhatsApp: 0852-1848-3129\n\n' +
+                      '📋 Siapkan ID/NIA Anda untuk verifikasi.');
             });
         }
         
@@ -1420,74 +1474,15 @@
             });
         }
         
-        // ===== VALIDASI NIA MANUAL =====
-        function validateNIA(nia) {
-            if (!nia || nia.trim() === '') {
-                return { valid: false, message: 'ID/NIA wajib diisi.' };
-            }
-            
-            // Format: #01-2026-XXX (XXX = 3 digit angka)
-            const niaPattern = /^#01-2026-[0-9]{3}$/;
-            if (!niaPattern.test(nia)) {
-                return { valid: false, message: 'Format ID/NIA tidak valid. Gunakan format: #01-2026-001' };
-            }
-            
-            return { valid: true, message: '' };
-        }
-        
-        // ===== CHECK NIA UNIK =====
-        async function isNIAUnique(nia) {
-            try {
-                // Check Firebase
-                if (firebaseInitialized && db) {
-                    const anggotaRef = db.collection('anggota');
-                    const snapshot = await anggotaRef.where('nia', '==', nia).get();
-                    if (!snapshot.empty) {
-                        return false;
-                    }
-                }
-                
-                // Check LocalStorage
-                const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                if (localAnggota.some(a => a.nia === nia)) {
-                    return false;
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Error checking NIA:', error);
-                return false;
-            }
-        }
-        
         // ===== REGISTRATION FORM HANDLER =====
+        // MANUAL NIA INPUT - TIDAK ADA AUTO GENERATE
         const registrationForm = document.getElementById('registrationForm');
         const errorMessageDaftar = document.getElementById('errorMessageDaftar');
         const successMessageDaftar = document.getElementById('successMessageDaftar');
-        const niaManualInput = document.getElementById('niaManual');
         
         if (registrationForm) {
             registrationForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
-                // ===== VALIDASI NIA MANUAL - WAJIB DIISI =====
-                const nia = niaManualInput.value.trim();
-                
-                const niaValidation = validateNIA(nia);
-                if (!niaValidation.valid) {
-                    showErrorDaftar(niaValidation.message);
-                    niaManualInput.classList.add('error');
-                    niaManualInput.focus();
-                    return;
-                }
-                
-                // Cek keunikan NIA
-                if (!await isNIAUnique(nia)) {
-                    showErrorDaftar('❌ ID/NIA sudah terdaftar. Silakan hubungi Admin untuk mendapatkan NIA baru.');
-                    niaManualInput.classList.add('error');
-                    niaManualInput.focus();
-                    return;
-                }
                 
                 if (!validateRegistrationForm()) return;
                 
@@ -1500,6 +1495,28 @@
                 try {
                     const email = document.getElementById('emailMember').value.trim();
                     const password = document.getElementById('passwordMember').value;
+                    const nia = document.getElementById('niaManual').value.trim();
+                    
+                    // VALIDASI NIA - WAJIB DAN MANUAL
+                    if (!nia) {
+                        showErrorDaftar('❌ ID/NIA wajib diisi. Hubungi Admin untuk mendapatkan NIA Anda.');
+                        return;
+                    }
+                    
+                    // Validasi format NIA
+                    if (!isValidNIA(nia)) {
+                        showErrorDaftar('❌ Format ID/NIA tidak valid. Format: #01-2026-001 s/d #01-2026-1000');
+                        return;
+                    }
+                    
+                    // Ekstrak nomor NIA
+                    const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
+                    
+                    // Validasi range NIA
+                    if (niaNumber < 1 || niaNumber > 1000) {
+                        showErrorDaftar('❌ ID/NIA harus antara #01-2026-001 sampai #01-2026-1000');
+                        return;
+                    }
                     
                     // Check if email already exists
                     const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
@@ -1508,18 +1525,24 @@
                         return;
                     }
                     
+                    // Check if NIA already exists
+                    if (await isNIAExists(nia)) {
+                        showErrorDaftar('❌ ID/NIA sudah terdaftar. Hubungi Admin untuk mendapatkan NIA yang berbeda.');
+                        return;
+                    }
+                    
                     // Handle photo upload
                     let fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
                     
-                    // Prepare data for Firebase - STRUCTURE MUST MATCH DASHBOARD ADMIN & AKUN-ANGGOTA.HTML
+                    // Prepare data for Firebase/Anggota
                     const anggotaData = {
-                        // Identitas - WAJIB dan SAMA DENGAN DASHBOARD ADMIN & AKUN-ANGGOTA
+                        // Identitas - MANUAL NIA
                         id: nia,
                         nia: nia,
                         nama: document.getElementById('nama').value,
                         posisi: document.getElementById('posisi').value,
                         
-                        // Data pribadi - WAJIB
+                        // Data pribadi
                         alamat: document.getElementById('alamat').value,
                         jenis_kelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
                         jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
@@ -1527,18 +1550,18 @@
                         nik: document.getElementById('nik').value,
                         nik_ktp: document.getElementById('nik').value,
                         
-                        // Kontak - WAJIB
+                        // Kontak
                         email: email,
                         whatsapp: '+62' + document.getElementById('whatsapp').value,
                         telepon: '+62' + document.getElementById('whatsapp').value,
                         
-                        // Status keanggotaan - WAJIB
+                        // Status keanggotaan
                         status: document.querySelector('input[name="statusAktif"]:checked').value,
                         status_aktif: document.querySelector('input[name="statusAktif"]:checked').value,
                         tanggal_daftar: document.getElementById('tanggalDaftar').value,
                         tanggal_bergabung: document.getElementById('tanggalDaftar').value,
                         
-                        // Data simpanan - WAJIB
+                        // Data simpanan
                         simpanan_pokok: parseFloat(document.getElementById('simpananPokok').value) || 200000,
                         simpananPokok: parseFloat(document.getElementById('simpananPokok').value) || 200000,
                         simpanan_wajib: parseFloat(document.getElementById('simpananWajib').value) || 20000,
@@ -1546,7 +1569,7 @@
                         simpanan_sukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
                         simpananSukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
                         
-                        // Data keuangan - Dihitung otomatis
+                        // Data keuangan
                         total_simpanan: (parseFloat(document.getElementById('simpananPokok').value) || 0) + 
                                       (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
                                       (parseFloat(document.getElementById('simpananSukarela').value) || 0),
@@ -1586,7 +1609,7 @@
                         // Link untuk Akun Anggota
                         akun_anggota_url: `${REDIRECT_ANGGOTA}?nia=${encodeURIComponent(nia)}`,
                         
-                        // Data untuk pinjaman default
+                        // Data pinjaman default
                         loanActive: 0,
                         loanActiveCount: 0,
                         loanRejected: 0,
@@ -1595,24 +1618,18 @@
                         loanPaidCount: 0,
                         loanPending: 0,
                         
-                        // Data untuk KUD Toko
+                        // Data KUD Toko
                         ksuShopping: 0,
                         ksuDebt: 0
                     };
                     
+                    // Determine access level based on NIA
+                    const accessLevel = (nia === '#01-2026-001') ? 'dashboard' : 'anggota';
+                    
                     // Save to Firebase if available
                     if (firebaseInitialized && db) {
                         try {
-                            // Check if email already exists in Firebase
-                            const anggotaRef = db.collection('anggota');
-                            const emailQuery = await anggotaRef.where('email', '==', email).get();
-                            
-                            if (!emailQuery.empty) {
-                                showErrorDaftar('❌ Email sudah terdaftar di sistem.');
-                                return;
-                            }
-                            
-                            // Save to Firebase
+                            // Save anggota data
                             await db.collection('anggota').doc(nia).set(anggotaData);
                             console.log('✅ Data saved to Firebase:', nia);
                             
@@ -1624,7 +1641,7 @@
                                 role: anggotaData.posisi,
                                 posisi: anggotaData.posisi,
                                 foto: fotoUrl,
-                                access: 'anggota',
+                                access: accessLevel,
                                 anggotaId: nia,
                                 nia: nia,
                                 createdAt: new Date().toISOString(),
@@ -1635,7 +1652,6 @@
                             
                         } catch (firebaseError) {
                             console.error('Firebase save error:', firebaseError);
-                            // Continue with localStorage only
                         }
                     }
                     
@@ -1652,7 +1668,7 @@
                         role: anggotaData.posisi,
                         posisi: anggotaData.posisi,
                         foto: fotoUrl,
-                        access: 'anggota',
+                        access: accessLevel,
                         anggotaId: nia,
                         nia: nia,
                         createdAt: new Date().toISOString(),
@@ -1661,33 +1677,12 @@
                     localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
                     
                     // Show success
-                    showSuccessDaftar('✅ Pendaftaran berhasil! ID/NIA: ' + nia);
-                    
-                    // Prepare success message with details
-                    const successDetails = `🎉 PENDAFTARAN BERHASIL!\n\n` +
-                                         `━━━━━━━━━━━━━━━━━━━━━\n` +
-                                         `ID/NIA: ${nia}\n` +
-                                         `Nama: ${anggotaData.nama}\n` +
-                                         `Posisi: ${anggotaData.posisi}\n` +
-                                         `Email: ${email}\n` +
-                                         `Tanggal Bergabung: ${anggotaData.tanggal_daftar}\n` +
-                                         `Status: ${anggotaData.status}\n` +
-                                         `━━━━━━━━━━━━━━━━━━━━━\n` +
-                                         `Simpanan Awal:\n` +
-                                         `• Pokok: Rp ${parseInt(anggotaData.simpanan_pokok).toLocaleString('id-ID')}\n` +
-                                         `• Wajib: Rp ${parseInt(anggotaData.simpanan_wajib).toLocaleString('id-ID')}\n` +
-                                         `• Sukarela: Rp ${parseInt(anggotaData.simpanan_sukarela).toLocaleString('id-ID')}\n` +
-                                         `Total: Rp ${parseInt(anggotaData.total_simpanan).toLocaleString('id-ID')}\n` +
-                                         `━━━━━━━━━━━━━━━━━━━━━\n` +
-                                         `Limit Pinjaman: Rp ${parseInt(anggotaData.limit_pinjaman).toLocaleString('id-ID')}\n` +
-                                         `Estimasi SHU: Rp ${parseInt(anggotaData.shu_estimasi).toLocaleString('id-ID')}\n` +
-                                         `━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                                         `✅ Sekarang Anda bisa login dengan akun ini.\n` +
-                                         `📱 Hubungi admin jika ada pertanyaan.`;
+                    showSuccessDaftar('✅ Pendaftaran berhasil! ID/NIA Anda: ' + nia);
                     
                     // Auto-fill login form
                     document.getElementById('email').value = email;
                     document.getElementById('password').value = password;
+                    if (niaLoginInput) niaLoginInput.value = nia;
                     
                     // Switch to anggota type
                     userTypes.forEach(t => {
@@ -1703,7 +1698,14 @@
                     // Show login form after delay
                     setTimeout(() => {
                         showLoginForm();
-                        alert(successDetails);
+                        
+                        // Success message
+                        const roleMessage = (nia === '#01-2026-001') 
+                            ? 'Anda login sebagai Admin dengan akses penuh.' 
+                            : 'Anda login sebagai Anggota.';
+                        
+                        alert(`✅ PENDAFTARAN BERHASIL!\n\nID/NIA: ${nia}\nNama: ${anggotaData.nama}\nEmail: ${email}\n\n${roleMessage}\n\nSilakan login dengan akun yang sudah terisi otomatis.`);
+                        
                     }, 2000);
                     
                 } catch (error) {
@@ -1718,6 +1720,21 @@
         
         // ===== VALIDATION FUNCTIONS =====
         function validateRegistrationForm() {
+            // Validasi NIA Manual - WAJIB
+            const nia = document.getElementById('niaManual').value.trim();
+            if (!nia) {
+                showErrorDaftar('❌ ID/NIA wajib diisi. Hubungi Admin untuk mendapatkan NIA Anda.');
+                document.getElementById('niaManual').focus();
+                return false;
+            }
+            
+            // Validasi format NIA
+            if (!isValidNIA(nia)) {
+                showErrorDaftar('❌ Format ID/NIA tidak valid. Format: #01-2026-001 s/d #01-2026-1000');
+                document.getElementById('niaManual').focus();
+                return false;
+            }
+            
             const requiredFields = [
                 'nama', 'posisi', 'alamat', 
                 'nik', 'emailMember', 'whatsapp',
@@ -1840,13 +1857,16 @@
             }
         }
         
+        // ===== INITIAL FORM STATE =====
+        updateFormForUserType('admin');
+        
         // ===== CONSOLE INFO =====
-        console.log('=== LOGIN SYSTEM READY ===');
+        console.log('=== LOGIN SYSTEM READY (REVISI TOTAL) ===');
         console.log('✅ Admin Account: admin@koperasi.com / admin014212');
-        console.log('✅ Default anggota: TIDAK ADA (keamanan)');
-        console.log('✅ NIA: WAJIB DIISI MANUAL - Tidak ada auto generate');
-        console.log('✅ Redirect: Anggota → akun-anggota.html');
-        console.log('✅ Redirect: Admin → dashboard-admin.html');
+        console.log('✅ NIA #01-2026-001: Akses Admin ke akun-anggota.html');
+        console.log('✅ NIA #01-2026-002 s/d 1000: Akses Anggota ke akun-anggota.html');
+        console.log('✅ TIDAK ADA DATA ANGGOTA DEFAULT DITAMPILKAN');
+        console.log('✅ NIA WAJIB DIISI MANUAL - TIDAK ADA AUTO GENERATE');
         console.log('✅ Firebase status:', firebaseInitialized ? 'Connected' : 'Not connected');
     });
     </script>
