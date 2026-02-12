@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register - Koperasi Asmara Tani</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --accent: #ff5722;
+            --light: #f5f5f5;
+            --dark: #333;
+            --gray: #757575;
+            --gray-light: #e0e0e0;
+            --danger: #f44336;
+            --warning: #ffc107;
+            --success: #4caf50;
+            --info: #2196f3;
+            --gold: #ffd700;
+            --gold-dark: #daa520;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .back-home {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--primary);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 0.85rem;
+        }
+        
+        .back-home:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--danger);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 0.9rem;
+        }
+        
+        .close-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .login-left img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 25px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-left h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .login-left .tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        .login-right {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .login-header {
+            margin-bottom: 40px;
+        }
+        
+        .login-header h2 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .login-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .login-form {
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .required {
+            color: var(--danger);
+        }
+        
+        .form-control, .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid var(--gray-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-btn {
+            background: var(--light);
+            color: var(--dark);
+            padding: 16px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: 1px dashed var(--gray-light);
+        }
+        
+        .file-upload-btn:hover {
+            background: var(--gray-light);
+        }
+        
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-name {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .btn {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover:before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-light);
+        }
+        
+        .login-footer, .form-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .login-footer a, .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .login-footer a:hover, .form-footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--gray-light);
+        }
+        
+        .user-type {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .user-type.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .user-type:not(.active):hover {
+            background: var(--light);
+        }
+        
+        /* New styles for NIA display - MANUAL INPUT */
+        .nia-manual {
+            background: linear-gradient(145deg, #fff9e6, #fff3cd);
+            border: 2px solid var(--warning);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(255, 193, 7, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nia-manual::before {
+            content: '⚠️ WAJIB DIISI';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: var(--warning);
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.05);
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+        
+        .nia-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .nia-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nia-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid var(--warning);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .nia-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+        
+        .nia-input.error {
+            border-color: var(--danger);
+            background-color: rgba(244, 67, 54, 0.05);
+        }
+        
+        .nia-info {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nia-example {
+            display: inline-block;
+            background: var(--light);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* New styles for optional label */
+        .optional-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-style: italic;
+            margin-left: 5px;
+        }
+        
+        /* Radio button styles */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .radio-option:hover {
+            background: var(--light);
+        }
+        
+        .radio-option input[type="radio"] {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Input group styles */
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-group-prepend {
+            padding: 0 15px;
+            background: var(--light);
+            border: 1px solid var(--gray-light);
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+        }
+        
+        .input-group-prepend + .form-control {
+            border-radius: 0 10px 10px 0;
+            border-left: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-right, .form-container {
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container, .register-container {
+                flex-direction: column;
+                max-width: 450px;
+            }
+            
+            .login-left, .header {
+                padding: 30px;
+            }
+            
+            .login-right, .form-container {
+                padding: 30px;
+            }
+            
+            .back-home, .close-btn {
+                top: 10px;
+            }
+            
+            .back-home {
+                left: 10px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .close-btn {
+                right: 10px;
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-home" id="backHome">
+        <i class="fas fa-home"></i> Beranda
+    </button>
+    
+    <button class="close-btn" id="closeBtn" title="Tutup">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="main-container">
+        <!-- Container Login (Default) -->
+        <div class="login-container" id="loginContainer">
+            <div class="login-left">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg" alt="Logo Koperasi Asmara Tani">
+                <h1>Koperasi Asmara Tani</h1>
+                <div class="tagline">#koperasijenius</div>
+            </div>
+            
+            <div class="login-right">
+                <div class="login-header">
+                    <h2 id="loginHeaderTitle">Masuk ke Dashboard</h2>
+                    <p id="loginHeaderSubtitle">Silakan masuk dengan akun Anda</p>
+                </div>
+                
+                <div class="user-type-selector">
+                    <div class="user-type active" data-type="admin">Admin/Pengurus</div>
+                    <div class="user-type" data-type="anggota">Anggota</div>
+                </div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Alamat Email <span class="required">*</span></label>
+                        <input type="email" id="email" class="form-control" placeholder="Masukkan alamat email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Kata Sandi <span class="required">*</span></label>
+                        <div class="password-container">
+                            <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Ingat saya</label>
+                        </div>
+                        <a href="#" class="forgot-password" id="forgotPassword">Lupa kata sandi?</a>
+                    </div>
+                    
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="success-message" id="successMessage"></div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Masuk
+                    </button>
+                </form>
+                
+                <div class="login-footer">
+                    <p id="registerText">Belum punya akun? <a href="#" id="registerLink">Daftar sebagai Anggota</a></p>
+                </div>
+
+                <!-- INFO: Data default anggota TIDAK DITAMPILKAN untuk keamanan -->
+                <!-- Hanya menampilkan informasi kontak admin -->
+                <div style="margin-top: 20px; padding: 15px; background: rgba(33, 150, 243, 0.05); border-radius: 10px; border-left: 5px solid var(--info);">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--info); font-weight: 600;">
+                        <i class="fas fa-info-circle"></i> Informasi Penting:
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 5px;">
+                        <i class="fas fa-id-card"></i> ID/NIA diberikan oleh Admin Koperasi
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--gray);">
+                        <i class="fas fa-phone-alt"></i> Hubungi Admin: 0852-1848-3129
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Container Daftar Anggota -->
+        <div class="register-container" id="registerContainer">
+            <div class="header">
+                <h1>Daftar Sebagai Anggota</h1>
+                <p>Koperasi Asmara Tani</p>
+            </div>
+            
+            <div class="form-container">
+                <!-- NIA Manual Input - WAJIB DIISI, TIDAK DIGENERATE OTOMATIS -->
+                <div class="nia-manual">
+                    <div class="nia-label">
+                        <i class="fas fa-id-card"></i> ID/NIA Anggota <span class="required">*</span>
+                        <span style="font-size: 0.8rem; color: var(--warning); margin-left: 8px;">
+                            <i class="fas fa-exclamation-triangle"></i> Diperoleh dari Admin
+                        </span>
+                    </div>
+                    <div class="nia-input-group">
+                        <input type="text" id="niaManual" class="nia-input" 
+                               placeholder="Contoh: #01-2026-001" 
+                               maxlength="15" 
+                               autocomplete="off">
+                    </div>
+                    <div class="nia-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <span>ID/NIA bersifat unik dan diberikan oleh Admin Koperasi. Hubungi Admin untuk mendapatkan NIA.</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <span class="nia-example">#01-2026-001</span>
+                        <span class="nia-example">#01-2026-002</span>
+                        <span class="nia-example">#01-2026-003</span>
+                        <span style="font-size: 0.75rem; color: var(--gray); margin-left: 8px;">(contoh format)</span>
+                    </div>
+                </div>
+                
+                <form id="registrationForm">
+                    <!-- SECTION 1: Foto Profil (Opsional) -->
+                    <div class="form-group">
+                        <label for="foto">
+                            <i class="fas fa-camera"></i> Foto Profil 
+                            <span class="optional-label">(Opsional)</span>
+                        </label>
+                        <div class="file-upload">
+                            <div class="file-upload-btn">
+                                <i class="fas fa-cloud-upload-alt"></i> Pilih Foto
+                            </div>
+                            <input type="file" id="foto" accept="image/*" onchange="updateFileName('foto', 'foto-name')">
+                        </div>
+                        <div class="file-name" id="foto-name">Belum ada file dipilih</div>
+                    </div>
+                    
+                    <!-- SECTION 2: Identitas (Wajib) -->
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap <span class="required">*</span></label>
+                        <input type="text" id="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="posisi">Posisi <span class="required">*</span></label>
+                        <select id="posisi" class="form-select" required>
+                            <option value="">Pilih Posisi</option>
+                            <option value="Ketua">Ketua</option>
+                            <option value="Wakil Ketua">Wakil Ketua</option>
+                            <option value="Sekretaris">Sekretaris</option>
+                            <option value="Bendahara">Bendahara</option>
+                            <option value="Pengawas">Pengawas</option>
+                            <option value="Anggota Biasa" selected>Anggota Biasa</option>
+                        </select>
+                    </div>
+                    
+                    <!-- SECTION 3: Data Pribadi (Wajib) -->
+                    <div class="form-group">
+                        <label for="alamat">Alamat Lengkap <span class="required">*</span></label>
+                        <textarea id="alamat" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required maxlength="200"></textarea>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                            <span id="alamatCounter" style="font-size: 0.8rem; color: var(--gray);">
+                                0/200 karakter
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="jenisKelamin">Jenis Kelamin <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="jenisKelamin" value="Laki-laki" required>
+                                        <i class="fas fa-male"></i> Laki-laki
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="jenisKelamin" value="Perempuan" required>
+                                        <i class="fas fa-female"></i> Perempuan
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="agama">Agama <span class="required">*</span></label>
+                                <select id="agama" class="form-select" required>
+                                    <option value="">Pilih Agama</option>
+                                    <option value="Islam" selected>Islam</option>
+                                    <option value="Kristen">Kristen</option>
+                                    <option value="Katolik">Katolik</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Budha">Budha</option>
+                                    <option value="Konghucu">Konghucu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nik">NIK KTP <span class="required">*</span></label>
+                        <input type="text" id="nik" class="form-control" placeholder="Masukkan 16 digit NIK KTP" required pattern="[0-9]{16}" maxlength="16">
+                    </div>
+                    
+                    <!-- SECTION 4: Kontak (Wajib) -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="emailMember">Email <span class="required">*</span></label>
+                                <input type="email" id="emailMember" class="form-control" placeholder="Masukkan email aktif" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="whatsapp">WhatsApp <span class="required">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">+62</span>
+                                    <input type="tel" id="whatsapp" class="form-control" placeholder="81234567890" required pattern="^[0-9]{9,13}$">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SECTION 5: Status Keanggotaan -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="statusAktif">Status Aktif <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-option" style="background: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.3);">
+                                        <input type="radio" name="statusAktif" value="Aktif" required checked>
+                                        <i class="fas fa-check-circle" style="color: var(--success);"></i> Aktif
+                                    </label>
+                                    <label class="radio-option" style="background: rgba(244, 67, 54, 0.1); border: 2px solid rgba(244, 67, 54, 0.3);">
+                                        <input type="radio" name="statusAktif" value="Tidak Aktif" required>
+                                        <i class="fas fa-times-circle" style="color: var(--danger);"></i> Tidak Aktif
+                                    </label>
+                                    <label class="radio-option" style="background: rgba(255, 193, 7, 0.1); border: 2px solid rgba(255, 193, 7, 0.3);">
+                                        <input type="radio" name="statusAktif" value="Menunggu" required>
+                                        <i class="fas fa-clock" style="color: var(--warning);"></i> Menunggu
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="tanggalDaftar">Tanggal Bergabung <span class="required">*</span></label>
+                                <input type="date" id="tanggalDaftar" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SECTION 6: Data Simpanan -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="simpananPokok">Simpanan Pokok <span class="required">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">Rp</span>
+                                    <input type="number" id="simpananPokok" class="form-control" value="200000" min="200000" step="5000" required>
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">
+                                    Minimal Rp 200.000
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="simpananWajib">Simpanan Wajib <span class="required">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-prepend">Rp</span>
+                                    <input type="number" id="simpananWajib" class="form-control" value="20000" min="20000" step="1000" required>
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">
+                                    Minimal Rp 20.000
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="simpananSukarela">
+                            Simpanan Sukarela 
+                            <span class="optional-label">(Opsional)</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-prepend">Rp</span>
+                            <input type="number" id="simpananSukarela" class="form-control" value="0" min="0" step="1000">
+                        </div>
+                    </div>
+                    
+                    <!-- SECTION 7: Password -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="passwordMember">Password <span class="required">*</span></label>
+                                <div class="password-container">
+                                    <input type="password" id="passwordMember" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
+                                    <button type="button" class="toggle-password" onclick="togglePassword('passwordMember', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ulangiPassword">Ulangi Password <span class="required">*</span></label>
+                                <div class="password-container">
+                                    <input type="password" id="ulangiPassword" class="form-control" placeholder="Ulangi password" required minlength="6">
+                                    <button type="button" class="toggle-password" onclick="togglePassword('ulangiPassword', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="errorMessageDaftar"></div>
+                    <div class="success-message" id="successMessageDaftar"></div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Daftar sebagai Anggota
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="form-footer">
+                    <p>Sudah punya akun? <a href="#" id="backToLogin">Masuk di sini</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE CONFIGURATION -->
+    <script>
+    // ===== FIREBASE CONFIGURATION =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyC73l7zgnN4lAtXmYGY-7KpER8_h0QZMg8",
+        authDomain: "koperasi-asmara-tani.firebaseapp.com",
+        projectId: "koperasi-asmara-tani",
+        storageBucket: "koperasi-asmara-tani.firebasestorage.app",
+        messagingSenderId: "378910307691",
+        appId: "1:378910307691:web:16ba94c7de9fd77c4e56c1",
+        measurementId: "G-TQQ3P3YSYE"
+    };
+    
+    // Initialize Firebase
+    let db = null;
+    let firebaseInitialized = false;
+    
+    async function initializeFirebase() {
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            
+            db = firebase.firestore();
+            firebaseInitialized = true;
+            console.log('✅ Firebase initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            return false;
+        }
+    }
+    
+    // Initialize Firebase on load
+    initializeFirebase();
+    </script>
+
+    <script>
+    // ===== MAIN APPLICATION - REVISI: NIA MANUAL INPUT, TIDAK ADA AUTO GENERATE =====
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM REVISI ===');
+        console.log('✅ NIA WAJIB DIISI MANUAL - Tidak ada Auto Generate');
+        console.log('✅ Data default anggota TIDAK DITAMPILKAN di halaman login');
+        console.log('✅ Role Admin: admin@koperasi.com / admin014212');
+        console.log('✅ Redirect: Anggota → akun-anggota.html, Admin → dashboard-admin.html');
+        
+        // Initialize Firebase
+        await initializeFirebase();
+        
+        // ===== ELEMENT REFERENCES =====
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const backHomeBtn = document.getElementById('backHome');
+        const closeBtn = document.getElementById('closeBtn');
+        const backToLoginLink = document.getElementById('backToLogin');
+        const registerLink = document.getElementById('registerLink');
+        
+        // ===== CONSTANTS =====
+        const ADMIN_EMAIL = 'admin@koperasi.com';
+        const ADMIN_PASSWORD = 'admin014212';
+        const REDIRECT_ANGGOTA = 'akun-anggota.html';
+        const REDIRECT_ADMIN = 'dashboard-admin.html';
+        
+        // ===== INITIALIZE DEFAULT DATA (HANYA ADMIN, TIDAK ADA DEFAULT ANGGOTA) =====
+        async function initializeDefaultData() {
+            try {
+                // Default Admin User - TETAP ADA
+                const adminData = {
+                    email: ADMIN_EMAIL,
+                    password: ADMIN_PASSWORD,
+                    name: 'Administrator Koperasi',
+                    role: 'Admin',
+                    posisi: 'Admin',
+                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                    access: 'dashboard',
+                    isSuperAdmin: true,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: null,
+                    nia: 'ADMIN-001'
+                };
+                
+                // HANYA ADMIN - TIDAK ADA DEFAULT ANGGOTA
+                // Data anggota default TIDAK DIMASUKKAN untuk keamanan
+                
+                // Save to LocalStorage
+                const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
+                
+                // Save Admin
+                if (!localUsers[ADMIN_EMAIL]) {
+                    localUsers[ADMIN_EMAIL] = adminData;
+                }
+                
+                localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
+                
+                // Save to Firebase if available
+                if (firebaseInitialized && db) {
+                    try {
+                        const adminRef = db.collection('users').doc(ADMIN_EMAIL);
+                        await adminRef.set(adminData);
+                        console.log('✅ Admin data saved to Firebase');
+                    } catch (error) {
+                        console.warn('⚠️ Firebase save warning:', error);
+                    }
+                }
+                
+                console.log('✅ Default admin initialized');
+                console.log('⚠️ Default anggota TIDAK ADA - NIA harus diisi manual');
+                
+            } catch (error) {
+                console.error('❌ Error initializing default data:', error);
+            }
+        }
+        
+        // Call initialize default data
+        await initializeDefaultData();
+        
+        // ===== NAVIGATION =====
+        backHomeBtn.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            if (confirm('Apakah Anda yakin ingin menutup halaman ini?')) {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // ===== TOGGLE FORM FUNCTIONS =====
+        function showLoginForm() {
+            loginContainer.style.display = 'flex';
+            registerContainer.style.display = 'none';
+        }
+        
+        function showRegisterForm() {
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+            
+            // Set tanggal bergabung default ke hari ini
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggalDaftar').value = today;
+            
+            // Set default values for simpanan
+            document.getElementById('simpananPokok').value = 200000;
+            document.getElementById('simpananWajib').value = 20000;
+            document.getElementById('simpananSukarela').value = 0;
+            
+            // Reset form
+            document.getElementById('registrationForm').reset();
+            
+            // Reset file names
+            document.getElementById('foto-name').textContent = 'Belum ada file dipilih';
+            
+            // Reset radio buttons
+            document.querySelector('input[name="jenisKelamin"][value="Laki-laki"]').checked = true;
+            document.querySelector('input[name="statusAktif"][value="Aktif"]').checked = true;
+            
+            // Reset alamat counter
+            document.getElementById('alamatCounter').textContent = '0/200 karakter';
+            document.getElementById('alamatCounter').style.color = 'var(--gray)';
+            
+            // Reset NIA input
+            document.getElementById('niaManual').value = '';
+            document.getElementById('niaManual').classList.remove('error');
+        }
+        
+        // Register link click
+        if (registerLink) {
+            registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showRegisterForm();
+            });
+        }
+        
+        backToLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLoginForm();
+        });
+        
+        // ===== TOGGLE PASSWORD VISIBILITY =====
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        }
+        
+        // Global toggle password function
+        window.togglePassword = function(inputId, button) {
+            const input = document.getElementById(inputId);
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            button.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        };
+        
+        // ===== FILE NAME UPDATE FUNCTION =====
+        window.updateFileName = function(inputId, displayId) {
+            const input = document.getElementById(inputId);
+            const display = document.getElementById(displayId);
+            if (input && display) {
+                display.textContent = input.files.length > 0 ? input.files[0].name : 'Belum ada file dipilih';
+            }
+        };
+        
+        // ===== USER TYPE SELECTOR =====
+        const userTypes = document.querySelectorAll('.user-type');
+        let currentUserType = 'admin';
+        
+        userTypes.forEach(type => {
+            type.addEventListener('click', function() {
+                userTypes.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentUserType = this.getAttribute('data-type');
+                updateFormForUserType(currentUserType);
+            });
+        });
+        
+        function updateFormForUserType(userType) {
+            const loginHeader = document.querySelector('.login-header h2');
+            const loginSubtitle = document.querySelector('.login-header p');
+            const registerText = document.getElementById('registerText');
+            
+            if (userType === 'admin') {
+                loginHeader.textContent = 'Masuk sebagai Admin/Pengurus';
+                loginSubtitle.textContent = 'Silakan masuk dengan akun Admin/Pengurus';
+                if (registerText) {
+                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai Anggota</a>';
+                }
+            } else {
+                loginHeader.textContent = 'Masuk sebagai Anggota';
+                loginSubtitle.textContent = 'Silakan masuk dengan akun anggota Anda';
+                if (registerText) {
+                    registerText.innerHTML = 'Belum punya akun? <a href="#" id="registerLink">Daftar sebagai Anggota</a>';
+                }
+            }
+            
+            // Re-attach register link event
+            const newRegisterLink = document.getElementById('registerLink');
+            if (newRegisterLink) {
+                newRegisterLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showRegisterForm();
+                });
+            }
+        }
+        
+        // ===== LOGIN FORM HANDLER =====
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const forgotPassword = document.getElementById('forgotPassword');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember').checked;
+                
+                if (!email || !password) {
+                    showError('Harap isi semua field yang diperlukan.');
+                    return;
+                }
+                
+                // Show loading
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                submitBtn.disabled = true;
+                
+                try {
+                    // Check Admin Login
+                    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                        // Admin login successful
+                        showSuccess('Login Admin berhasil! Mengarahkan ke Dashboard Admin...');
+                        
+                        const adminData = {
+                            email: ADMIN_EMAIL,
+                            name: 'Administrator Koperasi',
+                            role: 'Admin',
+                            access: 'dashboard',
+                            isSuperAdmin: true,
+                            loginTime: new Date().toISOString()
+                        };
+                        
+                        localStorage.setItem('koperasi_current_user', JSON.stringify(adminData));
+                        
+                        if (remember) {
+                            localStorage.setItem('koperasi_remembered_email', email);
+                        }
+                        
+                        setTimeout(() => {
+                            window.location.href = REDIRECT_ADMIN;
+                        }, 1000);
+                        return;
+                    }
+                    
+                    // Check Anggota Login - Try Firebase first
+                    if (firebaseInitialized && db) {
+                        try {
+                            const usersRef = db.collection('users');
+                            const querySnapshot = await usersRef.where('email', '==', email).get();
+                            
+                            if (!querySnapshot.empty) {
+                                const userDoc = querySnapshot.docs[0];
+                                const userData = userDoc.data();
+                                
+                                if (userData.password === password) {
+                                    // Check if trying to login as admin with anggota account
+                                    if (currentUserType === 'admin' && userData.access === 'anggota') {
+                                        showError('Akses ditolak. Akun ini adalah anggota, bukan admin.');
+                                        return;
+                                    }
+                                    
+                                    showSuccess('Login berhasil! Mengarahkan ke halaman anggota...');
+                                    
+                                    localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
+                                    
+                                    if (remember) {
+                                        localStorage.setItem('koperasi_remembered_email', email);
+                                    }
+                                    
+                                    setTimeout(() => {
+                                        window.location.href = REDIRECT_ANGGOTA;
+                                    }, 1000);
+                                    return;
+                                }
+                            }
+                        } catch (firebaseError) {
+                            console.log('Firebase auth failed, trying local storage:', firebaseError);
+                        }
+                    }
+                    
+                    // Fallback to local storage authentication
+                    const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
+                    const user = localUsers[email];
+                    
+                    if (!user) {
+                        showError('Email tidak terdaftar.');
+                        return;
+                    }
+                    
+                    if (user.password !== password) {
+                        showError('Password salah.');
+                        return;
+                    }
+                    
+                    // Check access based on user type
+                    if (currentUserType === 'admin' && user.access !== 'dashboard') {
+                        showError('Akses ditolak. Silakan login sebagai anggota.');
+                        return;
+                    }
+                    
+                    // Login successful
+                    showSuccess('Login berhasil! Mengarahkan ke halaman...');
+                    
+                    localStorage.setItem('koperasi_current_user', JSON.stringify(user));
+                    
+                    if (remember) {
+                        localStorage.setItem('koperasi_remembered_email', email);
+                    } else {
+                        localStorage.removeItem('koperasi_remembered_email');
+                    }
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (user.access === 'dashboard' || user.role === 'Admin' || user.role === 'Ketua' || user.role === 'Sekretaris' || user.role === 'Bendahara' || user.role === 'Pengawas') {
+                            window.location.href = REDIRECT_ADMIN;
+                        } else {
+                            window.location.href = REDIRECT_ANGGOTA;
+                        }
+                    }, 1000);
+                    
+                } catch (error) {
+                    showError('Terjadi kesalahan: ' + error.message);
+                } finally {
+                    // Restore button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+        
+        // ===== HELPER FUNCTIONS =====
+        function showError(message) {
+            if (errorMessage) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                if (successMessage) successMessage.style.display = 'none';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            } else {
+                alert('Error: ' + message);
+            }
+        }
+        
+        function showSuccess(message) {
+            if (successMessage) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                if (errorMessage) errorMessage.style.display = 'none';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            } else {
+                alert('Success: ' + message);
+            }
+        }
+        
+        // ===== CHECK REMEMBERED EMAIL =====
+        const rememberedEmail = localStorage.getItem('koperasi_remembered_email');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('remember').checked = true;
+        }
+        
+        // ===== FORGOT PASSWORD =====
+        if (forgotPassword) {
+            forgotPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('🔐 Lupa Password?\n\n' +
+                      'Untuk Admin: admin@koperasi.com / admin014212\n' +
+                      'Untuk Anggota: Hubungi Administrator Koperasi\n\n' +
+                      '📞 Kontak Admin:\n' +
+                      'Email: admin@koperasiasmaratani.id\n' +
+                      'WhatsApp: 0852-1848-3129\n\n' +
+                      'Atau datang langsung ke kantor Koperasi KUD Asmara Tani.');
+            });
+        }
+        
+        // ===== ALAMAT CHARACTER COUNTER =====
+        const alamatInput = document.getElementById('alamat');
+        const alamatCounter = document.getElementById('alamatCounter');
+        
+        if (alamatInput && alamatCounter) {
+            alamatInput.addEventListener('input', function() {
+                const count = this.value.length;
+                alamatCounter.textContent = `${count}/200 karakter`;
+                
+                if (count > 200) {
+                    alamatCounter.style.color = 'var(--danger)';
+                    this.value = this.value.substring(0, 200);
+                } else if (count > 180) {
+                    alamatCounter.style.color = 'var(--warning)';
+                } else {
+                    alamatCounter.style.color = 'var(--gray)';
+                }
+            });
+        }
+        
+        // ===== VALIDASI NIA MANUAL =====
+        function validateNIA(nia) {
+            if (!nia || nia.trim() === '') {
+                return { valid: false, message: 'ID/NIA wajib diisi.' };
+            }
+            
+            // Format: #01-2026-XXX (XXX = 3 digit angka)
+            const niaPattern = /^#01-2026-[0-9]{3}$/;
+            if (!niaPattern.test(nia)) {
+                return { valid: false, message: 'Format ID/NIA tidak valid. Gunakan format: #01-2026-001' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+        
+        // ===== CHECK NIA UNIK =====
+        async function isNIAUnique(nia) {
+            try {
+                // Check Firebase
+                if (firebaseInitialized && db) {
+                    const anggotaRef = db.collection('anggota');
+                    const snapshot = await anggotaRef.where('nia', '==', nia).get();
+                    if (!snapshot.empty) {
+                        return false;
+                    }
+                }
+                
+                // Check LocalStorage
+                const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                if (localAnggota.some(a => a.nia === nia)) {
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error checking NIA:', error);
+                return false;
+            }
+        }
+        
+        // ===== REGISTRATION FORM HANDLER =====
+        const registrationForm = document.getElementById('registrationForm');
+        const errorMessageDaftar = document.getElementById('errorMessageDaftar');
+        const successMessageDaftar = document.getElementById('successMessageDaftar');
+        const niaManualInput = document.getElementById('niaManual');
+        
+        if (registrationForm) {
+            registrationForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // ===== VALIDASI NIA MANUAL - WAJIB DIISI =====
+                const nia = niaManualInput.value.trim();
+                
+                const niaValidation = validateNIA(nia);
+                if (!niaValidation.valid) {
+                    showErrorDaftar(niaValidation.message);
+                    niaManualInput.classList.add('error');
+                    niaManualInput.focus();
+                    return;
+                }
+                
+                // Cek keunikan NIA
+                if (!await isNIAUnique(nia)) {
+                    showErrorDaftar('❌ ID/NIA sudah terdaftar. Silakan hubungi Admin untuk mendapatkan NIA baru.');
+                    niaManualInput.classList.add('error');
+                    niaManualInput.focus();
+                    return;
+                }
+                
+                if (!validateRegistrationForm()) return;
+                
+                // Show loading
+                const submitBtn = registrationForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const email = document.getElementById('emailMember').value.trim();
+                    const password = document.getElementById('passwordMember').value;
+                    
+                    // Check if email already exists
+                    const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
+                    if (localUsers[email]) {
+                        showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain.');
+                        return;
+                    }
+                    
+                    // Handle photo upload
+                    let fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
+                    
+                    // Prepare data for Firebase - STRUCTURE MUST MATCH DASHBOARD ADMIN & AKUN-ANGGOTA.HTML
+                    const anggotaData = {
+                        // Identitas - WAJIB dan SAMA DENGAN DASHBOARD ADMIN & AKUN-ANGGOTA
+                        id: nia,
+                        nia: nia,
+                        nama: document.getElementById('nama').value,
+                        posisi: document.getElementById('posisi').value,
+                        
+                        // Data pribadi - WAJIB
+                        alamat: document.getElementById('alamat').value,
+                        jenis_kelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
+                        jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
+                        agama: document.getElementById('agama').value,
+                        nik: document.getElementById('nik').value,
+                        nik_ktp: document.getElementById('nik').value,
+                        
+                        // Kontak - WAJIB
+                        email: email,
+                        whatsapp: '+62' + document.getElementById('whatsapp').value,
+                        telepon: '+62' + document.getElementById('whatsapp').value,
+                        
+                        // Status keanggotaan - WAJIB
+                        status: document.querySelector('input[name="statusAktif"]:checked').value,
+                        status_aktif: document.querySelector('input[name="statusAktif"]:checked').value,
+                        tanggal_daftar: document.getElementById('tanggalDaftar').value,
+                        tanggal_bergabung: document.getElementById('tanggalDaftar').value,
+                        
+                        // Data simpanan - WAJIB
+                        simpanan_pokok: parseFloat(document.getElementById('simpananPokok').value) || 200000,
+                        simpananPokok: parseFloat(document.getElementById('simpananPokok').value) || 200000,
+                        simpanan_wajib: parseFloat(document.getElementById('simpananWajib').value) || 20000,
+                        simpananWajib: parseFloat(document.getElementById('simpananWajib').value) || 20000,
+                        simpanan_sukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
+                        simpananSukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
+                        
+                        // Data keuangan - Dihitung otomatis
+                        total_simpanan: (parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                      (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                      (parseFloat(document.getElementById('simpananSukarela').value) || 0),
+                        totalSimpanan: (parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                     (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                     (parseFloat(document.getElementById('simpananSukarela').value) || 0),
+                        total_pinjaman: 0,
+                        totalPinjaman: 0,
+                        limit_pinjaman: Math.floor(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                                  (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                                  (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.4),
+                        limitPinjaman: Math.floor(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                                 (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                                 (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.4),
+                        shu: Math.round(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                       (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                       (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.05),
+                        shu_estimasi: Math.round(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
+                                                (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
+                                                (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.05),
+                        
+                        // Foto
+                        foto: fotoUrl,
+                        
+                        // Password
+                        password: password,
+                        
+                        // Metadata
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                        last_update: new Date().toLocaleString('id-ID'),
+                        
+                        // QR Code
+                        qr_url: `https://qr-code-hybrid.vercel.app/?id=${encodeURIComponent(nia)}`,
+                        qr_code: `https://qr-code-hybrid.vercel.app/?id=${encodeURIComponent(nia)}&name=${encodeURIComponent(document.getElementById('nama').value)}`,
+                        
+                        // Link untuk Akun Anggota
+                        akun_anggota_url: `${REDIRECT_ANGGOTA}?nia=${encodeURIComponent(nia)}`,
+                        
+                        // Data untuk pinjaman default
+                        loanActive: 0,
+                        loanActiveCount: 0,
+                        loanRejected: 0,
+                        loanRejectedCount: 0,
+                        loanPaid: 0,
+                        loanPaidCount: 0,
+                        loanPending: 0,
+                        
+                        // Data untuk KUD Toko
+                        ksuShopping: 0,
+                        ksuDebt: 0
+                    };
+                    
+                    // Save to Firebase if available
+                    if (firebaseInitialized && db) {
+                        try {
+                            // Check if email already exists in Firebase
+                            const anggotaRef = db.collection('anggota');
+                            const emailQuery = await anggotaRef.where('email', '==', email).get();
+                            
+                            if (!emailQuery.empty) {
+                                showErrorDaftar('❌ Email sudah terdaftar di sistem.');
+                                return;
+                            }
+                            
+                            // Save to Firebase
+                            await db.collection('anggota').doc(nia).set(anggotaData);
+                            console.log('✅ Data saved to Firebase:', nia);
+                            
+                            // Create user account for login
+                            const userData = {
+                                email: email,
+                                password: password,
+                                name: anggotaData.nama,
+                                role: anggotaData.posisi,
+                                posisi: anggotaData.posisi,
+                                foto: fotoUrl,
+                                access: 'anggota',
+                                anggotaId: nia,
+                                nia: nia,
+                                createdAt: new Date().toISOString(),
+                                lastLogin: null
+                            };
+                            
+                            await db.collection('users').doc(email).set(userData);
+                            
+                        } catch (firebaseError) {
+                            console.error('Firebase save error:', firebaseError);
+                            // Continue with localStorage only
+                        }
+                    }
+                    
+                    // Save to local storage
+                    const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                    localAnggota.push(anggotaData);
+                    localStorage.setItem('koperasi_anggota', JSON.stringify(localAnggota));
+                    
+                    // Save user for login
+                    localUsers[email] = {
+                        email: email,
+                        password: password,
+                        name: anggotaData.nama,
+                        role: anggotaData.posisi,
+                        posisi: anggotaData.posisi,
+                        foto: fotoUrl,
+                        access: 'anggota',
+                        anggotaId: nia,
+                        nia: nia,
+                        createdAt: new Date().toISOString(),
+                        lastLogin: null
+                    };
+                    localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
+                    
+                    // Show success
+                    showSuccessDaftar('✅ Pendaftaran berhasil! ID/NIA: ' + nia);
+                    
+                    // Prepare success message with details
+                    const successDetails = `🎉 PENDAFTARAN BERHASIL!\n\n` +
+                                         `━━━━━━━━━━━━━━━━━━━━━\n` +
+                                         `ID/NIA: ${nia}\n` +
+                                         `Nama: ${anggotaData.nama}\n` +
+                                         `Posisi: ${anggotaData.posisi}\n` +
+                                         `Email: ${email}\n` +
+                                         `Tanggal Bergabung: ${anggotaData.tanggal_daftar}\n` +
+                                         `Status: ${anggotaData.status}\n` +
+                                         `━━━━━━━━━━━━━━━━━━━━━\n` +
+                                         `Simpanan Awal:\n` +
+                                         `• Pokok: Rp ${parseInt(anggotaData.simpanan_pokok).toLocaleString('id-ID')}\n` +
+                                         `• Wajib: Rp ${parseInt(anggotaData.simpanan_wajib).toLocaleString('id-ID')}\n` +
+                                         `• Sukarela: Rp ${parseInt(anggotaData.simpanan_sukarela).toLocaleString('id-ID')}\n` +
+                                         `Total: Rp ${parseInt(anggotaData.total_simpanan).toLocaleString('id-ID')}\n` +
+                                         `━━━━━━━━━━━━━━━━━━━━━\n` +
+                                         `Limit Pinjaman: Rp ${parseInt(anggotaData.limit_pinjaman).toLocaleString('id-ID')}\n` +
+                                         `Estimasi SHU: Rp ${parseInt(anggotaData.shu_estimasi).toLocaleString('id-ID')}\n` +
+                                         `━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                                         `✅ Sekarang Anda bisa login dengan akun ini.\n` +
+                                         `📱 Hubungi admin jika ada pertanyaan.`;
+                    
+                    // Auto-fill login form
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                    
+                    // Switch to anggota type
+                    userTypes.forEach(t => {
+                        if (t.getAttribute('data-type') === 'anggota') {
+                            t.classList.add('active');
+                        } else {
+                            t.classList.remove('active');
+                        }
+                    });
+                    currentUserType = 'anggota';
+                    updateFormForUserType('anggota');
+                    
+                    // Show login form after delay
+                    setTimeout(() => {
+                        showLoginForm();
+                        alert(successDetails);
+                    }, 2000);
+                    
+                } catch (error) {
+                    showErrorDaftar('❌ Error: ' + error.message);
+                } finally {
+                    // Restore button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+        
+        // ===== VALIDATION FUNCTIONS =====
+        function validateRegistrationForm() {
+            const requiredFields = [
+                'nama', 'posisi', 'alamat', 
+                'nik', 'emailMember', 'whatsapp',
+                'tanggalDaftar', 'simpananPokok', 'simpananWajib',
+                'passwordMember', 'ulangiPassword'
+            ];
+            
+            // Check required fields
+            for (let field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element || element.value === '' || element.value === null) {
+                    showErrorDaftar(`Field ${field} harus diisi.`);
+                    if (element) element.focus();
+                    return false;
+                }
+            }
+            
+            // Check radio buttons
+            const jenisKelamin = document.querySelector('input[name="jenisKelamin"]:checked');
+            if (!jenisKelamin) {
+                showErrorDaftar('Pilih jenis kelamin.');
+                return false;
+            }
+            
+            const statusAktif = document.querySelector('input[name="statusAktif"]:checked');
+            if (!statusAktif) {
+                showErrorDaftar('Pilih status aktif.');
+                return false;
+            }
+            
+            // Email validation
+            const email = document.getElementById('emailMember').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showErrorDaftar('Format email tidak valid.');
+                document.getElementById('emailMember').focus();
+                return false;
+            }
+            
+            // Password validation
+            const password = document.getElementById('passwordMember').value;
+            const ulangiPassword = document.getElementById('ulangiPassword').value;
+            
+            if (password.length < 6) {
+                showErrorDaftar('Password minimal 6 karakter.');
+                document.getElementById('passwordMember').focus();
+                return false;
+            }
+            
+            if (password !== ulangiPassword) {
+                showErrorDaftar('Password tidak sama.');
+                document.getElementById('ulangiPassword').focus();
+                return false;
+            }
+            
+            // WhatsApp validation
+            const whatsapp = document.getElementById('whatsapp').value;
+            const whatsappRegex = /^[0-9]{9,13}$/;
+            if (!whatsappRegex.test(whatsapp)) {
+                showErrorDaftar('WhatsApp harus 9-13 digit angka (tanpa +62).');
+                document.getElementById('whatsapp').focus();
+                return false;
+            }
+            
+            // NIK validation
+            const nik = document.getElementById('nik').value;
+            const nikRegex = /^[0-9]{16}$/;
+            if (!nikRegex.test(nik)) {
+                showErrorDaftar('NIK harus 16 digit angka.');
+                document.getElementById('nik').focus();
+                return false;
+            }
+            
+            // Simpanan validation
+            const simpananPokok = parseFloat(document.getElementById('simpananPokok').value);
+            const simpananWajib = parseFloat(document.getElementById('simpananWajib').value);
+            
+            if (simpananPokok < 200000) {
+                showErrorDaftar('Simpanan pokok minimal Rp 200.000');
+                document.getElementById('simpananPokok').focus();
+                return false;
+            }
+            
+            if (simpananWajib < 20000) {
+                showErrorDaftar('Simpanan wajib minimal Rp 20.000');
+                document.getElementById('simpananWajib').focus();
+                return false;
+            }
+            
+            // Alamat length validation
+            const alamat = document.getElementById('alamat').value;
+            if (alamat.length > 200) {
+                showErrorDaftar('Alamat maksimal 200 karakter.');
+                document.getElementById('alamat').focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function showErrorDaftar(message) {
+            if (errorMessageDaftar) {
+                errorMessageDaftar.textContent = message;
+                errorMessageDaftar.style.display = 'block';
+                if (successMessageDaftar) successMessageDaftar.style.display = 'none';
+                setTimeout(() => {
+                    errorMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function showSuccessDaftar(message) {
+            if (successMessageDaftar) {
+                successMessageDaftar.textContent = message;
+                successMessageDaftar.style.display = 'block';
+                if (errorMessageDaftar) errorMessageDaftar.style.display = 'none';
+                setTimeout(() => {
+                    successMessageDaftar.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // ===== CONSOLE INFO =====
+        console.log('=== LOGIN SYSTEM READY ===');
+        console.log('✅ Admin Account: admin@koperasi.com / admin014212');
+        console.log('✅ Default anggota: TIDAK ADA (keamanan)');
+        console.log('✅ NIA: WAJIB DIISI MANUAL - Tidak ada auto generate');
+        console.log('✅ Redirect: Anggota → akun-anggota.html');
+        console.log('✅ Redirect: Admin → dashboard-admin.html');
+        console.log('✅ Firebase status:', firebaseInitialized ? 'Connected' : 'Not connected');
+    });
+    </script>
+</body>
+</html>
