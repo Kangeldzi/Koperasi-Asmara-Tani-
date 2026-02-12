@@ -1167,7 +1167,7 @@
                                 
                                 if (userData.password === password) {
                                     // Login successful
-                                    showSuccess('Login berhasil! Mengarahkan ke Akun...');
+                                    showSuccess('Login berhasil! Mengarahkan ke Dashboard...');
                                     
                                     // Save session
                                     localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
@@ -1184,7 +1184,7 @@
                                         if (userData.role === 'admin' || userData.role === 'Ketua' || userData.role === 'Sekretaris' || userData.role === 'Bendahara' || userData.role === 'Pengawas') {
                                             window.location.href = 'dashboard-admin.html';
                                         } else {
-                                            window.location.href = 'akun-anggota.html';
+                                            window.location.href = 'tabungan-digital.html';
                                         }
                                     }, 1000);
                                     return;
@@ -1233,7 +1233,7 @@
                         if (user.access === 'dashboard' || user.role !== 'Anggota') {
                             window.location.href = 'dashboard-admin.html';
                         } else {
-                            window.location.href = 'akun-anggota.html';
+                            window.location.href = 'tabungan-digital.html';
                         }
                     }, 1000);
                     
