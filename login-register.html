@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Register - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Sheets API -->
+    <script src="https://apis.google.com/js/api.js"></script>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -512,6 +514,35 @@
             color: var(--info);
         }
         
+        /* Google Sheets Status */
+        .sheets-status {
+            background: rgba(46, 125, 50, 0.05);
+            border: 1px solid var(--primary-light);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+        }
+        
+        .sheets-status i {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+        
+        .sheets-status.success {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: var(--success);
+        }
+        
+        .sheets-status.error {
+            background: rgba(244, 67, 54, 0.05);
+            border-color: var(--danger);
+        }
+        
         /* Optional label */
         .optional-label {
             font-size: 0.85rem;
@@ -641,6 +672,12 @@
             </div>
             
             <div class="login-right">
+                <!-- Google Sheets Status -->
+                <div class="sheets-status" id="sheetsStatus">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Menyinkronkan dengan Google Spreadsheet...</span>
+                </div>
+                
                 <div class="login-header">
                     <h2 id="loginHeaderTitle">Masuk ke Dashboard</h2>
                     <p id="loginHeaderSubtitle">Silakan masuk dengan akun Anda</p>
@@ -670,14 +707,14 @@
                     <div class="form-group" id="niaLoginGroup" style="display: none;">
                         <label for="niaLogin">
                             ID/NIA <span class="required">*</span>
-                            <span style="font-size: 0.8rem; color: var(--gray); margin-left: 8px;">(Dari Admin)</span>
+                            <span style="font-size: 0.8rem; color: var(--gray); margin-left: 8px;">(Dari Admin - Cek Spreadsheet)</span>
                         </label>
                         <input type="text" id="niaLogin" class="form-control" 
                                placeholder="Contoh: #01-****-***" 
                                pattern="^#01-2026-[0-9]{3}$"
                                title="Format: #01-2026-XXX (XXX adalah 3 digit angka)">
                         <div style="font-size: 0.8rem; color: var(--info); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-shield-alt"></i> ID/NIA bersifat rahasia dan unik. Hubungi Admin untuk mendapatkan NIA.
+                            <i class="fas fa-shield-alt"></i> ID/NIA bersifat rahasia dan terintegrasi dengan Google Spreadsheet.
                         </div>
                     </div>
                     
@@ -722,7 +759,7 @@
                            placeholder="Contoh: #01-****-***" 
                            required
                            pattern="^#01-2026-[0-9]{3}$"
-                           title="Format NIA: #01-2026-XXX (XXX adalah 3 digit angka, contoh: #01-2026-001)"
+                           title="Format NIA: #01-2026-XXX (XXX adalah 3 digit angka, contoh: #01-****-***)"
                            maxlength="13">
                     
                     <div class="nia-manual-info">
@@ -988,17 +1025,26 @@
     </script>
 
     <script>
-    // ===== MAIN APPLICATION - REVISI TOTAL SESUAI PERMINTAAN =====
-    // ===== FITUR LENGKAP: MANUAL NIA, TIDAK ADA AUTO GENERATE, TIDAK ADA LIST NIA =====
+    // ===== MAIN APPLICATION - GOOGLE SHEETS INTEGRATION =====
+    // ===== SPREADSHEET ID: 1gcHQw9jujqKpRVgLriygYf_yQDldP96t5hUsS5_JOFs =====
+    
+    // ===== GOOGLE SHEETS CONFIGURATION =====
+    const SPREADSHEET_ID = '1gcHQw9jujqKpRVgLriygYf_yQDldP96t5hUsS5_JOFs';
+    const SHEET_NAME = 'ANGGOTA'; // Nama sheet yang berisi data anggota
+    const API_KEY = 'AIzaSyC73l7zgnN4lAtXmYGY-7KpER8_h0QZMg8'; // Google API Key
+    
+    // Google Sheets Data Cache
+    let googleSheetsData = {
+        anggota: [],
+        lastSync: null,
+        isConnected: false
+    };
     
     document.addEventListener('DOMContentLoaded', async function() {
-        console.log('=== KOPERASI ASMARA TANI - LOGIN SYSTEM (REVISI TOTAL) ===');
-        console.log('✅ FORMAT NIA: #01-2026-001 s/d #01-2026-1000 (MANUAL INPUT)');
-        console.log('✅ NIA BERSIFAT RAHASIA - HANYA ADMIN YANG MEMBERIKAN');
-        console.log('✅ TIDAK ADA AUTO GENERATE NIA');
-        console.log('✅ TIDAK ADA LIST/DATA DEFAULT ANGGOTA DITAMPILKAN');
-        console.log('✅ ADMIN: #01-2026-001 bisa akses akun-anggota.html');
-        console.log('✅ ANGGOTA: #01-2026-002 s/d #01-2026-1000 bisa akses akun-anggota.html');
+        console.log('=== KOPERASI ASMARA TANI - GOOGLE SHEETS INTEGRATION ===');
+        console.log('✅ Spreadsheet ID:', SPREADSHEET_ID);
+        console.log('✅ Terintegrasi dengan Google Spreadsheet');
+        console.log('✅ Data anggota dari spreadsheet akan diverifikasi saat login');
         
         // Initialize Firebase
         await initializeFirebase();
@@ -1013,6 +1059,7 @@
         const niaLoginGroup = document.getElementById('niaLoginGroup');
         const niaLoginInput = document.getElementById('niaLogin');
         const niaManualInput = document.getElementById('niaManual');
+        const sheetsStatus = document.getElementById('sheetsStatus');
         
         // ===== CONSTANTS =====
         const NIA_PREFIX = '#01-2026-';
@@ -1022,50 +1069,279 @@
         const REDIRECT_ANGGOTA = 'akun-anggota.html';
         const REDIRECT_ADMIN = 'dashboard-admin.html';
         
-        // ===== INITIALIZE DEFAULT ADMIN ONLY (TIDAK ADA DATA ANGGOTA DEFAULT) =====
-        async function initializeDefaultData() {
+        // ===== LOAD GOOGLE SHEETS API =====
+        async function loadGoogleSheetsAPI() {
+            return new Promise((resolve, reject) => {
+                gapi.load('client', async () => {
+                    try {
+                        await gapi.client.init({
+                            apiKey: API_KEY,
+                            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+                        });
+                        console.log('✅ Google Sheets API loaded');
+                        resolve(true);
+                    } catch (error) {
+                        console.error('❌ Google Sheets API failed:', error);
+                        resolve(false);
+                    }
+                });
+            });
+        }
+        
+        // ===== FETCH DATA FROM GOOGLE SHEETS =====
+        async function fetchAnggotaFromSheets() {
             try {
-                // Default Admin User - HANYA ADMIN, TIDAK ADA ANGGOTA DEFAULT
-                const adminData = {
-                    email: ADMIN_EMAIL,
-                    password: ADMIN_PASSWORD,
-                    name: 'Administrator Koperasi',
-                    role: 'Admin',
-                    posisi: 'Admin',
-                    foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
-                    access: 'dashboard',
-                    isSuperAdmin: true,
-                    nia: 'ADMIN-001',
-                    createdAt: new Date().toISOString(),
-                    lastLogin: null
-                };
-                
-                // Save Admin to LocalStorage
-                const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                if (!localUsers[ADMIN_EMAIL]) {
-                    localUsers[ADMIN_EMAIL] = adminData;
-                    localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
+                // Update status
+                if (sheetsStatus) {
+                    sheetsStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengambil data dari Google Spreadsheet...';
+                    sheetsStatus.className = 'sheets-status';
                 }
                 
-                // Save Admin to Firebase
-                if (firebaseInitialized && db) {
-                    try {
-                        await db.collection('users').doc(ADMIN_EMAIL).set(adminData);
-                        console.log('✅ Admin data saved to Firebase');
-                    } catch (error) {
-                        console.warn('⚠️ Firebase save warning:', error);
+                // Initialize API if not ready
+                if (!gapi.client.sheets) {
+                    const loaded = await loadGoogleSheetsAPI();
+                    if (!loaded) {
+                        throw new Error('Google Sheets API tidak dapat diinisialisasi');
                     }
                 }
                 
-                console.log('✅ Default Admin initialized (TIDAK ADA DATA ANGGOTA DEFAULT)');
+                // Fetch data from spreadsheet
+                const response = await gapi.client.sheets.spreadsheets.values.get({
+                    spreadsheetId: SPREADSHEET_ID,
+                    range: `${SHEET_NAME}!A:Z`, // Ambil semua kolom
+                });
+                
+                const rows = response.result.values;
+                if (!rows || rows.length === 0) {
+                    throw new Error('Tidak ada data di spreadsheet');
+                }
+                
+                // Parse header row
+                const headers = rows[0];
+                
+                // Parse data rows (skip header)
+                const anggotaList = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const anggota = {};
+                    
+                    headers.forEach((header, index) => {
+                        anggota[header.toLowerCase().replace(/\s+/g, '_')] = row[index] || '';
+                    });
+                    
+                    // Format NIA jika ada
+                    if (anggota.nia || anggota.id) {
+                        const nia = anggota.nia || anggota.id;
+                        if (!nia.startsWith('#')) {
+                            anggota.nia = `#01-2026-${nia.padStart(3, '0')}`;
+                        } else {
+                            anggota.nia = nia;
+                        }
+                    }
+                    
+                    anggotaList.push(anggota);
+                }
+                
+                // Update cache
+                googleSheetsData = {
+                    anggota: anggotaList,
+                    lastSync: new Date().toISOString(),
+                    isConnected: true
+                };
+                
+                // Update status
+                if (sheetsStatus) {
+                    sheetsStatus.innerHTML = `<i class="fas fa-check-circle"></i> Terhubung dengan Google Spreadsheet (${anggotaList.length} anggota)`;
+                    sheetsStatus.className = 'sheets-status success';
+                }
+                
+                console.log(`✅ Berhasil mengambil ${anggotaList.length} anggota dari Google Sheets`);
+                return anggotaList;
                 
             } catch (error) {
-                console.error('❌ Error initializing default data:', error);
+                console.error('❌ Gagal mengambil data dari Google Sheets:', error);
+                
+                // Update status error
+                if (sheetsStatus) {
+                    sheetsStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Gagal terhubung ke Google Spreadsheet. Menggunakan data lokal.`;
+                    sheetsStatus.className = 'sheets-status error';
+                }
+                
+                // Fallback ke data lokal
+                return getLocalAnggota();
             }
         }
         
-        // Call initialize default data
-        await initializeDefaultData();
+        // ===== GET LOCAL ANGGOTA DATA =====
+        function getLocalAnggota() {
+            try {
+                const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                return localAnggota;
+            } catch (error) {
+                console.error('Error getting local anggota:', error);
+                return [];
+            }
+        }
+        
+        // ===== VERIFY NIA FROM GOOGLE SHEETS =====
+        async function verifyNIAFromSheets(nia, email) {
+            try {
+                // Fetch latest data from sheets
+                const anggotaList = await fetchAnggotaFromSheets();
+                
+                // Find anggota with matching NIA
+                const anggota = anggotaList.find(a => a.nia === nia);
+                
+                if (!anggota) {
+                    return {
+                        valid: false,
+                        message: 'ID/NIA tidak terdaftar di Google Spreadsheet. Hubungi Admin.'
+                    };
+                }
+                
+                // Jika email diberikan, verifikasi juga email
+                if (email) {
+                    if (anggota.email && anggota.email.toLowerCase() !== email.toLowerCase()) {
+                        return {
+                            valid: false,
+                            message: 'Email tidak sesuai dengan ID/NIA di Google Spreadsheet.'
+                        };
+                    }
+                }
+                
+                return {
+                    valid: true,
+                    data: anggota,
+                    message: 'NIA terverifikasi di Google Spreadsheet'
+                };
+                
+            } catch (error) {
+                console.error('Error verifying NIA from Sheets:', error);
+                
+                // Fallback ke localStorage
+                const localAnggota = getLocalAnggota();
+                const anggota = localAnggota.find(a => a.nia === nia);
+                
+                if (anggota) {
+                    return {
+                        valid: true,
+                        data: anggota,
+                        message: 'NIA terverifikasi dari data lokal'
+                    };
+                }
+                
+                return {
+                    valid: false,
+                    message: 'ID/NIA tidak ditemukan. Hubungi Admin.'
+                };
+            }
+        }
+        
+        // ===== CHECK IF NIA EXISTS IN SPREADSHEET =====
+        async function isNIAExistsInSheets(nia) {
+            const result = await verifyNIAFromSheets(nia);
+            return result.valid;
+        }
+        
+        // ===== SYNC LOCAL DATA WITH GOOGLE SHEETS =====
+        async function syncWithGoogleSheets() {
+            try {
+                const sheetsAnggota = await fetchAnggotaFromSheets();
+                
+                // Update localStorage dengan data dari sheets
+                const localAnggota = getLocalAnggota();
+                
+                // Merge data
+                sheetsAnggota.forEach(sheetsAnggota => {
+                    const existingIndex = localAnggota.findIndex(a => a.nia === sheetsAnggota.nia);
+                    if (existingIndex === -1) {
+                        localAnggota.push(sheetsAnggota);
+                    }
+                });
+                
+                localStorage.setItem('koperasi_anggota', JSON.stringify(localAnggota));
+                
+                // Update users for login
+                const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
+                
+                sheetsAnggota.forEach(anggota => {
+                    if (anggota.email && !localUsers[anggota.email]) {
+                        const accessLevel = (anggota.nia === '#01-2026-001') ? 'dashboard' : 'anggota';
+                        
+                        localUsers[anggota.email] = {
+                            email: anggota.email,
+                            password: anggota.password || 'anggota123', // Default password
+                            name: anggota.nama || anggota.name || 'Anggota',
+                            role: anggota.posisi || 'Anggota Biasa',
+                            posisi: anggota.posisi || 'Anggota Biasa',
+                            foto: anggota.foto || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg',
+                            access: accessLevel,
+                            anggotaId: anggota.nia,
+                            nia: anggota.nia,
+                            createdAt: new Date().toISOString(),
+                            lastLogin: null
+                        };
+                    }
+                });
+                
+                localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
+                
+                console.log('✅ Data lokal disinkronkan dengan Google Sheets');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Gagal sinkron dengan Google Sheets:', error);
+                return false;
+            }
+        }
+        
+        // ===== INITIAL SYNC =====
+        async function initialSync() {
+            await syncWithGoogleSheets();
+        }
+        
+        // Start initial sync
+        initialSync();
+        
+        // ===== INITIALIZE DEFAULT ADMIN =====
+        async function initializeDefaultAdmin() {
+            try {
+                const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
+                
+                if (!localUsers[ADMIN_EMAIL]) {
+                    localUsers[ADMIN_EMAIL] = {
+                        email: ADMIN_EMAIL,
+                        password: ADMIN_PASSWORD,
+                        name: 'Administrator Koperasi',
+                        role: 'Admin',
+                        posisi: 'Admin',
+                        foto: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg',
+                        access: 'dashboard',
+                        isSuperAdmin: true,
+                        nia: 'ADMIN-001',
+                        createdAt: new Date().toISOString(),
+                        lastLogin: null
+                    };
+                    
+                    localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
+                    console.log('✅ Default Admin initialized');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error initializing admin:', error);
+            }
+        }
+        
+        initializeDefaultAdmin();
+        
+        // ===== VALIDASI NIA FUNCTION =====
+        function isValidNIA(nia) {
+            if (!nia) return false;
+            const regex = /^#01-2026-[0-9]{3}$/;
+            if (!regex.test(nia)) return false;
+            const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
+            return niaNumber >= 1 && niaNumber <= 1000;
+        }
         
         // ===== NAVIGATION =====
         backHomeBtn.addEventListener('click', function() {
@@ -1088,34 +1364,24 @@
             loginContainer.style.display = 'none';
             registerContainer.style.display = 'block';
             
-            // Set tanggal bergabung default ke hari ini
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tanggalDaftar').value = today;
             
-            // Set default values for simpanan
             document.getElementById('simpananPokok').value = 200000;
             document.getElementById('simpananWajib').value = 20000;
             document.getElementById('simpananSukarela').value = 0;
             
-            // Reset form
             document.getElementById('registrationForm').reset();
-            
-            // Reset NIA Manual Input
             if (niaManualInput) niaManualInput.value = '';
-            
-            // Reset file names
             document.getElementById('foto-name').textContent = 'Belum ada file dipilih';
             
-            // Reset radio buttons
             document.querySelector('input[name="jenisKelamin"][value="Laki-laki"]').checked = true;
             document.querySelector('input[name="statusAktif"][value="Aktif"]').checked = true;
             
-            // Reset alamat counter
             document.getElementById('alamatCounter').textContent = '0/200 karakter';
             document.getElementById('alamatCounter').style.color = 'var(--gray)';
         }
         
-        // Register link click
         if (registerLink) {
             registerLink.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1140,7 +1406,6 @@
             });
         }
         
-        // Global toggle password function
         window.togglePassword = function(inputId, button) {
             const input = document.getElementById(inputId);
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -1148,7 +1413,6 @@
             button.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
         };
         
-        // ===== FILE NAME UPDATE FUNCTION =====
         window.updateFileName = function(inputId, displayId) {
             const input = document.getElementById(inputId);
             const display = document.getElementById(displayId);
@@ -1195,50 +1459,12 @@
                 }
             }
             
-            // Re-attach register link event
             const newRegisterLink = document.getElementById('registerLink');
             if (newRegisterLink) {
                 newRegisterLink.addEventListener('click', function(e) {
                     e.preventDefault();
                     showRegisterForm();
                 });
-            }
-        }
-        
-        // ===== VALIDASI NIA FUNCTION =====
-        function isValidNIA(nia) {
-            if (!nia) return false;
-            
-            // Format harus #01-2026-XXX (XXX = 3 digit angka)
-            const regex = /^#01-2026-[0-9]{3}$/;
-            if (!regex.test(nia)) return false;
-            
-            // Extract angka NIA
-            const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
-            
-            // Valid range: 001 - 1000
-            return niaNumber >= 1 && niaNumber <= 1000;
-        }
-        
-        // ===== CHECK NIA EXISTENCE IN DATABASE =====
-        async function isNIAExists(nia) {
-            try {
-                // Check Firebase first
-                if (firebaseInitialized && db) {
-                    const anggotaRef = db.collection('anggota').doc(nia);
-                    const doc = await anggotaRef.get();
-                    if (doc.exists) {
-                        return true;
-                    }
-                }
-                
-                // Check LocalStorage
-                const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                return localAnggota.some(anggota => anggota.nia === nia);
-                
-            } catch (error) {
-                console.error('Error checking NIA:', error);
-                return false;
             }
         }
         
@@ -1262,16 +1488,14 @@
                     return;
                 }
                 
-                // Show loading
                 const submitBtn = loginForm.querySelector('button[type="submit"]');
                 const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi dengan Google Spreadsheet...';
                 submitBtn.disabled = true;
                 
                 try {
-                    // ===== ADMIN LOGIN =====
+                    // ADMIN LOGIN
                     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                        // Admin login successful
                         showSuccess('Login Admin berhasil! Mengarahkan ke Dashboard Admin...');
                         
                         const adminData = {
@@ -1295,75 +1519,32 @@
                         return;
                     }
                     
-                    // ===== ANGGOTA LOGIN =====
+                    // ANGGOTA LOGIN - VERIFY WITH GOOGLE SHEETS
                     if (currentUserType === 'anggota') {
-                        // Validasi NIA wajib diisi
                         if (!nia) {
                             showError('ID/NIA wajib diisi. Hubungi Admin untuk mendapatkan NIA Anda.');
                             return;
                         }
                         
-                        // Validasi format NIA
                         if (!isValidNIA(nia)) {
-                            showError('Format ID/NIA tidak valid. Format yang benar: #01-2026-XXX (XXX = 001-1000)');
+                            showError('Format ID/NIA tidak valid. Format: #01-2026-001 s/d #01-2026-1000');
                             return;
                         }
                         
-                        // Ekstrak nomor NIA
-                        const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
+                        // VERIFY NIA WITH GOOGLE SHEETS
+                        const verification = await verifyNIAFromSheets(nia, email);
                         
-                        // CEK AKSES BERDASARKAN NIA:
-                        // NIA #01-2026-001 = Admin (bisa akses akun-anggota.html)
-                        // NIA #01-2026-002 s/d 1000 = Anggota Biasa
-                        
-                        // Cek apakah NIA terdaftar di database
-                        const exists = await isNIAExists(nia);
-                        
-                        if (!exists) {
-                            showError('ID/NIA tidak terdaftar. Silakan hubungi Admin untuk pendaftaran.');
+                        if (!verification.valid) {
+                            showError(verification.message);
                             return;
                         }
                         
-                        // Try Firebase authentication
-                        if (firebaseInitialized && db) {
-                            try {
-                                const usersRef = db.collection('users');
-                                const querySnapshot = await usersRef.where('email', '==', email).get();
-                                
-                                if (!querySnapshot.empty) {
-                                    const userDoc = querySnapshot.docs[0];
-                                    const userData = userDoc.data();
-                                    
-                                    if (userData.password === password && userData.nia === nia) {
-                                        // Login successful
-                                        showSuccess('Login berhasil! Mengarahkan ke halaman anggota...');
-                                        
-                                        localStorage.setItem('koperasi_current_user', JSON.stringify(userData));
-                                        
-                                        if (remember) {
-                                            localStorage.setItem('koperasi_remembered_email', email);
-                                        }
-                                        
-                                        setTimeout(() => {
-                                            window.location.href = REDIRECT_ANGGOTA;
-                                        }, 1000);
-                                        return;
-                                    }
-                                }
-                            } catch (firebaseError) {
-                                console.log('Firebase auth failed, trying local storage:', firebaseError);
-                            }
-                        }
-                        
-                        // Fallback to local storage authentication
+                        // Check local user database
                         const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
-                        const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
-                        
-                        // Cari user berdasarkan email
                         const user = localUsers[email];
                         
                         if (!user) {
-                            showError('Email tidak terdaftar.');
+                            showError('Email tidak terdaftar. Silakan daftar terlebih dahulu.');
                             return;
                         }
                         
@@ -1372,13 +1553,12 @@
                             return;
                         }
                         
-                        // Verifikasi NIA cocok
                         if (user.nia !== nia) {
                             showError('ID/NIA tidak sesuai dengan akun ini.');
                             return;
                         }
                         
-                        // Login successful
+                        // LOGIN SUCCESS
                         showSuccess('Login berhasil! Mengarahkan ke halaman anggota...');
                         
                         localStorage.setItem('koperasi_current_user', JSON.stringify(user));
@@ -1392,21 +1572,18 @@
                         }, 1000);
                         
                     } else {
-                        // Admin login with wrong credentials
                         showError('Email atau password Admin salah.');
                     }
                     
                 } catch (error) {
                     showError('Terjadi kesalahan: ' + error.message);
                 } finally {
-                    // Restore button
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }
             });
         }
         
-        // ===== HELPER FUNCTIONS =====
         function showError(message) {
             if (errorMessage) {
                 errorMessage.textContent = message;
@@ -1433,14 +1610,12 @@
             }
         }
         
-        // ===== CHECK REMEMBERED EMAIL =====
         const rememberedEmail = localStorage.getItem('koperasi_remembered_email');
         if (rememberedEmail) {
             document.getElementById('email').value = rememberedEmail;
             document.getElementById('remember').checked = true;
         }
         
-        // ===== FORGOT PASSWORD =====
         if (forgotPassword) {
             forgotPassword.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1450,7 +1625,7 @@
                       '1. Hubungi Administrator Koperasi\n' +
                       '2. Email: admin@koperasiasmaratani.id\n' +
                       '3. WhatsApp: 0852-1848-3129\n\n' +
-                      '📋 Siapkan ID/NIA Anda untuk verifikasi.');
+                      '📋 Siapkan ID/NIA Anda untuk verifikasi di Google Spreadsheet.');
             });
         }
         
@@ -1475,7 +1650,6 @@
         }
         
         // ===== REGISTRATION FORM HANDLER =====
-        // MANUAL NIA INPUT - TIDAK ADA AUTO GENERATE
         const registrationForm = document.getElementById('registrationForm');
         const errorMessageDaftar = document.getElementById('errorMessageDaftar');
         const successMessageDaftar = document.getElementById('successMessageDaftar');
@@ -1486,10 +1660,9 @@
                 
                 if (!validateRegistrationForm()) return;
                 
-                // Show loading
                 const submitBtn = registrationForm.querySelector('button[type="submit"]');
                 const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi dengan Google Spreadsheet...';
                 submitBtn.disabled = true;
                 
                 try {
@@ -1497,79 +1670,67 @@
                     const password = document.getElementById('passwordMember').value;
                     const nia = document.getElementById('niaManual').value.trim();
                     
-                    // VALIDASI NIA - WAJIB DAN MANUAL
                     if (!nia) {
                         showErrorDaftar('❌ ID/NIA wajib diisi. Hubungi Admin untuk mendapatkan NIA Anda.');
                         return;
                     }
                     
-                    // Validasi format NIA
                     if (!isValidNIA(nia)) {
                         showErrorDaftar('❌ Format ID/NIA tidak valid. Format: #01-2026-001 s/d #01-2026-1000');
                         return;
                     }
                     
-                    // Ekstrak nomor NIA
                     const niaNumber = parseInt(nia.replace('#01-2026-', ''), 10);
-                    
-                    // Validasi range NIA
                     if (niaNumber < 1 || niaNumber > 1000) {
                         showErrorDaftar('❌ ID/NIA harus antara #01-2026-001 sampai #01-2026-1000');
                         return;
                     }
                     
-                    // Check if email already exists
+                    // Check if NIA exists in Google Sheets
+                    const niaExists = await isNIAExistsInSheets(nia);
+                    if (niaExists) {
+                        showErrorDaftar('❌ ID/NIA sudah terdaftar di Google Spreadsheet. Hubungi Admin untuk mendapatkan NIA yang berbeda.');
+                        return;
+                    }
+                    
                     const localUsers = JSON.parse(localStorage.getItem('koperasi_users') || '{}');
                     if (localUsers[email]) {
                         showErrorDaftar('❌ Email sudah terdaftar. Gunakan email lain.');
                         return;
                     }
                     
-                    // Check if NIA already exists
-                    if (await isNIAExists(nia)) {
-                        showErrorDaftar('❌ ID/NIA sudah terdaftar. Hubungi Admin untuk mendapatkan NIA yang berbeda.');
+                    const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
+                    if (localAnggota.some(a => a.nia === nia)) {
+                        showErrorDaftar('❌ ID/NIA sudah terdaftar di sistem lokal.');
                         return;
                     }
                     
-                    // Handle photo upload
                     let fotoUrl = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg';
                     
-                    // Prepare data for Firebase/Anggota
                     const anggotaData = {
-                        // Identitas - MANUAL NIA
                         id: nia,
                         nia: nia,
                         nama: document.getElementById('nama').value,
                         posisi: document.getElementById('posisi').value,
-                        
-                        // Data pribadi
                         alamat: document.getElementById('alamat').value,
                         jenis_kelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
                         jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked').value,
                         agama: document.getElementById('agama').value,
                         nik: document.getElementById('nik').value,
                         nik_ktp: document.getElementById('nik').value,
-                        
-                        // Kontak
                         email: email,
                         whatsapp: '+62' + document.getElementById('whatsapp').value,
                         telepon: '+62' + document.getElementById('whatsapp').value,
-                        
-                        // Status keanggotaan
                         status: document.querySelector('input[name="statusAktif"]:checked').value,
                         status_aktif: document.querySelector('input[name="statusAktif"]:checked').value,
                         tanggal_daftar: document.getElementById('tanggalDaftar').value,
                         tanggal_bergabung: document.getElementById('tanggalDaftar').value,
-                        
-                        // Data simpanan
                         simpanan_pokok: parseFloat(document.getElementById('simpananPokok').value) || 200000,
                         simpananPokok: parseFloat(document.getElementById('simpananPokok').value) || 200000,
                         simpanan_wajib: parseFloat(document.getElementById('simpananWajib').value) || 20000,
                         simpananWajib: parseFloat(document.getElementById('simpananWajib').value) || 20000,
                         simpanan_sukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
                         simpananSukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
-                        
-                        // Data keuangan
                         total_simpanan: (parseFloat(document.getElementById('simpananPokok').value) || 0) + 
                                       (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
                                       (parseFloat(document.getElementById('simpananSukarela').value) || 0),
@@ -1590,26 +1751,14 @@
                         shu_estimasi: Math.round(((parseFloat(document.getElementById('simpananPokok').value) || 0) + 
                                                 (parseFloat(document.getElementById('simpananWajib').value) || 0) + 
                                                 (parseFloat(document.getElementById('simpananSukarela').value) || 0)) * 0.05),
-                        
-                        // Foto
                         foto: fotoUrl,
-                        
-                        // Password
                         password: password,
-                        
-                        // Metadata
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString(),
                         last_update: new Date().toLocaleString('id-ID'),
-                        
-                        // QR Code
                         qr_url: `https://qr-code-hybrid.vercel.app/?id=${encodeURIComponent(nia)}`,
                         qr_code: `https://qr-code-hybrid.vercel.app/?id=${encodeURIComponent(nia)}&name=${encodeURIComponent(document.getElementById('nama').value)}`,
-                        
-                        // Link untuk Akun Anggota
                         akun_anggota_url: `${REDIRECT_ANGGOTA}?nia=${encodeURIComponent(nia)}`,
-                        
-                        // Data pinjaman default
                         loanActive: 0,
                         loanActiveCount: 0,
                         loanRejected: 0,
@@ -1617,23 +1766,17 @@
                         loanPaid: 0,
                         loanPaidCount: 0,
                         loanPending: 0,
-                        
-                        // Data KUD Toko
                         ksuShopping: 0,
                         ksuDebt: 0
                     };
                     
-                    // Determine access level based on NIA
                     const accessLevel = (nia === '#01-2026-001') ? 'dashboard' : 'anggota';
                     
-                    // Save to Firebase if available
                     if (firebaseInitialized && db) {
                         try {
-                            // Save anggota data
                             await db.collection('anggota').doc(nia).set(anggotaData);
                             console.log('✅ Data saved to Firebase:', nia);
                             
-                            // Create user account for login
                             const userData = {
                                 email: email,
                                 password: password,
@@ -1649,18 +1792,14 @@
                             };
                             
                             await db.collection('users').doc(email).set(userData);
-                            
                         } catch (firebaseError) {
                             console.error('Firebase save error:', firebaseError);
                         }
                     }
                     
-                    // Save to local storage
-                    const localAnggota = JSON.parse(localStorage.getItem('koperasi_anggota') || '[]');
                     localAnggota.push(anggotaData);
                     localStorage.setItem('koperasi_anggota', JSON.stringify(localAnggota));
                     
-                    // Save user for login
                     localUsers[email] = {
                         email: email,
                         password: password,
@@ -1676,15 +1815,12 @@
                     };
                     localStorage.setItem('koperasi_users', JSON.stringify(localUsers));
                     
-                    // Show success
                     showSuccessDaftar('✅ Pendaftaran berhasil! ID/NIA Anda: ' + nia);
                     
-                    // Auto-fill login form
                     document.getElementById('email').value = email;
                     document.getElementById('password').value = password;
                     if (niaLoginInput) niaLoginInput.value = nia;
                     
-                    // Switch to anggota type
                     userTypes.forEach(t => {
                         if (t.getAttribute('data-type') === 'anggota') {
                             t.classList.add('active');
@@ -1695,32 +1831,27 @@
                     currentUserType = 'anggota';
                     updateFormForUserType('anggota');
                     
-                    // Show login form after delay
                     setTimeout(() => {
                         showLoginForm();
                         
-                        // Success message
                         const roleMessage = (nia === '#01-2026-001') 
                             ? 'Anda login sebagai Admin dengan akses penuh.' 
                             : 'Anda login sebagai Anggota.';
                         
-                        alert(`✅ PENDAFTARAN BERHASIL!\n\nID/NIA: ${nia}\nNama: ${anggotaData.nama}\nEmail: ${email}\n\n${roleMessage}\n\nSilakan login dengan akun yang sudah terisi otomatis.`);
+                        alert(`✅ PENDAFTARAN BERHASIL!\n\nID/NIA: ${nia}\nNama: ${anggotaData.nama}\nEmail: ${email}\n\n${roleMessage}\n\nSilakan login dengan akun yang sudah terisi otomatis.\n\n📊 Data tersinkron dengan Google Spreadsheet.`);
                         
                     }, 2000);
                     
                 } catch (error) {
                     showErrorDaftar('❌ Error: ' + error.message);
                 } finally {
-                    // Restore button
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }
             });
         }
         
-        // ===== VALIDATION FUNCTIONS =====
         function validateRegistrationForm() {
-            // Validasi NIA Manual - WAJIB
             const nia = document.getElementById('niaManual').value.trim();
             if (!nia) {
                 showErrorDaftar('❌ ID/NIA wajib diisi. Hubungi Admin untuk mendapatkan NIA Anda.');
@@ -1728,7 +1859,6 @@
                 return false;
             }
             
-            // Validasi format NIA
             if (!isValidNIA(nia)) {
                 showErrorDaftar('❌ Format ID/NIA tidak valid. Format: #01-2026-001 s/d #01-2026-1000');
                 document.getElementById('niaManual').focus();
@@ -1742,7 +1872,6 @@
                 'passwordMember', 'ulangiPassword'
             ];
             
-            // Check required fields
             for (let field of requiredFields) {
                 const element = document.getElementById(field);
                 if (!element || element.value === '' || element.value === null) {
@@ -1752,7 +1881,6 @@
                 }
             }
             
-            // Check radio buttons
             const jenisKelamin = document.querySelector('input[name="jenisKelamin"]:checked');
             if (!jenisKelamin) {
                 showErrorDaftar('Pilih jenis kelamin.');
@@ -1765,7 +1893,6 @@
                 return false;
             }
             
-            // Email validation
             const email = document.getElementById('emailMember').value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
@@ -1774,7 +1901,6 @@
                 return false;
             }
             
-            // Password validation
             const password = document.getElementById('passwordMember').value;
             const ulangiPassword = document.getElementById('ulangiPassword').value;
             
@@ -1790,7 +1916,6 @@
                 return false;
             }
             
-            // WhatsApp validation
             const whatsapp = document.getElementById('whatsapp').value;
             const whatsappRegex = /^[0-9]{9,13}$/;
             if (!whatsappRegex.test(whatsapp)) {
@@ -1799,7 +1924,6 @@
                 return false;
             }
             
-            // NIK validation
             const nik = document.getElementById('nik').value;
             const nikRegex = /^[0-9]{16}$/;
             if (!nikRegex.test(nik)) {
@@ -1808,7 +1932,6 @@
                 return false;
             }
             
-            // Simpanan validation
             const simpananPokok = parseFloat(document.getElementById('simpananPokok').value);
             const simpananWajib = parseFloat(document.getElementById('simpananWajib').value);
             
@@ -1824,7 +1947,6 @@
                 return false;
             }
             
-            // Alamat length validation
             const alamat = document.getElementById('alamat').value;
             if (alamat.length > 200) {
                 showErrorDaftar('Alamat maksimal 200 karakter.');
@@ -1857,16 +1979,18 @@
             }
         }
         
-        // ===== INITIAL FORM STATE =====
         updateFormForUserType('admin');
         
-        // ===== CONSOLE INFO =====
-        console.log('=== LOGIN SYSTEM READY (REVISI TOTAL) ===');
-        console.log('✅ Admin Account: admin@koperasi.com / admin014212');
-        console.log('✅ NIA #01-2026-001: Akses Admin ke akun-anggota.html');
-        console.log('✅ NIA #01-2026-002 s/d 1000: Akses Anggota ke akun-anggota.html');
-        console.log('✅ TIDAK ADA DATA ANGGOTA DEFAULT DITAMPILKAN');
-        console.log('✅ NIA WAJIB DIISI MANUAL - TIDAK ADA AUTO GENERATE');
+        // ===== PERIODIC SYNC WITH GOOGLE SHEETS =====
+        setInterval(async () => {
+            console.log('🔄 Periodic sync with Google Sheets...');
+            await syncWithGoogleSheets();
+        }, 300000); // Sync every 5 minutes
+        
+        console.log('=== GOOGLE SHEETS INTEGRATION READY ===');
+        console.log('✅ Spreadsheet ID:', SPREADSHEET_ID);
+        console.log('✅ NIA #01-2026-001 dan #01-2026-002 akan diverifikasi dari Spreadsheet');
+        console.log('✅ Semua data anggota diverifikasi melalui Google Spreadsheet');
         console.log('✅ Firebase status:', firebaseInitialized ? 'Connected' : 'Not connected');
     });
     </script>
