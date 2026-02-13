@@ -4738,11 +4738,11 @@
         // 2. Google Sheets untuk database cloud (Spreadsheet)
         
         const CONFIG = {
-            // Ganti dengan URL Web App Google Apps Script Anda
-            // Format: https://script.google.com/macros/s/.../exec
-            GOOGLE_SHEETS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbzJX7XQq9LQq9LQq9LQq9LQq9LQq9LQq9L/exec', // GANTI INI!
+            // URL Web App Google Apps Script
+            GOOGLE_SHEETS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbw2Lspxf4UB7x0KZ2GUCVQc-eEFmCCNsUXco5XcOlh2E2x0NDFqIOfx6Vji4oLu4ZuO/exec',
             
-            SPREADSHEET_ID: '1q9LQq9LQq9LQq9LQq9LQq9LQq9LQq9LQq9L', // GANTI INI!
+            // Spreadsheet ID yang benar
+            SPREADSHEET_ID: '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA',
             
             MEMBER_ID: '#01-2026-001',
             MEMBER_NAME: 'Eldi Sugianto, S.Kom',
@@ -4979,6 +4979,7 @@
                 
                 // Data yang akan dikirim
                 const dataToSend = {
+                    action: 'sync',
                     timestamp: new Date().toISOString(),
                     memberId: memberData.id,
                     memberName: memberData.nama,
@@ -4994,17 +4995,14 @@
                     shuEstimasi: Math.floor((memberData.pokok + memberData.wajib + memberData.sukarela) * memberData.shuPercentage),
                     ksuBelanja: memberData.ksuShopping,
                     ksuHutang: memberData.ksuDebt,
-                    transactions: JSON.stringify(transactions.slice(0, 10)), // 10 transaksi terakhir
+                    transactions: JSON.stringify(transactions.slice(0, 10)),
                     loanData: JSON.stringify(loanData)
                 };
 
-                // Simulasi pengiriman ke Google Sheets
-                // UNCOMMENT kode di bawah jika sudah memiliki Google Apps Script Web App URL
-                
-                /*
+                // Kirim ke Google Sheets via Apps Script
                 const response = await fetch(CONFIG.GOOGLE_SHEETS_WEBAPP_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Penting untuk Google Apps Script
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -5012,9 +5010,8 @@
                 });
                 
                 console.log('✅ Data tersinkron ke Google Sheets');
-                */
 
-                // Untuk demo, kita simpan ke localStorage sebagai bukti sinkronisasi
+                // Simpan ke localStorage sebagai bukti sinkronisasi
                 localStorage.setItem('lastSyncToSheets', JSON.stringify({
                     timestamp: new Date().toISOString(),
                     data: dataToSend
@@ -5032,33 +5029,31 @@
             try {
                 console.log('🔄 Mengambil data dari Google Sheets...');
                 
-                // Simulasi pengambilan data dari Google Sheets
-                // UNCOMMENT kode di bawah jika sudah memiliki endpoint GET
-                
-                /*
+                // Ambil data dari Google Sheets via Apps Script
                 const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?memberId=${memberData.id}`, {
                     method: 'GET',
-                    mode: 'no-cors'
+                    mode: 'cors'
                 });
                 
                 if (response.ok) {
-                    const data = await response.json();
-                    // Update memberData dengan data dari Google Sheets
-                    if (data.simpananPokok) memberData.pokok = parseInt(data.simpananPokok);
-                    if (data.simpananWajib) memberData.wajib = parseInt(data.simpananWajib);
-                    if (data.simpananSukarela) memberData.sukarela = parseInt(data.simpananSukarela);
-                    if (data.pinjamanAktif) memberData.loanActive = parseInt(data.pinjamanAktif);
-                    if (data.pinjamanLunas) memberData.loanPaid = parseInt(data.pinjamanLunas);
-                    if (data.transactions) transactions = JSON.parse(data.transactions);
-                    if (data.loanData) loanData = JSON.parse(data.loanData);
-                }
-                */
-                
-                // Untuk demo, kita ambil dari localStorage
-                const lastSync = localStorage.getItem('lastSyncFromSheets');
-                if (lastSync) {
-                    const syncData = JSON.parse(lastSync);
-                    console.log('✅ Data dimuat dari Google Sheets (simulasi)');
+                    const result = await response.json();
+                    if (result.success && result.data) {
+                        // Update memberData dengan data dari Google Sheets
+                        if (result.data.member) {
+                            if (result.data.member.pokok) memberData.pokok = parseInt(result.data.member.pokok);
+                            if (result.data.member.wajib) memberData.wajib = parseInt(result.data.member.wajib);
+                            if (result.data.member.sukarela) memberData.sukarela = parseInt(result.data.member.sukarela);
+                        }
+                        if (result.data.loans) {
+                            if (result.data.loans.berjalan) loanData.berjalan = result.data.loans.berjalan;
+                            if (result.data.loans.ditolak) loanData.ditolak = result.data.loans.ditolak;
+                            if (result.data.loans.lunas) loanData.lunas = result.data.loans.lunas;
+                        }
+                        if (result.data.transactions && result.data.transactions.length > 0) {
+                            transactions = result.data.transactions;
+                        }
+                        console.log('✅ Data dimuat dari Google Sheets');
+                    }
                 }
                 
                 updateLastSyncInfo('Google Sheets (baca)');
@@ -6117,7 +6112,7 @@ ________________________________
             // Load data dari LocalStorage
             loadFromLocalStorage();
             
-            // Sinkron dari Google Sheets (simulasi)
+            // Sinkron dari Google Sheets
             syncFromGoogleSheets();
             
             // Update semua data
