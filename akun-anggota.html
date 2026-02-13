@@ -1562,7 +1562,229 @@
             transform: translateY(-2px);
         }
 
-        /* ========== GRADASI EMAS PADA NAVBAR DENGAN EFEK PARALLAK, SHADOW, HOVER ========== */
+        /* ========== TOMBOL TRANSFER ESTETIK ========== */
+        .btn-transfer-premium {
+            background: linear-gradient(145deg, #2E7D32, #4CAF50, #66BB6A, #2E7D32) !important;
+            background-size: 300% 300% !important;
+            color: white !important;
+            border: 2px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 50px !important;
+            padding: 16px 24px !important;
+            font-weight: 700 !important;
+            font-size: 1.1rem !important;
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.1) inset !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            animation: gradientShift 3s ease infinite !important;
+            letter-spacing: 1px !important;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+        }
+
+        .btn-transfer-premium::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent) !important;
+            transition: left 0.6s ease !important;
+        }
+
+        .btn-transfer-premium:hover {
+            transform: translateY(-5px) scale(1.03) !important;
+            box-shadow: 0 18px 35px rgba(46, 125, 50, 0.5), 0 0 0 3px rgba(255, 255, 255, 0.3) inset !important;
+            background: linear-gradient(145deg, #1B5E20, #2E7D32, #4CAF50, #1B5E20) !important;
+            background-size: 300% 300% !important;
+        }
+
+        .btn-transfer-premium:hover::before {
+            left: 100% !important;
+        }
+
+        .btn-transfer-premium i {
+            font-size: 1.3rem !important;
+            transition: transform 0.4s ease !important;
+        }
+
+        .btn-transfer-premium:hover i {
+            transform: scale(1.2) rotate(360deg) !important;
+        }
+
+        /* ========== TOMBOL CETAK KARTU DAN DOWNLOAD PDF ESTETIK ========== */
+        .btn-card-print, .btn-pdf-download {
+            background: linear-gradient(145deg, #2E7D32, #4CAF50, #66BB6A) !important;
+            background-size: 200% 200% !important;
+            color: white !important;
+            border: 2px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 40px !important;
+            padding: 14px 20px !important;
+            font-weight: 700 !important;
+            font-size: 1rem !important;
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3) !important;
+            transition: all 0.4s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            flex: 1 !important;
+            animation: pulse 2s infinite !important;
+        }
+
+        .btn-card-print {
+            background: linear-gradient(145deg, #FF9800, #F57C00, #FFB74D) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .btn-pdf-download {
+            background: linear-gradient(145deg, #2196F3, #1976D2, #64B5F6) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .btn-card-print::before, .btn-pdf-download::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent) !important;
+            transition: left 0.6s ease !important;
+        }
+
+        .btn-card-print:hover, .btn-pdf-download:hover {
+            transform: translateY(-4px) scale(1.02) !important;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25) !important;
+            border-color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .btn-card-print:hover::before, .btn-pdf-download:hover::before {
+            left: 100% !important;
+        }
+
+        .btn-card-print i, .btn-pdf-download i {
+            font-size: 1.2rem !important;
+            transition: transform 0.3s ease !important;
+        }
+
+        .btn-card-print:hover i, .btn-pdf-download:hover i {
+            transform: scale(1.2) rotate(10deg) !important;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3); }
+            50% { box-shadow: 0 12px 30px rgba(46, 125, 50, 0.5); }
+            100% { box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3); }
+        }
+
+        /* ========== PREVIEW KARTU ANGGOTA ========== */
+        .kartu-preview-container {
+            background: linear-gradient(145deg, #f9f9f9, #eaeaea);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #2E7D32;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .kartu-preview-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px dashed #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .kartu-preview {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #ddd;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .kartu-header {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            padding: 12px;
+            border-radius: 12px 12px 0 0;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .kartu-header h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .kartu-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #4CAF50;
+            margin: 0 auto 15px;
+        }
+
+        .kartu-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .kartu-info {
+            width: 100%;
+            text-align: left;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .kartu-info-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .kartu-info-label {
+            font-weight: 700;
+            width: 100px;
+            color: #333;
+        }
+
+        .kartu-info-value {
+            flex: 1;
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .kartu-footer {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            width: 100%;
+        }
+
+        /* ========== GRADASI HIJAU LEMBUT PADA NAVBAR ========== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -1575,7 +1797,7 @@
             align-items: center;
             padding: 10px 0 15px;
             border-radius: 20px 20px 0 0;
-            box-shadow: 0 -5px 25px rgba(255, 215, 0, 0.4), 0 -2px 10px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 -5px 25px rgba(46, 125, 50, 0.4), 0 -2px 10px rgba(0,0,0,0.1) !important;
             z-index: 100;
             max-width: 500px;
             margin: 0 auto;
@@ -1594,14 +1816,14 @@
         .nav-item {
             text-align: center;
             font-size: 11px;
-            color: #4A2C0D !important;
+            color: white !important;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
             flex: 1;
             padding: 8px 4px;
             border-radius: 15px;
             font-weight: 600;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
             position: relative;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.1);
@@ -1626,21 +1848,21 @@
         }
 
         .nav-item.active {
-            background: rgba(76, 175, 80, 0.25) !important;
-            color: #1E3A1E !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #FFD700 !important;
             font-weight: 700;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5), 0 0 0 2px rgba(255, 215, 0, 0.5) inset !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.5) inset !important;
             transform: translateY(-5px) scale(1.08) !important;
-            text-shadow: 0 2px 5px rgba(255, 255, 255, 0.8) !important;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5) !important;
             border: 1px solid white !important;
         }
 
         .nav-item:hover {
             transform: translateY(-3px) scale(1.05) !important;
-            background: rgba(255, 255, 255, 0.3) !important;
-            color: #1E3A1E !important;
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.6) !important;
-            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.7) !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: #FFF8E1 !important;
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.6) !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
         }
 
         .nav-icon {
@@ -1653,64 +1875,6 @@
         .nav-item:hover .nav-icon {
             transform: scale(1.2) rotate(5deg);
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        }
-
-        /* ========== EFEK PARALLAK PADA SETIAP HALAMAN UTAMA ========== */
-        .page.active {
-            background: linear-gradient(135deg, #f5f9f0 0%, #e8f3e0 100%);
-            position: relative;
-            animation: parallaxGlow 8s ease infinite alternate;
-        }
-
-        @keyframes parallaxGlow {
-            0% { background-position: 0% 0%; background-size: 100% 100%; }
-            100% { background-position: 100% 100%; background-size: 120% 120%; }
-        }
-
-        .page.active .header-home,
-        .page.active .header-savings,
-        .page.active .header-loan,
-        .page.active .header-account {
-            background-size: 150% 150% !important;
-            animation: headerParallax 12s ease infinite alternate !important;
-        }
-
-        @keyframes headerParallax {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 100% 100%; }
-        }
-
-        .page.active .total-savings-card,
-        .page.active .stats-card,
-        .page.active .shu-card,
-        .page.active .ksu-card,
-        .page.active .activity-card,
-        .page.active .summary-card,
-        .page.active .savings-actions-section,
-        .page.active .savings-history-section,
-        .page.active .profile-card {
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            animation: cardParallax 10s ease infinite alternate;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        @keyframes cardParallax {
-            0% { transform: translateY(0px) rotateX(0deg); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-            100% { transform: translateY(-3px) rotateX(1deg); box-shadow: 0 20px 35px rgba(46, 125, 50, 0.15); }
-        }
-
-        .page.active .total-savings-card:hover,
-        .page.active .stats-card:hover,
-        .page.active .shu-card:hover,
-        .page.active .ksu-card:hover,
-        .page.active .activity-card:hover,
-        .page.active .summary-card:hover,
-        .page.active .savings-actions-section:hover,
-        .page.active .savings-history-section:hover,
-        .page.active .profile-card:hover {
-            transform: translateY(-8px) rotateX(2deg) scale(1.02) !important;
-            box-shadow: 0 25px 40px rgba(46, 125, 50, 0.25) !important;
         }
 
         /* Premium Modal Styling */
@@ -2278,23 +2442,6 @@
             font-size: 12px;
             font-weight: 500;
             color: #333;
-        }
-
-        /* Bottom Navigation - SUDAH DITAMBAHKAN GRADASI EMAS DI ATAS */
-        .bottom-nav {
-            /* CSS sudah diubah di atas dengan gradasi emas */
-        }
-
-        .nav-item {
-            /* CSS sudah diubah di atas dengan efek hover dan shadow */
-        }
-
-        .nav-item.active {
-            /* CSS sudah diubah di atas */
-        }
-
-        .nav-icon {
-            /* CSS sudah diubah di atas */
         }
 
         /* Report Preview */
@@ -3222,7 +3369,7 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation - TELAH DIBERI GRADASI EMAS, SHADOW, HOVER, PARALLAK -->
+        <!-- Bottom Navigation - GRADASI HIJAU LEMBUT TEMA KOPERASI -->
         <div class="bottom-nav">
             <div class="nav-item" data-page="savings" onclick="switchPage('savings')">
                 <div class="nav-icon"><i class="fas fa-wallet"></i></div>
@@ -3331,7 +3478,7 @@
         </div>
     </div>
 
-    <!-- Modal untuk Transfer -->
+    <!-- Modal untuk Transfer - TAMPIL LENGKAP DENGAN TOMBOL ESTETIK -->
     <div id="modalTransfer" class="modal-akun">
         <div class="modal-content-akun">
             <div class="modal-header-akun">
@@ -3369,21 +3516,57 @@
                     <textarea class="form-input" id="transferNote" placeholder="Tambahkan catatan jika perlu" rows="2"></textarea>
                 </div>
                 
-                <button class="btn-modal btn-modal-whatsapp" onclick="processTransfer()" style="width:100%;">
-                    <i class="fas fa-exchange-alt"></i> Proses Transfer
+                <button class="btn-transfer-premium" onclick="processTransfer()">
+                    <i class="fas fa-exchange-alt"></i> PROSES TRANSFER
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal untuk Laporan -->
+    <!-- Modal untuk Laporan - TAMPIL LENGKAP DENGAN PREVIEW KARTU DAN TOMBOL ESTETIK -->
     <div id="modalReport" class="modal-akun">
         <div class="modal-content-akun">
             <div class="modal-header-akun">
-                <div class="modal-title-akun">Laporan Simpanan</div>
+                <div class="modal-title-akun">Laporan & Cetak Kartu</div>
                 <button class="close-btn-akun" onclick="closeAkunModal('modalReport')">&times;</button>
             </div>
             <div class="modal-body-akun">
+                <!-- Preview Kartu Anggota -->
+                <div class="kartu-preview-container">
+                    <div class="kartu-preview-title">
+                        <i class="fas fa-id-card"></i> Preview Kartu Anggota
+                    </div>
+                    <div class="kartu-preview">
+                        <div class="kartu-header">
+                            <h4>KOPERASI KUD ASMARA TANI</h4>
+                        </div>
+                        <div class="kartu-photo">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg" alt="Foto Anggota">
+                        </div>
+                        <div class="kartu-info">
+                            <div class="kartu-info-row">
+                                <span class="kartu-info-label">NIA</span>
+                                <span class="kartu-info-value" id="kartuNIA">#01-2026-001</span>
+                            </div>
+                            <div class="kartu-info-row">
+                                <span class="kartu-info-label">Nama</span>
+                                <span class="kartu-info-value" id="kartuNama">Eldi Sugianto, S.Kom</span>
+                            </div>
+                            <div class="kartu-info-row">
+                                <span class="kartu-info-label">Tgl Gabung</span>
+                                <span class="kartu-info-value" id="kartuTglGabung">18/09/2020</span>
+                            </div>
+                            <div class="kartu-info-row">
+                                <span class="kartu-info-label">Status</span>
+                                <span class="kartu-info-value" style="color: #2E7D32; font-weight: 700;">AKTIF</span>
+                            </div>
+                        </div>
+                        <div class="kartu-footer">
+                            <i class="fas fa-qrcode"></i> Scan untuk verifikasi anggota
+                        </div>
+                    </div>
+                </div>
+
                 <div class="report-preview" id="reportPreview">
                     <div class="report-header">
                         <div class="report-title">KOPERASI KUD ASMARA TANI</div>
@@ -3460,12 +3643,20 @@
                     </div>
                 </div>
                 
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="printReport()">
+                <div class="button-group" style="display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                    <button class="btn-card-print" onclick="printKartuAnggota()" style="flex: 1;">
+                        <i class="fas fa-id-card"></i> Cetak Kartu
+                    </button>
+                    <button class="btn-pdf-download" onclick="downloadPDF()" style="flex: 1;">
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </button>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button class="btn-modal btn-modal-secondary" onclick="printReport()" style="flex: 1;">
                         <i class="fas fa-print"></i> Cetak Laporan
                     </button>
-                    <button class="btn btn-secondary" onclick="downloadPDF()">
-                        <i class="fas fa-download"></i> Download PDF
+                    <button class="btn-modal btn-modal-primary" onclick="closeAkunModal('modalReport')" style="flex: 1;">
+                        <i class="fas fa-times"></i> Tutup
                     </button>
                 </div>
             </div>
@@ -4983,6 +5174,9 @@
             
             // Update last updated time
             updateLastUpdatedTime();
+            
+            // Update kartu preview
+            updateKartuPreview();
         }
 
         function updateProfileData() {
@@ -5035,6 +5229,12 @@
             
             const dateOptions = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             updateElementText('reportDate', now.toLocaleDateString('id-ID', dateOptions) + ' WIB');
+        }
+
+        function updateKartuPreview() {
+            updateElementText('kartuNIA', memberData.id);
+            updateElementText('kartuNama', memberData.nama);
+            updateElementText('kartuTglGabung', '18/09/2020');
         }
 
         function updateElementText(id, value) {
@@ -5401,7 +5601,9 @@
             updateAllFinancialData();
             openAkunModal('modalWithdrawal'); 
         }
-        function openTransferModal() { openAkunModal('modalTransfer'); }
+        function openTransferModal() { 
+            openAkunModal('modalTransfer'); 
+        }
         function openReportModal() { 
             updateAllFinancialData();
             openAkunModal('modalReport'); 
@@ -5595,6 +5797,39 @@ ________________________________
                 window.print();
                 document.body.innerHTML = originalContent;
                 location.reload();
+            }
+        }
+
+        function printKartuAnggota() {
+            const kartuContent = document.querySelector('.kartu-preview')?.innerHTML;
+            if (kartuContent) {
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html><head><title>Kartu Anggota Koperasi</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        body{font-family:'Poppins',sans-serif;padding:40px;max-width:400px;margin:0 auto;background:#f0f7f0;}
+                        .kartu-preview{background:white;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;text-align:center;border:2px solid #2E7D32;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
+                        .kartu-header{background:linear-gradient(135deg,#2E7D32,#4CAF50);color:white;padding:12px;border-radius:12px 12px 0 0;width:100%;margin-bottom:15px;}
+                        .kartu-header h4{font-size:1.1rem;font-weight:700;margin:0;}
+                        .kartu-photo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:4px solid #4CAF50;margin:0 auto 15px;}
+                        .kartu-photo img{width:100%;height:100%;object-fit:cover;}
+                        .kartu-info{width:100%;text-align:left;background:#f5f5f5;padding:15px;border-radius:12px;}
+                        .kartu-info-row{display:flex;margin-bottom:8px;font-size:0.9rem;}
+                        .kartu-info-label{font-weight:700;width:100px;color:#333;}
+                        .kartu-info-value{flex:1;color:#2E7D32;font-weight:600;}
+                        .kartu-footer{margin-top:15px;font-size:0.8rem;color:#666;border-top:1px solid #ddd;padding-top:10px;width:100%;}
+                    </style>
+                    </head>
+                    <body>
+                        <div class="kartu-preview">${kartuContent}</div>
+                        <div style="text-align:center; margin-top:30px;">
+                            <button onclick="window.print()" style="padding:12px 30px; background:#2E7D32; color:white; border:none; border-radius:50px; font-weight:600; cursor:pointer;">Cetak Kartu</button>
+                        </div>
+                        <script>window.onload=function(){ setTimeout(function(){ window.print(); }, 500); }<\/script>
+                    </body></html>
+                `);
+                printWindow.document.close();
             }
         }
 
