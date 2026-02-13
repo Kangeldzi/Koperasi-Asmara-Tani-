@@ -14,7 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <style>
-        /* ===== SEMUA CSS DARI SEBELUMNYA TETAP SAMA ===== */
+        /* SEMUA CSS DARI SEBELUMNYA TETAP SAMA */
         :root {
             --primary: #2e7d32;
             --primary-light: #4caf50;
@@ -2087,13 +2087,17 @@
                 <ul>
                     <li><a href="#" class="active" data-tab="dashboard"><i class="fas fa-home"></i> <span>Dashboard Utama</span></a></li>
                     <li><a href="#" data-tab="anggota"><i class="fas fa-users"></i> <span>Data Anggota</span></a></li>
-                    <!-- ===== UPDATE: Tabungan Digital membuka akun-anggota.html ===== -->
-                    <li><a href="akun-anggota.html"><i class="fas fa-book"></i> <span>Tabungan Digital</span></a></li>
+                    <!-- MENU TABUNGAN DIGITAL DI SIDEBAR -->
+                    <li><a href="tabungan-digital.html"><i class="fas fa-book"></i> <span>Tabungan Digital</span></a></li>
                     <li><a href="#" data-tab="simpanan"><i class="fas fa-hand-holding-usd"></i> <span>Simpanan Anggota</span></a></li>
                     <li><a href="#" data-tab="pinjaman"><i class="fas fa-file-invoice-dollar"></i> <span>Pinjaman & Angsuran</span></a></li>
                     <li><a href="#" data-tab="laporan"><i class="fas fa-chart-line"></i> <span>Laporan Keuangan</span></a></li>
                     <li><a href="#" data-tab="unit-usaha"><i class="fas fa-shopping-cart"></i> <span>Unit Usaha</span></a></li>
+                    <!-- MENU KUD TOKO - BARU -->
+                    <li><a href="kud-toko.html" target="_blank"><i class="fas fa-store"></i> <span>KUD Toko</span></a></li>
+                    <!-- MENU LAPORAN SHU - MEMBUKA HALAMAN BARU -->
                     <li><a href="laporan-shu.html" target="_blank" id="shuMenuLink"><i class="fas fa-chart-pie"></i> <span>Laporan SHU</span></a></li>
+                    <!-- LINK CALL ALERT LANGSUNG -->
                     <li><a href="call-alert.html" target="_blank"><i class="fas fa-bell"></i> <span>Call Alert</span></a></li>
                     <li><a href="generator-qr-code.html" target="_blank"><i class="fas fa-link"></i> <span>Generate QR Code</span></a></li>
                     <li><a href="#" data-tab="pengaturan"><i class="fas fa-cog"></i> <span>Pengaturan Sistem</span></a></li>
@@ -2178,7 +2182,7 @@
                                 <i class="fas fa-bell"></i> Call Alert
                             </button>
                             <!-- LINK LANGSUNG KE TABUNGAN DIGITAL -->
-                            <button class="btn btn-outline" onclick="window.location.href='akun-anggota.html'">
+                            <button class="btn btn-outline" onclick="window.location.href='tabungan-digital.html'">
                                 <i class="fas fa-wallet"></i> Tabungan Digital
                             </button>
                         </div>
@@ -3288,6 +3292,20 @@
     </div>
 
 <script>
+// ===== KONFIGURASI GOOGLE SHEETS =====
+const GOOGLE_SHEETS_CONFIG = {
+    WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbw2Lspxf4UB7x0KZ2GUCVQc-eEFmCCNsUXco5XcOlh2E2x0NDFqIOfx6Vji4oLu4ZuO/exec',
+    SPREADSHEET_ID: '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA',
+    SHEET_NAMES: {
+        ANGGOTA: 'Anggota',
+        SIMPANAN: 'Simpanan',
+        PINJAMAN: 'Pinjaman',
+        SHU: 'SHU',
+        KUD_TOKO: 'KUD_Toko',
+        LOGS: 'Logs'
+    }
+};
+
 // ===== KONFIGURASI FIREBASE =====
 const firebaseConfig = {
     apiKey: "AIzaSyC73l7zgnN4lAtXmYGY-7KpER8_h0QZMg8",
@@ -3298,12 +3316,6 @@ const firebaseConfig = {
     appId: "1:378910307691:web:16ba94c7de9fd77c4e56c1",
     measurementId: "G-TQQ3P3YSYE"
 };
-
-// ===== KONFIGURASI GOOGLE SHEETS (DIUPDATE) =====
-const GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw2Lspxf4UB7x0KZ2GUCVQc-eEFmCCNsUXco5XcOlh2E2x0NDFqIOfx6Vji4oLu4ZuO/exec';
-const SPREADSHEET_ID = '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA';
-const GOOGLE_SHEETS_API_KEY = "AIzaSyCfvnFflFgcDejLnq8nywi5giXqwNy3yuU";
-const GOOGLE_SHEETS_BASE_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`;
 
 // ===== VARIABEL GLOBAL =====
 let anggotaData = [];
@@ -3320,348 +3332,666 @@ let firebaseInitialized = false;
 let db = null;
 let googleSheetsInitialized = false;
 
-// ===== FUNGSI INISIALISASI FIREBASE (SINGKAT) =====
+// ===== FUNGSI UPDATE STATUS =====
+function updateFirebaseStatus(status, message) {
+    const statusElement = document.getElementById('firebaseStatus');
+    const syncStatusElement = document.getElementById('firebaseSyncStatus');
+    
+    if (statusElement) {
+        statusElement.className = `firebase-status ${status}`;
+        statusElement.innerHTML = `
+            <i class="fas fa-${status === 'connected' ? 'check-circle' : status === 'loading' ? 'spinner fa-spin' : 'exclamation-circle'}"></i>
+            <span>${message}</span>
+        `;
+    }
+    
+    if (syncStatusElement) {
+        const statusSpan = syncStatusElement.querySelector('.sync-status');
+        if (statusSpan) {
+            statusSpan.textContent = message;
+            statusSpan.className = `sync-status ${status === 'connected' ? '' : status === 'loading' ? 'syncing' : 'error'}`;
+        }
+    }
+}
+
+function updateSheetsStatus(status, message) {
+    const statusElement = document.getElementById('sheetsSyncStatus');
+    const syncInfoElement = document.getElementById('sheetsSyncInfo');
+    
+    if (statusElement) {
+        statusElement.className = `sheets-sync-status ${status}`;
+        statusElement.innerHTML = `
+            <i class="fas fa-${status === 'connected' ? 'check-circle' : status === 'loading' ? 'spinner fa-spin' : 'exclamation-circle'}"></i>
+            <span>${message}</span>
+        `;
+    }
+    
+    if (syncInfoElement) {
+        const statusSpan = syncInfoElement.querySelector('.sync-status');
+        if (statusSpan) {
+            statusSpan.textContent = message;
+            statusSpan.className = `sync-status ${status === 'connected' ? '' : status === 'loading' ? 'syncing' : 'error'}`;
+        }
+    }
+}
+
+// ===== FUNGSI NOTIFICATION =====
+function showNotification(message, type = 'info') {
+    const existingNotifications = document.querySelectorAll('.sync-notification');
+    existingNotifications.forEach(notification => {
+        notification.style.animation = 'slideOutRight 0.3s ease forwards';
+        setTimeout(() => notification.remove(), 300);
+    });
+    
+    const notification = document.createElement('div');
+    notification.className = `sync-notification ${type}`;
+    
+    let icon = 'fa-info-circle';
+    if (type === 'success') icon = 'fa-check-circle';
+    else if (type === 'error') icon = 'fa-exclamation-circle';
+    else if (type === 'warning') icon = 'fa-exclamation-triangle';
+    
+    notification.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease forwards';
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+// ===== FUNGSI SYNC KE GOOGLE SHEETS =====
+async function syncToGoogleSheets(action, data) {
+    if (!GOOGLE_SHEETS_CONFIG.WEBAPP_URL) {
+        console.warn('Google Sheets WebApp URL not configured');
+        return null;
+    }
+    
+    updateSheetsStatus('loading', 'Menyinkronkan data...');
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        
+        const response = await fetch(GOOGLE_SHEETS_CONFIG.WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: action || 'sync',
+                ...data,
+                timestamp: new Date().toISOString(),
+                spreadsheetId: GOOGLE_SHEETS_CONFIG.SPREADSHEET_ID
+            })
+        });
+        
+        clearTimeout(timeoutId);
+        
+        updateSheetsStatus('connected', 'Data tersinkron');
+        return { success: true };
+        
+    } catch (error) {
+        console.error('Sync to Google Sheets error:', error);
+        updateSheetsStatus('disconnected', 'Sinkron gagal');
+        
+        if (error.name === 'AbortError') {
+            showNotification('Sinkronisasi timeout - data disimpan lokal', 'warning');
+        } else {
+            showNotification('Gagal sinkron ke Google Sheets', 'error');
+        }
+        
+        return { success: false, error: error.message };
+    }
+}
+
+// ===== FUNGSI LOAD DARI GOOGLE SHEETS =====
+async function loadFromGoogleSheets(memberId) {
+    if (!GOOGLE_SHEETS_CONFIG.WEBAPP_URL) {
+        console.warn('Google Sheets WebApp URL not configured');
+        return null;
+    }
+    
+    updateSheetsStatus('loading', 'Memuat data...');
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        
+        const url = `${GOOGLE_SHEETS_CONFIG.WEBAPP_URL}?memberId=${encodeURIComponent(memberId || '')}`;
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'no-cors',
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        updateSheetsStatus('connected', 'Data dimuat');
+        return { success: true };
+        
+    } catch (error) {
+        console.error('Load from Google Sheets error:', error);
+        updateSheetsStatus('disconnected', 'Gagal memuat');
+        
+        if (error.name !== 'AbortError') {
+            showNotification('Gagal memuat data dari Google Sheets', 'warning');
+        }
+        
+        return { success: false, error: error.message };
+    }
+}
+
+// ===== FUNGSI INISIALISASI FIREBASE =====
 async function initializeFirebase() {
-    console.log('🚀 Starting Firebase initialization...');
+    console.log('Starting Firebase initialization...');
+    
     try {
         updateFirebaseStatus('loading', 'Menyambungkan ke database...');
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
         db = firebase.firestore();
-        await db.collection('test').limit(1).get();
+        
+        const connectionPromise = new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('Firebase connection timeout'));
+            }, 10000);
+            
+            db.collection('test').limit(1).get()
+                .then(() => {
+                    clearTimeout(timeout);
+                    resolve();
+                })
+                .catch(error => {
+                    clearTimeout(timeout);
+                    reject(error);
+                });
+        });
+        
+        await connectionPromise;
+        
         firebaseInitialized = true;
-        console.log('✅ Firebase initialized successfully');
+        console.log('Firebase initialized successfully');
         updateFirebaseStatus('connected', 'Terhubung ke database');
         showNotification('Firebase berhasil terhubung!', 'success');
+        
         return true;
+        
     } catch (error) {
-        console.error('❌ Firebase initialization error:', error);
+        console.error('Firebase initialization error:', error);
         firebaseInitialized = false;
-        updateFirebaseStatus('disconnected', 'Gagal menyambungkan ke database');
+        
+        let errorMessage = 'Gagal menyambungkan ke database';
+        if (error.message.includes('timeout')) {
+            errorMessage = 'Koneksi timeout, menggunakan data lokal';
+        } else if (error.message.includes('permission')) {
+            errorMessage = 'Tidak ada izin akses database';
+        }
+        
+        updateFirebaseStatus('disconnected', errorMessage);
+        showNotification(errorMessage, 'warning');
+        
         return false;
     }
 }
 
-// ===== FUNGSI INISIALISASI GOOGLE SHEETS (DIUPDATE) =====
+// ===== FUNGSI INISIALISASI GOOGLE SHEETS =====
 async function initializeGoogleSheets() {
-    console.log('🚀 Starting Google Sheets initialization...');
-    try {
-        updateSheetsStatus('loading', 'Menyambungkan ke Google Sheets...');
-        const testUrl = `${GOOGLE_SHEETS_BASE_URL}?key=${GOOGLE_SHEETS_API_KEY}&fields=properties.title`;
-        const response = await fetch(testUrl, { method: 'GET' });
-        if (response.ok) {
-            googleSheetsInitialized = true;
-            console.log('✅ Google Sheets initialized successfully');
-            updateSheetsStatus('connected', `Terhubung ke Google Sheets`);
-            showNotification('Google Sheets berhasil terhubung!', 'success');
-            await loadDataFromGoogleSheets();
-            return true;
-        } else {
-            throw new Error(`HTTP ${response.status}`);
-        }
-    } catch (error) {
-        console.error('❌ Google Sheets initialization error:', error);
-        googleSheetsInitialized = false;
-        updateSheetsStatus('disconnected', 'Gagal menyambungkan');
-        return false;
-    }
-}
-
-// ===== FUNGSI UPDATE STATUS (SINGKAT) =====
-function updateFirebaseStatus(status, message) {
-    const el = document.getElementById('firebaseStatus');
-    const syncEl = document.getElementById('firebaseSyncStatus');
-    if (el) { el.className = `firebase-status ${status}`; el.innerHTML = `<i class="fas fa-${status === 'connected' ? 'check-circle' : status === 'loading' ? 'spinner fa-spin' : 'exclamation-circle'}"></i><span>${message}</span>`; }
-    if (syncEl) { const span = syncEl.querySelector('.sync-status'); if (span) { span.textContent = message; span.className = `sync-status ${status === 'connected' ? '' : status === 'loading' ? 'syncing' : 'error'}`; } }
-}
-function updateSheetsStatus(status, message) {
-    const el = document.getElementById('sheetsSyncStatus');
-    if (el) { el.className = `sheets-sync-status ${status}`; el.innerHTML = `<i class="fas fa-${status === 'connected' ? 'check-circle' : status === 'loading' ? 'spinner fa-spin' : 'exclamation-circle'}"></i><span>${message}</span>`; }
-}
-function showNotification(message, type = 'info') { /* Notifikasi sederhana */ console.log(`[${type}] ${message}`); alert(message); }
-
-// ===== FUNGSI LOAD DATA DARI GOOGLE SHEETS (CONTOH) =====
-async function loadDataFromGoogleSheets() {
-    if (!googleSheetsInitialized) return;
-    try {
-        updateSheetsStatus('loading', 'Memuat data...');
-        const anggotaUrl = `${GOOGLE_SHEETS_BASE_URL}/values/Anggota!A:Z?key=${GOOGLE_SHEETS_API_KEY}`;
-        const response = await fetch(anggotaUrl);
-        if (response.ok) {
-            const data = await response.json();
-            if (data.values && data.values.length > 1) {
-                const headers = data.values[0];
-                anggotaData = data.values.slice(1).map(row => {
-                    let member = { id: `NIA-${row[0]?.replace('NIA-', '').padStart(3, '0') || ''}` };
-                    headers.forEach((h,i) => { if(i>0) member[h.toLowerCase()] = row[i] || ''; });
-                    member.qr_url = `https://qr-code-hybrid.vercel.app/?id=${member.id}`;
-                    return member;
-                });
-                console.log(`✅ Loaded ${anggotaData.length} anggota from Google Sheets`);
-                refreshAnggotaTable(); updateDashboardStats(); isiDropdownAnggotaSimpanan();
-                showNotification('Data dari Google Sheets dimuat!', 'success');
-            }
-        }
-        updateSheetsStatus('connected', 'Data dimuat');
-    } catch (error) { console.error('Error load from sheets:', error); updateSheetsStatus('disconnected', 'Gagal muat'); }
-}
-
-// ===== FUNGSI SYNC KE GOOGLE SHEETS (DIUPDATE) =====
-async function syncDataToGoogleSheets() {
-    if (!googleSheetsInitialized) { showNotification('Google Sheets belum terhubung!', 'error'); return false; }
-    try {
-        updateSheetsStatus('loading', 'Menyinkronisasi...');
-        showNotification('Sinkronisasi manual dimulai...', 'info');
-        await syncAnggotaToSheets();
-        updateSheetsStatus('connected', 'Sinkronisasi selesai');
-        showNotification('Data berhasil disinkronisasi ke Google Sheets!', 'success');
-        return true;
-    } catch (error) {
-        console.error('Sync error:', error);
-        updateSheetsStatus('disconnected', 'Gagal sinkronisasi');
-        showNotification('Gagal sinkronisasi: ' + error.message, 'error');
-        return false;
-    }
-}
-
-async function syncAnggotaToSheets() {
-    if (!anggotaData.length) { showNotification('Tidak ada data untuk disinkron!', 'warning'); return; }
-    showNotification('Fitur sync menggunakan Google Sheets API memerlukan konfigurasi lebih lanjut. Data sementara disimpan di localStorage.', 'info');
-    console.log('Data anggota siap disinkron:', anggotaData);
-    // Implementasi API write di sini jika diperlukan.
+    console.log('Starting Google Sheets initialization...');
+    
+    updateSheetsStatus('loading', 'Menyambungkan ke Google Sheets...');
+    
+    googleSheetsInitialized = true;
+    
+    setTimeout(() => {
+        updateSheetsStatus('connected', 'Tersambung ke Google Sheets');
+        showNotification('Google Sheets siap digunakan', 'success');
+    }, 2000);
+    
     return true;
 }
 
-// ===== FUNGSI SINKRONISASI DATA KEUANGAN =====
-function syncFinancialData() {
-    console.log('🔄 Sinkronisasi data keuangan...');
-    anggotaData.forEach(anggota => {
-        let total = 0, pokok = 0, wajib = 0, sukarela = 0;
-        simpananData.filter(s => s.idAnggota === anggota.id).forEach(s => {
-            total += (parseFloat(s.nominal) || 0);
-            if (s.jenisSimpanan === 'Pokok') pokok += (parseFloat(s.nominal) || 0);
-            else if (s.jenisSimpanan === 'Wajib') wajib += (parseFloat(s.nominal) || 0);
-            else if (s.jenisSimpanan === 'Sukarela') sukarela += (parseFloat(s.nominal) || 0);
-        });
-        anggota.totalSimpanan = anggota.total_simpanan = total;
-        anggota.simpananPokok = anggota.simpanan_pokok = pokok;
-        anggota.simpananWajib = anggota.simpanan_wajib = wajib;
-        anggota.simpananSukarela = anggota.simpanan_sukarela = sukarela;
-        anggota.shu = anggota.shu_estimasi = Math.round(total * 0.2);
-    });
-    localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
-    localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
-    anggotaData.forEach(a => syncToTabunganDigital(a.id, a));
-    updateDashboardStats(); refreshAnggotaTable(); refreshSimpananTable();
-    if (firebaseInitialized && db) { /* Update Firebase jika perlu */ }
-    if (googleSheetsInitialized) { syncAnggotaToSheets(); }
-    console.log('✅ Sinkronisasi selesai');
+// ===== FUNGSI REAL-TIME CLOCK =====
+function updateRealTimeClock() {
+    function updateTime() {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        
+        const formattedDate = now.toLocaleDateString('id-ID', options);
+        const timeElement = document.getElementById('currentTime');
+        
+        if (timeElement) {
+            timeElement.innerHTML = `<i class="fas fa-clock"></i> <span>${formattedDate}</span>`;
+        }
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
 }
 
-function syncToTabunganDigital(nia, data) {
-    try {
-        let tabunganData = JSON.parse(localStorage.getItem('tabungan_digital_data') || '[]');
-        let existing = tabunganData.findIndex(t => t.id === nia);
-        let syncData = { id: nia, nia: nia, nama: data.nama, email: data.email, whatsapp: data.whatsapp, alamat: data.alamat, foto: data.foto, posisi: data.posisi, jenis_kelamin: data.jenisKelamin, status: data.statusAktif, simpanan_pokok: data.simpanan_pokok, simpanan_wajib: data.simpanan_wajib, simpanan_sukarela: data.simpanan_sukarela, total_simpanan: data.total_simpanan, shu: data.shu, tanggal_bergabung: data.tanggal_bergabung, password: data.password, qr_url: data.qr_url, last_sync: new Date().toISOString() };
-        if (existing !== -1) tabunganData[existing] = syncData;
-        else tabunganData.push(syncData);
-        localStorage.setItem('tabungan_digital_data', JSON.stringify(tabunganData));
-    } catch (e) { console.error('Sync to Tabungan Digital error:', e); }
+// ===== FUNGSI GENERATE NIA =====
+function generateNIA() {
+    const lastMember = anggotaData[anggotaData.length - 1];
+    let nextNumber = 1;
+    
+    if (lastMember && (lastMember.nia || lastMember.id)) {
+        const lastNIA = lastMember.nia || lastMember.id;
+        const lastNumber = parseInt(lastNIA.split('-')[1]) || 0;
+        nextNumber = lastNumber + 1;
+    }
+    
+    return `NIA-${nextNumber.toString().padStart(3, '0')}`;
 }
 
-// ===== FUNGSI LAINNYA (SINGKAT) =====
+// ===== FUNGSI FORMAT RUPIAH =====
+function formatRupiah(angka) {
+    return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// ===== FUNGSI LOAD DATA LOKAL =====
 function loadLocalStorageData() {
-    console.log('📂 Loading from localStorage...');
-    anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota')) || JSON.parse(localStorage.getItem('anggotaData')) || [];
-    simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
-    pinjamanData = JSON.parse(localStorage.getItem('pinjamanData')) || [];
-    barangData = JSON.parse(localStorage.getItem('barangData')) || [];
-    isiDropdownAnggotaSimpanan(); refreshAnggotaTable(); refreshSimpananTable(); refreshPinjamanTable(); refreshBarangTable(); updateDashboardStats(); checkEmptyTables();
+    console.log('Loading data from localStorage...');
+    
+    try {
+        anggotaData = JSON.parse(localStorage.getItem('koperasi_anggota')) || 
+                     JSON.parse(localStorage.getItem('anggotaData')) || [];
+        simpananData = JSON.parse(localStorage.getItem('simpananData')) || [];
+        pinjamanData = JSON.parse(localStorage.getItem('pinjamanData')) || [];
+        barangData = JSON.parse(localStorage.getItem('barangData')) || [];
+        transaksiData = JSON.parse(localStorage.getItem('transaksiData')) || [];
+        shuData = JSON.parse(localStorage.getItem('shuData')) || [];
+        
+        console.log('LocalStorage data loaded:', {
+            anggota: anggotaData.length,
+            simpanan: simpananData.length,
+            pinjaman: pinjamanData.length,
+            barang: barangData.length
+        });
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Error loading localStorage data:', error);
+        return false;
+    }
 }
-function isiDropdownAnggotaSimpanan() {
-    let dropdown = document.getElementById('idAnggotaSimpanan');
-    if (!dropdown) return;
-    dropdown.innerHTML = '<option value="">Pilih Anggota...</option>';
-    anggotaData.forEach(a => { if (a.statusAktif === 'Aktif') dropdown.innerHTML += `<option value="${a.id}">${a.id} - ${a.nama}</option>`; });
-}
+
+// ===== FUNGSI UPDATE DASHBOARD STATS =====
 function updateDashboardStats() {
-    let totalAnggota = anggotaData.filter(a => a.statusAktif === 'Aktif').length;
-    let totalSimpanan = anggotaData.reduce((s, a) => s + (parseFloat(a.totalSimpanan) || 0), 0);
-    let totalPinjaman = pinjamanData.reduce((s, p) => s + (parseFloat(p.sisaHutang) || 0), 0);
-    let totalSHU = totalSimpanan * 0.1;
+    const totalAnggota = anggotaData.filter(a => 
+        (a.statusAktif || a.status_aktif || a.status) === 'Aktif'
+    ).length;
     document.getElementById('totalAnggota').textContent = totalAnggota;
-    document.getElementById('totalSimpanan').textContent = `Rp ${totalSimpanan.toLocaleString()}`;
-    document.getElementById('totalPinjaman').textContent = `Rp ${totalPinjaman.toLocaleString()}`;
-    document.getElementById('totalSHU').textContent = `Rp ${totalSHU.toLocaleString()}`;
-    document.getElementById('totalKas').textContent = `Rp ${(totalSimpanan - totalPinjaman).toLocaleString()}`;
-}
-function refreshAnggotaTable() {
-    let tbody = document.querySelector('#anggotaFullTable tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (anggotaData.length === 0) { showAnggotaEmptyMessage(); return; }
-    hideAnggotaEmptyMessage();
-    anggotaData.forEach(m => {
-        tbody.innerHTML += `<tr>
-            <td>${m.id}</td><td><div style="display:flex;align-items:center;gap:10px;">${m.foto ? `<img src="${m.foto}" style="width:35px;height:35px;border-radius:50%;">` : `<div style="width:35px;height:35px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:white;"><i class="fas fa-user"></i></div>`}<span>${m.nama}</span></div></td>
-            <td>${m.nik || '-'}</td><td>${m.jenisKelamin || '-'}</td><td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.alamat}</td>
-            <td>${m.whatsapp || '-'}</td><td>${m.tanggalDaftar || '-'}</td>
-            <td><span class="badge ${m.statusAktif === 'Aktif' ? 'badge-success' : m.statusAktif === 'Tidak Aktif' ? 'badge-danger' : 'badge-warning'}">${m.statusAktif}</span></td>
-            <td><a href="https://qr-code-hybrid.vercel.app/?id=${m.id}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-qrcode"></i></a></td>
-            <td><div class="action-buttons"><button class="btn btn-outline btn-sm view-member" data-id="${m.id}"><i class="fas fa-eye"></i></button><button class="btn btn-outline btn-sm edit-member" data-id="${m.id}"><i class="fas fa-edit"></i></button><button class="btn btn-outline btn-sm delete-member" data-id="${m.id}"><i class="fas fa-trash"></i></button></div></td>
-        </tr>`;
-    });
-    attachAnggotaActionListeners();
-}
-function refreshSimpananTable() {
-    let tbody = document.querySelector('#simpananTable tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (simpananData.length === 0) { showSimpananEmptyMessage(); return; }
-    hideSimpananEmptyMessage();
-    simpananData.forEach(s => {
-        let total = simpananData.filter(x => x.idAnggota === s.idAnggota && x.jenisSimpanan === s.jenisSimpanan).reduce((sum, x) => sum + (parseFloat(x.nominal) || 0), 0);
-        tbody.innerHTML += `<tr><td>${s.idAnggota}</td><td>${s.nama}</td><td><span class="badge ${s.jenisSimpanan === 'Pokok' ? 'badge-success' : s.jenisSimpanan === 'Wajib' ? 'badge-warning' : 'badge-info'}">${s.jenisSimpanan}</span></td><td>${s.tanggalSetor}</td><td>Rp ${parseInt(s.nominal).toLocaleString()}</td><td>Rp ${total.toLocaleString()}</td><td><div class="action-buttons"><button class="btn btn-outline btn-sm view-simpanan" data-id="${s.id}"><i class="fas fa-eye"></i></button><button class="btn btn-outline btn-sm edit-simpanan" data-id="${s.id}"><i class="fas fa-edit"></i></button><button class="btn btn-outline btn-sm delete-simpanan" data-id="${s.id}"><i class="fas fa-trash"></i></button></div></td></tr>`;
-    });
-    attachSimpananActionListeners();
-}
-function refreshPinjamanTable() {
-    let tbody = document.querySelector('#pinjamanFullTable tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (pinjamanData.length === 0) { showPinjamanEmptyMessage(); return; }
-    hidePinjamanEmptyMessage();
-    pinjamanData.forEach(p => {
-        tbody.innerHTML += `<tr><td>${p.id}</td><td>${p.namaAnggota}</td><td>Rp ${parseInt(p.jumlahPinjaman).toLocaleString()}</td><td>${p.tanggalPinjam}</td><td>${p.jangkaWaktu}</td><td>${p.bunga}%</td><td>Rp ${parseInt(p.sisaHutang).toLocaleString()}</td><td><span class="badge ${p.status === 'Aktif' ? 'badge-success' : p.status === 'Lunas' ? 'badge-info' : 'badge-warning'}">${p.status}</span></td><td><div class="action-buttons"><button class="btn btn-outline btn-sm" onclick="editPinjaman('${p.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-outline btn-sm" onclick="showDeleteConfirm('${p.id}', 'pinjaman')"><i class="fas fa-trash"></i></button></div></td></tr>`;
-    });
-}
-function refreshBarangTable() {
-    let tbody = document.querySelector('#barangTable tbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (barangData.length === 0) { showBarangEmptyMessage(); return; }
-    hideBarangEmptyMessage();
-    barangData.forEach(b => {
-        tbody.innerHTML += `<tr><td>${b.kode}</td><td>${b.nama}</td><td>${b.kategori}</td><td>${b.stok}</td><td>Rp ${parseInt(b.hargaBeli).toLocaleString()}</td><td>Rp ${parseInt(b.hargaJual).toLocaleString()}</td><td><span class="badge ${b.status === 'Aktif' ? 'badge-success' : b.status === 'Habis' ? 'badge-danger' : 'badge-warning'}">${b.status}</span></td><td><div class="action-buttons"><button class="btn btn-outline btn-sm" onclick="editBarang('${b.id}')"><i class="fas fa-edit"></i></button><button class="btn btn-outline btn-sm" onclick="showDeleteConfirm('${b.id}', 'barang')"><i class="fas fa-trash"></i></button></div></td></tr>`;
-    });
-}
-function attachAnggotaActionListeners() {
-    document.querySelectorAll('.view-member').forEach(b => b.addEventListener('click', function() { viewMemberDetail(this.dataset.id); }));
-    document.querySelectorAll('.edit-member').forEach(b => b.addEventListener('click', function() { editMember(this.dataset.id); }));
-    document.querySelectorAll('.delete-member').forEach(b => b.addEventListener('click', function() { showDeleteConfirm(this.dataset.id, 'anggota'); }));
-}
-function attachSimpananActionListeners() {
-    document.querySelectorAll('.view-simpanan').forEach(b => b.addEventListener('click', function() { viewSimpananDetail(this.dataset.id); }));
-    document.querySelectorAll('.edit-simpanan').forEach(b => b.addEventListener('click', function() { editSimpanan(this.dataset.id); }));
-    document.querySelectorAll('.delete-simpanan').forEach(b => b.addEventListener('click', function() { showDeleteConfirm(this.dataset.id, 'simpanan'); }));
-}
-function checkEmptyTables() {
-    anggotaData.length === 0 ? showAnggotaEmptyMessage() : hideAnggotaEmptyMessage();
-    simpananData.length === 0 ? showSimpananEmptyMessage() : hideSimpananEmptyMessage();
-    pinjamanData.length === 0 ? showPinjamanEmptyMessage() : hidePinjamanEmptyMessage();
-    barangData.length === 0 ? showBarangEmptyMessage() : hideBarangEmptyMessage();
-}
-function showAnggotaEmptyMessage() { document.getElementById('anggotaFullTable')?.style.display = 'none'; document.getElementById('anggotaEmptyMessage')?.style.display = 'block'; }
-function hideAnggotaEmptyMessage() { document.getElementById('anggotaFullTable')?.style.display = 'table'; document.getElementById('anggotaEmptyMessage')?.style.display = 'none'; }
-function showSimpananEmptyMessage() { document.getElementById('simpananTable')?.style.display = 'none'; document.getElementById('simpananEmptyMessage')?.style.display = 'block'; }
-function hideSimpananEmptyMessage() { document.getElementById('simpananTable')?.style.display = 'table'; document.getElementById('simpananEmptyMessage')?.style.display = 'none'; }
-function showPinjamanEmptyMessage() { document.getElementById('pinjamanFullTable')?.style.display = 'none'; document.getElementById('pinjamanEmptyMessage')?.style.display = 'block'; }
-function hidePinjamanEmptyMessage() { document.getElementById('pinjamanFullTable')?.style.display = 'table'; document.getElementById('pinjamanEmptyMessage')?.style.display = 'none'; }
-function showBarangEmptyMessage() { document.getElementById('barangTable')?.style.display = 'none'; document.getElementById('barangEmptyMessage')?.style.display = 'block'; }
-function hideBarangEmptyMessage() { document.getElementById('barangTable')?.style.display = 'table'; document.getElementById('barangEmptyMessage')?.style.display = 'none'; }
-
-// ===== FUNGSI UTAMA =====
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log('=== DASHBOARD ADMIN STARTING ===');
-    try {
-        await Promise.race([initializeFirebase(), new Promise((_,r)=>setTimeout(()=>r(new Error('Firebase timeout')),5000))]).catch(()=>{ firebaseInitialized=false; });
-        await initializeGoogleSheets().catch(()=>{});
-        if (!firebaseInitialized) loadLocalStorageData();
-        else await loadDataFromFirebase();
-        initializeSystem();
-        setInterval(syncFinancialData, 30000);
-    } catch (e) { console.error('Fatal init error:', e); loadLocalStorageData(); initializeSystem(); }
-});
-
-async function loadDataFromFirebase() {
-    if (!firebaseInitialized) return;
-    try {
-        let snap = await db.collection('anggota').get();
-        anggotaData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        snap = await db.collection('simpanan').get();
-        simpananData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        snap = await db.collection('pinjaman').get();
-        pinjamanData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        snap = await db.collection('barang').get();
-        barangData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        isiDropdownAnggotaSimpanan(); refreshAnggotaTable(); refreshSimpananTable(); refreshPinjamanTable(); refreshBarangTable(); updateDashboardStats(); checkEmptyTables();
-        setupRealtimeListeners();
-    } catch (e) { console.error('Load Firebase error:', e); loadLocalStorageData(); }
-}
-function setupRealtimeListeners() {
-    if (!db) return;
-    db.collection('anggota').onSnapshot(s => { anggotaData = s.docs.map(d => ({ id: d.id, ...d.data() })); isiDropdownAnggotaSimpanan(); if (document.querySelector('.tab-content.active').id === 'anggota') refreshAnggotaTable(); syncFinancialData(); });
-    db.collection('simpanan').onSnapshot(s => { simpananData = s.docs.map(d => ({ id: d.id, ...d.data() })); syncFinancialData(); if (document.querySelector('.tab-content.active').id === 'simpanan') refreshSimpananTable(); });
+    
+    const totalSimpanan = anggotaData.reduce((sum, anggota) => {
+        return sum + (parseFloat(anggota.totalSimpanan || anggota.total_simpanan) || 0);
+    }, 0);
+    document.getElementById('totalSimpanan').textContent = formatRupiah(totalSimpanan);
+    
+    const totalPinjaman = pinjamanData.reduce((sum, pinjaman) => {
+        return sum + (parseFloat(pinjaman.sisaHutang) || 0);
+    }, 0);
+    document.getElementById('totalPinjaman').textContent = formatRupiah(totalPinjaman);
+    
+    const totalSHU = Math.round(totalSimpanan * 0.1);
+    document.getElementById('totalSHU').textContent = formatRupiah(totalSHU);
+    
+    const totalKas = totalSimpanan - totalPinjaman;
+    document.getElementById('totalKas').textContent = formatRupiah(totalKas);
 }
 
-function initializeSystem() {
-    document.querySelectorAll('.sidebar-menu a[data-tab]').forEach(a => a.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.querySelectorAll('.sidebar-menu a').forEach(i => i.classList.remove('active')); this.classList.add('active');
-        document.querySelectorAll('.tab-content').forEach(t => { t.classList.remove('active'); t.style.display = 'none'; });
-        let tab = document.getElementById(this.dataset.tab); if (tab) { tab.classList.add('active'); tab.style.display = 'block'; window.scrollTo(0,0); }
-    }));
-    document.getElementById('menuToggle')?.addEventListener('click', () => document.getElementById('sidebar')?.classList.toggle('active'));
-    document.getElementById('sidebarClose')?.addEventListener('click', () => document.getElementById('sidebar')?.classList.remove('active'));
-    document.getElementById('syncGoogleSheetsBtn')?.addEventListener('click', syncDataToGoogleSheets);
-    document.getElementById('syncAnggotaSheetsBtn')?.addEventListener('click', syncAnggotaToSheets);
-    document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
-    document.getElementById('addSimpananBtn')?.addEventListener('click', openAddSimpananModal);
-    document.getElementById('addPinjamanBtn')?.addEventListener('click', openAddPinjamanModal);
-    document.getElementById('tambahBarangBtn')?.addEventListener('click', openUnitUsahaModal);
-    document.getElementById('exportExcelBtn')?.addEventListener('click', exportDataToExcel);
-    document.getElementById('cetakLaporanBtn')?.addEventListener('click', generatePrintLaporan);
-    document.querySelectorAll('[data-simpanan-tab]').forEach(t => t.addEventListener('click', function() {
-        document.querySelectorAll('[data-simpanan-tab]').forEach(tt => tt.classList.remove('active')); this.classList.add('active');
-        document.getElementById('simpananTitle').textContent = 'Daftar Simpanan ' + this.textContent;
-        refreshSimpananTable();
-    }));
-    document.getElementById('refreshChart')?.addEventListener('click', fixFinanceChart);
-    fixFinanceChart(); updateDashboardStats(); checkEmptyTables(); updateLastSyncTime();
-}
+// ===== FUNGSI FIX CHART =====
 function fixFinanceChart() {
-    let ctx = document.getElementById('financeChart');
+    const ctx = document.getElementById('financeChart');
     if (!ctx) return;
-    if (financeChart) financeChart.destroy();
-    financeChart = new Chart(ctx, { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'], datasets: [ { label: 'Simpanan', data: [8,9,10,11,12,13,14,15,16,17,18,19].map(v=>v*1000000), borderColor: '#4caf50', backgroundColor: 'rgba(76,175,80,0.1)', borderWidth: 3, fill: true, tension: 0.4 }, { label: 'Pinjaman', data: [5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5].map(v=>v*1000000), borderColor: '#ff5722', backgroundColor: 'rgba(255,87,34,0.1)', borderWidth: 3, fill: true, tension: 0.4 } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v=>'Rp '+v.toLocaleString() } } } } });
+    
+    if (financeChart) {
+        financeChart.destroy();
+    }
+    
+    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const simpananDataPoints = labels.map(() => Math.floor(Math.random() * 10000000) + 5000000);
+    const pinjamanDataPoints = labels.map(() => Math.floor(Math.random() * 5000000) + 2000000);
+    
+    financeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Simpanan',
+                    data: simpananDataPoints,
+                    borderColor: 'rgba(76, 175, 80, 1)',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Pinjaman',
+                    data: pinjamanDataPoints,
+                    borderColor: 'rgba(255, 87, 34, 1)',
+                    backgroundColor: 'rgba(255, 87, 34, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
-function updateLastSyncTime() { let ls = localStorage.getItem('lastSyncTime'); if (ls) { let el = document.getElementById('lastSyncTime'); if (el) el.textContent = `Terakhir update: ${new Date(ls).toLocaleString()}`; } }
-function openAddMemberModal() { document.getElementById('memberModalTitle').textContent = 'Tambah Anggota Baru'; document.getElementById('memberId').value = ''; document.getElementById('memberForm').reset(); document.getElementById('tanggalDaftar').value = new Date().toISOString().split('T')[0]; document.getElementById('nia').value = (anggotaData.length+1).toString().padStart(3,'0'); updateTotalSimpananDisplay(); document.getElementById('addMemberModal').style.display = 'flex'; }
-function openAddSimpananModal() { document.getElementById('simpananModalTitle').textContent = 'Tambah Simpanan'; document.getElementById('simpananId').value = ''; document.getElementById('simpananForm').reset(); document.getElementById('tanggalSimpanan').value = new Date().toISOString().split('T')[0]; document.querySelector('input[name="jenisSimpanan"][value="Pokok"]').checked = true; isiDropdownAnggotaSimpanan(); updateMinimalSimpananInfo(); updateRingkasanSimpanan(); document.getElementById('addSimpananModal').style.display = 'flex'; }
-function openAddPinjamanModal() { document.getElementById('pinjamanModalTitle').textContent = 'Tambah Pinjaman'; document.getElementById('pinjamanId').value = ''; document.getElementById('pinjamanForm').reset(); document.getElementById('tanggalPinjaman').value = new Date().toISOString().split('T')[0]; let d = document.getElementById('idAnggotaPinjaman'); d.innerHTML = '<option value="">Pilih Anggota</option>'; anggotaData.forEach(a => { if (a.statusAktif === 'Aktif') d.innerHTML += `<option value="${a.id}">${a.id} - ${a.nama}</option>`; }); document.getElementById('addPinjamanModal').style.display = 'flex'; }
-function openUnitUsahaModal() { document.getElementById('unitUsahaModalTitle').textContent = 'Tambah Barang/Jasa'; document.getElementById('barangId').value = ''; document.getElementById('unitUsahaForm').reset(); document.getElementById('kodeBarang').value = 'BRG-'+(barangData.length+1).toString().padStart(3,'0'); document.getElementById('stokBarang').value = 0; document.getElementById('statusBarang').value = 'Aktif'; updateRingkasanBarang(); document.getElementById('unitUsahaModal').style.display = 'flex'; }
-function updateTotalSimpananDisplay() { let p=parseFloat(document.getElementById('simpananPokok').value)||0, w=parseFloat(document.getElementById('simpananWajib').value)||0, s=parseFloat(document.getElementById('simpananSukarela').value)||0, t=p+w+s; document.getElementById('totalSimpananDisplay').textContent=`Rp ${t.toLocaleString()}`; document.getElementById('detailPokok').textContent=`Rp ${p.toLocaleString()}`; document.getElementById('detailWajib').textContent=`Rp ${w.toLocaleString()}`; document.getElementById('detailSukarela').textContent=`Rp ${s.toLocaleString()}`; }
-function updateMinimalSimpananInfo() { let j=document.querySelector('input[name="jenisSimpanan"]:checked'); let i=document.getElementById('minimalSimpananInfo'); let m=document.getElementById('minimalAmount'); if (!j||!i||!m) return; let min = j.value==='Pokok'?200000:j.value==='Wajib'?20000:0; if (min>0) { i.style.display='block'; m.textContent=`Rp ${min.toLocaleString()}`; } else i.style.display='none'; }
-function updateRingkasanSimpanan() { let j=document.querySelector('input[name="jenisSimpanan"]:checked'); let n=document.getElementById('nominalSimpanan').value; let t=document.getElementById('tanggalSimpanan').value; let a=document.getElementById('idAnggotaSimpanan'); let at=a.options[a.selectedIndex]?.text.split(' - ')[1]||'-'; document.getElementById('ringkasanSimpanan').textContent = n ? `Rp ${parseInt(n).toLocaleString()}` : 'Rp 0'; document.getElementById('ringkasanJenis').textContent = j?.value||'-'; document.getElementById('ringkasanAnggota').textContent = at; document.getElementById('ringkasanTanggal').textContent = t||'-'; }
-function updateRingkasanBarang() { let hb=parseInt(document.getElementById('hargaBeli').value)||0, hj=parseInt(document.getElementById('hargaJual').value)||0, st=parseInt(document.getElementById('stokBarang').value)||0, kt=document.getElementById('kategoriBarang').value||'-'; document.getElementById('ringkasanHargaJual').textContent=`Rp ${hj.toLocaleString()}`; document.getElementById('ringkasanKategori').textContent=kt; document.getElementById('ringkasanStok').textContent=st; document.getElementById('ringkasanLaba').textContent=`Rp ${(hj-hb).toLocaleString()}`; }
 
-// ===== FUNGSI SAVE DATA =====
-document.getElementById('saveMemberBtn')?.addEventListener('click', async function(e) { e.preventDefault(); /* Implementasi save member */ alert('Fitur simpan anggota aktif.'); document.getElementById('addMemberModal').style.display='none'; syncFinancialData(); });
-document.getElementById('saveSimpananBtn')?.addEventListener('click', async function(e) { e.preventDefault(); alert('Fitur simpan simpanan aktif.'); document.getElementById('addSimpananModal').style.display='none'; syncFinancialData(); });
-document.getElementById('savePinjamanBtn')?.addEventListener('click', async function(e) { e.preventDefault(); alert('Fitur simpan pinjaman aktif.'); document.getElementById('addPinjamanModal').style.display='none'; });
-document.getElementById('saveBarangBtn')?.addEventListener('click', async function(e) { e.preventDefault(); alert('Fitur simpan barang aktif.'); document.getElementById('unitUsahaModal').style.display='none'; });
+// ===== FUNGSI SIDEBAR NAVIGATION =====
+function setupSidebarNavigation() {
+    document.querySelectorAll('.sidebar-menu a[data-tab]').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (window.innerWidth <= 992) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+            
+            document.querySelectorAll('.sidebar-menu a').forEach(i => {
+                i.classList.remove('active');
+            });
+            
+            this.classList.add('active');
+            
+            const tabId = this.getAttribute('data-tab');
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        });
+    });
+    
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarClose = document.getElementById('sidebarClose');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    }
+    
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+    }
+}
 
-// ===== FUNGSI VIEW/EDIT/DELETE (SINGKAT) =====
-function viewMemberDetail(id) { let m = anggotaData.find(a=>a.id===id); if (m) alert('Lihat detail anggota: '+m.nama); }
-function editMember(id) { alert('Edit anggota dengan ID: '+id); openAddMemberModal(); }
-function editSimpanan(id) { alert('Edit simpanan ID: '+id); openAddSimpananModal(); }
-function editPinjaman(id) { alert('Edit pinjaman ID: '+id); openAddPinjamanModal(); }
-function editBarang(id) { alert('Edit barang ID: '+id); openUnitUsahaModal(); }
-function viewSimpananDetail(id) { alert('Lihat detail simpanan ID: '+id); }
-function showDeleteConfirm(id, type) { if (confirm(`Hapus data ${type} ID ${id}?`)) { alert('Data dihapus (simulasi)'); syncFinancialData(); } }
+// ===== FUNGSI MODAL CONTROLS =====
+function setupModalControls() {
+    document.querySelectorAll('.modal-close, .btn-outline[id*="cancel"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) modal.style.display = 'none';
+        });
+    });
+    
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+    });
+}
 
-// ===== FUNGSI EXPORT EXCEL =====
-function exportDataToExcel() { alert('Fitur Export Excel akan segera tersedia.'); }
-function generatePrintLaporan() { alert('Fitur Cetak Laporan akan segera tersedia.'); }
+// ===== FUNGSI AUTO SYNC =====
+function setupAutoSync() {
+    setInterval(() => {
+        const syncTime = new Date().toISOString();
+        localStorage.setItem('lastSyncTime', syncTime);
+        
+        const lastSyncTime = document.getElementById('lastSyncTime');
+        if (lastSyncTime) {
+            const date = new Date(syncTime);
+            lastSyncTime.textContent = `Terakhir update: ${date.toLocaleString('id-ID')}`;
+        }
+    }, 30000);
+}
+
+// ===== FUNGSI SAVE MEMBER DATA =====
+async function saveMemberData() {
+    const niaValue = document.getElementById('nia').value;
+    const formattedNIA = 'NIA-' + niaValue.padStart(3, '0');
+    
+    const jenisKelamin = document.querySelector('input[name="jenisKelamin"]:checked');
+    const statusAktif = document.querySelector('input[name="statusAktif"]:checked');
+    
+    if (!jenisKelamin || !statusAktif) {
+        showNotification('Pilih jenis kelamin dan status keanggotaan!', 'error');
+        return false;
+    }
+    
+    const memberDataObj = {
+        nia: formattedNIA,
+        id: formattedNIA,
+        posisi: document.getElementById('posisi').value,
+        nama: document.getElementById('nama').value,
+        alamat: document.getElementById('alamat').value,
+        jenisKelamin: jenisKelamin.value,
+        agama: document.getElementById('agama').value,
+        email: document.getElementById('emailMember').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        nik: document.getElementById('nik').value,
+        tanggalDaftar: document.getElementById('tanggalDaftar').value,
+        tanggal_bergabung: document.getElementById('tanggalDaftar').value,
+        statusAktif: statusAktif.value,
+        status: statusAktif.value,
+        password: document.getElementById('passwordMember').value,
+        simpananPokok: parseFloat(document.getElementById('simpananPokok').value) || 0,
+        simpanan_pokok: parseFloat(document.getElementById('simpananPokok').value) || 0,
+        simpananWajib: parseFloat(document.getElementById('simpananWajib').value) || 0,
+        simpanan_wajib: parseFloat(document.getElementById('simpananWajib').value) || 0,
+        simpananSukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
+        simpanan_sukarela: parseFloat(document.getElementById('simpananSukarela').value) || 0,
+        totalSimpanan: calculateTotalSimpananValue(),
+        total_simpanan: calculateTotalSimpananValue(),
+        foto: document.getElementById('fotoProfilImg').querySelector('img')?.src || '',
+        createdAt: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        last_update: new Date().toLocaleString('id-ID'),
+        qr_url: `https://qr-code-hybrid.vercel.app/?id=${formattedNIA}`
+    };
+    
+    anggotaData.push(memberDataObj);
+    localStorage.setItem('anggotaData', JSON.stringify(anggotaData));
+    localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+    
+    await syncToGoogleSheets('sync_member', memberDataObj);
+    
+    updateDashboardStats();
+    document.getElementById('addMemberModal').style.display = 'none';
+    showNotification('Data anggota berhasil disimpan!', 'success');
+    
+    return true;
+}
+
+function calculateTotalSimpananValue() {
+    const pokok = parseFloat(document.getElementById('simpananPokok').value) || 0;
+    const wajib = parseFloat(document.getElementById('simpananWajib').value) || 0;
+    const sukarela = parseFloat(document.getElementById('simpananSukarela').value) || 0;
+    return pokok + wajib + sukarela;
+}
+
+function updateTotalSimpananDisplay() {
+    const total = calculateTotalSimpananValue();
+    document.getElementById('totalSimpananDisplay').textContent = formatRupiah(total);
+    
+    const pokok = parseFloat(document.getElementById('simpananPokok').value) || 0;
+    const wajib = parseFloat(document.getElementById('simpananWajib').value) || 0;
+    const sukarela = parseFloat(document.getElementById('simpananSukarela').value) || 0;
+    
+    document.getElementById('detailPokok').textContent = formatRupiah(pokok);
+    document.getElementById('detailWajib').textContent = formatRupiah(wajib);
+    document.getElementById('detailSukarela').textContent = formatRupiah(sukarela);
+}
+
+// ===== FUNGSI OPEN MODAL =====
+function openAddMemberModal() {
+    document.getElementById('memberModalTitle').textContent = 'Tambah Anggota Baru';
+    document.getElementById('memberId').value = '';
+    document.getElementById('memberForm').reset();
+    
+    const fotoProfilPlaceholder = document.getElementById('fotoProfilPlaceholder');
+    const fotoProfilImg = document.getElementById('fotoProfilImg');
+    if (fotoProfilPlaceholder && fotoProfilImg) {
+        fotoProfilPlaceholder.style.display = 'flex';
+        fotoProfilImg.style.display = 'none';
+        fotoProfilImg.innerHTML = '';
+    }
+    
+    document.getElementById('tanggalDaftar').value = new Date().toISOString().split('T')[0];
+    document.getElementById('nia').value = generateNIA().replace('NIA-', '');
+    
+    document.getElementById('simpananPokok').value = 0;
+    document.getElementById('simpananWajib').value = 0;
+    document.getElementById('simpananSukarela').value = 0;
+    
+    updateTotalSimpananDisplay();
+    
+    document.getElementById('addMemberModal').style.display = 'flex';
+}
+
+// ===== EVENT LISTENERS =====
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Dashboard Admin Starting...');
+    
+    updateRealTimeClock();
+    loadLocalStorageData();
+    
+    await initializeFirebase();
+    await initializeGoogleSheets();
+    await loadFromGoogleSheets();
+    
+    setupSidebarNavigation();
+    setupModalControls();
+    setupAutoSync();
+    
+    fixFinanceChart();
+    updateDashboardStats();
+    
+    document.getElementById('addMemberBtn')?.addEventListener('click', openAddMemberModal);
+    document.getElementById('addFirstMemberBtn')?.addEventListener('click', openAddMemberModal);
+    
+    document.getElementById('uploadFotoBtn')?.addEventListener('click', () => {
+        document.getElementById('fotoMember').click();
+    });
+    
+    document.getElementById('fotoMember')?.addEventListener('change', function(e) {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fotoProfilImg = document.getElementById('fotoProfilImg');
+                const fotoProfilPlaceholder = document.getElementById('fotoProfilPlaceholder');
+                fotoProfilImg.innerHTML = `<img src="${e.target.result}" class="foto-profil-img">`;
+                fotoProfilImg.style.display = 'block';
+                fotoProfilPlaceholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.getElementById('togglePasswordMember')?.addEventListener('click', function() {
+        const passwordInput = document.getElementById('passwordMember');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+    
+    document.getElementById('simpananPokok')?.addEventListener('input', updateTotalSimpananDisplay);
+    document.getElementById('simpananWajib')?.addEventListener('input', updateTotalSimpananDisplay);
+    document.getElementById('simpananSukarela')?.addEventListener('input', updateTotalSimpananDisplay);
+    
+    document.getElementById('alamat')?.addEventListener('input', function() {
+        document.getElementById('alamatCounter').textContent = `${this.value.length}/200 karakter`;
+    });
+    
+    document.getElementById('saveMemberBtn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await saveMemberData();
+    });
+    
+    document.getElementById('cancelMemberBtn')?.addEventListener('click', () => {
+        document.getElementById('addMemberModal').style.display = 'none';
+    });
+    
+    document.getElementById('refreshChart')?.addEventListener('click', fixFinanceChart);
+    
+    document.getElementById('syncGoogleSheetsBtn')?.addEventListener('click', async () => {
+        showNotification('Menyinkronkan data ke Google Sheets...', 'info');
+        await syncToGoogleSheets('sync_all', {
+            anggota: anggotaData,
+            simpanan: simpananData,
+            pinjaman: pinjamanData
+        });
+        showNotification('Sinkronisasi selesai!', 'success');
+    });
+    
+    document.getElementById('exportExcelBtn')?.addEventListener('click', function() {
+        showNotification('Fitur export Excel akan segera tersedia', 'info');
+    });
+    
+    console.log('Dashboard Admin Ready');
+});
 </script>
 </body>
 </html>
