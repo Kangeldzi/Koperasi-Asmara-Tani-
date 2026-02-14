@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Kartu Digital Anggota</title>
+<title>QR Code Hybrid</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -36,7 +36,7 @@ body{
   padding-bottom:14px;
 }
 
-/* LOGO GLASS */
+/* LOGO GLASS - UNTUK FOTO PROFIL */
 .logo-wrap{
   width:86px;
   height:86px;
@@ -52,16 +52,17 @@ body{
     inset 0 0 12px rgba(255,255,255,.25);
   transition:.4s ease;
   animation:float 4s ease-in-out infinite;
+  overflow:hidden; /* Tambahan untuk memastikan foto tidak keluar dari lingkaran */
 }
 .logo-wrap:hover{
   transform:scale(1.08);
   box-shadow:0 0 28px rgba(0,255,160,.9);
 }
 .logo-wrap img{
-  width:58px;
-  height:58px;
+  width:100%;
+  height:100%;
+  object-fit:cover; /* Memastikan foto ter-crop dengan baik */
   border-radius:50%;
-  object-fit:cover;
 }
 
 @keyframes float{
@@ -167,8 +168,6 @@ body{
   backdrop-filter:blur(10px);
   box-shadow:0 0 14px rgba(0,255,160,.5);
   transition:.3s;
-  cursor:pointer;
-  font-family:'Poppins',sans-serif;
 }
 .actions button:hover{
   background:#00ff9d;
@@ -203,24 +202,23 @@ body{
   100%{transform:rotate(360deg)}
 }
 
-/* ERROR MESSAGE */
-.error-message{
-  background:rgba(255,160,0,0.1);
-  border:1px solid rgba(255,160,0,0.3);
-  border-radius:12px;
-  padding:12px;
-  margin:10px 0;
-  text-align:center;
-  font-size:12px;
-  color:#ffa000;
-}
-
 /* LAST UPDATE */
 .last-update{
   font-size:9px;
   text-align:center;
   margin-top:5px;
   opacity:.6;
+}
+
+/* FALLBACK IMAGE */
+.fallback-img {
+  background: linear-gradient(145deg, #2E7D32, #4CAF50);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -237,8 +235,10 @@ body{
   <!-- CONTENT (hidden by default) -->
   <div id="content" style="display:none;">
     <div class="header">
-      <div class="logo-wrap">
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg" id="fotoAnggota">
+      <div class="logo-wrap" id="profilePhotoContainer">
+        <img id="profilePhoto" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg" 
+             alt="Foto Profil" 
+             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Eldi+Sugianto&background=2E7D32&color=fff&size=128';">
       </div>
       <h1>KOPERASI ASMARA TANI</h1>
       <small>Kartu Anggota Digital (Mobile-Only)</small>
@@ -249,8 +249,8 @@ body{
     </div>
 
     <div class="identity">
-      <h2 id="nama">Kang L</h2>
-      <p id="nia">NIA : KOP-001</p>
+      <h2 id="nama">Eldi Sugianto, S.Kom</h2>
+      <p id="nia">NIA : #01-2026-001</p>
     </div>
 
     <div class="stats">
@@ -260,13 +260,13 @@ body{
     </div>
 
     <div class="data">
-      <div><span>Alamat</span><b id="alamat">Pamijahan, Bogor</b></div>
+      <div><span>Alamat</span><b id="alamat">Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810</b></div>
       <div><span>Jenis Kelamin</span><b id="jk">Laki-laki</b></div>
       <div><span>Agama</span><b id="agama">Islam</b></div>
       <div><span>NIK</span><b id="nik">3201171212810011</b></div>
-      <div><span>Email</span><b id="email">anggota@email.com</b></div>
-      <div><span>Telepon</span><b id="telepon">085218483129</b></div>
-      <div><span>Tanggal Daftar</span><b id="tglDaftar">18-09-2025</b></div>
+      <div><span>Email</span><b id="email">siliwangi4212@gmail.com</b></div>
+      <div><span>Telepon</span><b id="telepon">6285218483129</b></div>
+      <div><span>Tanggal Daftar</span><b id="tglDaftar">18-09-2020</b></div>
       <div><span>Total Simpanan</span><b id="totalSimpanan">Rp 0</b></div>
       <div><span>Total Pinjaman</span><b id="totalPinjaman">Rp 0</b></div>
       <div><span>Estimasi SHU</span><b id="shu">Rp 0</b></div>
@@ -286,332 +286,317 @@ body{
 </div>
 
 <script>
-// =================== KONFIGURASI ===================
+// =================== KONFIGURASI APPS SCRIPT ===================
 const CONFIG = {
-  DEFAULT_ID: 'KOP-001',
-  DATA_SOURCE: 'googleAppsScript',
-  GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxZtNu-nEfVM6Fv0w4iHXTPixTBlp-pJHuhvngytbGlCpmDBqV2uG8_JgNGtJtWkLd_/exec',
-  AUTO_REFRESH_INTERVAL: 30000 // 30 detik
+    // URL Web App Google Apps Script (sama dengan akun-anggota.html)
+    GOOGLE_SHEETS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbw2Lspxf4UB7x0KZ2GUCVQc-eEFmCCNsUXco5XcOlh2E2x0NDFqIOfx6Vji4oLu4ZuO/exec',
+    
+    // Spreadsheet ID yang benar
+    SPREADSHEET_ID: '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA',
+    
+    // Default Member ID (bisa diganti via URL parameter)
+    DEFAULT_MEMBER_ID: '#01-2026-001',
+    
+    // Data default untuk fallback
+    DEFAULT_MEMBER_NAME: 'Eldi Sugianto, S.Kom',
+    DEFAULT_MEMBER_EMAIL: 'siliwangi4212@gmail.com',
+    DEFAULT_MEMBER_PHONE: '6285218483129',
+    DEFAULT_MEMBER_ADDRESS: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
+    DEFAULT_FOTO_URL: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'
 };
 
-// =================== DATA DEFAULT ===================
-const DEFAULT_DATA = {
-  "KOP-001": {
-    "Foto": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg",
-    "nama": "Kang L",
-    "nia": "KOP-001",
-    "Posisi": "Anggota",
-    "Nama_Lengkap": "Kang L",
-    "Alamat_Lengkap": "Pamijahan, Bogor",
-    "Jenis_Kelamin": "Laki-laki",
-    "Email": "siliwangi@email.com",
-    "WhatsApp": "085218483129",
-    "NIK": "3201171212810011",
-    "Agama": "Islam",
-    "Status": "AKTIF",
-    "Tanggal_Bergabung": "18-09-2025",
-    "Simpanan_Pokok": 200000,
-    "Simpanan_Wajib": 0,
-    "Simpanan_Sukarela": 0,
-    "Total_Simpanan": 200000,
-    "Total_Pinjaman": 0,
-    "SHU_Estimasi": 0,
-    "LastUpdated": new Date().toLocaleString('id-ID')
-  }
+// =================== DATA ANGGOTA ===================
+let memberData = {
+    // Data Profil
+    id: CONFIG.DEFAULT_MEMBER_ID,
+    nama: CONFIG.DEFAULT_MEMBER_NAME,
+    email: CONFIG.DEFAULT_MEMBER_EMAIL,
+    wa: CONFIG.DEFAULT_MEMBER_PHONE,
+    alamat: CONFIG.DEFAULT_MEMBER_ADDRESS,
+    nik: '3201171212810011',
+    jk: 'Laki-laki',
+    agama: 'Islam',
+    tglDaftar: '2020-09-18',
+    status: 'AKTIF',
+    fotoUrl: CONFIG.DEFAULT_FOTO_URL, // Tambahan field foto
+    
+    // Data Keuangan
+    pokok: 200000,
+    wajib: 0,
+    sukarela: 200000,
+    
+    // Data Pinjaman
+    loanActive: 10000000,
+    loanRejected: 1000000,
+    loanPaid: 6000000,
+    
+    // Persentase
+    shuPercentage: 0.05
 };
 
-// =================== FUNGSI BANTU ===================
+// =================== HELPER FUNCTIONS ===================
 function formatRupiah(angka) {
-  if (!angka && angka !== 0) return 'Rp 0';
-  const numberValue = parseInt(angka);
-  return 'Rp ' + numberValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (angka === undefined || angka === null) return "Rp 0";
+    return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 function formatDate(dateString) {
-  if (!dateString) return '-';
-  // Coba format tanggal jika dalam format yang berbeda
-  const date = new Date(dateString);
-  if (!isNaN(date.getTime())) {
-    return date.toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  }
-  return dateString;
+    if (!dateString) return '-';
+    try {
+        const date = new Date(dateString);
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        return date.toLocaleDateString('id-ID', options).replace(/\//g, '-');
+    } catch (e) {
+        return dateString;
+    }
 }
 
 function getParameterByName(name) {
-  const url = new URL(window.location.href);
-  return url.searchParams.get(name);
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
 }
 
-function showError(message) {
-  const loadingElement = document.getElementById('loading');
-  loadingElement.innerHTML = `
-    <div class="error-message">
-      <p><strong>Error:</strong> ${message}</p>
-      <p style="margin-top:8px; font-size:11px;">Menggunakan data default...</p>
-    </div>
-  `;
-  
-  setTimeout(() => {
-    loadDefaultData();
-  }, 2000);
+// =================== FUNGSI UPDATE FOTO PROFIL ===================
+function updateProfilePhoto(fotoUrl, nama) {
+    const photoElement = document.getElementById('profilePhoto');
+    
+    if (fotoUrl && fotoUrl !== '') {
+        photoElement.src = fotoUrl;
+    } else {
+        // Fallback ke UI Avatars jika tidak ada foto
+        const namaForUrl = encodeURIComponent(nama || 'Anggota');
+        photoElement.src = `https://ui-avatars.com/api/?name=${namaForUrl}&background=2E7D32&color=fff&size=128`;
+    }
+    
+    // Handler jika gambar gagal load
+    photoElement.onerror = function() {
+        this.onerror = null;
+        const namaForUrl = encodeURIComponent(nama || 'Anggota');
+        this.src = `https://ui-avatars.com/api/?name=${namaForUrl}&background=2E7D32&color=fff&size=128`;
+    };
 }
 
-// =================== LOAD DATA ===================
-async function loadMemberData() {
-    const loadingElement = document.getElementById('loading');
-    const contentElement = document.getElementById('content');
+// =================== FUNGSI UPDATE UI ===================
+function updateUI(data) {
+    if (!data) return;
+    
+    // Update foto profil
+    updateProfilePhoto(data.fotoUrl, data.nama);
+    
+    // Update basic info
+    document.getElementById('nama').textContent = data.nama || CONFIG.DEFAULT_MEMBER_NAME;
+    document.getElementById('nia').textContent = `NIA : ${data.id || CONFIG.DEFAULT_MEMBER_ID}`;
+    
+    // Update status
+    const statusElement = document.getElementById('statusText');
+    statusElement.textContent = data.status || 'AKTIF';
+    if (data.status === 'TIDAK AKTIF') {
+        statusElement.className = 'status-inactive';
+    } else {
+        statusElement.className = '';
+    }
+    
+    // Update simpanan
+    document.getElementById('pokok').textContent = formatRupiah(data.pokok || 0);
+    document.getElementById('wajib').textContent = formatRupiah(data.wajib || 0);
+    document.getElementById('sukarela').textContent = formatRupiah(data.sukarela || 0);
+    
+    // Update data pribadi
+    document.getElementById('alamat').textContent = data.alamat || CONFIG.DEFAULT_MEMBER_ADDRESS;
+    document.getElementById('jk').textContent = data.jk || 'Laki-laki';
+    document.getElementById('agama').textContent = data.agama || 'Islam';
+    document.getElementById('nik').textContent = data.nik || '3201171212810011';
+    document.getElementById('email').textContent = data.email || CONFIG.DEFAULT_MEMBER_EMAIL;
+    document.getElementById('telepon').textContent = data.wa || CONFIG.DEFAULT_MEMBER_PHONE;
+    document.getElementById('tglDaftar').textContent = formatDate(data.tglDaftar || '2020-09-18');
+    
+    // Update keuangan
+    const totalSimpanan = (data.pokok || 0) + (data.wajib || 0) + (data.sukarela || 0);
+    document.getElementById('totalSimpanan').textContent = formatRupiah(totalSimpanan);
+    document.getElementById('totalPinjaman').textContent = formatRupiah(data.loanActive || 0);
+    
+    const shuEstimation = Math.floor(totalSimpanan * (data.shuPercentage || 0.05));
+    document.getElementById('shu').textContent = formatRupiah(shuEstimation);
+    
+    // Update timestamp
+    const now = new Date();
+    const options = { 
+        day: '2-digit', month: '2-digit', year: 'numeric', 
+        hour: '2-digit', minute: '2-digit', second: '2-digit' 
+    };
+    const timeStr = now.toLocaleDateString('id-ID', options).replace(/\//g, '-');
+    document.getElementById('lastUpdate').textContent = `Terakhir update: ${timeStr} WIB`;
+    
+    // Hide loading, show content
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+}
 
+// =================== FUNGSI LOAD DATA DARI GOOGLE SHEETS ===================
+async function loadMemberDataFromSheets(memberId) {
     try {
-        // 1. Ambil ID anggota dari URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const memberId = urlParams.get('id') || CONFIG.DEFAULT_ID;
+        console.log('🔄 Mengambil data anggota dari Google Sheets...');
         
-        console.log('Mengambil data untuk ID:', memberId);
-
-        // 2. Buat URL ke Google Apps Script
-        const scriptUrl = `${CONFIG.GOOGLE_SCRIPT_URL}?id=${encodeURIComponent(memberId)}`;
-        console.log('URL GAS:', scriptUrl);
-
-        // 3. Ambil data dari Google Apps Script dengan timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        
-        const response = await fetch(scriptUrl, {
-          method: 'GET',
-          mode: 'cors',
-          signal: controller.signal
+        const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?memberId=${encodeURIComponent(memberId)}`, {
+            method: 'GET',
+            mode: 'cors'
         });
         
-        clearTimeout(timeoutId);
-        
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // 4. Parse data JSON
-        const responseText = await response.text();
-        console.log('Raw response:', responseText.substring(0, 200) + '...');
-        
-        let memberData;
-        try {
-            memberData = JSON.parse(responseText);
-            console.log('Parsed data:', memberData);
-        } catch (parseError) {
-            console.error('Parse error:', parseError);
-            // Coba cek jika respons adalah HTML
-            if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
-                throw new Error('GAS mengembalikan HTML, bukan JSON. Periksa deployment GAS.');
+        if (response.ok) {
+            const result = await response.json();
+            
+            if (result.success && result.data && result.data.member) {
+                const sheetsData = result.data.member;
+                
+                // Update memberData dengan data dari Google Sheets (termasuk fotoUrl)
+                memberData = {
+                    ...memberData,
+                    id: sheetsData.nia || memberId,
+                    nama: sheetsData.nama || memberData.nama,
+                    email: sheetsData.email || memberData.email,
+                    wa: sheetsData.wa || memberData.wa,
+                    alamat: sheetsData.alamat || memberData.alamat,
+                    nik: sheetsData.nik || memberData.nik,
+                    jk: sheetsData.jenisKelamin || memberData.jk,
+                    agama: sheetsData.agama || memberData.agama,
+                    tglDaftar: sheetsData.tanggalGabung || memberData.tglDaftar,
+                    status: sheetsData.statusKeanggotaan || memberData.status,
+                    fotoUrl: sheetsData.fotoUrl || memberData.fotoUrl, // Ambil fotoUrl dari sheets
+                    pokok: sheetsData.pokok || memberData.pokok,
+                    wajib: sheetsData.wajib || memberData.wajib,
+                    sukarela: sheetsData.sukarela || memberData.sukarela,
+                    shuPercentage: memberData.shuPercentage
+                };
+                
+                // Update loan data jika ada
+                if (result.data.loans) {
+                    memberData.loanActive = result.data.loans.berjalan?.nominal || 0;
+                    memberData.loanRejected = result.data.loans.ditolak?.nominal || 0;
+                    memberData.loanPaid = result.data.loans.lunas?.nominal || 0;
+                }
+                
+                console.log('✅ Data berhasil dimuat dari Google Sheets');
+                return true;
             }
-            throw new Error('Format data tidak valid (bukan JSON)');
         }
-
-        // 5. Validasi data minimal
-        if (!memberData || (Object.keys(memberData).length === 0 && memberData.constructor === Object)) {
-            throw new Error('Data kosong diterima dari server');
-        }
-
-        // 6. Update UI dengan data
-        updateUI(memberData);
-
-        // 7. Sembunyikan loading, tampilkan konten
-        loadingElement.style.display = 'none';
-        contentElement.style.display = 'block';
-
+        
+        console.log('⚠️ Gagal memuat dari Google Sheets, menggunakan data lokal');
+        return false;
+        
     } catch (error) {
-        console.error('Kesalahan saat load data:', error);
-        
-        // Tampilkan pesan error spesifik
-        let errorMessage = 'Gagal memuat data. ';
-        
-        if (error.name === 'AbortError') {
-            errorMessage += 'Timeout: Server tidak merespons dalam 10 detik.';
-        } else if (error.message.includes('HTTP error')) {
-            errorMessage += 'Error koneksi ke server.';
-        } else if (error.message.includes('Format data')) {
-            errorMessage += 'Format data dari server tidak valid.';
-        } else if (error.message.includes('Data kosong')) {
-            errorMessage += 'Data tidak ditemukan untuk ID ini.';
-        } else {
-            errorMessage += error.message;
-        }
-        
-        showError(errorMessage);
+        console.error('❌ Error loading from Google Sheets:', error);
+        return false;
     }
 }
 
-function loadDefaultData() {
-  const memberId = CONFIG.DEFAULT_ID;
-  const memberData = DEFAULT_DATA[memberId];
-  updateUI(memberData);
-  
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('content').style.display = 'block';
-}
-
-function updateUI(data) {
-  if (!data) {
-    console.error('Data kosong di updateUI');
-    return;
-  }
-  
-  console.log('Updating UI with data:', data);
-  
-  // Helper untuk mendapatkan nilai dengan berbagai kemungkinan key
-  function getValue(...keys) {
-    for (const key of keys) {
-      if (data[key] !== undefined && data[key] !== null && data[key] !== '') {
-        return data[key];
-      }
+// =================== FUNGSI LOAD DATA UTAMA ===================
+async function loadMemberData() {
+    try {
+        // Ambil ID dari URL parameter atau pakai default
+        const memberId = getParameterByName('id') || CONFIG.DEFAULT_MEMBER_ID;
+        
+        // Coba ambil data dari Google Sheets
+        const sheetsSuccess = await loadMemberDataFromSheets(memberId);
+        
+        // Update UI dengan data yang ada (dari sheets atau default)
+        updateUI(memberData);
+        
+    } catch (error) {
+        console.error('Error loading data:', error);
+        // Fallback ke default data
+        updateUI(memberData);
     }
-    return '-';
-  }
-  
-  // Update basic info
-  document.getElementById('nama').textContent = getValue('Nama_Lengkap', 'nama_lengkap', 'nama', 'Nama');
-  document.getElementById('nia').textContent = `NIA : ${getValue('ID/NIA', 'ID_NIA', 'NIA', 'nia', 'id')}`;
-  
-  // Update status dengan class yang benar
-  const statusElement = document.getElementById('statusText');
-  const statusValue = getValue('Status', 'status');
-  statusElement.textContent = statusValue;
-  
-  // Reset class dulu
-  statusElement.classList.remove('status-inactive');
-  
-  // Tambah class jika status tidak aktif
-  if (typeof statusValue === 'string' && statusValue.toUpperCase().includes('TIDAK')) {
-    statusElement.classList.add('status-inactive');
-  }
-  
-  // Update foto jika ada
-  const fotoUrl = getValue('Foto', 'foto', 'photo');
-  if (fotoUrl && fotoUrl !== '-' && !fotoUrl.includes('undefined')) {
-    document.getElementById('fotoAnggota').src = fotoUrl;
-    document.getElementById('fotoAnggota').alt = `Foto ${getValue('Nama_Lengkap', 'nama')}`;
-  }
-  
-  // Update simpanan
-  document.getElementById('pokok').textContent = formatRupiah(getValue('Simpanan_Pokok', 'simpanan_pokok', 'pokok'));
-  document.getElementById('wajib').textContent = formatRupiah(getValue('Simpanan_Wajib', 'simpanan_wajib', 'wajib'));
-  document.getElementById('sukarela').textContent = formatRupiah(getValue('Simpanan_Sukarela', 'simpanan_sukarela', 'sukarela'));
-  
-  // Update data pribadi
-  document.getElementById('alamat').textContent = getValue('Alamat_Lengkap', 'alamat_lengkap', 'Alamat', 'alamat');
-  document.getElementById('jk').textContent = getValue('Jenis_Kelamin', 'jenis_kelamin', 'JK', 'jk');
-  document.getElementById('agama').textContent = getValue('Agama', 'agama');
-  document.getElementById('nik').textContent = getValue('NIK', 'nik');
-  document.getElementById('email').textContent = getValue('Email', 'email');
-  document.getElementById('telepon').textContent = getValue('WhatsApp', 'whatsapp', 'Telepon', 'telepon', 'No_HP', 'no_hp');
-  document.getElementById('tglDaftar').textContent = formatDate(getValue('Tanggal_Bergabung', 'tanggal_bergabung', 'tgl_daftar', 'Tanggal_Daftar'));
-  
-  // Hitung total simpanan jika tidak disediakan
-  const pokok = parseInt(getValue('Simpanan_Pokok', 'simpanan_pokok')) || 0;
-  const wajib = parseInt(getValue('Simpanan_Wajib', 'simpanan_wajib')) || 0;
-  const sukarela = parseInt(getValue('Simpanan_Sukarela', 'simpanan_sukarela')) || 0;
-  const totalSimpanan = pokok + wajib + sukarela;
-  
-  // Update keuangan
-  document.getElementById('totalSimpanan').textContent = formatRupiah(
-    getValue('Total_Simpanan', 'total_simpanan') || totalSimpanan
-  );
-  document.getElementById('totalPinjaman').textContent = formatRupiah(getValue('Total_Pinjaman', 'total_pinjaman', 'Pinjaman'));
-  document.getElementById('shu').textContent = formatRupiah(getValue('SHU_Estimasi', 'shu_estimasi', 'SHU', 'shu'));
-  
-  // Update timestamp
-  const lastUpdate = getValue('LastUpdated', 'last_updated', 'last_update', 'updated_at');
-  document.getElementById('lastUpdate').textContent = 
-    `Terakhir update: ${lastUpdate !== '-' ? lastUpdate : new Date().toLocaleString('id-ID')}`;
 }
 
 // =================== EXPORT FUNCTION ===================
 function exportPDF() {
-  // Untuk sementara gunakan print, nanti bisa diintegrasikan dengan library PDF
-  alert('Fitur Export PDF akan diintegrasikan dengan Dashboard Admin.\nUntuk saat ini, gunakan fitur Print/Cetak.');
-  // window.print() bisa digunakan sebagai alternatif
+    alert('Fitur Export PDF akan diintegrasikan dengan Dashboard Admin');
+    // Bisa diarahkan ke dashboard admin untuk generate PDF
+    window.open('dashboard-admin.html?export=pdf&id=' + encodeURIComponent(memberData.id), '_blank');
 }
 
 // =================== AUTO REFRESH ===================
-let refreshInterval;
-function startAutoRefresh() {
-  if (refreshInterval) clearInterval(refreshInterval);
-  refreshInterval = setInterval(loadMemberData, CONFIG.AUTO_REFRESH_INTERVAL);
-}
+// Auto refresh data setiap 30 detik
+setInterval(loadMemberData, 30000);
 
-function stopAutoRefresh() {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-  }
-}
+// =================== INITIAL LOAD ===================
+// Load data saat halaman dibuka
+document.addEventListener('DOMContentLoaded', loadMemberData);
 
 // =================== SYNC WITH DASHBOARD ===================
+// Fungsi untuk diupdate dari dashboard-admin.html
 window.updateMemberData = function(memberId, newData) {
-  // Simpan ke localStorage sebagai cache
-  const savedData = localStorage.getItem('koperasiData');
-  let allData = savedData ? JSON.parse(savedData) : {};
-  
-  allData[memberId] = {
-    ...allData[memberId],
-    ...newData,
-    LastUpdated: new Date().toLocaleString('id-ID')
-  };
-  
-  localStorage.setItem('koperasiData', JSON.stringify(allData));
-  
-  // Jika ID yang diupdate sama dengan yang sedang dilihat
-  const currentId = getParameterByName('id') || CONFIG.DEFAULT_ID;
-  if (currentId === memberId) {
-    loadMemberData(); // Refresh tampilan
-  }
-  
-  return true;
+    if (memberId === memberData.id) {
+        // Update data
+        memberData = {
+            ...memberData,
+            ...newData
+        };
+        
+        // Update UI
+        updateUI(memberData);
+        
+        // Trigger sinkron ke Google Sheets
+        syncToGoogleSheets();
+    }
+    return true;
 };
+
+// Fungsi sinkron ke Google Sheets
+async function syncToGoogleSheets() {
+    try {
+        const totalSimpanan = memberData.pokok + memberData.wajib + memberData.sukarela;
+        
+        const dataToSend = {
+            action: 'sync',
+            timestamp: new Date().toISOString(),
+            memberId: memberData.id,
+            memberName: memberData.nama,
+            fotoUrl: memberData.fotoUrl, // Kirim fotoUrl juga
+            simpananPokok: memberData.pokok,
+            simpananWajib: memberData.wajib,
+            simpananSukarela: memberData.sukarela,
+            totalSimpanan: totalSimpanan,
+            pinjamanAktif: memberData.loanActive,
+            pinjamanDitolak: memberData.loanRejected,
+            pinjamanLunas: memberData.loanPaid,
+            shuEstimasi: Math.floor(totalSimpanan * (memberData.shuPercentage || 0.05))
+        };
+        
+        await fetch(CONFIG.GOOGLE_SHEETS_WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataToSend)
+        });
+        
+        console.log('✅ Data tersinkron ke Google Sheets');
+        
+    } catch (error) {
+        console.error('❌ Gagal sinkron ke Google Sheets:', error);
+    }
+}
 
 // =================== DEBUG / TEST ===================
 window.debugUpdate = function() {
-  const testData = {
-    Foto: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhADAiDm28b0fescUKnqADc9uk3Q2oIptWD-hyzBQXb2AMtoPrxb7Q9Ecr9SDV_RhqA9uWO6qTcepfbfuR7KFWuKUmYYPB-6JfiExBCzT-MljhNh1P1TPsabKvh2rAQzEtZUA0lpiIkIuBxHvHVuXl0GdUWEyaABcfpsHnX_kyDLN_pS2gVNzp_kIP6Vss/s1280/1000007204.jpg",
-    Nama_Lengkap: "Kang L (Test Update)",
-    "ID/NIA": "KOP-001",
-    Status: "AKTIF",
-    Simpanan_Pokok: 250000,
-    Simpanan_Wajib: 50000,
-    Simpanan_Sukarela: 100000,
-    Total_Simpanan: 400000,
-    Total_Pinjaman: 1500000,
-    SHU_Estimasi: 75000,
-    LastUpdated: new Date().toLocaleString('id-ID')
-  };
-  
-  const memberId = getParameterByName('id') || CONFIG.DEFAULT_ID;
-  window.updateMemberData(memberId, testData);
-  alert(`Data test telah diupdate untuk ID: ${memberId}!`);
+    const testData = {
+        pokok: 250000,
+        sukarela: 250000,
+        loanActive: 12000000,
+        fotoUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png'
+    };
+    
+    window.updateMemberData(memberData.id, testData);
+    alert('Data test telah diupdate!');
 };
 
-// =================== INITIAL LOAD ===================
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, starting data load...');
-  loadMemberData();
-  startAutoRefresh();
-  
-  // Tambah event listener untuk visibility change
-  document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-      // Jika tab menjadi aktif lagi, refresh data
-      loadMemberData();
+// =================== LISTENER UNTUK STORAGE CHANGES ===================
+// Jika ada perubahan dari tab lain
+window.addEventListener('storage', function(e) {
+    if (e.key === 'koperasiData') {
+        console.log('🔄 Data berubah di tab lain, reload...');
+        loadMemberData();
     }
-  });
-});
-
-// =================== UNLOAD CLEANUP ===================
-window.addEventListener('beforeunload', function() {
-  stopAutoRefresh();
 });
 </script>
 
