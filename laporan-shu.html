@@ -478,12 +478,6 @@
             min-width: 36px;
         }
         
-        .btn-icon {
-            width: 44px;
-            height: 44px;
-            padding: 0;
-        }
-        
         .badge {
             display: inline-flex;
             align-items: center;
@@ -554,6 +548,24 @@
         
         .fw-bold {
             font-weight: 700;
+        }
+        
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: var(--space-md);
+            padding: var(--space-sm);
+            background: rgba(46, 125, 50, 0.05);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .sync-status .badge {
+            padding: 4px 8px;
+            font-size: 0.75rem;
         }
         
         @media screen and (min-width: 768px) {
@@ -629,14 +641,14 @@
         <!-- HEADER -->
         <header class="header">
             <div class="header-content">
-                <button class="back-button" onclick="window.history.back()">
+                <button class="back-button" onclick="window.location.href='dashboard-admin.html'">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <div class="header-title">
                     <h1>Laporan SHU</h1>
                     <p>Sisa Hasil Usaha - Koperasi Asmara Tani</p>
                 </div>
-                <button class="back-button" onclick="refreshData()" title="Refresh Data" style="background: rgba(255,255,255,0.25);">
+                <button class="back-button" onclick="refreshData()" title="Refresh Data">
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
@@ -667,19 +679,6 @@
                             <option value="tahunan">Tahunan</option>
                             <option value="semester1">Semester 1</option>
                             <option value="semester2">Semester 2</option>
-                            <option value="triwulan1">Triwulan 1</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">Status</label>
-                        <select class="filter-select" id="statusSHU">
-                            <option value="all">Semua Status</option>
-                            <option value="dibagikan">Sudah Dibagikan</option>
-                            <option value="dialokasikan">Dialokasikan</option>
-                            <option value="disetorkan">Disetorkan</option>
                         </select>
                     </div>
                 </div>
@@ -694,10 +693,12 @@
                 </div>
             </div>
             
-            <!-- Info Sinkronisasi -->
-            <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px dashed var(--gray-light); font-size: 0.85rem; color: var(--gray);">
-                <i class="fas fa-database"></i> Data diambil dari Dashboard Admin 
-                <span id="syncStatus" style="color: var(--success); margin-left: 5px;">✓ Sinkron</span>
+            <!-- STATUS SINKRONISASI -->
+            <div class="sync-status">
+                <i class="fas fa-database" style="color: var(--primary);"></i>
+                <span>Sumber Data: <strong>Dashboard Admin</strong></span>
+                <span class="badge badge-success" id="syncStatus">✓ Sinkron</span>
+                <span style="margin-left: auto; font-size: 0.75rem;" id="lastSyncTime"></span>
             </div>
         </section>
         
@@ -706,21 +707,18 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-title">Total SHU Tahun Ini</div>
+                        <div class="stat-title">Total SHU</div>
                         <div class="stat-icon">
                             <i class="fas fa-money-bill-wave"></i>
                         </div>
                     </div>
                     <div class="stat-value" id="totalSHUDisplay">Rp 0</div>
-                    <div class="stat-detail">
-                        <i class="fas fa-arrow-up text-success"></i>
-                        <span id="growthPercent">0%</span> dari tahun lalu
-                    </div>
+                    <div class="stat-detail" id="totalSHUDetail">Tahun 2026</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-title">SHU Dibagikan ke Anggota</div>
+                        <div class="stat-title">SHU Anggota (60%)</div>
                         <div class="stat-icon">
                             <i class="fas fa-hand-holding-usd"></i>
                         </div>
@@ -728,36 +726,30 @@
                     <div class="stat-value" id="shuAnggotaDisplay">Rp 0</div>
                     <div class="stat-detail">
                         <i class="fas fa-users"></i>
-                        <span id="jumlahAnggotaSHU">0</span> anggota aktif
+                        <span id="jumlahAnggotaSHU">0</span> anggota
                     </div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-title">Dana Cadangan</div>
+                        <div class="stat-title">Dana Cadangan (20%)</div>
                         <div class="stat-icon">
                             <i class="fas fa-piggy-bank"></i>
                         </div>
                     </div>
                     <div class="stat-value" id="danaCadanganDisplay">Rp 0</div>
-                    <div class="stat-detail">
-                        <i class="fas fa-percentage"></i>
-                        20% dari total SHU
-                    </div>
+                    <div class="stat-detail" id="cadanganDetail">Dana pengembangan</div>
                 </div>
                 
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-title">Rata-rata per Anggota</div>
+                        <div class="stat-title">Pertumbuhan</div>
                         <div class="stat-icon">
-                            <i class="fas fa-calculator"></i>
+                            <i class="fas fa-chart-line"></i>
                         </div>
                     </div>
-                    <div class="stat-value" id="rataRataSHU">Rp 0</div>
-                    <div class="stat-detail">
-                        <i class="fas fa-chart-line"></i>
-                        Berdasarkan simpanan
-                    </div>
+                    <div class="stat-value" id="growthDisplay">0%</div>
+                    <div class="stat-detail">Dari tahun sebelumnya</div>
                 </div>
             </div>
         </section>
@@ -802,7 +794,7 @@
             <div class="table-header">
                 <h2>
                     <i class="fas fa-users"></i>
-                    Daftar Penerima SHU per Anggota
+                    Penerima SHU per Anggota
                 </h2>
                 <div class="table-actions">
                     <button class="btn btn-outline btn-sm" id="exportPenerimaBtn">
@@ -840,7 +832,7 @@
         <section class="table-section">
             <div class="action-buttons">
                 <button class="action-btn" id="refreshDataBtn">
-                    <i class="fas fa-sync-alt"></i> Refresh Data
+                    <i class="fas fa-sync-alt"></i> Sinkron Dashboard
                 </button>
                 <button class="action-btn" id="exportExcelBtn">
                     <i class="fas fa-file-excel"></i> Export Excel
@@ -848,13 +840,16 @@
                 <button class="action-btn" id="viewChartBtn">
                     <i class="fas fa-chart-bar"></i> Lihat Chart
                 </button>
+                <button class="action-btn" id="checkSyncBtn">
+                    <i class="fas fa-check-circle"></i> Cek Sinkron
+                </button>
             </div>
         </section>
         
         <!-- FOOTER -->
         <footer class="footer">
             <p>© 2026 Koperasi Asmara Tani</p>
-            <p id="lastSyncInfo">Terakhir sinkron: -</p>
+            <p id="footerInfo">Data sinkron dengan Dashboard Admin</p>
         </footer>
     </div>
     
@@ -867,14 +862,12 @@
         
         let currentFilter = {
             tahun: '2026',
-            periode: 'tahunan',
-            status: 'all'
+            periode: 'tahunan'
         };
         
         let chartInstance = null;
-        let chartType = 'pie';
 
-        // ===== KONSTANTA SHU DARI AD/ART =====
+        // ===== KONSTANTA =====
         const SHU_DISTRIBUSI = [
             { jenis: 'Dana Cadangan', persentase: 20, status: 'Disetorkan', color: '#2e7d32' },
             { jenis: 'Dana Anggota', persentase: 60, status: 'Dibagikan', color: '#2196f3' },
@@ -887,70 +880,60 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📊 SHU Report - Mengambil data dari Dashboard...');
             
-            document.querySelector('.back-button').onclick = function() {
-                window.location.href = 'dashboard-admin.html';
-            };
-            
             // Load data dari dashboard
             loadDataFromDashboard();
             
             // Setup event listeners
             setupEventListeners();
             
-            // Tampilkan data
+            // Update tampilan
             updateDisplay();
-            
             updateLastSyncTime();
         });
 
         // ===== LOAD DATA LANGSUNG DARI DASHBOARD =====
         function loadDataFromDashboard() {
             try {
-                // Ambil data dari localStorage yang digunakan Dashboard Admin
+                // Coba ambil dari localStorage yang digunakan Dashboard Admin
                 const storedDashboard = localStorage.getItem('dashboardData');
                 
                 if (storedDashboard) {
                     dashboardData = JSON.parse(storedDashboard);
                     console.log('✅ Data dashboard ditemukan:', dashboardData);
                     
-                    // Ambil data anggota
-                    if (dashboardData.anggota && Array.isArray(dashboardData.anggota)) {
-                        anggotaData = dashboardData.anggota;
-                    } else {
-                        // Coba sumber lain
-                        const anggota = localStorage.getItem('koperasi_anggota');
-                        if (anggota) {
-                            anggotaData = JSON.parse(anggota);
-                        }
-                    }
-                    
-                    // Ambil data SHU langsung dari dashboard
+                    // Cek apakah ada data SHU di dashboard
                     if (dashboardData.shu) {
                         console.log('✅ Data SHU dari dashboard:', dashboardData.shu);
                         processSHUFromDashboard();
-                    } else {
-                        // Hitung SHU berdasarkan data anggota
-                        calculateSHUFromAnggota();
-                    }
-                } else {
-                    console.log('⚠️ Data dashboard tidak ditemukan, mencari sumber lain...');
-                    
-                    // Coba sumber lain
-                    const anggota = localStorage.getItem('koperasi_anggota');
-                    if (anggota) {
-                        anggotaData = JSON.parse(anggota);
-                        calculateSHUFromAnggota();
-                    } else {
-                        // Fallback ke data dummy
-                        generateDummyData();
+                        
+                        // Update status sinkron
+                        document.getElementById('syncStatus').innerHTML = '✓ Sinkron';
+                        document.getElementById('syncStatus').className = 'badge badge-success';
+                        return;
                     }
                 }
                 
-                document.getElementById('syncStatus').innerHTML = '✓ Sinkron dengan Dashboard';
+                // Jika tidak ada data SHU di dashboard, coba ambil dari sumber lain
+                const anggota = localStorage.getItem('koperasi_anggota');
+                if (anggota) {
+                    anggotaData = JSON.parse(anggota);
+                    calculateSHUFromAnggota();
+                    
+                    document.getElementById('syncStatus').innerHTML = '⚠️ Data Anggota';
+                    document.getElementById('syncStatus').className = 'badge badge-warning';
+                    return;
+                }
+                
+                // Fallback ke data dummy
+                generateDummyData();
+                document.getElementById('syncStatus').innerHTML = '⚠️ Data Demo';
+                document.getElementById('syncStatus').className = 'badge badge-warning';
                 
             } catch (error) {
                 console.error('❌ Error loading data:', error);
                 generateDummyData();
+                document.getElementById('syncStatus').innerHTML = '❌ Error';
+                document.getElementById('syncStatus').className = 'badge badge-danger';
             }
         }
 
@@ -963,65 +946,61 @@
             
             // Ambil nilai dari dashboard
             const totalSHU = shu.total || 0;
-            const shuAnggota = shu.dibagikan || Math.round(totalSHU * 0.6);
-            const danaCadangan = shu.cadangan || Math.round(totalSHU * 0.2);
-            const jumlahAnggota = shu.anggota || anggotaData.length || 0;
+            const shuAnggota = shu.dibagikan || 0;
+            const danaCadangan = shu.cadangan || 0;
+            const jumlahAnggota = shu.anggota || 0;
+            const pertumbuhan = shu.pertumbuhan || 0;
             
-            // Buat data distribusi berdasarkan nilai dari dashboard
-            shuData = SHU_DISTRIBUSI.map((item, index) => {
-                let jumlah = 0;
-                if (item.jenis === 'Dana Cadangan') jumlah = danaCadangan;
-                else if (item.jenis === 'Dana Anggota') jumlah = shuAnggota;
-                else if (item.jenis === 'Dana Pengurus') jumlah = Math.round(totalSHU * 0.1);
-                else if (item.jenis === 'Dana Pendidikan') jumlah = Math.round(totalSHU * 0.05);
-                else if (item.jenis === 'Dana Sosial') jumlah = Math.round(totalSHU * 0.05);
-                
-                return {
+            // Buat data distribusi dari dashboard
+            if (shu.distribusi && shu.distribusi.length > 0) {
+                // Gunakan distribusi dari dashboard
+                shuData = shu.distribusi.map((item, index) => ({
                     id: `SHU-${String(index + 1).padStart(3, '0')}`,
                     jenis: item.jenis,
                     persentase: item.persentase,
-                    jumlah: jumlah,
+                    jumlah: item.jumlah,
                     deskripsi: getDeskripsiSHU(item.jenis),
-                    status: item.status,
+                    status: item.status || getStatusSHU(item.jenis),
                     sumber: 'SHU Tahun Berjalan',
                     tanggal: `${tahun}-12-31`,
                     bukti: `SHU-${item.jenis.substring(0,3)}-${tahun}`,
-                    color: item.color
-                };
-            });
-            
-            // Hitung SHU per anggota berdasarkan data dari dashboard
-            if (anggotaData.length > 0) {
-                const totalSimpananSemua = anggotaData.reduce((sum, a) => 
-                    sum + (a.totalSimpanan || a.simpananPokok + a.simpananWajib + a.simpananSukarela || 0), 0);
-                
-                penerimaData = anggotaData.map((anggota, index) => {
-                    const totalSimpanan = anggota.totalSimpanan || 
-                        (anggota.simpananPokok + anggota.simpananWajib + anggota.simpananSukarela) || 200000;
-                    
-                    const proporsi = totalSimpanan / (totalSimpananSemua || 1);
-                    const shuDiterima = Math.round(shuAnggota * proporsi);
+                    color: getColorSHU(item.jenis)
+                }));
+            } else {
+                // Buat distribusi manual dari nilai total
+                shuData = SHU_DISTRIBUSI.map((item, index) => {
+                    let jumlah = 0;
+                    if (item.jenis === 'Dana Cadangan') jumlah = danaCadangan;
+                    else if (item.jenis === 'Dana Anggota') jumlah = shuAnggota;
+                    else if (item.jenis === 'Dana Pengurus') jumlah = Math.round(totalSHU * 0.1);
+                    else if (item.jenis === 'Dana Pendidikan') jumlah = Math.round(totalSHU * 0.05);
+                    else if (item.jenis === 'Dana Sosial') jumlah = Math.round(totalSHU * 0.05);
                     
                     return {
-                        id: anggota.id || anggota.nia || `AGT-${String(index + 1).padStart(3, '0')}`,
-                        nia: anggota.nia || `#01-2026-${String(index + 1).padStart(3, '0')}`,
-                        nama: anggota.nama || `Anggota ${index + 1}`,
-                        noAnggota: anggota.nia || anggota.id || `AGT-${String(index + 1).padStart(3, '0')}`,
-                        simpananPokok: anggota.simpananPokok || 200000,
-                        simpananWajib: anggota.simpananWajib || 0,
-                        simpananSukarela: anggota.simpananSukarela || 0,
-                        totalSimpanan: totalSimpanan,
-                        shuDiterima: shuDiterima,
-                        persentase: parseFloat((proporsi * 100).toFixed(2)),
-                        tanggalTerima: `${tahun}-12-20`,
-                        status: 'Diterima',
-                        bukti: `SHU-${anggota.id || index + 1}-${tahun}`
+                        id: `SHU-${String(index + 1).padStart(3, '0')}`,
+                        jenis: item.jenis,
+                        persentase: item.persentase,
+                        jumlah: jumlah,
+                        deskripsi: getDeskripsiSHU(item.jenis),
+                        status: item.status,
+                        sumber: 'SHU Tahun Berjalan',
+                        tanggal: `${tahun}-12-31`,
+                        bukti: `SHU-${item.jenis.substring(0,3)}-${tahun}`,
+                        color: item.color
                     };
                 });
             }
             
+            // Ambil data anggota dari dashboard
+            if (dashboardData.anggota && dashboardData.anggota.length > 0) {
+                anggotaData = dashboardData.anggota;
+            }
+            
+            // Hitung SHU per anggota (proporsional)
+            calculatePerAnggotaSHU(totalSHU, shuAnggota, jumlahAnggota);
+            
             // Update statistik
-            updateStats(totalSHU, shuAnggota, danaCadangan, jumlahAnggota);
+            updateStats(totalSHU, shuAnggota, danaCadangan, jumlahAnggota, pertumbuhan);
         }
 
         // ===== HITUNG SHU DARI DATA ANGGOTA (FALLBACK) =====
@@ -1060,13 +1039,26 @@
                 };
             });
             
-            // Hitung SHU per anggota
+            calculatePerAnggotaSHU(totalSHU, shuAnggota, jumlahAnggota);
+            updateStats(totalSHU, shuAnggota, danaCadangan, jumlahAnggota, 12.5);
+        }
+
+        // ===== HITUNG SHU PER ANGGOTA =====
+        function calculatePerAnggotaSHU(totalSHU, shuAnggota, jumlahAnggota) {
+            if (anggotaData.length === 0) {
+                generateDummyPenerima(jumlahAnggota || 48, shuAnggota);
+                return;
+            }
+            
+            const totalSimpananSemua = anggotaData.reduce((sum, a) => 
+                sum + (a.totalSimpanan || a.simpananPokok + a.simpananWajib + a.simpananSukarela || 200000), 0);
+            
             penerimaData = anggotaData.map((anggota, index) => {
                 const totalSimpanan = anggota.totalSimpanan || 
                     (anggota.simpananPokok + anggota.simpananWajib + anggota.simpananSukarela) || 200000;
                 
                 const proporsi = totalSimpanan / totalSimpananSemua;
-                const shuDiterima = Math.round(shuAnggota * proporsi);
+                const shuTerima = Math.round(shuAnggota * proporsi);
                 
                 return {
                     id: anggota.id || anggota.nia || `AGT-${String(index + 1).padStart(3, '0')}`,
@@ -1077,31 +1069,40 @@
                     simpananWajib: anggota.simpananWajib || 0,
                     simpananSukarela: anggota.simpananSukarela || 0,
                     totalSimpanan: totalSimpanan,
-                    shuDiterima: shuDiterima,
+                    shuDiterima: shuTerima,
                     persentase: parseFloat((proporsi * 100).toFixed(2)),
-                    tanggalTerima: `${tahun}-12-20`,
+                    tanggalTerima: `${currentFilter.tahun}-12-20`,
                     status: 'Diterima',
-                    bukti: `SHU-${anggota.id || index + 1}-${tahun}`
+                    bukti: `SHU-${anggota.id || index + 1}-${currentFilter.tahun}`
                 };
             });
-            
-            updateStats(totalSHU, shuAnggota, danaCadangan, jumlahAnggota);
         }
 
-        function getDeskripsiSHU(jenis) {
-            const deskripsi = {
-                'Dana Cadangan': 'Cadangan untuk pengembangan koperasi',
-                'Dana Anggota': 'Dibagikan kepada anggota sesuai simpanan',
-                'Dana Pengurus': 'Honorarium pengurus koperasi',
-                'Dana Pendidikan': 'Program pendidikan anggota',
-                'Dana Sosial': 'Kegiatan sosial kemasyarakatan'
-            };
-            return deskripsi[jenis] || '-';
+        function generateDummyPenerima(jumlah, shuAnggota) {
+            const names = ['Budi Santoso', 'Siti Rahayu', 'Agus Wijaya', 'Dewi Lestari', 'Hendra Gunawan'];
+            penerimaData = [];
+            
+            for (let i = 0; i < Math.min(jumlah, 10); i++) {
+                const totalSimpanan = 200000 + (i * 50000);
+                penerimaData.push({
+                    id: `AGT-${String(i + 1).padStart(3, '0')}`,
+                    nia: `#01-2026-${String(i + 1).padStart(3, '0')}`,
+                    nama: names[i % names.length] + (i > 4 ? ` ${i + 1}` : ''),
+                    noAnggota: `AGT-${String(i + 1).padStart(3, '0')}`,
+                    simpananPokok: 200000,
+                    simpananWajib: (i + 1) * 20000,
+                    simpananSukarela: i * 100000,
+                    totalSimpanan: totalSimpanan,
+                    shuDiterima: Math.round(shuAnggota / jumlah * (i + 1)),
+                    persentase: parseFloat(((i + 1) / jumlah * 100).toFixed(2)),
+                    tanggalTerima: `${currentFilter.tahun}-12-20`,
+                    status: 'Diterima',
+                    bukti: `SHU-${i + 1}-${currentFilter.tahun}`
+                });
+            }
         }
 
         function generateDummyData() {
-            console.log('📝 Membuat data dummy...');
-            
             anggotaData = [
                 { id: 'AGT-001', nama: 'Budi Santoso', simpananPokok: 200000, simpananWajib: 240000, simpananSukarela: 500000 },
                 { id: 'AGT-002', nama: 'Siti Rahayu', simpananPokok: 200000, simpananWajib: 360000, simpananSukarela: 750000 },
@@ -1111,50 +1112,80 @@
             calculateSHUFromAnggota();
         }
 
+        function getDeskripsiSHU(jenis) {
+            const desc = {
+                'Dana Cadangan': 'Cadangan pengembangan koperasi',
+                'Dana Anggota': 'Dibagikan ke anggota sesuai simpanan',
+                'Dana Pengurus': 'Honorarium pengurus',
+                'Dana Pendidikan': 'Program pendidikan',
+                'Dana Sosial': 'Kegiatan sosial'
+            };
+            return desc[jenis] || '-';
+        }
+
+        function getStatusSHU(jenis) {
+            const status = {
+                'Dana Cadangan': 'Disetorkan',
+                'Dana Anggota': 'Dibagikan',
+                'Dana Pengurus': 'Dibayarkan',
+                'Dana Pendidikan': 'Dialokasikan',
+                'Dana Sosial': 'Dialokasikan'
+            };
+            return status[jenis] || 'Dialokasikan';
+        }
+
+        function getColorSHU(jenis) {
+            const colors = {
+                'Dana Cadangan': '#2e7d32',
+                'Dana Anggota': '#2196f3',
+                'Dana Pengurus': '#ff9800',
+                'Dana Pendidikan': '#00bcd4',
+                'Dana Sosial': '#ff5722'
+            };
+            return colors[jenis] || '#2e7d32';
+        }
+
         // ===== UPDATE STATISTICS =====
-        function updateStats(totalSHU, shuAnggota, danaCadangan, jumlahAnggota) {
+        function updateStats(totalSHU, shuAnggota, danaCadangan, jumlahAnggota, pertumbuhan) {
             const rataRata = jumlahAnggota > 0 ? Math.round(shuAnggota / jumlahAnggota) : 0;
             
-            // Growth rate berdasarkan tahun
-            const growthRates = { '2025': 8.5, '2026': 12.3, '2027': 15.7, '2028': 18.2 };
-            const growth = growthRates[currentFilter.tahun] || 12.3;
-            
             document.getElementById('totalSHUDisplay').textContent = formatCurrency(totalSHU);
+            document.getElementById('totalSHUDetail').innerHTML = `Tahun ${currentFilter.tahun}`;
+            
             document.getElementById('shuAnggotaDisplay').textContent = formatCurrency(shuAnggota);
-            document.getElementById('danaCadanganDisplay').textContent = formatCurrency(danaCadangan);
-            document.getElementById('rataRataSHU').textContent = formatCurrency(rataRata);
             document.getElementById('jumlahAnggotaSHU').textContent = jumlahAnggota;
+            
+            document.getElementById('danaCadanganDisplay').textContent = formatCurrency(danaCadangan);
+            document.getElementById('growthDisplay').textContent = pertumbuhan + '%';
+            
             document.getElementById('totalAnggotaPenerima').textContent = jumlahAnggota;
             
-            const totalSimpananSemua = penerimaData.reduce((sum, a) => sum + a.totalSimpanan, 0);
-            document.getElementById('totalSimpananSemua').textContent = formatCurrency(totalSimpananSemua);
-            document.getElementById('growthPercent').textContent = growth + '%';
+            const totalSimpanan = penerimaData.reduce((sum, a) => sum + a.totalSimpanan, 0);
+            document.getElementById('totalSimpananSemua').textContent = formatCurrency(totalSimpanan);
         }
 
         // ===== APPLY FILTER =====
         function applyFilter() {
             currentFilter.tahun = document.getElementById('tahunSHU').value;
             currentFilter.periode = document.getElementById('periodeSHU').value;
-            currentFilter.status = document.getElementById('statusSHU').value;
             
-            // Reload data dari dashboard dengan filter tahun baru
+            // Jika ada data dashboard, gunakan multiplier untuk simulasi tahun
             if (dashboardData && dashboardData.shu) {
-                // Jika ada data historis per tahun, ambil sesuai tahun
-                // Untuk demo, kita adjust multiplier
                 const multiplier = getYearMultiplier(currentFilter.tahun);
+                const baseSHU = dashboardData.shu.total / getYearMultiplier('2026');
                 
-                const totalSHU = (dashboardData.shu.total || 50000000) * multiplier;
-                const shuAnggota = totalSHU * 0.6;
-                const danaCadangan = totalSHU * 0.2;
+                const totalSHU = Math.round(baseSHU * multiplier);
+                const shuAnggota = Math.round(totalSHU * 0.6);
+                const danaCadangan = Math.round(totalSHU * 0.2);
                 
-                // Update data distribusi
-                shuData = SHU_DISTRIBUSI.map((item, index) => ({
+                // Update distribusi
+                shuData = shuData.map(item => ({
                     ...item,
                     jumlah: item.jenis === 'Dana Cadangan' ? danaCadangan :
                             item.jenis === 'Dana Anggota' ? shuAnggota :
-                            item.jenis === 'Dana Pengurus' ? totalSHU * 0.1 :
-                            item.jenis === 'Dana Pendidikan' ? totalSHU * 0.05 :
-                            totalSHU * 0.05,
+                            item.jenis === 'Dana Pengurus' ? Math.round(totalSHU * 0.1) :
+                            item.jenis === 'Dana Pendidikan' ? Math.round(totalSHU * 0.05) :
+                            Math.round(totalSHU * 0.05),
                     tanggal: `${currentFilter.tahun}-12-31`,
                     bukti: `SHU-${item.jenis.substring(0,3)}-${currentFilter.tahun}`
                 }));
@@ -1162,31 +1193,24 @@
                 // Update penerima
                 penerimaData = penerimaData.map(p => ({
                     ...p,
-                    shuDiterima: Math.round(p.shuDiterima * multiplier),
+                    shuDiterima: Math.round(p.shuDiterima * multiplier / getYearMultiplier('2026')),
                     tanggalTerima: `${currentFilter.tahun}-12-20`,
                     bukti: `SHU-${p.id}-${currentFilter.tahun}`
                 }));
                 
-                updateStats(totalSHU, shuAnggota, danaCadangan, penerimaData.length);
+                updateStats(totalSHU, shuAnggota, danaCadangan, penerimaData.length, 
+                           dashboardData.shu.pertumbuhan || 12.5);
             }
             
-            // Filter berdasarkan status
-            let filteredSHU = shuData;
-            if (currentFilter.status !== 'all') {
-                filteredSHU = shuData.filter(item => 
-                    item.status.toLowerCase().includes(currentFilter.status.toLowerCase())
-                );
-            }
-            
-            displayData(filteredSHU);
+            displayData(shuData);
             displayPenerimaData();
             
             showMessage(`Filter: Tahun ${currentFilter.tahun}`, 'info');
         }
 
         function getYearMultiplier(tahun) {
-            const multipliers = { '2025': 0.85, '2026': 1.0, '2027': 1.15, '2028': 1.3 };
-            return multipliers[tahun] || 1.0;
+            const mult = { '2025': 0.85, '2026': 1.0, '2027': 1.15, '2028': 1.3 };
+            return mult[tahun] || 1.0;
         }
 
         // ===== DISPLAY DATA =====
@@ -1310,7 +1334,12 @@
             const item = shuData.find(d => d.id === itemId);
             if (!item) return;
             
-            alert(`Detail ${item.jenis}\nJumlah: ${formatCurrency(item.jumlah)}\nDeskripsi: ${item.deskripsi}`);
+            alert(`📊 DETAIL ${item.jenis}\n\n` +
+                  `Jumlah: ${formatCurrency(item.jumlah)}\n` +
+                  `Persentase: ${item.persentase}%\n` +
+                  `Status: ${item.status}\n` +
+                  `Tanggal: ${item.tanggal}\n` +
+                  `Deskripsi: ${item.deskripsi}`);
         };
 
         // ===== PRINT FUNCTIONS =====
@@ -1319,14 +1348,19 @@
             if (!anggota) return;
             
             const printContent = `
-                <html><body>
-                    <h2>KOPERASI ASMARA TANI</h2>
+                <html>
+                <head><title>Kwitansi SHU - ${anggota.nama}</title></head>
+                <body style="font-family: Arial; padding: 30px;">
+                    <h2 style="color: #2e7d32;">KOPERASI ASMARA TANI</h2>
                     <h3>BUKTI PENERIMAAN SHU</h3>
                     <p>Nama: ${anggota.nama}</p>
                     <p>No. Anggota: ${anggota.noAnggota}</p>
                     <p>Jumlah: ${formatCurrency(anggota.shuDiterima)}</p>
                     <p>Tanggal: ${anggota.tanggalTerima}</p>
-                </body></html>
+                    <hr>
+                    <p>Terbilang: ${terbilang(anggota.shuDiterima)} rupiah</p>
+                </body>
+                </html>
             `;
             
             const w = window.open('', '_blank');
@@ -1334,6 +1368,11 @@
             w.document.close();
             w.print();
         };
+
+        function terbilang(angka) {
+            if (angka < 1000000) return 'beberapa';
+            return 'dihitung';
+        }
 
         // ===== EXPORT FUNCTIONS =====
         function exportToExcel() {
@@ -1359,7 +1398,8 @@
                     'No. Anggota': a.noAnggota,
                     'Nama': a.nama,
                     'Total Simpanan': a.totalSimpanan,
-                    'SHU Diterima': a.shuDiterima
+                    'SHU Diterima': a.shuDiterima,
+                    'Persentase': a.persentase + '%'
                 })));
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Penerima SHU');
@@ -1375,9 +1415,9 @@
             const chartHTML = `
                 <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:2000;">
                     <div style="background:white; padding:20px; border-radius:16px; width:90%; max-width:400px;">
-                        <h3>Distribusi SHU ${currentFilter.tahun}</h3>
+                        <h3 style="margin-bottom:20px;">Distribusi SHU ${currentFilter.tahun}</h3>
                         <canvas id="chartCanvas" style="height:300px;"></canvas>
-                        <button onclick="closeChart()" class="btn btn-primary" style="margin-top:20px;">Tutup</button>
+                        <button onclick="closeChart()" class="btn btn-primary" style="margin-top:20px; width:100%;">Tutup</button>
                     </div>
                 </div>
             `;
@@ -1394,13 +1434,27 @@
                             data: shuData.map(i => i.jumlah),
                             backgroundColor: shuData.map(i => i.color)
                         }]
+                    },
+                    options: {
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const value = context.raw;
+                                        const percentage = shuData[context.dataIndex].persentase;
+                                        return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
             }, 100);
         };
 
         window.closeChart = function() {
-            document.querySelector('div[style*="position:fixed"]').remove();
+            const overlay = document.querySelector('div[style*="position:fixed"]');
+            if (overlay) overlay.remove();
         };
 
         // ===== UTILITY FUNCTIONS =====
@@ -1419,6 +1473,7 @@
                 padding: 12px 20px;
                 border-radius: 8px;
                 z-index: 3000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             `;
             msg.textContent = message;
             document.body.appendChild(msg);
@@ -1427,14 +1482,33 @@
 
         function updateLastSyncTime() {
             const now = new Date();
-            document.getElementById('lastSyncInfo').textContent = 
-                `Terakhir sinkron: ${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')} (dari Dashboard)`;
+            document.getElementById('lastSyncTime').textContent = 
+                now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function checkSyncWithDashboard() {
+            const currentDashboard = localStorage.getItem('dashboardData');
+            
+            if (currentDashboard) {
+                const newData = JSON.parse(currentDashboard);
+                
+                if (dashboardData && JSON.stringify(dashboardData.shu) === JSON.stringify(newData.shu)) {
+                    showMessage('✓ Data sinkron dengan Dashboard', 'success');
+                } else {
+                    showMessage('⚠️ Data berbeda dengan Dashboard. Klik Sinkron untuk update', 'warning');
+                    document.getElementById('syncStatus').innerHTML = '⚠️ Perlu Update';
+                    document.getElementById('syncStatus').className = 'badge badge-warning';
+                }
+            } else {
+                showMessage('❌ Dashboard tidak ditemukan', 'error');
+            }
         }
 
         window.refreshData = function() {
             loadDataFromDashboard();
             updateDisplay();
             showMessage('Data disinkronkan dengan Dashboard', 'success');
+            updateLastSyncTime();
         };
 
         // ===== EVENT LISTENERS =====
@@ -1443,7 +1517,6 @@
             document.getElementById('resetFilterBtn').addEventListener('click', () => {
                 document.getElementById('tahunSHU').value = '2026';
                 document.getElementById('periodeSHU').value = 'tahunan';
-                document.getElementById('statusSHU').value = 'all';
                 applyFilter();
             });
             
@@ -1452,8 +1525,9 @@
             document.getElementById('exportPenerimaBtn').addEventListener('click', exportPenerimaToExcel);
             document.getElementById('refreshDataBtn').addEventListener('click', refreshData);
             document.getElementById('viewChartBtn').addEventListener('click', showChartModal);
+            document.getElementById('checkSyncBtn').addEventListener('click', checkSyncWithDashboard);
             
-            ['tahunSHU', 'periodeSHU', 'statusSHU'].forEach(id => {
+            ['tahunSHU', 'periodeSHU'].forEach(id => {
                 document.getElementById(id).addEventListener('change', applyFilter);
             });
         }
