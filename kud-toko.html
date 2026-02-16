@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>KUD Toko KopSmart · Koperasi Digital</title>
+    <!-- Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f7f3;
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 90px;
+            color: #1d331d;
+        }
+
+        /* ========== HEADER ========== */
+        .header-koperasi {
+            background: linear-gradient(165deg, #2b6e3c 0%, #3f8d4b 100%);
+            color: white;
+            padding: 20px 20px 25px;
+            border-radius: 0 0 35px 35px;
+            box-shadow: 0 6px 15px rgba(20, 70, 0, 0.2);
+            margin-bottom: 5px;
+        }
+
+        .welcome-full {
+            font-size: 0.85rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .profile-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .nama-wrapper h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .profile-image {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,240,0.8);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 40px;
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container i {
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-container input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .search-container input::placeholder {
+            color: rgba(255,255,240,0.8);
+        }
+
+        /* ========== CONTAINER ========== */
+        .container {
+            padding: 0 16px;
+        }
+
+        /* ========== SLIDESHOW ========== */
+        .slider {
+            margin: 12px 0 18px;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 8px 18px rgba(0, 35, 0, 0.15);
+            aspect-ratio: 16/7;
+            background: #cbdcc6;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+
+        .slides img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        /* ========== MEGA CARD STATISTIK ========== */
+        .stats-mega-card {
+            background: white;
+            border-radius: 28px;
+            padding: 18px 18px 16px;
+            box-shadow: 0 18px 28px -15px rgba(0, 45, 0, 0.25);
+            margin-bottom: 22px;
+        }
+
+        .limit-section {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .limit-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #527a4e;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .limit-nominal {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1d511d;
+            line-height: 1.1;
+        }
+
+        .usage-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f9ed;
+            border-radius: 40px;
+            padding: 10px 18px;
+            margin-bottom: 12px;
+        }
+
+        .usage-col {
+            text-align: center;
+            flex: 1;
+        }
+
+        .usage-col .label {
+            font-size: 0.7rem;
+            color: #62855e;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .usage-col .value {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1a4d2a;
+        }
+
+        .separator {
+            width: 1px;
+            height: 25px;
+            background: #c8ddc2;
+        }
+
+        .progress-wrapper {
+            margin-bottom: 12px;
+        }
+
+        .progress-bg {
+            background: #e1eedb;
+            height: 10px;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #f0b13a;
+            height: 10px;
+            width: 0%;
+            border-radius: 30px;
+            transition: width 0.5s;
+        }
+
+        .mini-row {
+            display: flex;
+            gap: 12px;
+            margin: 12px 0 10px;
+        }
+
+        .mini-card {
+            flex: 1;
+            background: #f4fbf2;
+            border-radius: 20px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .mini-card .label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #527a4e;
+            margin-bottom: 6px;
+        }
+
+        .mini-card .value {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #1e4d1e;
+        }
+
+        .sisa-card {
+            background: linear-gradient(135deg, #ebf7e8, #dff0da);
+            border-radius: 22px;
+            padding: 12px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sisa-card .label {
+            font-weight: 600;
+            color: #2c622c;
+            font-size: 0.8rem;
+        }
+
+        .sisa-card .value {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #1e5a1e;
+        }
+
+        /* ========== KATEGORI ========== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0 10px;
+        }
+
+        .section-header h3 {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #1b461b;
+        }
+
+        .cat-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 5px 0 18px;
+            scrollbar-width: thin;
+        }
+
+        .cat-item {
+            background: white;
+            border: 1px solid #d5e7d0;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a551f;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .cat-item:hover {
+            background: #f5e9d4;
+            border-color: #c9a75a;
+        }
+
+        .cat-item i {
+            margin-right: 6px;
+            color: #d18d2c;
+        }
+
+        /* ========== PRODUK GRID ========== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 10px 0 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 22px;
+            padding: 12px 10px 12px;
+            box-shadow: 0 10px 18px -12px rgba(30, 60, 10, 0.2);
+            border: 1px solid #e3efe0;
+            cursor: pointer;
+            transition: transform 0.15s;
+            position: relative;
+        }
+
+        .product-card .img-wrapper {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .product-card img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 18px;
+            background: #edf5ea;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #f5c84e;
+            color: #1d511d;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            z-index: 2;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #174017;
+            margin-bottom: 4px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .current-price {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #b56d1f;
+        }
+
+        .original-price {
+            font-size: 0.7rem;
+            color: #9bb198;
+            text-decoration: line-through;
+        }
+
+        .rating-terjual {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.65rem;
+            color: #5b7259;
+            margin-left: auto;
+        }
+
+        .stars-small {
+            color: #ffb83b;
+            letter-spacing: -1px;
+        }
+
+        .btn-cart-small {
+            background: #f5c84e;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 0;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1d511d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* ========== BOTTOM NAVBAR ========== */
+        .navbar-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 18px;
+            border-top: 1px solid #dde8d9;
+            box-shadow: 0 -4px 20px rgba(30, 50, 0, 0.08);
+            z-index: 999;
+            border-radius: 28px 28px 0 0;
+        }
+
+        .nav-item {
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #4d6a4a;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 30px;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 3px;
+            color: #3f6b3f;
+        }
+
+        .nav-item.active {
+            background: #f2e8cf;
+            color: #225222;
+        }
+
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: 5px;
+            background: #d55a30;
+            color: white;
+            font-size: 0.65rem;
+            padding: 3px 6px;
+            border-radius: 40px;
+            border: 2px solid white;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            border-radius: 35px 35px 0 0;
+            padding: 20px 20px 30px;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-top: 5px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e5a1e;
+        }
+
+        .modal-back {
+            width: 40px;
+            height: 40px;
+            background: #f0f7ee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2a5e2a;
+            cursor: pointer;
+        }
+
+        /* Kategori Scroll di Modal */
+        .modal-cat-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 5px 0 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-cat-item {
+            background: #f0f8ee;
+            border: 1px solid #c5e0bf;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1a551f;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .modal-cat-item i {
+            margin-right: 6px;
+            color: #d18d2c;
+        }
+
+        .modal-cat-item.active {
+            background: #f5c84e;
+            color: #1d511d;
+            border-color: #dba332;
+        }
+
+        /* ========== DETAIL PRODUK MODAL ========== */
+        .produk-detail-img {
+            width: 100%;
+            border-radius: 28px;
+            margin: 15px 0 12px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+
+        .galeri-kecil {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 8px 0 15px;
+        }
+
+        .galeri-item {
+            flex: 0 0 70px;
+            text-align: center;
+        }
+
+        .galeri-item img {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid #e5f0e2;
+            cursor: pointer;
+        }
+
+        .galeri-item span {
+            display: block;
+            font-size: 9px;
+            background: #f0f8ee;
+            padding: 4px 6px;
+            border-radius: 5px;
+            margin-top: 4px;
+            color: #3b623b;
+            border: 1px solid #d2e5cd;
+        }
+
+        .nama-produk-besar {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a4a1a;
+            margin: 8px 0 4px;
+        }
+
+        .harga-produk {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #b8661a;
+            margin-bottom: 10px;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .stars {
+            display: flex;
+            gap: 3px;
+            font-size: 1.1rem;
+            color: #ffb83b;
+        }
+
+        .terjual {
+            font-size: 0.7rem;
+            background: #ecf7e9;
+            padding: 4px 10px;
+            border-radius: 30px;
+            color: #2d642d;
+        }
+
+        .deskripsi, .spesifikasi {
+            background: #f5fbf4;
+            padding: 16px 18px;
+            border-radius: 22px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #2d512d;
+            border: 1px solid #d4e8cf;
+        }
+
+        .deskripsi h4, .spesifikasi h4 {
+            margin-bottom: 8px;
+            color: #1c571c;
+            font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-beli {
+            flex: 1;
+            background: #2b823b;
+            color: white;
+            border: none;
+            padding: 18px 0;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(35, 100, 20, 0.3);
+        }
+
+        .btn-fav {
+            width: 60px;
+            height: 60px;
+            border-radius: 60px;
+            background: #fff2df;
+            border: 1px solid #f0cf9f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #d1691a;
+            cursor: pointer;
+        }
+
+        /* ========== KERANJANG ITEM STYLE ========== */
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            background: #f9fcf8;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #e3efe0;
+            position: relative;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e4a1e;
+            max-width: 180px;
+        }
+
+        .cart-item-fav {
+            color: #d1691a;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .cart-item-unit {
+            font-size: 0.7rem;
+            color: #6e946a;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #b56d1f;
+            margin-bottom: 8px;
+        }
+
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #edf5ea;
+            padding: 5px 12px;
+            border-radius: 30px;
+            width: fit-content;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #c5e0bf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #1e5a1e;
+            cursor: pointer;
+        }
+
+        .qty-number {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1d511d;
+        }
+
+        /* Promo Card */
+        .promo-card {
+            background: #f0f8ee;
+            border-radius: 20px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            border: 1px dashed #c5e0bf;
+            cursor: pointer;
+        }
+
+        .promo-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .promo-left i {
+            color: #d18d2c;
+            font-size: 1.2rem;
+        }
+
+        .promo-left span {
+            font-weight: 600;
+            color: #1e5a1e;
+        }
+
+        .promo-right i {
+            color: #6e946a;
+        }
+
+        /* Promo Item */
+        .promo-item {
+            background: #f9fcf8;
+            border: 1px solid #e3efe0;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .promo-item:hover {
+            border-color: #f5c84e;
+            background: #fff9e6;
+        }
+
+        .promo-item-left {
+            flex: 1;
+        }
+
+        .promo-code {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e5a1e;
+            background: #f5c84e;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .promo-desc {
+            font-size: 0.75rem;
+            color: #6e946a;
+            line-height: 1.3;
+        }
+
+        .promo-value {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #b56d1f;
+            min-width: 70px;
+            text-align: right;
+        }
+
+        /* Applied Promo */
+        .applied-promo {
+            background: #e3f5e3;
+            border: 1px solid #a5d6a5;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .applied-promo-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .applied-promo-left i {
+            color: #166b1f;
+            font-size: 1.1rem;
+        }
+
+        .applied-promo-code {
+            font-weight: 700;
+            color: #166b1f;
+            font-size: 0.9rem;
+        }
+
+        .applied-promo-desc {
+            font-size: 0.7rem;
+            color: #2d642d;
+        }
+
+        .applied-promo-remove {
+            color: #d55a30;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        /* Ringkasan Belanja */
+        .summary-card {
+            background: #f4fbf2;
+            border-radius: 25px;
+            padding: 18px;
+            margin: 15px 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #2d512d;
+        }
+
+        .summary-row.total {
+            font-weight: 800;
+            color: #1e5a1e;
+            font-size: 1.1rem;
+            border-top: 1px solid #c8ddc2;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .summary-row.promo {
+            color: #166b1f;
+            font-weight: 600;
+        }
+
+        .btn-checkout {
+            background: #2b823b;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        /* Metode Pembayaran */
+        .payment-option {
+            background: #f9fcf8;
+            border: 2px solid #e3efe0;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .payment-option:hover {
+            border-color: #f5c84e;
+        }
+
+        .payment-option.active {
+            border-color: #f5c84e;
+            background: #fff9e6;
+        }
+
+        .payment-option-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #1e4a1e;
+        }
+
+        .payment-option-header i {
+            font-size: 1.3rem;
+            color: #d18d2c;
+        }
+
+        .payment-detail {
+            margin-top: 15px;
+            padding: 15px;
+            background: #edf5ea;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            color: #2d512d;
+        }
+
+        .bank-item {
+            padding: 12px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bank-item:hover {
+            background: #f5e9d4;
+        }
+
+        .bank-item i {
+            width: 24px;
+            color: #d18d2c;
+        }
+
+        .bank-item .bank-detail {
+            flex: 1;
+        }
+
+        .bank-item .bank-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e5a1e;
+        }
+
+        .bank-item .bank-account {
+            font-size: 0.8rem;
+            color: #6e946a;
+        }
+
+        /* Modal Hutang */
+        .hutang-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hutang-content {
+            background: white;
+            width: 90%;
+            max-width: 350px;
+            border-radius: 35px;
+            padding: 25px;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .hutang-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e5a1e;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hutang-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #2d512d;
+        }
+
+        .hutang-row.total {
+            font-weight: 800;
+            color: #1e5a1e;
+            font-size: 1.1rem;
+            border-top: 1px solid #c8ddc2;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-hutang {
+            background: #2b823b;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .btn-close-hutang {
+            background: #edf5ea;
+            color: #1e5a1e;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 50px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-selesai {
+            background: #e3f5e3;
+            color: #166b1f;
+            border: 1px solid #a5d6a5;
+        }
+
+        .status-belum {
+            background: #fff3e0;
+            color: #b85e1a;
+            border: 1px solid #ffcc80;
+        }
+
+        .status-proses {
+            background: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #90caf9;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            right: 20px;
+            background: #1d531d;
+            color: white;
+            padding: 14px;
+            border-radius: 50px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            z-index: 10000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header-koperasi">
+        <div class="welcome-full">Selamat Datang di KUD Toko KopSmart</div>
+        <div class="profile-row">
+            <div class="nama-wrapper">
+                <h3 id="namaAnggota">Eldi Sugianto, S.Kom</h3>
+            </div>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png" 
+                 alt="Profile" class="profile-image">
+        </div>
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Cari produk, sembako, pulsa..." id="searchInput">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- SLIDESHOW -->
+        <div class="slider">
+            <div class="slides" id="slides">
+                <img src="https://picsum.photos/id/1015/600/250" alt="slide 1">
+                <img src="https://picsum.photos/id/1043/600/250" alt="slide 2">
+                <img src="https://picsum.photos/id/106/600/250" alt="slide 3">
+            </div>
+        </div>
+
+        <!-- MEGA CARD STATISTIK -->
+        <div class="stats-mega-card">
+            <div class="limit-section">
+                <div class="limit-label">LIMIT HUTANG</div>
+                <div class="limit-nominal" id="limitNominal">Rp 5.000.000</div>
+            </div>
+            <div class="usage-row">
+                <div class="usage-col">
+                    <div class="label">Terpakai</div>
+                    <div class="value" id="terpakaiValue">Rp 1.850.000</div>
+                </div>
+                <div class="separator"></div>
+                <div class="usage-col">
+                    <div class="label">Tersedia</div>
+                    <div class="value" id="tersediaValue">Rp 3.150.000</div>
+                </div>
+            </div>
+            <div class="progress-wrapper">
+                <div class="progress-bg">
+                    <div class="progress-fill" id="progressFill" style="width: 37%;"></div>
+                </div>
+            </div>
+            <div class="mini-row">
+                <div class="mini-card">
+                    <div class="label"><i class="fas fa-check-circle"></i> Hutang Terbayar</div>
+                    <div class="value" id="hutangTerbayar">Rp 750.000</div>
+                </div>
+                <div class="mini-card">
+                    <div class="label"><i class="fas fa-calendar-exclamation"></i> Jatuh Tempo</div>
+                    <div class="value" id="jatuhTempo">Rp 450.000</div>
+                </div>
+            </div>
+            <div class="sisa-card">
+                <span class="label">Sisa Hutang</span>
+                <span class="value" id="sisaHutang">Rp 3.150.000</span>
+            </div>
+        </div>
+
+        <!-- KATEGORI (7 MENU) -->
+        <div class="section-header">
+            <h3><i class="fas fa-tags"></i> Jelajahi Kategori</h3>
+        </div>
+        <div class="cat-scroll" id="mainCategoryScroll">
+            <div class="cat-item" onclick="openKategoriProduk('pulsa')"><i class="fas fa-mobile-alt"></i> Pulsa</div>
+            <div class="cat-item" onclick="openKategoriProduk('sembako')"><i class="fas fa-shopping-basket"></i> Sembako</div>
+            <div class="cat-item" onclick="openKategoriProduk('grosir')"><i class="fas fa-boxes"></i> Grosir</div>
+            <div class="cat-item" onclick="openKategoriProduk('jasa')"><i class="fas fa-tools"></i> Jasa</div>
+            <div class="cat-item" onclick="openKategoriProduk('tukang')"><i class="fas fa-hard-hat"></i> Tukang</div>
+            <div class="cat-item" onclick="openKategoriProduk('umkm')"><i class="fas fa-store"></i> UMKM</div>
+            <div class="cat-item" onclick="openKategoriProduk('properti')"><i class="fas fa-home"></i> Properti</div>
+        </div>
+
+        <!-- PRODUK PILIHAN -->
+        <div class="section-header">
+            <h3><i class="fas fa-cubes"></i> Produk Pilihan</h3>
+            <a href="#" style="color: #497a49; font-size: 0.85rem;" onclick="openProdukListModal('all'); return false;">lihat semua</a>
+        </div>
+        <div class="products-grid" id="produkList"></div>
+    </div>
+
+    <!-- BOTTOM NAVBAR (Toko, Produk, Keranjang, Pesanan) -->
+    <div class="navbar-bottom">
+        <div class="nav-item active" onclick="openTokoModal()">
+            <i class="fas fa-store"></i>
+            <span>Toko</span>
+        </div>
+        <div class="nav-item" onclick="openProdukListModal('all')">
+            <i class="fas fa-tag"></i>
+            <span>Produk</span>
+        </div>
+        <div class="nav-item" onclick="openKeranjangModal()">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Keranjang</span>
+            <span class="badge" id="badge">3</span>
+        </div>
+        <div class="nav-item" onclick="openPesananModal()">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Pesanan</span>
+        </div>
+    </div>
+
+    <!-- MODAL OVERLAY UTAMA -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal-content" id="modalContent" onclick="event.stopPropagation()">
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- MODAL HUTANG (POP-UP) -->
+    <div class="hutang-modal" id="hutangModal" onclick="closeHutangModal()">
+        <div class="hutang-content" onclick="event.stopPropagation()">
+            <div class="hutang-title">Rincian Hutang</div>
+            <div class="hutang-row">
+                <span>Sisa Hutang</span>
+                <span id="sisaHutangModal">Rp 500.000</span>
+            </div>
+            <div class="hutang-row">
+                <span>Hutang Transaksi ini</span>
+                <span id="hutangTransaksiModal">Rp 1.325.000</span>
+            </div>
+            <div class="hutang-row">
+                <span>Jatuh Tempo</span>
+                <span>10 Februari 2026</span>
+            </div>
+            <div class="hutang-row total">
+                <span>Total Hutang</span>
+                <span id="totalHutangModal">Rp 1.825.000</span>
+            </div>
+            <button class="btn-hutang" onclick="prosesCheckoutHutang()">Checkout</button>
+            <button class="btn-close-hutang" onclick="closeHutangModal()">Batal</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">✓ Produk ditambahkan</div>
+
+    <script>
+        // ========== DATA PRODUK ==========
+        let produkList = [
+            // Pulsa
+            { id: 1, kategori: 'pulsa', nama: 'Pulsa 10rb', harga: 10500, hargaAsli: 12000, gambar: 'https://picsum.photos/id/1/300/300', terjual: 1250, rating: 4.8, badge: 'Populer', satuan: 'pcs', deskripsi: 'Pulsa elektrik 10rb untuk semua operator. Masa aktif sesuai ketentuan operator.', spesifikasi: 'Nominal: Rp 10.000 | Operator: All Operator | Masa Aktif: 30 hari', galeri: ['https://picsum.photos/id/1/100/100', 'https://picsum.photos/id/2/100/100', 'https://picsum.photos/id/3/100/100'] },
+            { id: 2, kategori: 'pulsa', nama: 'Pulsa 25rb', harga: 25500, hargaAsli: 27000, gambar: 'https://picsum.photos/id/2/300/300', terjual: 980, rating: 4.7, badge: 'Hemat', satuan: 'pcs', deskripsi: 'Pulsa elektrik 25rb. Proses cepat 24 jam.', spesifikasi: 'Nominal: Rp 25.000 | Operator: All Operator', galeri: ['https://picsum.photos/id/2/100/100', 'https://picsum.photos/id/3/100/100', 'https://picsum.photos/id/4/100/100'] },
+            { id: 3, kategori: 'pulsa', nama: 'Paket Data 10GB', harga: 65000, hargaAsli: 75000, gambar: 'https://picsum.photos/id/3/300/300', terjual: 756, rating: 4.9, badge: 'Best', satuan: 'pcs', deskripsi: 'Paket data 10GB 30 hari. Kuota utama 10GB.', spesifikasi: 'Kuota: 10GB | Masa Aktif: 30 hari', galeri: ['https://picsum.photos/id/3/100/100', 'https://picsum.photos/id/4/100/100', 'https://picsum.photos/id/5/100/100'] },
+            
+            // Sembako
+            { id: 4, kategori: 'sembako', nama: 'Beras Premium 5kg', harga: 85000, hargaAsli: 95000, gambar: 'https://picsum.photos/id/100/300/300', terjual: 156, rating: 4.5, badge: 'Hemat 10rb', satuan: 'kg', deskripsi: 'Beras premium kualitas terbaik, pulen dan wangi. Cocok untuk konsumsi sehari-hari.', spesifikasi: 'Berat: 5kg | Kadar air: 14% | Varietas: IR64', galeri: ['https://picsum.photos/id/100/100/100', 'https://picsum.photos/id/101/100/100', 'https://picsum.photos/id/102/100/100'] },
+            { id: 5, kategori: 'sembako', nama: 'Minyak Goreng 2L', harga: 32000, hargaAsli: 38000, gambar: 'https://picsum.photos/id/101/300/300', terjual: 203, rating: 4.2, badge: 'Diskon 16%', satuan: 'liter', deskripsi: 'Minyak goreng kemasan 2 liter, jernih dan tahan panas.', spesifikasi: 'Volume: 2L | Kemasan: Pouch | Merek: Minyakita', galeri: ['https://picsum.photos/id/101/100/100', 'https://picsum.photos/id/102/100/100', 'https://picsum.photos/id/103/100/100'] },
+            { id: 6, kategori: 'sembako', nama: 'Gula Pasir 1kg', harga: 16000, hargaAsli: 18500, gambar: 'https://picsum.photos/id/102/300/300', terjual: 320, rating: 4.8, badge: 'Best Seller', satuan: 'kg', deskripsi: 'Gula pasir putih murni, manis alami.', spesifikasi: 'Berat: 1kg | Kemasan: Plastik | Asal: Jawa', galeri: ['https://picsum.photos/id/102/100/100', 'https://picsum.photos/id/103/100/100', 'https://picsum.photos/id/104/100/100'] },
+            
+            // Grosir
+            { id: 7, kategori: 'grosir', nama: 'Beras 25kg (Grosir)', harga: 375000, hargaAsli: 425000, gambar: 'https://picsum.photos/id/104/300/300', terjual: 45, rating: 4.6, badge: 'Grosir', satuan: 'karung', deskripsi: 'Beras kualitas medium untuk kebutuhan grosir.', spesifikasi: 'Berat: 25kg | Kemasan: Karung', galeri: ['https://picsum.photos/id/104/100/100', 'https://picsum.photos/id/105/100/100'] },
+            { id: 8, kategori: 'grosir', nama: 'Minyak 5L (Grosir)', harga: 145000, hargaAsli: 165000, gambar: 'https://picsum.photos/id/105/300/300', terjual: 67, rating: 4.4, badge: 'Ekonomis', satuan: 'pcs', deskripsi: 'Minyak goreng kemasan 5L untuk kebutuhan grosir.', spesifikasi: 'Volume: 5L | Kemasan: Jerigen', galeri: ['https://picsum.photos/id/105/100/100', 'https://picsum.photos/id/106/100/100'] },
+            
+            // Jasa
+            { id: 9, kategori: 'jasa', nama: 'Service AC', harga: 50000, hargaAsli: 75000, gambar: 'https://picsum.photos/id/106/300/300', terjual: 28, rating: 4.9, badge: 'Teknisi', satuan: 'jasa', deskripsi: 'Jasa service AC bersih dan perawatan.', spesifikasi: 'Durasi: 2 jam | Termasuk spare part', galeri: ['https://picsum.photos/id/106/100/100', 'https://picsum.photos/id/107/100/100'] },
+            { id: 10, kategori: 'jasa', nama: 'Cuci Karpet', harga: 75000, hargaAsli: 100000, gambar: 'https://picsum.photos/id/107/300/300', terjual: 15, rating: 4.7, badge: 'Profesional', satuan: 'jasa', deskripsi: 'Jasa cuci karpet profesional.', spesifikasi: 'Harga per meter | Free antar', galeri: ['https://picsum.photos/id/107/100/100', 'https://picsum.photos/id/108/100/100'] },
+            
+            // Tukang
+            { id: 11, kategori: 'tukang', nama: 'Tukang Bangunan', harga: 150000, hargaAsli: 180000, gambar: 'https://picsum.photos/id/108/300/300', terjual: 12, rating: 4.8, badge: 'Berpengalaman', satuan: 'hari', deskripsi: 'Jasa tukang bangunan berpengalaman.', spesifikasi: 'Harga per hari | Termasuk alat', galeri: ['https://picsum.photos/id/108/100/100', 'https://picsum.photos/id/109/100/100'] },
+            
+            // UMKM
+            { id: 12, kategori: 'umkm', nama: 'Keripik Singkong', harga: 15000, hargaAsli: 20000, gambar: 'https://picsum.photos/id/109/300/300', terjual: 89, rating: 4.5, badge: 'UMKM', satuan: 'bungkus', deskripsi: 'Keripik singkong asli buatan UMKM lokal.', spesifikasi: 'Berat: 250g | Rasa: Original', galeri: ['https://picsum.photos/id/109/100/100', 'https://picsum.photos/id/110/100/100'] },
+            
+            // Properti
+            { id: 13, kategori: 'properti', nama: 'Sewa Ruko', harga: 5000000, hargaAsli: 6000000, gambar: 'https://picsum.photos/id/110/300/300', terjual: 3, rating: 5.0, badge: 'Strategis', satuan: 'bulan', deskripsi: 'Sewa ruko strategis di pusat kota.', spesifikasi: 'Luas: 50m² | Listrik: 4400W', galeri: ['https://picsum.photos/id/110/100/100', 'https://picsum.photos/id/111/100/100'] },
+        ];
+
+        // ========== DATA KERANJANG ==========
+        let cart = JSON.parse(localStorage.getItem('cart')) || [
+            { id: 4, nama: 'Beras Premium 5kg', harga: 85000, gambar: 'https://picsum.photos/id/100/300/300', qty: 2, satuan: 'kg', favorit: false },
+            { id: 5, nama: 'Minyak Goreng 2L', harga: 32000, gambar: 'https://picsum.photos/id/101/300/300', qty: 1, satuan: 'liter', favorit: true },
+            { id: 1, nama: 'Pulsa 10rb', harga: 10500, gambar: 'https://picsum.photos/id/1/300/300', qty: 3, satuan: 'pcs', favorit: false },
+        ];
+
+        // ========== DATA PROMO ==========
+        let appliedPromo = null;
+        let availablePromos = [
+            { code: 'HEMAT10', type: 'percent', value: 10, maxDiscount: 20000, desc: 'Diskon 10% maks. Rp 20.000', minBelanja: 0 },
+            { code: 'BELANJA25', type: 'nominal', value: 25000, desc: 'Diskon Rp 25.000 min. belanja Rp 200.000', minBelanja: 200000 },
+            { code: 'GRATISONGKIR', type: 'ongkir', value: 5000, desc: 'Gratis ongkir min. belanja Rp 100.000', minBelanja: 100000 }
+        ];
+
+        // ========== DATA PESANAN ==========
+        let pesananList = [
+            {
+                id: '#01-2026-001',
+                tanggal: '16 Februari 2026',
+                status: 'Selesai',
+                metodePembayaran: 'Transfer Bank',
+                produk: [
+                    { nama: 'Jeruk', qty: 2, hargaSatuan: 10000, total: 20000, gambar: 'https://picsum.photos/id/15/100/100' },
+                    { nama: 'Mangga', qty: 3, hargaSatuan: 15000, total: 45000, gambar: 'https://picsum.photos/id/16/100/100' }
+                ],
+                subtotal: 65000,
+                jasa: 6500,
+                ongkir: 5000,
+                total: 76500
+            },
+            {
+                id: '#01-2026-002',
+                tanggal: '15 Februari 2026',
+                status: 'Belum dibayar',
+                metodePembayaran: 'Transfer Bank',
+                produk: [
+                    { nama: 'Beras', qty: 1, hargaSatuan: 12000, total: 12000, gambar: 'https://picsum.photos/id/100/100/100' },
+                    { nama: 'Minyak Goreng', qty: 2, hargaSatuan: 11000, total: 22000, gambar: 'https://picsum.photos/id/101/100/100' }
+                ],
+                subtotal: 34000,
+                jasa: 3400,
+                ongkir: 5000,
+                total: 42400
+            },
+            {
+                id: '#01-2026-003',
+                tanggal: '14 Februari 2026',
+                status: 'Di Proses',
+                metodePembayaran: 'DANA',
+                produk: [
+                    { nama: 'Beras', qty: 1, hargaSatuan: 12000, total: 12000, gambar: 'https://picsum.photos/id/100/100/100' },
+                    { nama: 'Minyak Goreng', qty: 2, hargaSatuan: 11000, total: 22000, gambar: 'https://picsum.photos/id/101/100/100' },
+                    { nama: 'Gula', qty: 1, hargaSatuan: 14000, total: 14000, gambar: 'https://picsum.photos/id/102/100/100' }
+                ],
+                subtotal: 48000,
+                jasa: 4800,
+                ongkir: 5000,
+                total: 57800
+            }
+        ];
+
+        // ========== DATA ANGGOTA ==========
+        let anggotaData = {
+            nama: 'Eldi Sugianto, S.Kom',
+            noHP: '085218483129',
+            alamat: 'Jl. Koperasi No. 123, Jakarta'
+        };
+
+        // ========== RENDER PRODUK UTAMA ==========
+        function renderProdukUtama() {
+            const wrap = document.getElementById('produkList');
+            wrap.innerHTML = '';
+            produkList.slice(0, 4).forEach(p => {
+                wrap.innerHTML += `
+                    <div class="product-card">
+                        <div class="img-wrapper" onclick="openDetailProduk(${p.id})">
+                            <img src="${p.gambar}" loading="lazy">
+                            <span class="product-badge">${p.badge}</span>
+                        </div>
+                        <div onclick="openDetailProduk(${p.id})">
+                            <div class="product-name">${p.nama}</div>
+                            <div class="price-row">
+                                <span class="current-price">Rp ${p.harga.toLocaleString('id-ID')}</span>
+                                <span class="original-price">Rp ${p.hargaAsli.toLocaleString('id-ID')}</span>
+                                <span class="rating-terjual">
+                                    <span class="stars-small">${'★'.repeat(Math.floor(p.rating))}</span>
+                                    ${p.terjual}
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn-cart-small" onclick="addToCart(${p.id})">
+                            <i class="fas fa-shopping-cart"></i> Keranjang
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // ========== FUNGSI CART ==========
+        function addToCart(id) {
+            const produk = produkList.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...produk, qty: 1, favorit: false });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateBadge();
+            showToast(`${produk.nama} ditambahkan`);
+        }
+
+        function updateBadge() {
+            document.getElementById('badge').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            toast.innerText = '✓ ' + msg;
+            setTimeout(() => toast.style.display = 'none', 2000);
+        }
+
+        // ========== FUNGSI HITUNG TOTAL ==========
+        function hitungTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+            let jasa = subtotal * 0.1; // 10%
+            let ongkir = 5000;
+            let diskon = 0;
+
+            if (appliedPromo) {
+                if (appliedPromo.type === 'percent') {
+                    diskon = Math.min(subtotal * (appliedPromo.value / 100), appliedPromo.maxDiscount || Infinity);
+                } else if (appliedPromo.type === 'nominal') {
+                    if (subtotal >= appliedPromo.minBelanja) {
+                        diskon = appliedPromo.value;
+                    }
+                } else if (appliedPromo.type === 'ongkir') {
+                    if (subtotal >= appliedPromo.minBelanja) {
+                        ongkir = 0;
+                    }
+                }
+            }
+
+            const total = subtotal + jasa + ongkir - diskon;
+            return { subtotal, jasa, ongkir, diskon, total };
+        }
+
+        // ========== MODAL DETAIL PRODUK ==========
+        function openDetailProduk(id) {
+            const produk = produkList.find(p => p.id === id);
+            if (!produk) return;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-back" onclick="closeModal()" style="position: absolute; top: 20px; left: 20px; z-index:10;">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+
+                <img src="${produk.gambar}" class="produk-detail-img" alt="${produk.nama}">
+
+                <div class="galeri-kecil">
+                    ${produk.galeri.map((g, idx) => `
+                        <div class="galeri-item" onclick="changeMainImage('${g}')">
+                            <img src="${g}" alt="thumb ${idx+1}">
+                            <span>${produk.nama.split(' ')[0]} ${idx+1}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="nama-produk-besar">${produk.nama}</div>
+                <div class="harga-produk">Rp ${produk.harga.toLocaleString('id-ID')}</div>
+
+                <div class="rating-row">
+                    <div class="stars">
+                        ${[1,2,3,4,5].map(b => `
+                            <i class="fa${b <= Math.round(produk.rating) ? 's' : 'r'} fa-star"></i>
+                        `).join('')}
+                    </div>
+                    <span class="terjual"><i class="fas fa-shopping-bag"></i> ${produk.terjual} terjual</span>
+                </div>
+
+                <div class="deskripsi">
+                    <h4>📝 Deskripsi</h4>
+                    <p>${produk.deskripsi}</p>
+                </div>
+
+                <div class="spesifikasi">
+                    <h4>⚙️ Spesifikasi</h4>
+                    <p>${produk.spesifikasi}</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-beli" onclick="addToCart(${produk.id}); closeModal();"><i class="fas fa-shopping-cart"></i> Keranjang</button>
+                </div>
+            `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function changeMainImage(src) {
+            const mainImg = document.querySelector('.produk-detail-img');
+            if (mainImg) mainImg.src = src;
+        }
+
+        // ========== MODAL PROMO ==========
+        function openPromoModal() {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Kode Promo</div>
+                    <div class="modal-back" onclick="openKeranjangModal()">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+                
+                <div class="promo-input-modal" style="margin-bottom:20px;">
+                    <input type="text" class="promo-input" placeholder="Masukkan kode promo" id="promoCode" style="width:100%; padding:15px; border:2px solid #e3efe0; border-radius:50px; margin-bottom:15px;">
+                    <button class="btn-checkout" onclick="applyPromo()" style="margin-top:0;">Terapkan</button>
+                </div>
+
+                <div class="promo-list">
+                    <h4 style="color: #1e5a1e; margin-bottom:15px; font-size:0.9rem;">Promo Tersedia</h4>
+                    
+                    <div class="promo-item" onclick="selectPromo('HEMAT10')">
+                        <div class="promo-item-left">
+                            <span class="promo-code">HEMAT10</span>
+                            <div class="promo-desc">Diskon 10% maks. Rp 20.000</div>
+                        </div>
+                        <div class="promo-value">10%</div>
+                    </div>
+
+                    <div class="promo-item" onclick="selectPromo('BELANJA25')">
+                        <div class="promo-item-left">
+                            <span class="promo-code">BELANJA25</span>
+                            <div class="promo-desc">Diskon Rp 25.000 min. belanja Rp 200.000</div>
+                        </div>
+                        <div class="promo-value">Rp 25K</div>
+                    </div>
+
+                    <div class="promo-item" onclick="selectPromo('GRATISONGKIR')">
+                        <div class="promo-item-left">
+                            <span class="promo-code">GRATISONGKIR</span>
+                            <div class="promo-desc">Gratis ongkir min. belanja Rp 100.000</div>
+                        </div>
+                        <div class="promo-value">Gratis</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function selectPromo(code) {
+            document.getElementById('promoCode').value = code;
+        }
+
+        function applyPromo() {
+            const code = document.getElementById('promoCode').value.toUpperCase();
+            const promo = availablePromos.find(p => p.code === code);
+            
+            if (promo) {
+                const { subtotal } = hitungTotal();
+                
+                if (subtotal < promo.minBelanja) {
+                    showToast(`Minimal belanja Rp ${promo.minBelanja.toLocaleString('id-ID')}`);
+                    return;
+                }
+                
+                appliedPromo = promo;
+                showToast(`Promo ${code} diterapkan`);
+                setTimeout(() => {
+                    openKeranjangModal();
+                }, 1500);
+            } else {
+                showToast('Kode promo tidak valid');
+            }
+        }
+
+        function removePromo() {
+            appliedPromo = null;
+            showToast('Promo dihapus');
+            openKeranjangModal();
+        }
+
+        // ========== MODAL PRODUK PER KATEGORI ==========
+        function openKategoriProduk(kategori) {
+            const modalBody = document.getElementById('modalBody');
+            const filteredProduk = produkList.filter(p => p.kategori === kategori);
+            const kategoriNama = {
+                pulsa: 'Pulsa & Data',
+                sembako: 'Sembako',
+                grosir: 'Grosir',
+                jasa: 'Jasa',
+                tukang: 'Tukang',
+                umkm: 'UMKM',
+                properti: 'Properti'
+            };
+
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">${kategoriNama[kategori]}</div>
+                    <div class="modal-back" onclick="closeModal()">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+
+                <div class="modal-cat-scroll">
+                    <div class="modal-cat-item" onclick="openKategoriProduk('pulsa')"><i class="fas fa-mobile-alt"></i> Pulsa</div>
+                    <div class="modal-cat-item" onclick="openKategoriProduk('sembako')"><i class="fas fa-shopping-basket"></i> Sembako</div>
+                    <div class="modal-cat-item" onclick="openKategoriProduk('grosir')"><i class="fas fa-boxes"></i> Grosir</div>
+                    <div class="modal-cat-item" onclick="openKategoriProduk('jasa')"><i class="fas fa-tools"></i> Jasa</div>
+                    <div class="modal-cat-item" onclick="openKategoriProduk('tukang')"><i class="fas fa-hard-hat"></i> Tukang</div>
+                    <div class="modal-cat-item" onclick="openKategoriProduk('umkm')"><i class="fas fa-store"></i> UMKM</div>
+                    <div class="modal-cat-item" onclick="openKategoriProduk('properti')"><i class="fas fa-home"></i> Properti</div>
+                </div>
+
+                <div class="products-grid" style="grid-template-columns: repeat(2,1fr);">
+                    ${filteredProduk.map(p => `
+                        <div class="product-card">
+                            <div class="img-wrapper" onclick="openDetailProduk(${p.id})">
+                                <img src="${p.gambar}" loading="lazy">
+                                <span class="product-badge">${p.badge}</span>
+                            </div>
+                            <div onclick="openDetailProduk(${p.id})">
+                                <div class="product-name">${p.nama}</div>
+                                <div class="price-row">
+                                    <span class="current-price">Rp ${p.harga.toLocaleString('id-ID')}</span>
+                                    <span class="original-price">Rp ${p.hargaAsli.toLocaleString('id-ID')}</span>
+                                    <span class="rating-terjual">
+                                        <span class="stars-small">${'★'.repeat(Math.floor(p.rating))}</span>
+                                        ${p.terjual}
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="btn-cart-small" onclick="addToCart(${p.id})">
+                                <i class="fas fa-shopping-cart"></i> Keranjang
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        // ========== MODAL PRODUK LIST (SEMUA PRODUK) ==========
+        function openProdukListModal(kategori = 'all') {
+            const modalBody = document.getElementById('modalBody');
+            const filteredProduk = kategori === 'all' ? produkList : produkList.filter(p => p.kategori === kategori);
+
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Produk</div>
+                    <div class="modal-back" onclick="closeModal()">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+
+                <div class="modal-cat-scroll">
+                    <div class="modal-cat-item ${kategori === 'all' ? 'active' : ''}" onclick="openProdukListModal('all')"><i class="fas fa-th-large"></i> Semua</div>
+                    <div class="modal-cat-item ${kategori === 'pulsa' ? 'active' : ''}" onclick="openProdukListModal('pulsa')"><i class="fas fa-mobile-alt"></i> Pulsa</div>
+                    <div class="modal-cat-item ${kategori === 'sembako' ? 'active' : ''}" onclick="openProdukListModal('sembako')"><i class="fas fa-shopping-basket"></i> Sembako</div>
+                    <div class="modal-cat-item ${kategori === 'grosir' ? 'active' : ''}" onclick="openProdukListModal('grosir')"><i class="fas fa-boxes"></i> Grosir</div>
+                    <div class="modal-cat-item ${kategori === 'jasa' ? 'active' : ''}" onclick="openProdukListModal('jasa')"><i class="fas fa-tools"></i> Jasa</div>
+                    <div class="modal-cat-item ${kategori === 'tukang' ? 'active' : ''}" onclick="openProdukListModal('tukang')"><i class="fas fa-hard-hat"></i> Tukang</div>
+                    <div class="modal-cat-item ${kategori === 'umkm' ? 'active' : ''}" onclick="openProdukListModal('umkm')"><i class="fas fa-store"></i> UMKM</div>
+                    <div class="modal-cat-item ${kategori === 'properti' ? 'active' : ''}" onclick="openProdukListModal('properti')"><i class="fas fa-home"></i> Properti</div>
+                </div>
+
+                <div class="products-grid" style="grid-template-columns: repeat(2,1fr);">
+                    ${filteredProduk.map(p => `
+                        <div class="product-card">
+                            <div class="img-wrapper" onclick="openDetailProduk(${p.id})">
+                                <img src="${p.gambar}" loading="lazy">
+                                <span class="product-badge">${p.badge}</span>
+                            </div>
+                            <div onclick="openDetailProduk(${p.id})">
+                                <div class="product-name">${p.nama}</div>
+                                <div class="price-row">
+                                    <span class="current-price">Rp ${p.harga.toLocaleString('id-ID')}</span>
+                                    <span class="original-price">Rp ${p.hargaAsli.toLocaleString('id-ID')}</span>
+                                    <span class="rating-terjual">
+                                        <span class="stars-small">${'★'.repeat(Math.floor(p.rating))}</span>
+                                        ${p.terjual}
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="btn-cart-small" onclick="addToCart(${p.id})">
+                                <i class="fas fa-shopping-cart"></i> Keranjang
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        // ========== MODAL KERANJANG ==========
+        function openKeranjangModal() {
+            const { subtotal, jasa, ongkir, diskon, total } = hitungTotal();
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Keranjang</div>
+                    <div class="modal-back" onclick="closeModal()">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+
+                ${cart.length === 0 ? '<p style="text-align:center; padding:30px; color:#888;">Keranjang kosong</p>' : ''}
+
+                ${cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.gambar}" class="cart-item-image">
+                        <div class="cart-item-details">
+                            <div class="cart-item-header">
+                                <span class="cart-item-name">${item.nama}</span>
+                                <span class="cart-item-fav" onclick="toggleFavoriteCart(${item.id})">
+                                    <i class="fa${item.favorit ? 's' : 'r'} fa-heart"></i>
+                                </span>
+                            </div>
+                            <div class="cart-item-unit">${item.qty} ${item.satuan || 'pcs'}</div>
+                            <div class="cart-item-price">Rp ${(item.harga * item.qty).toLocaleString('id-ID')}</div>
+                            <div class="cart-item-qty">
+                                <span class="qty-btn" onclick="updateQty(${item.id}, -1)">−</span>
+                                <span class="qty-number">${item.qty}</span>
+                                <span class="qty-btn" onclick="updateQty(${item.id}, 1)">+</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+
+                ${cart.length > 0 ? `
+                    <div class="promo-card" onclick="openPromoModal()">
+                        <div class="promo-left">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Punya kode promo?</span>
+                        </div>
+                        <div class="promo-right">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    ${appliedPromo ? `
+                        <div class="applied-promo">
+                            <div class="applied-promo-left">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <div class="applied-promo-code">${appliedPromo.code}</div>
+                                    <div class="applied-promo-desc">${appliedPromo.desc}</div>
+                                </div>
+                            </div>
+                            <div class="applied-promo-remove" onclick="removePromo()">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="summary-card">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>Rp ${subtotal.toLocaleString('id-ID')}</span>
+                        </div>
+                        ${diskon > 0 ? `
+                            <div class="summary-row promo">
+                                <span>Diskon Promo</span>
+                                <span>- Rp ${diskon.toLocaleString('id-ID')}</span>
+                            </div>
+                        ` : ''}
+                        <div class="summary-row">
+                            <span>Jasa (10%)</span>
+                            <span>Rp ${jasa.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Pengiriman/Ongkir</span>
+                            <span>${ongkir === 0 ? 'Gratis' : 'Rp ' + ongkir.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>Rp ${total.toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-checkout" onclick="openPembayaranModal(${total})">Pilih Metode Pembayaran</button>
+                ` : ''}
+            `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        // ========== UPDATE QTY KERANJANG ==========
+        function updateQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateBadge();
+                openKeranjangModal(); // Refresh modal
+            }
+        }
+
+        // ========== TOGGLE FAVORIT ==========
+        function toggleFavoriteCart(id) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.favorit = !item.favorit;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                openKeranjangModal(); // Refresh
+            }
+        }
+
+        // ========== FUNGSI WHATSAPP ==========
+        function sendWhatsApp(metode, total, bank = '') {
+            const now = new Date();
+            const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
+            const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const jam = now.toLocaleTimeString('id-ID');
+
+            let produkDetail = '';
+            cart.forEach(item => {
+                produkDetail += `*${item.nama}* : ${item.qty} ${item.satuan} x Rp ${item.harga.toLocaleString('id-ID')} = Rp ${(item.harga * item.qty).toLocaleString('id-ID')}\n`;
+            });
+
+            let transferDetail = '';
+            if (metode === 'Transfer') {
+                if (bank === 'BRI') {
+                    transferDetail = '*Bank BRI - 4098 01 019526 53 3 A/n Eldi Sugianto*';
+                } else if (bank === 'DANA') {
+                    transferDetail = '*DANA : 085218483129*';
+                } else if (bank === 'Gopay') {
+                    transferDetail = '*Gopay : 085218483129*';
+                }
+            }
+
+            const pesan = `*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*
+*════ ◎•❀•◎﷽◎•❀•◎ ════*
+
+*_Assalamualaikum Warahmatullahi Wabarakatuh_*
+
+==========================
+*Halo Admin saya Anggota Koperasi "Asmara Tani" Saya Mau Bayar Belanjaan Saya*
+==========================
+*DATA ANGGOTA*
+
+*Nama* : ${anggotaData.nama}
+*Nomor HP* : ${anggotaData.noHP}
+*Alamat* : ${anggotaData.alamat}
+
+==========================
+*Bayar Produk/Barang/Jasa :*
+${produkDetail}
+*Hari :* ${hari}
+*Tanggal :* ${tanggal}
+*Jam :* ${jam}
+*Total Pembayaran :* Rp ${total.toLocaleString('id-ID')}
+*Hutang :* Rp 0
+________________________________
+*Transfer Via :*
+${metode === 'Transfer' ? transferDetail : metode === 'Tunai' ? '*Pembayaran Tunai*' : '*Pembayaran Hutang*'}
+${metode === 'Transfer' && bank === 'Lain' ? '*Bank Lain :* Silahkan transfer ke bank yang tersedia' : ''}
+===========================
+*Catatan* : _Silahkan Kirim Bukti Transfer/Pembayaran Anda.!_
+===========================
+
+*┅═•❃✽༊°°🍀🌻🍀°°༊✽❃•═┅*`;
+
+            const encodedPesan = encodeURIComponent(pesan);
+            window.open(`https://wa.me/6285218483129?text=${encodedPesan}`, '_blank');
+        }
+
+        // ========== MODAL PEMBAYARAN ==========
+        function openPembayaranModal(total) {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Metode Pembayaran</div>
+                    <div class="modal-back" onclick="openKeranjangModal()">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+
+                <div class="summary-card" style="margin-bottom:20px;">
+                    <div class="summary-row total">
+                        <span>Total Bayar</span>
+                        <span>Rp ${total.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+
+                <div class="payment-option" onclick="pilihTunai(${total})">
+                    <div class="payment-option-header">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Pembayaran Tunai</span>
+                    </div>
+                </div>
+
+                <div class="payment-option" onclick="toggleTransferDetail()">
+                    <div class="payment-option-header">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Transfer Via</span>
+                    </div>
+                    <div class="payment-detail" id="transferDetail" style="display:none;">
+                        <div class="bank-item" onclick="pilihTransfer('BRI', ${total})">
+                            <i class="fas fa-university"></i>
+                            <div class="bank-detail">
+                                <div class="bank-name">Bank BRI</div>
+                                <div class="bank-account">4098-01-019526-53-3 a/n Eldi Sugianto</div>
+                            </div>
+                        </div>
+                        <div class="bank-item" onclick="pilihTransfer('DANA', ${total})">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div class="bank-detail">
+                                <div class="bank-name">DANA</div>
+                                <div class="bank-account">085218483129 a/n Eldi Sugianto</div>
+                            </div>
+                        </div>
+                        <div class="bank-item" onclick="pilihTransfer('Gopay', ${total})">
+                            <i class="fas fa-wallet"></i>
+                            <div class="bank-detail">
+                                <div class="bank-name">Gopay</div>
+                                <div class="bank-account">085218483129 a/n Eldi Sugianto</div>
+                            </div>
+                        </div>
+                        <div class="bank-item" onclick="pilihTransfer('Lain', ${total})">
+                            <i class="fas fa-credit-card"></i>
+                            <div class="bank-detail">
+                                <div class="bank-name">Bank Lain</div>
+                                <div class="bank-account">Silahkan transfer ke bank yang tersedia</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-option" onclick="pilihHutang(${total})">
+                    <div class="payment-option-header">
+                        <i class="fas fa-book"></i>
+                        <span>Hutang</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========== TOGGLE DETAIL TRANSFER ==========
+        function toggleTransferDetail() {
+            const detail = document.getElementById('transferDetail');
+            if (detail) {
+                detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // ========== PILIH TUNAI ==========
+        function pilihTunai(total) {
+            sendWhatsApp('Tunai', total);
+            showToast('Pembayaran Tunai dipilih');
+        }
+
+        // ========== PILIH TRANSFER ==========
+        function pilihTransfer(bank, total) {
+            sendWhatsApp('Transfer', total, bank);
+            showToast(`Pembayaran via ${bank} akan diproses`);
+        }
+
+        // ========== PILIH HUTANG ==========
+        function pilihHutang(total) {
+            closeModal(); // Tutup modal pembayaran
+            
+            document.getElementById('hutangTransaksiModal').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+            const sisaHutang = 500000;
+            const totalHutang = sisaHutang + total;
+            document.getElementById('totalHutangModal').innerText = `Rp ${totalHutang.toLocaleString('id-ID')}`;
+            
+            document.getElementById('hutangModal').style.display = 'flex';
+        }
+
+        // ========== CLOSE HUTANG MODAL ==========
+        function closeHutangModal() {
+            document.getElementById('hutangModal').style.display = 'none';
+        }
+
+        // ========== PROSES CHECKOUT HUTANG ==========
+        function prosesCheckoutHutang() {
+            const total = parseInt(document.getElementById('hutangTransaksiModal').innerText.replace(/[^0-9]/g, ''));
+            sendWhatsApp('Hutang', total);
+            
+            alert('Checkout Hutang Berhasil!');
+            cart = [];
+            appliedPromo = null;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateBadge();
+            closeHutangModal();
+            closeModal();
+        }
+
+        // ========== MODAL PESANAN ==========
+        function openPesananModal(filter = 'Semua') {
+            const modalBody = document.getElementById('modalBody');
+            
+            let filteredPesanan = pesananList;
+            if (filter !== 'Semua') {
+                filteredPesanan = pesananList.filter(p => p.status === filter);
+            }
+
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Riwayat Pesanan</div>
+                    <div class="modal-back" onclick="closeModal()">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+
+                <div class="modal-cat-scroll" style="margin-bottom:20px;">
+                    <div class="modal-cat-item ${filter === 'Semua' ? 'active' : ''}" onclick="openPesananModal('Semua')">Semua</div>
+                    <div class="modal-cat-item ${filter === 'Selesai' ? 'active' : ''}" onclick="openPesananModal('Selesai')">Selesai</div>
+                    <div class="modal-cat-item ${filter === 'Belum dibayar' ? 'active' : ''}" onclick="openPesananModal('Belum dibayar')">Belum dibayar</div>
+                    <div class="modal-cat-item ${filter === 'Di Proses' ? 'active' : ''}" onclick="openPesananModal('Di Proses')">Di Proses</div>
+                </div>
+
+                ${filteredPesanan.map(p => `
+                    <div class="riwayat-item" onclick="openDetailPesanan('${p.id}')" style="background:white; border-radius:25px; padding:18px; margin-bottom:20px; border:1px solid #e3efe0; cursor:pointer;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-weight:700; font-size:1rem; color:#1e5a1e;">${p.id}</span>
+                            <span class="status-badge ${p.status === 'Selesai' ? 'status-selesai' : p.status === 'Belum dibayar' ? 'status-belum' : 'status-proses'}">${p.status}</span>
+                        </div>
+                        <div style="font-size:0.8rem; color:#6e946a; margin-bottom:12px;">${p.tanggal}</div>
+                        
+                        ${p.produk.slice(0, 2).map(prod => `
+                            <div style="display:flex; gap:10px; margin-bottom:8px;">
+                                <img src="${prod.gambar}" style="width:40px; height:40px; border-radius:10px; object-fit:cover;">
+                                <div style="flex:1;">
+                                    <div style="font-weight:600; font-size:0.85rem; color:#174017;">${prod.nama}</div>
+                                    <div style="font-size:0.7rem; color:#6e946a;">${prod.qty} x Rp ${prod.hargaSatuan.toLocaleString('id-ID')}</div>
+                                </div>
+                                <div style="font-weight:600; font-size:0.8rem; color:#b56d1f;">Rp ${prod.total.toLocaleString('id-ID')}</div>
+                            </div>
+                        `).join('')}
+                        
+                        ${p.produk.length > 2 ? `<div style="font-size:0.7rem; color:#6e946a; margin:5px 0;">+${p.produk.length - 2} produk lainnya</div>` : ''}
+                        
+                        <div style="border-top:1px solid #c8ddc2; margin:12px 0;"></div>
+                        
+                        <div style="display:flex; justify-content:space-between; font-weight:700; color:#1e5a1e;">
+                            <span>Total Belanja</span>
+                            <span>Rp ${p.total.toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                `).join('')}
+
+                ${filteredPesanan.length === 0 ? `
+                    <div style="text-align:center; padding:40px 0;">
+                        <i class="fas fa-box-open" style="font-size:3rem; color:#94b892;"></i>
+                        <p style="margin-top:15px;">Tidak ada pesanan</p>
+                    </div>
+                ` : ''}
+            `;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        // ========== MODAL DETAIL PESANAN ==========
+        function openDetailPesanan(id) {
+            const pesanan = pesananList.find(p => p.id === id);
+            if (!pesanan) return;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">Detail Pesanan</div>
+                    <div class="modal-back" onclick="openPesananModal('Semua')">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </div>
+
+                <div style="background: #f4fbf2; border-radius: 20px; padding: 15px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight:700; font-size:1rem; color:#1e5a1e;">${pesanan.id}</span>
+                        <span class="status-badge ${pesanan.status === 'Selesai' ? 'status-selesai' : pesanan.status === 'Belum dibayar' ? 'status-belum' : 'status-proses'}">${pesanan.status}</span>
+                    </div>
+                    <div style="font-size:0.8rem; color:#6e946a;">${pesanan.tanggal}</div>
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #1e5a1e; margin-bottom:15px;">Metode Pembayaran</h4>
+
+                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
+                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Transfer Bank</div>
+                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">BRI No. Rekening BRI a/n. Eldi Sugianto</div>
+                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d; display:flex; align-items:center; gap:8px;">
+                                4098-01-019526-53-3
+                                <button class="copy-btn" onclick="copyText('4098-01-019526-53-3')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
+                                    <i class="far fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
+                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Transfer E-wallet</div>
+                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">No DANA a/n. Eldi Sugianto</div>
+                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d; display:flex; align-items:center; gap:8px;">
+                                085218483129
+                                <button class="copy-btn" onclick="copyText('085218483129')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
+                                    <i class="far fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
+                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Transfer E-wallet</div>
+                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">No. Gopay a/n. Eldi Sugianto</div>
+                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d; display:flex; align-items:center; gap:8px;">
+                                085218483129
+                                <button class="copy-btn" onclick="copyText('085218483129')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
+                                    <i class="far fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
+                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Bank Lain</div>
+                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">Transfer Bank</div>
+                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d;">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
+                    <span class="status-badge status-belum" style="background:#fff3e0; color:#b85e1a; border:1px solid #ffcc80; padding:4px 12px; border-radius:20px; font-size:0.7rem; font-weight:600;">Belum dibayar</span>
+                </div>
+
+                <div style="background:#f4fbf2; border-radius:20px; padding:15px; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span style="font-size:0.9rem;">Nama Rekening</span>
+                        <span style="font-weight:600; font-size:0.9rem;">Eldi Sugianto</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span style="font-size:0.9rem;">Nama Bank</span>
+                        <span style="font-weight:600; font-size:0.9rem;">BRI</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.9rem;">No. Rekening</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-weight:600; font-size:0.9rem;">4098-01-019526-53-3</span>
+                            <button class="copy-btn" onclick="copyText('4098-01-019526-53-3')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
+                                <i class="far fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#f9fcf8; border:2px dashed #c5e0bf; border-radius:20px; padding:25px; text-align:center; margin:20px 0; cursor:pointer;" onclick="document.getElementById('fileUpload').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:#d18d2c; margin-bottom:10px;"></i>
+                    <p style="font-size:0.8rem; color:#6e946a;">Upload Foto Bukti Transfer/Pembayaran</p>
+                    <p style="font-size:0.7rem; color:#6e946a;">Klik untuk memilih file</p>
+                    <input type="file" id="fileUpload" style="display:none;" accept="image/*">
+                </div>
+
+                <h4 style="color: #1e5a1e; margin:20px 0 15px;">Detail Produk</h4>
+
+                ${pesanan.produk.map(prod => `
+                    <div style="display: flex; gap: 12px; background: white; border-radius: 16px; padding: 12px; margin-bottom: 10px; border: 1px solid #e3efe0;">
+                        <img src="${prod.gambar}" style="width: 60px; height: 60px; border-radius: 12px; object-fit: cover;">
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:0.85rem; color:#1e4a1e; margin-bottom:4px;">${prod.nama}</div>
+                            <div style="font-size:0.7rem; color:#6e946a; margin-bottom:2px;">${prod.qty} x Rp ${prod.hargaSatuan.toLocaleString('id-ID')}</div>
+                        </div>
+                        <div style="font-weight:600; font-size:0.8rem; color:#b56d1f; text-align:right;">
+                            Rp ${prod.total.toLocaleString('id-ID')}
+                        </div>
+                    </div>
+                `).join('')}
+
+                <div style="background:#f4fbf2; border-radius:20px; padding:18px; margin:20px 0;">
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size:0.85rem; color:#2d512d;">
+                        <span>Subtotal</span>
+                        <span>Rp ${pesanan.subtotal.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size:0.85rem; color:#2d512d;">
+                        <span>Jasa 10%</span>
+                        <span>Rp ${pesanan.jasa.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size:0.85rem; color:#2d512d;">
+                        <span>Pengiriman/Ongkir</span>
+                        <span>Gratis</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight:800; color:#1e5a1e; font-size:1rem; border-top:1px solid #c8ddc2; padding-top:12px; margin-top:8px;">
+                        <span>Total</span>
+                        <span>Rp ${pesanan.total.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Nomor rekening disalin');
+            });
+        }
+
+        // ========== FUNGSI LAINNYA ==========
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        function openTokoModal() {
+            closeModal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ========== SLIDESHOW ==========
+        let slideIdx = 0;
+        setInterval(() => {
+            slideIdx++;
+            document.getElementById('slides').style.transform = `translateX(-${(slideIdx % 3) * 100}%)`;
+        }, 4000);
+
+        // ========== INIT ==========
+        renderProdukUtama();
+        updateBadge();
+    </script>
+</body>
+</html>
