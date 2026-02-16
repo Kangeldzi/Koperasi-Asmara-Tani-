@@ -2020,6 +2020,29 @@
             background: #4285F4;
             color: white;
         }
+        
+        /* ===== STYLE UNTUK CALL ALERT ===== */
+        .call-alert-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -2058,6 +2081,8 @@
                     <li><a href="laporan-shu.html" target="_blank"><i class="fas fa-chart-pie"></i> <span>Laporan SHU</span></a></li>
                     <!-- LINK GENERATE QR CODE -->
                     <li><a href="generator-qr-code.html" target="_blank"><i class="fas fa-qrcode"></i> <span>Generate QR Code</span></a></li>
+                    <!-- MENU CALL ALERT - DITAMBAHKAN -->
+                    <li><a href="call-alert.html" target="_blank"><i class="fas fa-bell"></i> <span>Call Alert</span></a></li>
                     <li><a href="#" data-tab="pengaturan"><i class="fas fa-cog"></i> <span>Pengaturan Sistem</span></a></li>
                     <li><a href="https://koperasi-asmara-tani.vercel.app/"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a></li>
                 </ul>
@@ -3243,21 +3268,23 @@ async function initializeGoogleSheets() {
         updateSheetsStatus('loading', 'Menyambungkan ke Google Sheets...');
         
         // Test koneksi ke Google Sheets Web App
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?memberId=${CONFIG.ADMIN_PHONE}`, {
+        const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?action=test&memberId=${CONFIG.ADMIN_PHONE}&timestamp=${Date.now()}`, {
             method: 'GET',
-            mode: 'no-cors',
-            signal: controller.signal
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            }
         });
         
-        clearTimeout(timeoutId);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
-        // Dengan mode 'no-cors', kita tidak bisa membaca response
-        // Tapi jika tidak error, anggap koneksi berhasil
+        const data = await response.json();
+        console.log('Google Sheets response:', data);
+        
         googleSheetsInitialized = true;
-        console.log('✅ Google Sheets initialized successfully');
         updateSheetsStatus('connected', 'Terhubung ke Google Sheets');
         showNotification('Google Sheets berhasil terhubung!', 'success');
         
@@ -3271,10 +3298,10 @@ async function initializeGoogleSheets() {
         googleSheetsInitialized = false;
         
         let errorMessage = 'Gagal menyambungkan ke Google Sheets';
-        if (error.name === 'AbortError') {
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Tidak dapat terhubung ke Google Sheets. Pastikan Web App sudah di-deploy dengan akses "Anyone"';
+        } else if (error.message.includes('timeout')) {
             errorMessage = 'Koneksi timeout, menggunakan data lokal';
-        } else if (error.message.includes('Failed to fetch')) {
-            errorMessage = 'Tidak dapat terhubung ke Google Sheets API';
         }
         
         updateSheetsStatus('disconnected', errorMessage);
@@ -3321,20 +3348,54 @@ async function loadDataFromGoogleSheets() {
         console.log('📥 Loading data from Google Sheets...');
         updateSheetsStatus('loading', 'Memuat data dari Google Sheets...');
         
-        // Simulasi loading data dari Google Sheets
-        // Dalam implementasi nyata, Anda perlu endpoint GET yang mengembalikan data
+        // Request data dari Google Sheets
+        const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?action=getAllData&memberId=${CONFIG.ADMIN_PHONE}&timestamp=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
         
-        // Untuk demo, kita gunakan localStorage sebagai fallback
-        loadLocalStorageData();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Data from Google Sheets:', data);
+        
+        // Parse data dari Google Sheets
+        if (data.anggota) {
+            anggotaData = JSON.parse(data.anggota);
+            localStorage.setItem('koperasi_anggota', JSON.stringify(anggotaData));
+        }
+        
+        if (data.simpanan) {
+            simpananData = JSON.parse(data.simpanan);
+            localStorage.setItem('simpananData', JSON.stringify(simpananData));
+        }
+        
+        if (data.pinjaman) {
+            pinjamanData = JSON.parse(data.pinjaman);
+            localStorage.setItem('pinjamanData', JSON.stringify(pinjamanData));
+        }
         
         updateSheetsStatus('connected', `Data dimuat: ${anggotaData.length} anggota`);
+        showNotification('Data berhasil dimuat dari Google Sheets!', 'success');
+        
+        // Update UI
+        refreshAnggotaTable();
+        refreshSimpananTable();
+        refreshPinjamanTable();
+        updateDashboardStats();
+        isiDropdownAnggotaSimpanan();
+        checkEmptyTables();
         
     } catch (error) {
         console.error('❌ Error loading data from Google Sheets:', error);
         updateSheetsStatus('disconnected', 'Gagal memuat data');
-        showNotification('Gagal memuat data dari Google Sheets', 'error');
-        
-        // Fallback ke localStorage
+        showNotification('Gagal memuat data dari Google Sheets, menggunakan data lokal', 'warning');
         loadLocalStorageData();
     }
 }
@@ -3358,26 +3419,27 @@ async function syncDataToGoogleSheets() {
             memberName: CONFIG.ADMIN_NAME,
             totalAnggota: anggotaData.length,
             totalSimpanan: anggotaData.reduce((sum, a) => sum + (parseInt(a.totalSimpanan) || 0), 0),
-            anggotaData: JSON.stringify(anggotaData.slice(0, 10)), // 10 anggota terakhir
-            simpananData: JSON.stringify(simpananData.slice(0, 10)),
-            pinjamanData: JSON.stringify(pinjamanData.slice(0, 10))
+            anggotaData: JSON.stringify(anggotaData),
+            simpananData: JSON.stringify(simpananData),
+            pinjamanData: JSON.stringify(pinjamanData)
         };
         
         // Kirim ke Google Sheets Web App
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
         const response = await fetch(CONFIG.GOOGLE_SHEETS_WEBAPP_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(dataToSend),
-            signal: controller.signal
+            body: JSON.stringify(dataToSend)
         });
         
-        clearTimeout(timeoutId);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Sync result:', result);
         
         // Update waktu sinkronisasi
         lastSyncTime = new Date().toISOString();
@@ -3393,8 +3455,8 @@ async function syncDataToGoogleSheets() {
         console.error('❌ Error syncing to Google Sheets:', error);
         
         let errorMessage = 'Gagal menyinkronisasi data ke Google Sheets';
-        if (error.name === 'AbortError') {
-            errorMessage = 'Sinkronisasi timeout, data disimpan lokal';
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Gagal terhubung ke Google Sheets. Periksa URL dan deploy settings.';
         }
         
         updateSheetsStatus('disconnected', errorMessage);
@@ -3424,14 +3486,21 @@ async function syncAnggotaToSheets() {
             anggotaData: JSON.stringify(anggotaData)
         };
         
-        await fetch(CONFIG.GOOGLE_SHEETS_WEBAPP_URL, {
+        const response = await fetch(CONFIG.GOOGLE_SHEETS_WEBAPP_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(dataToSend)
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Sync anggota result:', result);
         
         updateSheetsStatus('connected', `Anggota tersinkron: ${anggotaData.length}`);
         showNotification(`Data anggota (${anggotaData.length}) berhasil disinkronisasi!`, 'success');
@@ -4130,6 +4199,14 @@ function viewMemberDetail(memberId) {
                 <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">TABUNGAN DIGITAL</div>
                 <a href="akun-anggota.html?nia=${member.nia || member.id}" target="_blank" style="color: white; text-decoration: underline; font-weight: bold;">
                     Buka Tabungan Digital <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+            
+            <!-- Link Call Alert -->
+            <div style="margin-top: 10px; padding: 15px; background: linear-gradient(135deg, var(--danger), #ff7043); color: white; border-radius: 8px; text-align: center;">
+                <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">CALL ALERT</div>
+                <a href="call-alert.html?nia=${member.nia || member.id}&nama=${encodeURIComponent(member.nama)}&wa=${member.whatsapp}" target="_blank" style="color: white; text-decoration: underline; font-weight: bold;">
+                    Kirim Alert ke Anggota <i class="fas fa-bell"></i>
                 </a>
             </div>
             
