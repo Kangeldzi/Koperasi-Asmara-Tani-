@@ -895,13 +895,13 @@
 
     <script>
     // ===== KONFIGURASI APPS SCRIPT =====
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2Lspxf4UB7x0KZ2GUCVQc-eEFmCCNsUXco5XcOlh2E2x0NDFqIOfx6Vji4oLu4ZuO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec';
     
     // ===== FUNGSI UTILITY =====
     function formatTokenWithPrefix(token) {
         if (!token) return '';
-        if (token.startsWith('#01-')) return token;
-        if (/^[0-9]{4}-[0-9]{3}$/.test(token)) return `#01-${token}`;
+        if (token.startsWith('01-')) return token;
+        if (/^[0-9]{4}-[0-9]{3}$/.test(token)) return `01-${token}`;
         return token;
     }
     
@@ -1023,11 +1023,11 @@
                 showSuccess('Login berhasil!');
                 setTimeout(() => window.location.href = 'dashboard-admin.html', 1000);
                 
-            } else if (token && formatTokenWithPrefix(token) === '#01-2026-001') {
+            } else if (token && formatTokenWithPrefix(token) === '01-2026-001') {
                 // Admin dengan token
                 localStorage.setItem('currentUser', JSON.stringify({
                     email: email,
-                    token: '#01-2026-001',
+                    token: '01-2026-001',
                     role: 'Admin dengan Token',
                     redirect: 'akun-anggota.html'
                 }));
@@ -1035,7 +1035,7 @@
                 showSuccess('Login berhasil!');
                 setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
                 
-            } else if (token && /^#01-2026-([0-9]{3})$/.test(formatTokenWithPrefix(token))) {
+            } else if (token && /^01-2026-([0-9]{3})$/.test(formatTokenWithPrefix(token))) {
                 // Anggota dengan token valid
                 localStorage.setItem('currentUser', JSON.stringify({
                     email: email,
@@ -1083,7 +1083,7 @@
             return;
         }
         
-        if (posisi === 'Admin' && token && formatTokenWithPrefix(token) !== '#01-2026-001') {
+        if (posisi === 'Admin' && token && formatTokenWithPrefix(token) !== '01-2026-001') {
             showErrorDaftar('Token Admin tidak valid');
             return;
         }
