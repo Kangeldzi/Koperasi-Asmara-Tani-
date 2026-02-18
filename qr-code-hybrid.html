@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>E-KTP Digital Anggota</title>
+<title>E-KTP Digital + QR Hybrid - Koperasi Asmara Tani</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- QR Code Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
 <style>
 body{
@@ -52,7 +54,7 @@ body{
     inset 0 0 12px rgba(255,255,255,.25);
   transition:.4s ease;
   animation:float 4s ease-in-out infinite;
-  overflow:hidden; /* Tambahan untuk memastikan foto tidak keluar dari lingkaran */
+  overflow:hidden;
 }
 .logo-wrap:hover{
   transform:scale(1.08);
@@ -61,7 +63,7 @@ body{
 .logo-wrap img{
   width:100%;
   height:100%;
-  object-fit:cover; /* Memastikan foto ter-crop dengan baik */
+  object-fit:cover;
   border-radius:50%;
 }
 
@@ -97,6 +99,67 @@ body{
 .status-inactive{
   background:#ff3d0033 !important;
   color:#ffa000 !important;
+}
+
+/* QR CODE SECTION */
+.qr-section {
+  background: rgba(0, 255, 160, 0.1);
+  border-radius: 16px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: center;
+  border: 1px solid rgba(0, 255, 160, 0.3);
+}
+
+.qr-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #7dffb2;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.qr-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+#qrcode {
+  width: 150px;
+  height: 150px;
+  background: white;
+  padding: 10px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#qrcode canvas {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 8px;
+}
+
+.qr-footer {
+  font-size: 10px;
+  color: #a9ffd1;
+  margin-top: 8px;
+  opacity: 0.8;
+}
+
+.qr-badge {
+  display: inline-block;
+  background: #2e7d32;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  margin-top: 5px;
 }
 
 /* IDENTITAS */
@@ -168,11 +231,24 @@ body{
   backdrop-filter:blur(10px);
   box-shadow:0 0 14px rgba(0,255,160,.5);
   transition:.3s;
+  cursor: pointer;
 }
 .actions button:hover{
   background:#00ff9d;
   color:#003a24;
   transform:translateY(-2px);
+}
+
+/* SHARE BUTTON */
+.share-btn {
+  background: rgba(255,255,255,0.15) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+.share-btn:hover {
+  background: rgba(255,255,255,0.3) !important;
+  color: #00ff9d !important;
 }
 
 /* FOOTER */
@@ -220,6 +296,31 @@ body{
   font-size: 32px;
   font-weight: bold;
 }
+
+/* SYNC STATUS */
+.sync-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #a9ffd1;
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff9d;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
 </style>
 </head>
 
@@ -236,21 +337,34 @@ body{
   <div id="content" style="display:none;">
     <div class="header">
       <div class="logo-wrap" id="profilePhotoContainer">
-        <img id="profilePhoto" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg" 
+        <img id="profilePhoto" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png" 
              alt="Foto Profil" 
              onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Eldi+Sugianto&background=2E7D32&color=fff&size=128';">
       </div>
       <h1>KOPERASI ASMARA TANI</h1>
-      <small>Kartu Anggota Digital (Mobile-Only)</small>
+      <small>Kartu Anggota Digital + QR Hybrid</small>
     </div>
 
     <div class="status">
       <span id="statusText">AKTIF</span>
     </div>
 
+    <!-- QR CODE SECTION -->
+    <div class="qr-section">
+      <div class="qr-title">
+        <i class="fas fa-qrcode"></i> QR CODE ANGGOTA
+      </div>
+      <div class="qr-container">
+        <div id="qrcode"></div>
+      </div>
+      <div class="qr-footer" id="qrData">NIA : #01-2026-001</div>
+      <span class="qr-badge" id="qrBadge">Scan untuk verifikasi</span>
+    </div>
+
     <div class="identity">
       <h2 id="nama">Eldi Sugianto, S.Kom</h2>
       <p id="nia">NIA : #01-2026-001</p>
+      <p id="posisi">Ketua</p>
     </div>
 
     <div class="stats">
@@ -265,74 +379,72 @@ body{
       <div><span>Agama</span><b id="agama">Islam</b></div>
       <div><span>NIK</span><b id="nik">3201171212810011</b></div>
       <div><span>Email</span><b id="email">siliwangi4212@gmail.com</b></div>
-      <div><span>Telepon</span><b id="telepon">6285218483129</b></div>
+      <div><span>WhatsApp</span><b id="telepon">085218483129</b></div>
       <div><span>Tanggal Daftar</span><b id="tglDaftar">18-09-2020</b></div>
       <div><span>Total Simpanan</span><b id="totalSimpanan">Rp 0</b></div>
       <div><span>Total Pinjaman</span><b id="totalPinjaman">Rp 0</b></div>
       <div><span>Estimasi SHU</span><b id="shu">Rp 0</b></div>
+      <div><span>Hutang Toko</span><b id="hutangToko">Rp 0</b></div>
     </div>
 
     <div class="actions">
-      <button onclick="window.print()">Cetak</button>
-      <button onclick="exportPDF()">Export PDF</button>
+      <button onclick="shareQR()" class="share-btn"><i class="fas fa-share-alt"></i> Share QR</button>
+      <button onclick="exportCard()">Export PDF</button>
+    </div>
+
+    <div class="sync-status">
+      <div class="sync-dot"></div>
+      <span id="syncStatus">Tersinkron dengan Google Sheets</span>
     </div>
 
     <div class="footer">
-      Data tersinkronisasi dari Dashboard Admin<br>
+      Data realtime dari Dashboard Admin<br>
       © Koperasi Asmara Tani 2026
       <div class="last-update" id="lastUpdate">Terakhir update: -</div>
     </div>
   </div>
 </div>
 
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <script>
 // =================== KONFIGURASI APPS SCRIPT ===================
 const CONFIG = {
-    // URL Web App Google Apps Script (sama dengan akun-anggota.html)
-    GOOGLE_SHEETS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbw2Lspxf4UB7x0KZ2GUCVQc-eEFmCCNsUXco5XcOlh2E2x0NDFqIOfx6Vji4oLu4ZuO/exec',
+    // URL Web App Google Apps Script
+    GOOGLE_SHEETS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec',
     
-    // Spreadsheet ID yang benar
+    // Spreadsheet ID
     SPREADSHEET_ID: '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA',
     
-    // Default Member ID (bisa diganti via URL parameter)
-    DEFAULT_MEMBER_ID: '#01-2026-001',
+    // Default Member ID
+    DEFAULT_MEMBER_ID: '01-2026-001',
     
-    // Data default untuk fallback
-    DEFAULT_MEMBER_NAME: 'Eldi Sugianto, S.Kom',
-    DEFAULT_MEMBER_EMAIL: 'siliwangi4212@gmail.com',
-    DEFAULT_MEMBER_PHONE: '6285218483129',
-    DEFAULT_MEMBER_ADDRESS: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
-    DEFAULT_FOTO_URL: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjh1oM43gxD4iCHpHRBrrbkCHRU5MigalAWf4G5x-cTLfRRxWeeTwGqwNz8FtSdSgcexhRAIWMX7eZoOxo0b-i8kB2EUr44TCkMCZ8VVfQTJpL0AgptbY8hjsTZtqg6jbS2MMOuIVf9FvNOR-JsZr4dvrpqTQT0I5qY5OB063z38W0mTIVhQrBPTASmQp0/s1280/1000175639.jpg'
+    // Data default sesuai referensi
+    DEFAULT_MEMBER: {
+        nia: '01-2026-001',
+        nama: 'Eldi Sugianto, S.Kom',
+        posisi: 'Ketua',
+        email: 'siliwangi4212@gmail.com',
+        wa: '085218483129',
+        alamat: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
+        nik: '3201171212810011',
+        jk: 'Laki-laki',
+        agama: 'Islam',
+        tglDaftar: '2020-09-18',
+        status: 'AKTIF',
+        fotoUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png',
+        pokok: 200000,
+        wajib: 0,
+        sukarela: 200000,
+        totalPinjaman: 0,
+        hutangToko: 0,
+        shuPercentage: 0.05
+    }
 };
 
 // =================== DATA ANGGOTA ===================
-let memberData = {
-    // Data Profil
-    id: CONFIG.DEFAULT_MEMBER_ID,
-    nama: CONFIG.DEFAULT_MEMBER_NAME,
-    email: CONFIG.DEFAULT_MEMBER_EMAIL,
-    wa: CONFIG.DEFAULT_MEMBER_PHONE,
-    alamat: CONFIG.DEFAULT_MEMBER_ADDRESS,
-    nik: '3201171212810011',
-    jk: 'Laki-laki',
-    agama: 'Islam',
-    tglDaftar: '2020-09-18',
-    status: 'AKTIF',
-    fotoUrl: CONFIG.DEFAULT_FOTO_URL, // Tambahan field foto
-    
-    // Data Keuangan
-    pokok: 200000,
-    wajib: 0,
-    sukarela: 200000,
-    
-    // Data Pinjaman
-    loanActive: 10000000,
-    loanRejected: 1000000,
-    loanPaid: 6000000,
-    
-    // Persentase
-    shuPercentage: 0.05
-};
+let memberData = { ...CONFIG.DEFAULT_MEMBER };
 
 // =================== HELPER FUNCTIONS ===================
 function formatRupiah(angka) {
@@ -356,6 +468,42 @@ function getParameterByName(name) {
     return url.searchParams.get(name);
 }
 
+// =================== GENERATE QR CODE ===================
+function generateQRCode(data) {
+    const qrElement = document.getElementById('qrcode');
+    qrElement.innerHTML = ''; // Clear existing QR
+    
+    // Data QR berisi informasi lengkap anggota
+    const qrData = JSON.stringify({
+        nia: data.nia,
+        nama: data.nama,
+        status: data.status,
+        timestamp: new Date().toISOString(),
+        url: window.location.href.split('?')[0] + '?id=' + encodeURIComponent(data.nia)
+    });
+    
+    // Generate QR Code
+    QRCode.toCanvas(qrData, { 
+        width: 200,
+        margin: 2,
+        color: {
+            dark: '#000000',
+            light: '#ffffff'
+        }
+    }, function(err, canvas) {
+        if (err) {
+            console.error('Error generating QR:', err);
+            qrElement.innerHTML = '<div style="color:red;">Gagal generate QR</div>';
+            return;
+        }
+        qrElement.appendChild(canvas);
+    });
+    
+    // Update QR info
+    document.getElementById('qrData').innerHTML = `NIA : ${data.nia}<br>Scan untuk verifikasi data`;
+    document.getElementById('qrBadge').innerHTML = data.status === 'AKTIF' ? '✓ Anggota Aktif' : '⚠️ Tidak Aktif';
+}
+
 // =================== FUNGSI UPDATE FOTO PROFIL ===================
 function updateProfilePhoto(fotoUrl, nama) {
     const photoElement = document.getElementById('profilePhoto');
@@ -363,12 +511,11 @@ function updateProfilePhoto(fotoUrl, nama) {
     if (fotoUrl && fotoUrl !== '') {
         photoElement.src = fotoUrl;
     } else {
-        // Fallback ke UI Avatars jika tidak ada foto
+        // Fallback ke UI Avatars
         const namaForUrl = encodeURIComponent(nama || 'Anggota');
         photoElement.src = `https://ui-avatars.com/api/?name=${namaForUrl}&background=2E7D32&color=fff&size=128`;
     }
     
-    // Handler jika gambar gagal load
     photoElement.onerror = function() {
         this.onerror = null;
         const namaForUrl = encodeURIComponent(nama || 'Anggota');
@@ -384,13 +531,14 @@ function updateUI(data) {
     updateProfilePhoto(data.fotoUrl, data.nama);
     
     // Update basic info
-    document.getElementById('nama').textContent = data.nama || CONFIG.DEFAULT_MEMBER_NAME;
-    document.getElementById('nia').textContent = `NIA : ${data.id || CONFIG.DEFAULT_MEMBER_ID}`;
+    document.getElementById('nama').textContent = data.nama || CONFIG.DEFAULT_MEMBER.nama;
+    document.getElementById('nia').textContent = `NIA : ${data.nia || CONFIG.DEFAULT_MEMBER.nia}`;
+    document.getElementById('posisi').textContent = data.posisi || 'Anggota';
     
     // Update status
     const statusElement = document.getElementById('statusText');
     statusElement.textContent = data.status || 'AKTIF';
-    if (data.status === 'TIDAK AKTIF') {
+    if (data.status !== 'AKTIF') {
         statusElement.className = 'status-inactive';
     } else {
         statusElement.className = '';
@@ -402,21 +550,25 @@ function updateUI(data) {
     document.getElementById('sukarela').textContent = formatRupiah(data.sukarela || 0);
     
     // Update data pribadi
-    document.getElementById('alamat').textContent = data.alamat || CONFIG.DEFAULT_MEMBER_ADDRESS;
+    document.getElementById('alamat').textContent = data.alamat || CONFIG.DEFAULT_MEMBER.alamat;
     document.getElementById('jk').textContent = data.jk || 'Laki-laki';
     document.getElementById('agama').textContent = data.agama || 'Islam';
     document.getElementById('nik').textContent = data.nik || '3201171212810011';
-    document.getElementById('email').textContent = data.email || CONFIG.DEFAULT_MEMBER_EMAIL;
-    document.getElementById('telepon').textContent = data.wa || CONFIG.DEFAULT_MEMBER_PHONE;
+    document.getElementById('email').textContent = data.email || CONFIG.DEFAULT_MEMBER.email;
+    document.getElementById('telepon').textContent = data.wa || '085218483129';
     document.getElementById('tglDaftar').textContent = formatDate(data.tglDaftar || '2020-09-18');
     
     // Update keuangan
     const totalSimpanan = (data.pokok || 0) + (data.wajib || 0) + (data.sukarela || 0);
     document.getElementById('totalSimpanan').textContent = formatRupiah(totalSimpanan);
-    document.getElementById('totalPinjaman').textContent = formatRupiah(data.loanActive || 0);
+    document.getElementById('totalPinjaman').textContent = formatRupiah(data.totalPinjaman || 0);
+    document.getElementById('hutangToko').textContent = formatRupiah(data.hutangToko || 0);
     
     const shuEstimation = Math.floor(totalSimpanan * (data.shuPercentage || 0.05));
     document.getElementById('shu').textContent = formatRupiah(shuEstimation);
+    
+    // Generate QR Code
+    generateQRCode(data);
     
     // Update timestamp
     const now = new Date();
@@ -426,6 +578,9 @@ function updateUI(data) {
     };
     const timeStr = now.toLocaleDateString('id-ID', options).replace(/\//g, '-');
     document.getElementById('lastUpdate').textContent = `Terakhir update: ${timeStr} WIB`;
+    
+    // Update sync status
+    document.getElementById('syncStatus').innerHTML = '✓ Tersinkron dengan Google Sheets';
     
     // Hide loading, show content
     document.getElementById('loading').style.display = 'none';
@@ -437,7 +592,23 @@ async function loadMemberDataFromSheets(memberId) {
     try {
         console.log('🔄 Mengambil data anggota dari Google Sheets...');
         
-        const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?memberId=${encodeURIComponent(memberId)}`, {
+        // Coba ambil dari localStorage dulu (data dari halaman lain)
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            const localData = JSON.parse(savedUser);
+            if (localData.nia === memberId) {
+                console.log('✅ Data ditemukan di localStorage');
+                memberData = {
+                    ...memberData,
+                    ...localData,
+                    fotoUrl: localData.fotoUrl || memberData.fotoUrl
+                };
+                return true;
+            }
+        }
+        
+        // Ambil dari Google Sheets via API
+        const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?action=getMember&memberId=${encodeURIComponent(memberId)}&sheetId=${CONFIG.SPREADSHEET_ID}`, {
             method: 'GET',
             mode: 'cors'
         });
@@ -445,42 +616,37 @@ async function loadMemberDataFromSheets(memberId) {
         if (response.ok) {
             const result = await response.json();
             
-            if (result.success && result.data && result.data.member) {
-                const sheetsData = result.data.member;
+            if (result.success && result.data) {
+                const sheetsData = result.data;
                 
-                // Update memberData dengan data dari Google Sheets (termasuk fotoUrl)
+                // Update memberData dengan data dari Google Sheets
                 memberData = {
-                    ...memberData,
-                    id: sheetsData.nia || memberId,
+                    nia: sheetsData.nia || memberId,
                     nama: sheetsData.nama || memberData.nama,
+                    posisi: sheetsData.posisi || memberData.posisi,
                     email: sheetsData.email || memberData.email,
-                    wa: sheetsData.wa || memberData.wa,
+                    wa: sheetsData.whatsapp || sheetsData.wa || memberData.wa,
                     alamat: sheetsData.alamat || memberData.alamat,
                     nik: sheetsData.nik || memberData.nik,
                     jk: sheetsData.jenisKelamin || memberData.jk,
                     agama: sheetsData.agama || memberData.agama,
-                    tglDaftar: sheetsData.tanggalGabung || memberData.tglDaftar,
-                    status: sheetsData.statusKeanggotaan || memberData.status,
-                    fotoUrl: sheetsData.fotoUrl || memberData.fotoUrl, // Ambil fotoUrl dari sheets
-                    pokok: sheetsData.pokok || memberData.pokok,
-                    wajib: sheetsData.wajib || memberData.wajib,
-                    sukarela: sheetsData.sukarela || memberData.sukarela,
+                    tglDaftar: sheetsData.tanggalBergabung || memberData.tglDaftar,
+                    status: sheetsData.status || memberData.status,
+                    fotoUrl: sheetsData.fotoUrl || memberData.fotoUrl,
+                    pokok: sheetsData.simpananPokok || memberData.pokok,
+                    wajib: sheetsData.simpananWajib || memberData.wajib,
+                    sukarela: sheetsData.simpananSukarela || memberData.sukarela,
+                    totalPinjaman: sheetsData.totalPinjaman || 0,
+                    hutangToko: sheetsData.hutangToko || 0,
                     shuPercentage: memberData.shuPercentage
                 };
-                
-                // Update loan data jika ada
-                if (result.data.loans) {
-                    memberData.loanActive = result.data.loans.berjalan?.nominal || 0;
-                    memberData.loanRejected = result.data.loans.ditolak?.nominal || 0;
-                    memberData.loanPaid = result.data.loans.lunas?.nominal || 0;
-                }
                 
                 console.log('✅ Data berhasil dimuat dari Google Sheets');
                 return true;
             }
         }
         
-        console.log('⚠️ Gagal memuat dari Google Sheets, menggunakan data lokal');
+        console.log('⚠️ Menggunakan data default');
         return false;
         
     } catch (error) {
@@ -495,24 +661,56 @@ async function loadMemberData() {
         // Ambil ID dari URL parameter atau pakai default
         const memberId = getParameterByName('id') || CONFIG.DEFAULT_MEMBER_ID;
         
-        // Coba ambil data dari Google Sheets
-        const sheetsSuccess = await loadMemberDataFromSheets(memberId);
+        // Coba ambil data
+        await loadMemberDataFromSheets(memberId);
         
-        // Update UI dengan data yang ada (dari sheets atau default)
+        // Update UI
         updateUI(memberData);
+        
+        // Simpan ke localStorage untuk digunakan halaman lain
+        localStorage.setItem('currentUser', JSON.stringify(memberData));
         
     } catch (error) {
         console.error('Error loading data:', error);
         // Fallback ke default data
-        updateUI(memberData);
+        updateUI(CONFIG.DEFAULT_MEMBER);
+    }
+}
+
+// =================== SHARE QR FUNCTION ===================
+function shareQR() {
+    const qrCanvas = document.querySelector('#qrcode canvas');
+    if (!qrCanvas) {
+        alert('QR Code belum siap');
+        return;
+    }
+    
+    // Convert canvas to data URL
+    const qrDataURL = qrCanvas.toDataURL('image/png');
+    
+    // Buat teks untuk dishare
+    const shareText = `Kartu Anggota Koperasi Asmara Tani\nNama: ${memberData.nama}\nNIA: ${memberData.nia}\nStatus: ${memberData.status}\n\nScan QR Code untuk verifikasi data lengkap.`;
+    
+    // Coba gunakan Web Share API jika tersedia
+    if (navigator.share) {
+        navigator.share({
+            title: 'Kartu Anggota Digital',
+            text: shareText,
+            url: window.location.href
+        }).catch(() => {
+            // Fallback
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + window.location.href)}`, '_blank');
+        });
+    } else {
+        // Fallback ke WhatsApp
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + window.location.href)}`, '_blank');
     }
 }
 
 // =================== EXPORT FUNCTION ===================
-function exportPDF() {
-    alert('Fitur Export PDF akan diintegrasikan dengan Dashboard Admin');
-    // Bisa diarahkan ke dashboard admin untuk generate PDF
-    window.open('dashboard-admin.html?export=pdf&id=' + encodeURIComponent(memberData.id), '_blank');
+function exportCard() {
+    // Arahkan ke dashboard admin untuk generate PDF
+    window.open('dashboard-admin.html?export=pdf&type=memberCard&id=' + encodeURIComponent(memberData.nia), '_blank');
 }
 
 // =================== AUTO REFRESH ===================
@@ -520,13 +718,12 @@ function exportPDF() {
 setInterval(loadMemberData, 30000);
 
 // =================== INITIAL LOAD ===================
-// Load data saat halaman dibuka
 document.addEventListener('DOMContentLoaded', loadMemberData);
 
-// =================== SYNC WITH DASHBOARD ===================
-// Fungsi untuk diupdate dari dashboard-admin.html
+// =================== SYNC WITH OTHER PAGES ===================
+// Fungsi untuk diupdate dari halaman lain
 window.updateMemberData = function(memberId, newData) {
-    if (memberId === memberData.id) {
+    if (memberId === memberData.nia) {
         // Update data
         memberData = {
             ...memberData,
@@ -536,7 +733,10 @@ window.updateMemberData = function(memberId, newData) {
         // Update UI
         updateUI(memberData);
         
-        // Trigger sinkron ke Google Sheets
+        // Simpan ke localStorage
+        localStorage.setItem('currentUser', JSON.stringify(memberData));
+        
+        // Trigger sync ke Google Sheets
         syncToGoogleSheets();
     }
     return true;
@@ -545,21 +745,21 @@ window.updateMemberData = function(memberId, newData) {
 // Fungsi sinkron ke Google Sheets
 async function syncToGoogleSheets() {
     try {
-        const totalSimpanan = memberData.pokok + memberData.wajib + memberData.sukarela;
+        const totalSimpanan = (memberData.pokok || 0) + (memberData.wajib || 0) + (memberData.sukarela || 0);
         
         const dataToSend = {
             action: 'sync',
             timestamp: new Date().toISOString(),
-            memberId: memberData.id,
+            sheetId: CONFIG.SPREADSHEET_ID,
+            memberId: memberData.nia,
             memberName: memberData.nama,
-            fotoUrl: memberData.fotoUrl, // Kirim fotoUrl juga
+            posisi: memberData.posisi,
+            fotoUrl: memberData.fotoUrl,
             simpananPokok: memberData.pokok,
             simpananWajib: memberData.wajib,
             simpananSukarela: memberData.sukarela,
             totalSimpanan: totalSimpanan,
-            pinjamanAktif: memberData.loanActive,
-            pinjamanDitolak: memberData.loanRejected,
-            pinjamanLunas: memberData.loanPaid,
+            hutangToko: memberData.hutangToko || 0,
             shuEstimasi: Math.floor(totalSimpanan * (memberData.shuPercentage || 0.05))
         };
         
@@ -571,33 +771,32 @@ async function syncToGoogleSheets() {
         });
         
         console.log('✅ Data tersinkron ke Google Sheets');
+        document.getElementById('syncStatus').innerHTML = '✓ Tersinkron dengan Google Sheets';
         
     } catch (error) {
         console.error('❌ Gagal sinkron ke Google Sheets:', error);
+        document.getElementById('syncStatus').innerHTML = '⚠️ Mode offline';
     }
 }
 
-// =================== DEBUG / TEST ===================
-window.debugUpdate = function() {
-    const testData = {
-        pokok: 250000,
-        sukarela: 250000,
-        loanActive: 12000000,
-        fotoUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png'
-    };
-    
-    window.updateMemberData(memberData.id, testData);
-    alert('Data test telah diupdate!');
-};
-
 // =================== LISTENER UNTUK STORAGE CHANGES ===================
-// Jika ada perubahan dari tab lain
 window.addEventListener('storage', function(e) {
-    if (e.key === 'koperasiData') {
+    if (e.key === 'currentUser') {
         console.log('🔄 Data berubah di tab lain, reload...');
-        loadMemberData();
+        try {
+            const newData = JSON.parse(e.newValue);
+            if (newData && newData.nia === memberData.nia) {
+                memberData = { ...memberData, ...newData };
+                updateUI(memberData);
+            }
+        } catch (err) {
+            console.error('Error parsing storage data:', err);
+        }
     }
 });
+
+// =================== DEBUG ===================
+console.log('✅ QR Code Hybrid siap dengan integrasi Google Sheets');
 </script>
 
 </body>
