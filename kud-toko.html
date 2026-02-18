@@ -1122,6 +1122,32 @@
             display: none;
             z-index: 10000;
         }
+        
+        /* Sync status */
+        .sync-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .profile-image {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -1134,11 +1160,15 @@
                 <h3 id="namaAnggota">Eldi Sugianto, S.Kom</h3>
             </div>
             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png" 
-                 alt="Profile" class="profile-image">
+                 alt="Profile" class="profile-image" onclick="window.location.href='akun-anggota.html'">
         </div>
         <div class="search-container">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Cari produk, sembako, pulsa..." id="searchInput">
+            <input type="text" placeholder="Cari produk, sembako, pulsa..." id="searchInput" onkeyup="searchProduk()">
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+            <span class="sync-indicator"></span>
+            <span style="font-size: 0.75rem; color: rgba(255,255,255,0.9);" id="syncStatus">Tersambung dengan Google Sheets</span>
         </div>
     </div>
 
@@ -1161,32 +1191,32 @@
             <div class="usage-row">
                 <div class="usage-col">
                     <div class="label">Terpakai</div>
-                    <div class="value" id="terpakaiValue">Rp 1.850.000</div>
+                    <div class="value" id="terpakaiValue">Rp 0</div>
                 </div>
                 <div class="separator"></div>
                 <div class="usage-col">
                     <div class="label">Tersedia</div>
-                    <div class="value" id="tersediaValue">Rp 3.150.000</div>
+                    <div class="value" id="tersediaValue">Rp 5.000.000</div>
                 </div>
             </div>
             <div class="progress-wrapper">
                 <div class="progress-bg">
-                    <div class="progress-fill" id="progressFill" style="width: 37%;"></div>
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                 </div>
             </div>
             <div class="mini-row">
                 <div class="mini-card">
                     <div class="label"><i class="fas fa-check-circle"></i> Hutang Terbayar</div>
-                    <div class="value" id="hutangTerbayar">Rp 750.000</div>
+                    <div class="value" id="hutangTerbayar">Rp 0</div>
                 </div>
                 <div class="mini-card">
                     <div class="label"><i class="fas fa-calendar-exclamation"></i> Jatuh Tempo</div>
-                    <div class="value" id="jatuhTempo">Rp 450.000</div>
+                    <div class="value" id="jatuhTempo">Rp 0</div>
                 </div>
             </div>
             <div class="sisa-card">
                 <span class="label">Sisa Hutang</span>
-                <span class="value" id="sisaHutang">Rp 3.150.000</span>
+                <span class="value" id="sisaHutang">Rp 5.000.000</span>
             </div>
         </div>
 
@@ -1225,9 +1255,9 @@
         <div class="nav-item" onclick="openKeranjangModal()">
             <i class="fas fa-shopping-cart"></i>
             <span>Keranjang</span>
-            <span class="badge" id="badge">3</span>
+            <span class="badge" id="badge">0</span>
         </div>
-        <div class="nav-item" onclick="openPesananModal()">
+        <div class="nav-item" onclick="openPesananModal('Semua')">
             <i class="fas fa-clipboard-list"></i>
             <span>Pesanan</span>
         </div>
@@ -1246,19 +1276,19 @@
             <div class="hutang-title">Rincian Hutang</div>
             <div class="hutang-row">
                 <span>Sisa Hutang</span>
-                <span id="sisaHutangModal">Rp 500.000</span>
+                <span id="sisaHutangModal">Rp 0</span>
             </div>
             <div class="hutang-row">
                 <span>Hutang Transaksi ini</span>
-                <span id="hutangTransaksiModal">Rp 1.325.000</span>
+                <span id="hutangTransaksiModal">Rp 0</span>
             </div>
             <div class="hutang-row">
                 <span>Jatuh Tempo</span>
-                <span>10 Februari 2026</span>
+                <span>10 Maret 2026</span>
             </div>
             <div class="hutang-row total">
                 <span>Total Hutang</span>
-                <span id="totalHutangModal">Rp 1.825.000</span>
+                <span id="totalHutangModal">Rp 0</span>
             </div>
             <button class="btn-hutang" onclick="prosesCheckoutHutang()">Checkout</button>
             <button class="btn-close-hutang" onclick="closeHutangModal()">Batal</button>
@@ -1269,6 +1299,27 @@
     <div class="toast" id="toast">✓ Produk ditambahkan</div>
 
     <script>
+        // ========== KONFIGURASI APPS SCRIPT ==========
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec';
+        const SHEET_ID = '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA';
+        const DEFAULT_PHOTO = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png';
+
+        // ========== DATA ANGGOTA (dari referensi) ==========
+        let currentUser = {
+            nia: '01-2026-001',
+            nama: 'Eldi Sugianto, S.Kom',
+            email: 'siliwangi4212@gmail.com',
+            whatsapp: '085218483129',
+            alamat: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
+            saldo: 400000,
+            simpananPokok: 200000,
+            simpananWajib: 0,
+            simpananSukarela: 200000,
+            hutangToko: 0,
+            limitHutang: 5000000,
+            foto: DEFAULT_PHOTO
+        };
+
         // ========== DATA PRODUK ==========
         let produkList = [
             // Pulsa
@@ -1300,11 +1351,7 @@
         ];
 
         // ========== DATA KERANJANG ==========
-        let cart = JSON.parse(localStorage.getItem('cart')) || [
-            { id: 4, nama: 'Beras Premium 5kg', harga: 85000, gambar: 'https://picsum.photos/id/100/300/300', qty: 2, satuan: 'kg', favorit: false },
-            { id: 5, nama: 'Minyak Goreng 2L', harga: 32000, gambar: 'https://picsum.photos/id/101/300/300', qty: 1, satuan: 'liter', favorit: true },
-            { id: 1, nama: 'Pulsa 10rb', harga: 10500, gambar: 'https://picsum.photos/id/1/300/300', qty: 3, satuan: 'pcs', favorit: false },
-        ];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         // ========== DATA PROMO ==========
         let appliedPromo = null;
@@ -1315,58 +1362,77 @@
         ];
 
         // ========== DATA PESANAN ==========
-        let pesananList = [
+        let pesananList = JSON.parse(localStorage.getItem('pesananList')) || [
             {
-                id: '#01-2026-001',
+                id: 'INV-2026021601',
                 tanggal: '16 Februari 2026',
                 status: 'Selesai',
-                metodePembayaran: 'Transfer Bank',
+                metodePembayaran: 'Transfer BRI',
                 produk: [
-                    { nama: 'Jeruk', qty: 2, hargaSatuan: 10000, total: 20000, gambar: 'https://picsum.photos/id/15/100/100' },
-                    { nama: 'Mangga', qty: 3, hargaSatuan: 15000, total: 45000, gambar: 'https://picsum.photos/id/16/100/100' }
+                    { nama: 'Beras Premium 5kg', qty: 2, hargaSatuan: 85000, total: 170000, gambar: 'https://picsum.photos/id/100/100/100' },
+                    { nama: 'Minyak Goreng 2L', qty: 1, hargaSatuan: 32000, total: 32000, gambar: 'https://picsum.photos/id/101/100/100' }
                 ],
-                subtotal: 65000,
-                jasa: 6500,
+                subtotal: 202000,
+                jasa: 20200,
                 ongkir: 5000,
-                total: 76500
-            },
-            {
-                id: '#01-2026-002',
-                tanggal: '15 Februari 2026',
-                status: 'Belum dibayar',
-                metodePembayaran: 'Transfer Bank',
-                produk: [
-                    { nama: 'Beras', qty: 1, hargaSatuan: 12000, total: 12000, gambar: 'https://picsum.photos/id/100/100/100' },
-                    { nama: 'Minyak Goreng', qty: 2, hargaSatuan: 11000, total: 22000, gambar: 'https://picsum.photos/id/101/100/100' }
-                ],
-                subtotal: 34000,
-                jasa: 3400,
-                ongkir: 5000,
-                total: 42400
-            },
-            {
-                id: '#01-2026-003',
-                tanggal: '14 Februari 2026',
-                status: 'Di Proses',
-                metodePembayaran: 'DANA',
-                produk: [
-                    { nama: 'Beras', qty: 1, hargaSatuan: 12000, total: 12000, gambar: 'https://picsum.photos/id/100/100/100' },
-                    { nama: 'Minyak Goreng', qty: 2, hargaSatuan: 11000, total: 22000, gambar: 'https://picsum.photos/id/101/100/100' },
-                    { nama: 'Gula', qty: 1, hargaSatuan: 14000, total: 14000, gambar: 'https://picsum.photos/id/102/100/100' }
-                ],
-                subtotal: 48000,
-                jasa: 4800,
-                ongkir: 5000,
-                total: 57800
+                total: 227200
             }
         ];
 
-        // ========== DATA ANGGOTA ==========
-        let anggotaData = {
-            nama: 'Eldi Sugianto, S.Kom',
-            noHP: '085218483129',
-            alamat: 'Jl. Koperasi No. 123, Jakarta'
-        };
+        // ========== LOAD DATA DARI LOCALSTORAGE ==========
+        function loadUserData() {
+            try {
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                } else {
+                    // Simpan user default ke localStorage
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+                
+                // Update tampilan
+                document.getElementById('namaAnggota').innerText = currentUser.nama;
+                
+                // Hitung statistik hutang
+                const terpakai = currentUser.hutangToko || 0;
+                const limit = currentUser.limitHutang || 5000000;
+                const tersedia = limit - terpakai;
+                
+                document.getElementById('terpakaiValue').innerText = 'Rp ' + terpakai.toLocaleString('id-ID');
+                document.getElementById('tersediaValue').innerText = 'Rp ' + tersedia.toLocaleString('id-ID');
+                document.getElementById('sisaHutang').innerText = 'Rp ' + tersedia.toLocaleString('id-ID');
+                
+                const persentase = (terpakai / limit) * 100;
+                document.getElementById('progressFill').style.width = persentase + '%';
+                
+                document.getElementById('limitNominal').innerText = 'Rp ' + limit.toLocaleString('id-ID');
+                
+            } catch (e) {
+                console.error('Error load user:', e);
+            }
+        }
+
+        // ========== SYNC DENGAN GOOGLE SHEETS ==========
+        async function syncWithSheets() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'syncUser',
+                        sheetId: SHEET_ID,
+                        data: currentUser
+                    })
+                });
+                
+                document.getElementById('syncStatus').innerText = 'Tersambung dengan Google Sheets ' + new Date().toLocaleTimeString('id-ID');
+                console.log('✅ Sync success');
+            } catch (error) {
+                console.error('Sync error:', error);
+                document.getElementById('syncStatus').innerText = 'Mode offline';
+            }
+        }
 
         // ========== RENDER PRODUK UTAMA ==========
         function renderProdukUtama() {
@@ -1845,9 +1911,10 @@
 ==========================
 *DATA ANGGOTA*
 
-*Nama* : ${anggotaData.nama}
-*Nomor HP* : ${anggotaData.noHP}
-*Alamat* : ${anggotaData.alamat}
+*NIA* : ${currentUser.nia}
+*Nama* : ${currentUser.nama}
+*Nomor HP* : ${currentUser.whatsapp}
+*Alamat* : ${currentUser.alamat}
 
 ==========================
 *Bayar Produk/Barang/Jasa :*
@@ -1856,7 +1923,7 @@ ${produkDetail}
 *Tanggal :* ${tanggal}
 *Jam :* ${jam}
 *Total Pembayaran :* Rp ${total.toLocaleString('id-ID')}
-*Hutang :* Rp 0
+*Hutang :* Rp ${metode === 'Hutang' ? total.toLocaleString('id-ID') : '0'}
 ________________________________
 *Transfer Via :*
 ${metode === 'Transfer' ? transferDetail : metode === 'Tunai' ? '*Pembayaran Tunai*' : '*Pembayaran Hutang*'}
@@ -1954,43 +2021,99 @@ ${metode === 'Transfer' && bank === 'Lain' ? '*Bank Lain :* Silahkan transfer ke
         function pilihTunai(total) {
             sendWhatsApp('Tunai', total);
             showToast('Pembayaran Tunai dipilih');
+            
+            // Simpan ke riwayat pesanan
+            simpanPesanan('Tunai', total);
         }
 
         // ========== PILIH TRANSFER ==========
         function pilihTransfer(bank, total) {
             sendWhatsApp('Transfer', total, bank);
             showToast(`Pembayaran via ${bank} akan diproses`);
+            
+            // Simpan ke riwayat pesanan
+            simpanPesanan('Transfer ' + bank, total);
         }
 
         // ========== PILIH HUTANG ==========
         function pilihHutang(total) {
             closeModal(); // Tutup modal pembayaran
             
+            document.getElementById('sisaHutangModal').innerText = 'Rp ' + (currentUser.limitHutang - currentUser.hutangToko).toLocaleString('id-ID');
             document.getElementById('hutangTransaksiModal').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-            const sisaHutang = 500000;
-            const totalHutang = sisaHutang + total;
+            const totalHutang = (currentUser.hutangToko || 0) + total;
             document.getElementById('totalHutangModal').innerText = `Rp ${totalHutang.toLocaleString('id-ID')}`;
             
+            // Simpan data sementara untuk proses checkout
+            sessionStorage.setItem('pendingHutang', total);
+            
             document.getElementById('hutangModal').style.display = 'flex';
+        }
+
+        // ========== SIMPAN PESANAN ==========
+        function simpanPesanan(metode, total) {
+            const now = new Date();
+            const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            const pesananBaru = {
+                id: 'INV-' + now.getFullYear() + 
+                    String(now.getMonth() + 1).padStart(2, '0') + 
+                    String(now.getDate()).padStart(2, '0') + 
+                    String(Math.floor(Math.random() * 1000)).padStart(3, '0'),
+                tanggal: tanggal,
+                status: 'Belum dibayar',
+                metodePembayaran: metode,
+                produk: cart.map(item => ({
+                    nama: item.nama,
+                    qty: item.qty,
+                    hargaSatuan: item.harga,
+                    total: item.harga * item.qty,
+                    gambar: item.gambar
+                })),
+                subtotal: hitungTotal().subtotal,
+                jasa: hitungTotal().jasa,
+                ongkir: hitungTotal().ongkir,
+                total: total
+            };
+            
+            pesananList.unshift(pesananBaru);
+            localStorage.setItem('pesananList', JSON.stringify(pesananList));
+            
+            // Kosongkan keranjang
+            cart = [];
+            appliedPromo = null;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateBadge();
+        }
+
+        // ========== PROSES CHECKOUT HUTANG ==========
+        function prosesCheckoutHutang() {
+            const totalHutangTransaksi = parseInt(sessionStorage.getItem('pendingHutang') || '0');
+            
+            // Update hutang user
+            currentUser.hutangToko = (currentUser.hutangToko || 0) + totalHutangTransaksi;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Kirim ke WhatsApp
+            sendWhatsApp('Hutang', totalHutangTransaksi);
+            
+            // Simpan pesanan
+            simpanPesanan('Hutang', totalHutangTransaksi);
+            
+            showToast('Checkout Hutang Berhasil!');
+            
+            // Update tampilan statistik
+            loadUserData();
+            
+            sessionStorage.removeItem('pendingHutang');
+            closeHutangModal();
+            closeModal();
         }
 
         // ========== CLOSE HUTANG MODAL ==========
         function closeHutangModal() {
             document.getElementById('hutangModal').style.display = 'none';
-        }
-
-        // ========== PROSES CHECKOUT HUTANG ==========
-        function prosesCheckoutHutang() {
-            const total = parseInt(document.getElementById('hutangTransaksiModal').innerText.replace(/[^0-9]/g, ''));
-            sendWhatsApp('Hutang', total);
-            
-            alert('Checkout Hutang Berhasil!');
-            cart = [];
-            appliedPromo = null;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateBadge();
-            closeHutangModal();
-            closeModal();
+            sessionStorage.removeItem('pendingHutang');
         }
 
         // ========== MODAL PESANAN ==========
@@ -2076,94 +2199,7 @@ ${metode === 'Transfer' && bank === 'Lain' ? '*Bank Lain :* Silahkan transfer ke
                         <span style="font-weight:700; font-size:1rem; color:#1e5a1e;">${pesanan.id}</span>
                         <span class="status-badge ${pesanan.status === 'Selesai' ? 'status-selesai' : pesanan.status === 'Belum dibayar' ? 'status-belum' : 'status-proses'}">${pesanan.status}</span>
                     </div>
-                    <div style="font-size:0.8rem; color:#6e946a;">${pesanan.tanggal}</div>
-                </div>
-
-                <div style="margin: 20px 0;">
-                    <h4 style="color: #1e5a1e; margin-bottom:15px;">Metode Pembayaran</h4>
-
-                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
-                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
-                            <i class="fas fa-university"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Transfer Bank</div>
-                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">BRI No. Rekening BRI a/n. Eldi Sugianto</div>
-                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d; display:flex; align-items:center; gap:8px;">
-                                4098-01-019526-53-3
-                                <button class="copy-btn" onclick="copyText('4098-01-019526-53-3')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
-                                    <i class="far fa-copy"></i> Copy
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
-                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Transfer E-wallet</div>
-                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">No DANA a/n. Eldi Sugianto</div>
-                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d; display:flex; align-items:center; gap:8px;">
-                                085218483129
-                                <button class="copy-btn" onclick="copyText('085218483129')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
-                                    <i class="far fa-copy"></i> Copy
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
-                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Transfer E-wallet</div>
-                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">No. Gopay a/n. Eldi Sugianto</div>
-                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d; display:flex; align-items:center; gap:8px;">
-                                085218483129
-                                <button class="copy-btn" onclick="copyText('085218483129')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
-                                    <i class="far fa-copy"></i> Copy
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 12px; background: #f9fcf8; border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid #e3efe0;">
-                        <div style="width:40px; height:40px; background:#edf5ea; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#d18d2c;">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-weight:600; font-size:0.9rem; color:#1e5a1e; margin-bottom:4px;">Bank Lain</div>
-                            <div style="font-size:0.75rem; color:#6e946a; margin-bottom:2px;">Transfer Bank</div>
-                            <div style="font-weight:600; font-size:0.85rem; color:#2d512d;">-</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
-                    <span class="status-badge status-belum" style="background:#fff3e0; color:#b85e1a; border:1px solid #ffcc80; padding:4px 12px; border-radius:20px; font-size:0.7rem; font-weight:600;">Belum dibayar</span>
-                </div>
-
-                <div style="background:#f4fbf2; border-radius:20px; padding:15px; margin-bottom:20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:0.9rem;">Nama Rekening</span>
-                        <span style="font-weight:600; font-size:0.9rem;">Eldi Sugianto</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-size:0.9rem;">Nama Bank</span>
-                        <span style="font-weight:600; font-size:0.9rem;">BRI</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.9rem;">No. Rekening</span>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span style="font-weight:600; font-size:0.9rem;">4098-01-019526-53-3</span>
-                            <button class="copy-btn" onclick="copyText('4098-01-019526-53-3')" style="background:#edf5ea; border:none; padding:4px 10px; border-radius:15px; font-size:0.65rem; color:#1e5a1e; cursor:pointer;">
-                                <i class="far fa-copy"></i> Copy
-                            </button>
-                        </div>
-                    </div>
+                    <div style="font-size:0.8rem; color:#6e946a;">${pesanan.tanggal} • ${pesanan.metodePembayaran}</div>
                 </div>
 
                 <div style="background:#f9fcf8; border:2px dashed #c5e0bf; border-radius:20px; padding:25px; text-align:center; margin:20px 0; cursor:pointer;" onclick="document.getElementById('fileUpload').click()">
@@ -2199,7 +2235,7 @@ ${metode === 'Transfer' && bank === 'Lain' ? '*Bank Lain :* Silahkan transfer ke
                     </div>
                     <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size:0.85rem; color:#2d512d;">
                         <span>Pengiriman/Ongkir</span>
-                        <span>Gratis</span>
+                        <span>Rp ${pesanan.ongkir.toLocaleString('id-ID')}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-weight:800; color:#1e5a1e; font-size:1rem; border-top:1px solid #c8ddc2; padding-top:12px; margin-top:8px;">
                         <span>Total</span>
@@ -2213,6 +2249,22 @@ ${metode === 'Transfer' && bank === 'Lain' ? '*Bank Lain :* Silahkan transfer ke
             navigator.clipboard.writeText(text).then(() => {
                 showToast('Nomor rekening disalin');
             });
+        }
+
+        // ========== SEARCH PRODUK ==========
+        function searchProduk() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            if (keyword.length < 2) return;
+            
+            const hasil = produkList.filter(p => 
+                p.nama.toLowerCase().includes(keyword) || 
+                p.kategori.toLowerCase().includes(keyword)
+            );
+            
+            if (hasil.length > 0) {
+                openProdukListModal('all');
+                // Filter di modal akan dilakukan dengan JS tambahan jika diperlukan
+            }
         }
 
         // ========== FUNGSI LAINNYA ==========
@@ -2233,8 +2285,22 @@ ${metode === 'Transfer' && bank === 'Lain' ? '*Bank Lain :* Silahkan transfer ke
         }, 4000);
 
         // ========== INIT ==========
-        renderProdukUtama();
-        updateBadge();
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            renderProdukUtama();
+            updateBadge();
+            
+            // Sync dengan Google Sheets setiap 5 menit
+            syncWithSheets();
+            setInterval(syncWithSheets, 300000);
+            
+            // Dengarkan event perubahan data dari halaman lain
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'currentUser') {
+                    loadUserData();
+                }
+            });
+        });
     </script>
 </body>
 </html>
