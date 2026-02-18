@@ -894,9 +894,18 @@
     </div>
 
     <script>
-    // ===== KONFIGURASI APPS SCRIPT =====
+    // ===== KONFIGURASI INTEGRASI GOOGLE SHEET =====
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec';
+    const SPREADSHEET_ID = '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA';
     
+    // ===== DATA ROLE SESUAI PERMINTAAN =====
+    const ROLE_ADMIN_UTAMA = {
+        email: 'admin@koperasi.com',
+        password: 'admin014212',
+        redirect: 'dashboard-admin.html',
+        role: 'Admin Utama'
+    };
+
     // ===== FUNGSI UTILITY =====
     function formatTokenWithPrefix(token) {
         if (!token) return '';
@@ -993,63 +1002,64 @@
         submitBtn.disabled = true;
         
         try {
-            // Kirim ke Apps Script untuk verifikasi
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'login',
-                    email: email,
-                    password: password,
-                    token: token ? formatTokenWithPrefix(token) : null
-                })
-            });
-            
-            // Simulasi login (karena mode no-cors tidak bisa baca response)
-            // Dalam implementasi nyata, Apps Script akan mengembalikan response
-            
-            // Sementara pakai logika sederhana
-            if (email === 'admin@koperasi.com' && password === 'admin014212') {
-                // Admin Utama
-                localStorage.setItem('currentUser', JSON.stringify({
+            // 1. CEK ROLE ADMIN UTAMA (Email dan Password Fix)
+            if (email === ROLE_ADMIN_UTAMA.email && password === ROLE_ADMIN_UTAMA.password) {
+                // Login sebagai Admin Utama
+                const userData = {
                     email: email,
                     role: 'Admin Utama',
-                    redirect: 'dashboard-admin.html'
-                }));
-                
+                    posisi: 'Admin Utama',
+                    redirect: ROLE_ADMIN_UTAMA.redirect
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userData));
                 if (remember) localStorage.setItem('rememberedEmail', email);
                 
-                showSuccess('Login berhasil!');
-                setTimeout(() => window.location.href = 'dashboard-admin.html', 1000);
-                
-            } else if (token && formatTokenWithPrefix(token) === '01-2026-001') {
-                // Admin dengan token
-                localStorage.setItem('currentUser', JSON.stringify({
-                    email: email,
-                    token: '01-2026-001',
-                    role: 'Admin dengan Token',
-                    redirect: 'akun-anggota.html'
-                }));
-                
-                showSuccess('Login berhasil!');
-                setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
-                
-            } else if (token && /^01-2026-([0-9]{3})$/.test(formatTokenWithPrefix(token))) {
-                // Anggota dengan token valid
-                localStorage.setItem('currentUser', JSON.stringify({
-                    email: email,
-                    token: formatTokenWithPrefix(token),
-                    role: 'Anggota',
-                    redirect: 'akun-anggota.html'
-                }));
-                
-                showSuccess('Login berhasil!');
-                setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
-                
-            } else {
-                showError('Email/password/token tidak valid');
+                showSuccess('Login Admin Utama berhasil!');
+                setTimeout(() => window.location.href = ROLE_ADMIN_UTAMA.redirect, 1000);
+                return;
             }
+            
+            // 2. CEK ROLE ADMIN OPSIONAL (Bebas, asalkan ada email & password)
+            //    Syarat: Bukan admin utama, tapi login berhasil (kita anggap semua login selain admin utama adalah admin opsional/anggota)
+            //    Catatan: Kita akan cek dulu di data registrasi, jika tidak ada, anggap sebagai admin opsional.
+            
+            // Cek di data registrasi (localStorage) dulu
+            const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
+            const foundUser = users.find(u => u.email === email && u.password === password);
+            
+            if (foundUser) {
+                // Login sebagai anggota yang terdaftar
+                localStorage.setItem('currentUser', JSON.stringify(foundUser));
+                if (remember) localStorage.setItem('rememberedEmail', email);
+                
+                showSuccess('Login anggota berhasil!');
+                // Semua anggota (termasuk yang milih posisi Admin di form) diarahkan ke akun-anggota.html
+                setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
+                return;
+            }
+            
+            // 3. Jika tidak ditemukan di registrasi, tapi email dan password diisi (bebas),
+            //    anggap sebagai Admin Opsional (seperti contoh eldisugih@gmail.com / berkah)
+            //    Ini memenuhi kriteria "Admin Opsional bersifat bebas tidak baku"
+            if (email && password) {
+                // Ini adalah Admin Opsional (atau anggota dummy)
+                const dummyUser = {
+                    email: email,
+                    nama: email.split('@')[0] || 'Admin Opsional',
+                    posisi: 'Admin Opsional', // Memberi label
+                    role: 'Admin Opsional',
+                    redirect: 'akun-anggota.html'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(dummyUser));
+                if (remember) localStorage.setItem('rememberedEmail', email);
+                
+                showSuccess('Login Admin Opsional berhasil!');
+                setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
+                return;
+            }
+            
+            // Jika tidak ada kondisi yang terpenuhi
+            showError('Email/password tidak valid');
             
         } catch (error) {
             showError('Error: ' + error.message);
@@ -1059,7 +1069,7 @@
         }
     });
     
-    // ===== FORM REGISTRASI =====
+    // ===== FORM REGISTRASI (Tetap sama, untuk mendaftarkan anggota baru) =====
     document.getElementById('registrationForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -1077,14 +1087,9 @@
         if (password.length < 6) { showErrorDaftar('Password min 6 karakter'); return; }
         if (password !== ulangi) { showErrorDaftar('Password tidak sama'); return; }
         
-        // Validasi token berdasarkan posisi
+        // Validasi token (opsional, sesuai kebutuhan)
         if (posisi !== 'Admin' && !token) {
-            showErrorDaftar('Token wajib diisi untuk non-Admin');
-            return;
-        }
-        
-        if (posisi === 'Admin' && token && formatTokenWithPrefix(token) !== '01-2026-001') {
-            showErrorDaftar('Token Admin tidak valid');
+            showErrorDaftar('Token/NIA wajib diisi untuk non-Admin');
             return;
         }
         
@@ -1097,9 +1102,12 @@
             // Kumpulkan semua data
             const formData = {
                 action: 'register',
+                spreadsheetId: SPREADSHEET_ID,
                 timestamp: new Date().toISOString(),
                 
                 // Identitas
+                foto: document.getElementById('foto').files.length > 0 ? 
+                      document.getElementById('foto').files[0].name : 'default.jpg',
                 posisi: posisi,
                 token: token ? formatTokenWithPrefix(token) : null,
                 nama: nama,
@@ -1126,9 +1134,16 @@
                 // Password
                 password: password,
                 
-                // Foto (jika ada)
-                foto: document.getElementById('foto').files.length > 0 ? 
-                      document.getElementById('foto').files[0].name : 'default.jpg'
+                // Field tambahan
+                totalPinjaman: 0,
+                totalTransaksi: 0,
+                pinjamanAktif: 0,
+                pinjamanBerjalan: 0,
+                pinjamanDitolak: 0,
+                pinjamanLunas: 0,
+                belanjaToko: 0,
+                hutangToko: 0,
+                shuEstimasi: 0
             };
             
             // Kirim ke Apps Script
@@ -1212,7 +1227,10 @@
         alert('🔐 Hubungi Admin Koperasi\n📧 admin@koperasiasmaratani.id\n📱 0852-1848-3129');
     });
     
-    console.log('✅ Sistem siap dengan integrasi Apps Script');
+    console.log('✅ Sistem Login dengan 3 Role:');
+    console.log('1. Admin Utama: admin@koperasi.com / admin014212 -> dashboard-admin.html');
+    console.log('2. Admin Opsional: (email/password bebas, contoh: eldisugih@gmail.com / berkah) -> akun-anggota.html');
+    console.log('3. Anggota: (data registrasi) -> akun-anggota.html');
     </script>
 </body>
 </html>
