@@ -76,6 +76,7 @@
             color: white;
             padding: 25px 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
@@ -424,8 +425,14 @@
             align-items: center;
             gap: 8px;
             font-size: 0.8rem;
-            color: var(--gray);
+            color: white;
             margin-top: 10px;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .sync-indicator {
@@ -539,6 +546,22 @@
                 display: none;
             }
         }
+        
+        /* Profile image */
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .profile-img-small {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-light);
+        }
     </style>
 </head>
 <body>
@@ -553,7 +576,7 @@
             <p>Management Data Anggota Koperasi Asmara Tani</p>
             <div class="sync-status">
                 <div class="sync-indicator"></div>
-                <span id="syncStatus">Sinkronisasi: Aktif</span>
+                <span id="syncStatus">Sinkronisasi: Google Sheets</span>
             </div>
         </div>
         
@@ -589,6 +612,7 @@
             <table class="anggota-table">
                 <thead>
                     <tr>
+                        <th>Foto</th>
                         <th>NIA</th>
                         <th>Nama Lengkap</th>
                         <th>Email</th>
@@ -619,6 +643,14 @@
                 <form id="anggotaForm">
                     <input type="hidden" id="editEmail">
                     <input type="hidden" id="originalNIA">
+                    <input type="hidden" id="anggotaFoto" value="">
+                    
+                    <div class="anggota-detail-section" style="text-align: center;">
+                        <img id="profilePreview" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 10px;">
+                        <div>
+                            <small style="color: var(--gray);">Foto profil default dari referensi</small>
+                        </div>
+                    </div>
                     
                     <div class="anggota-detail-section">
                         <h4>Data Personal</h4>
@@ -662,13 +694,13 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaWhatsApp">WhatsApp</label>
-                                    <input type="text" id="anggotaWhatsApp" class="form-control">
+                                    <input type="text" id="anggotaWhatsApp" class="form-control" value="085218483129">
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaNIK">NIK KTP</label>
-                                    <input type="text" id="anggotaNIK" class="form-control">
+                                    <input type="text" id="anggotaNIK" class="form-control" value="3201171212810011">
                                 </div>
                             </div>
                         </div>
@@ -679,7 +711,7 @@
                                     <label for="anggotaJenisKelamin">Jenis Kelamin</label>
                                     <select id="anggotaJenisKelamin" class="form-select">
                                         <option value="">Pilih</option>
-                                        <option value="Laki-laki">Laki-laki</option>
+                                        <option value="Laki-laki" selected>Laki-laki</option>
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
                                 </div>
@@ -699,7 +731,7 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaSimpananPokok">Total Simpanan Pokok (Rp)</label>
-                                    <input type="number" id="anggotaSimpananPokok" class="form-control" value="0" min="0">
+                                    <input type="number" id="anggotaSimpananPokok" class="form-control" value="200000" min="0">
                                 </div>
                             </div>
                             <div class="form-col">
@@ -714,13 +746,13 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaSimpananSukarela">Total Simpanan Sukarela (Rp)</label>
-                                    <input type="number" id="anggotaSimpananSukarela" class="form-control" value="0" min="0">
+                                    <input type="number" id="anggotaSimpananSukarela" class="form-control" value="200000" min="0">
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaSaldo">Total Saldo (Rp)</label>
-                                    <input type="number" id="anggotaSaldo" class="form-control" value="0" min="0" readonly>
+                                    <input type="number" id="anggotaSaldo" class="form-control" value="400000" min="0" readonly>
                                 </div>
                             </div>
                         </div>
@@ -732,14 +764,14 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaPosisi">Posisi</label>
-                                    <input type="text" id="anggotaPosisi" class="form-control">
+                                    <input type="text" id="anggotaPosisi" class="form-control" value="Ketua">
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaStatus">Status Aktif *</label>
                                     <select id="anggotaStatus" class="form-select" required>
-                                        <option value="aktif">Aktif</option>
+                                        <option value="aktif" selected>Aktif</option>
                                         <option value="tidak aktif">Tidak Aktif</option>
                                     </select>
                                 </div>
@@ -750,7 +782,7 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaAlamat">Alamat Lengkap</label>
-                                    <textarea id="anggotaAlamat" class="form-control" rows="3"></textarea>
+                                    <textarea id="anggotaAlamat" class="form-control" rows="3">Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810</textarea>
                                 </div>
                             </div>
                         </div>
@@ -759,13 +791,22 @@
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaAgama">Agama</label>
-                                    <input type="text" id="anggotaAgama" class="form-control">
+                                    <input type="text" id="anggotaAgama" class="form-control" value="Islam">
                                 </div>
                             </div>
                             <div class="form-col">
                                 <div class="form-group">
                                     <label for="anggotaTanggalBergabung">Tanggal Bergabung</label>
-                                    <input type="date" id="anggotaTanggalBergabung" class="form-control">
+                                    <input type="date" id="anggotaTanggalBergabung" class="form-control" value="2020-09-18">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="anggotaSHUEstimasi">Estimasi SHU</label>
+                                    <input type="number" id="anggotaSHUEstimasi" class="form-control" value="0" readonly>
                                 </div>
                             </div>
                         </div>
@@ -780,6 +821,13 @@
     </div>
 
     <script>
+        // ===============================
+        // KONFIGURASI APPS SCRIPT
+        // ===============================
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec';
+        const SHEET_ID = '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA';
+        const DEFAULT_PHOTO = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png';
+
         // ===============================
         // SISTEM DATABASE TERINTEGRASI
         // ===============================
@@ -796,31 +844,43 @@
             }
 
             initDefaultData() {
+                // Data default sesuai referensi
                 const defaultAnggota = [{
                     nia: '01-2026-001',
-                    nama: 'Administrator System',
-                    email: 'admin@koperasi.com',
-                    password: 'admin123',
-                    whatsapp: '-',
-                    nik: '-',
+                    nama: 'Eldi Sugianto, S.Kom',
+                    email: 'siliwangi4212@gmail.com',
+                    password: 'anggota123',
+                    whatsapp: '085218483129',
+                    nik: '3201171212810011',
                     jenis_kelamin: 'Laki-laki',
-                    keterangan: 'Administrator utama sistem',
-                    posisi: 'System Administrator',
+                    keterangan: 'Ketua Koperasi',
+                    posisi: 'Ketua',
                     status_aktif: 'aktif',
-                    alamat: 'Kantor Pusat Koperasi',
+                    alamat: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
                     agama: 'Islam',
-                    saldo: 0,
-                    simpanan_pokok: 0,
+                    saldo: 400000,
+                    simpanan_pokok: 200000,
                     simpanan_wajib: 0,
-                    simpanan_sukarela: 0,
-                    tanggal_bergabung: new Date().toISOString().split('T')[0],
-                    namalengkap: 'Administrator System',
-                    alamatlengkap: 'Kantor Pusat Koperasi',
-                    alamatemail: 'admin@koperasi.com',
-                    nowhatsapp: '-',
-                    nikktp: '-',
-                    tanggalbergabung: new Date().toISOString().split('T')[0],
-                    uploadfoto: ''
+                    simpanan_sukarela: 200000,
+                    tanggal_bergabung: '2020-09-18',
+                    namalengkap: 'Eldi Sugianto, S.Kom',
+                    alamatlengkap: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
+                    alamatemail: 'siliwangi4212@gmail.com',
+                    nowhatsapp: '085218483129',
+                    nikktp: '3201171212810011',
+                    tanggalbergabung: '2020-09-18',
+                    uploadfoto: DEFAULT_PHOTO,
+                    // Data pinjaman
+                    total_pinjaman: 0,
+                    total_transaksi: 0,
+                    pinjaman_aktif: 0,
+                    pinjaman_berjalan: 0,
+                    pinjaman_ditolak: 0,
+                    pinjaman_lunas: 0,
+                    belanja_toko: 0,
+                    hutang_toko: 0,
+                    shu_estimasi: 0,
+                    last_updated: new Date().toISOString()
                 }];
                 localStorage.setItem('anggotaData', JSON.stringify(defaultAnggota));
                 this.updateAnggotaCount();
@@ -887,7 +947,7 @@
                     // Edit mode: cari berdasarkan email
                     const index = allAnggota.findIndex(a => (a.alamatemail || a.email) === email);
                     if (index !== -1) {
-                        allAnggota[index] = { ...allAnggota[index], ...anggotaData };
+                        allAnggota[index] = { ...allAnggota[index], ...anggotaData, last_updated: new Date().toISOString() };
                     }
                 } else {
                     // Tambah mode: pastikan tidak ada duplikat
@@ -897,11 +957,15 @@
                     if (this.isEmailDuplicate(email, '')) {
                         throw new Error('Email sudah terdaftar!');
                     }
-                    allAnggota.push(anggotaData);
+                    allAnggota.push({ ...anggotaData, last_updated: new Date().toISOString() });
                 }
                 
                 localStorage.setItem('anggotaData', JSON.stringify(allAnggota));
                 this.updateAnggotaCount();
+                
+                // Dispatch event untuk memberi tahu halaman lain
+                window.dispatchEvent(new CustomEvent('anggotaDataUpdated', { detail: allAnggota }));
+                
                 return true;
             }
 
@@ -911,6 +975,10 @@
                 allAnggota = allAnggota.filter(a => (a.alamatemail || a.email) !== email);
                 localStorage.setItem('anggotaData', JSON.stringify(allAnggota));
                 this.updateAnggotaCount();
+                
+                // Dispatch event
+                window.dispatchEvent(new CustomEvent('anggotaDataUpdated', { detail: allAnggota }));
+                
                 return true;
             }
 
@@ -919,34 +987,31 @@
                 try {
                     const anggotaData = this.getAllAnggota();
                     
-                    const syncData = anggotaData.map(anggota => ({
-                        nia: anggota.nia || '',
-                        nama: anggota.namalengkap || anggota.nama || '',
-                        email: anggota.alamatemail || anggota.email || '',
-                        password: anggota.password || '',
-                        whatsapp: anggota.nowhatsapp || anggota.whatsapp || '',
-                        keterangan: anggota.keterangan || '',
-                        posisi: anggota.posisi || '',
-                        status_aktif: anggota.status_aktif || 'aktif',
-                        saldo: anggota.saldo || 0,
-                        simpanan_pokok: anggota.simpanan_pokok || 0,
-                        simpanan_wajib: anggota.simpanan_wajib || 0,
-                        simpanan_sukarela: anggota.simpanan_sukarela || 0,
-                        alamat: anggota.alamatlengkap || anggota.alamat || '',
-                        jenis_kelamin: anggota.jenis_kelamin || '',
-                        agama: anggota.agama || '',
-                        nik: anggota.nikktp || anggota.nik || '',
-                        tanggal_bergabung: anggota.tanggalbergabung || anggota.tanggal_bergabung || '',
-                        last_update: new Date().toISOString()
-                    }));
+                    // Kirim data ke Apps Script untuk disimpan ke sheet
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'sync',
+                            sheetId: SHEET_ID,
+                            data: anggotaData
+                        })
+                    });
 
-                    // Simulasi sync ke Google Sheets
-                    console.log('🔄 Sync data ke Google Sheets:', syncData);
-                    
+                    // Simpan waktu sinkronisasi
                     localStorage.setItem('lastSync', new Date().toISOString());
+                    
+                    // Update status sinkron
+                    document.getElementById('syncStatus').innerHTML = 'Sinkronisasi: Berhasil ' + new Date().toLocaleTimeString('id-ID');
+                    
+                    console.log('✅ Data berhasil disinkronkan ke Google Sheets');
                     return true;
                 } catch (error) {
-                    console.error('Error sync:', error);
+                    console.error('❌ Gagal sync ke Google Sheets:', error);
+                    document.getElementById('syncStatus').innerHTML = 'Sinkronisasi: Gagal - offline mode';
                     return false;
                 }
             }
@@ -961,7 +1026,6 @@
                     'Email': anggota.alamatemail || anggota.email || '',
                     'Password': anggota.password || '',
                     'WhatsApp': anggota.nowhatsapp || anggota.whatsapp || '',
-                    'Keterangan': anggota.keterangan || '',
                     'Posisi': anggota.posisi || '',
                     'Status': anggota.status_aktif || 'aktif',
                     'Saldo Total': anggota.saldo || 0,
@@ -973,8 +1037,11 @@
                     'Agama': anggota.agama || '',
                     'NIK KTP': anggota.nikktp || anggota.nik || '',
                     'Tanggal Bergabung': anggota.tanggalbergabung || anggota.tanggal_bergabung || '',
-                    'Foto Profil': anggota.uploadfoto || '',
-                    'Tanggal Update': new Date().toLocaleDateString('id-ID')
+                    'Total Pinjaman': anggota.total_pinjaman || 0,
+                    'Pinjaman Aktif': anggota.pinjaman_aktif || 0,
+                    'SHU Estimasi': anggota.shu_estimasi || 0,
+                    'Foto Profil': anggota.uploadfoto || DEFAULT_PHOTO,
+                    'Terakhir Update': anggota.last_updated || new Date().toLocaleString('id-ID')
                 }));
 
                 // Create CSV content
@@ -1026,12 +1093,19 @@
             const exportBtn = document.getElementById('exportBtn');
             const modalTogglePassword = document.getElementById('modalTogglePassword');
             const anggotaPasswordInput = document.getElementById('anggotaPassword');
+            const profilePreview = document.getElementById('profilePreview');
             
-            // Element untuk field simpanan baru
+            // Element untuk field simpanan
             const simpananPokokInput = document.getElementById('anggotaSimpananPokok');
             const simpananWajibInput = document.getElementById('anggotaSimpananWajib');
             const simpananSukarelaInput = document.getElementById('anggotaSimpananSukarela');
             const saldoInput = document.getElementById('anggotaSaldo');
+            const shuEstimasiInput = document.getElementById('anggotaSHUEstimasi');
+
+            // ✅ SET DEFAULT PHOTO
+            if (profilePreview) {
+                profilePreview.src = DEFAULT_PHOTO;
+            }
 
             // ✅ TOGGLE PASSWORD VISIBILITY
             function setupPasswordToggle() {
@@ -1051,6 +1125,11 @@
                 const sukarela = parseFloat(simpananSukarelaInput.value) || 0;
                 const total = pokok + wajib + sukarela;
                 saldoInput.value = total;
+                
+                // Hitung estimasi SHU (biasanya 5-10% dari saldo)
+                const estimasiSHU = Math.round(total * 0.06); // 6% dari saldo
+                if (shuEstimasiInput) shuEstimasiInput.value = estimasiSHU;
+                
                 return total;
             }
 
@@ -1082,10 +1161,10 @@
                         document.getElementById('anggotaStatus').value = 'aktif';
                         
                         // Set nilai default untuk simpanan
-                        document.getElementById('anggotaSimpananPokok').value = '0';
+                        document.getElementById('anggotaSimpananPokok').value = '200000';
                         document.getElementById('anggotaSimpananWajib').value = '0';
-                        document.getElementById('anggotaSimpananSukarela').value = '0';
-                        document.getElementById('anggotaSaldo').value = '0';
+                        document.getElementById('anggotaSimpananSukarela').value = '200000';
+                        document.getElementById('anggotaSaldo').value = '400000';
                         document.getElementById('anggotaTanggalBergabung').value = new Date().toISOString().split('T')[0];
                         
                         // Reset password field dan ikon mata
@@ -1136,8 +1215,9 @@
                     syncBtn.addEventListener('click', function() {
                         database.syncWithSheets().then(success => {
                             if (success) {
-                                document.getElementById('syncStatus').textContent = `Sinkronisasi: Berhasil (${new Date().toLocaleTimeString('id-ID')})`;
-                                showAlert('success', 'Data berhasil disinkronisasi!');
+                                showAlert('success', 'Data berhasil disinkronisasi ke Google Sheets!');
+                            } else {
+                                showAlert('error', 'Gagal sinkronisasi, data tersimpan lokal');
                             }
                         });
                     });
@@ -1183,12 +1263,14 @@
                 const anggotaAgama = document.getElementById('anggotaAgama').value.trim();
                 const anggotaTanggalBergabung = document.getElementById('anggotaTanggalBergabung').value;
                 const editEmail = document.getElementById('editEmail').value;
+                const anggotaFoto = DEFAULT_PHOTO; // Gunakan foto default
                 
-                // Nilai field simpanan baru
+                // Nilai field simpanan
                 const simpananPokok = parseFloat(document.getElementById('anggotaSimpananPokok').value) || 0;
                 const simpananWajib = parseFloat(document.getElementById('anggotaSimpananWajib').value) || 0;
                 const simpananSukarela = parseFloat(document.getElementById('anggotaSimpananSukarela').value) || 0;
                 const totalSaldo = calculateTotalSaldo();
+                const shuEstimasi = parseFloat(document.getElementById('anggotaSHUEstimasi').value) || 0;
 
                 // Validasi
                 if (!anggotaNIA || !anggotaNama || !anggotaEmail || !anggotaPassword) {
@@ -1242,13 +1324,25 @@
                     alamatemail: anggotaEmail,
                     nowhatsapp: anggotaWhatsApp,
                     nikktp: anggotaNIK,
-                    tanggalbergabung: anggotaTanggalBergabung || new Date().toISOString().split('T')[0]
+                    tanggalbergabung: anggotaTanggalBergabung || new Date().toISOString().split('T')[0],
+                    uploadfoto: anggotaFoto,
+                    // Data tambahan untuk integrasi
+                    total_pinjaman: 0,
+                    total_transaksi: 0,
+                    pinjaman_aktif: 0,
+                    pinjaman_berjalan: 0,
+                    pinjaman_ditolak: 0,
+                    pinjaman_lunas: 0,
+                    belanja_toko: 0,
+                    hutang_toko: 0,
+                    shu_estimasi: shuEstimasi,
+                    last_updated: new Date().toISOString()
                 };
 
                 try {
                     database.saveAnggota(anggotaDataBaru, isEditMode);
                     
-                    // Sync dengan Google Sheets
+                    // Sync dengan Google Sheets (background)
                     database.syncWithSheets();
 
                     showAlert('success', isEditMode ? 'Anggota berhasil diperbarui!' : 'Anggota berhasil ditambahkan!');
@@ -1286,7 +1380,7 @@
                 
                 if (anggotaData.length === 0) {
                     const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="10" style="text-align: center; padding: 20px;">Belum ada data anggota</td>`;
+                    row.innerHTML = `<td colspan="11" style="text-align: center; padding: 20px;">Belum ada data anggota</td>`;
                     anggotaTableBody.appendChild(row);
                     return;
                 }
@@ -1297,7 +1391,7 @@
                     const statusClass = anggota.status_aktif === 'aktif' ? 'status-aktif' : 'status-tidak-aktif';
                     const whatsapp = anggota.nowhatsapp || anggota.whatsapp;
                     const whatsappDisplay = whatsapp && whatsapp !== '-' 
-                        ? `<a href="https://wa.me/${whatsapp}" target="_blank" class="whatsapp-link">
+                        ? `<a href="https://wa.me/${whatsapp.replace(/\D/g,'')}" target="_blank" class="whatsapp-link">
                               <i class="fab fa-whatsapp whatsapp-icon"></i> ${whatsapp}
                            </a>`
                         : '-';
@@ -1308,7 +1402,11 @@
                     const simpananSukarela = anggota.simpanan_sukarela || 0;
                     const totalSimpanan = simpananPokok + simpananWajib + simpananSukarela;
                     
+                    // Foto profil
+                    const foto = anggota.uploadfoto || DEFAULT_PHOTO;
+                    
                     row.innerHTML = `
+                        <td><img src="${foto}" class="profile-img-small" alt="profile" onerror="this.src='${DEFAULT_PHOTO}'"></td>
                         <td><strong>${anggota.nia || '-'}</strong></td>
                         <td>${anggota.namalengkap || anggota.nama || '-'}</td>
                         <td>${anggota.alamatemail || anggota.email || '-'}</td>
@@ -1437,11 +1535,17 @@
                 document.getElementById('anggotaTanggalBergabung').value = anggota.tanggalbergabung || anggota.tanggal_bergabung || '';
                 document.getElementById('editEmail').value = anggota.alamatemail || anggota.email || '';
                 
-                // Field simpanan baru
+                // Field simpanan
                 document.getElementById('anggotaSimpananPokok').value = anggota.simpanan_pokok || 0;
                 document.getElementById('anggotaSimpananWajib').value = anggota.simpanan_wajib || 0;
                 document.getElementById('anggotaSimpananSukarela').value = anggota.simpanan_sukarela || 0;
                 document.getElementById('anggotaSaldo').value = anggota.saldo || 0;
+                document.getElementById('anggotaSHUEstimasi').value = anggota.shu_estimasi || 0;
+                
+                // Foto profil
+                if (profilePreview) {
+                    profilePreview.src = anggota.uploadfoto || DEFAULT_PHOTO;
+                }
                 
                 // Reset password visibility saat form diisi
                 anggotaPasswordInput.setAttribute('type', 'password');
@@ -1467,17 +1571,17 @@
                 }
             }
 
-            // Auto-sync setiap 2 menit
+            // Auto-sync setiap 5 menit
             setInterval(() => {
                 database.syncWithSheets();
-            }, 120000);
+            }, 300000);
 
             // Initialize system
             initializeEventListeners();
             loadAnggotaTable();
             
-            console.log('✅ Sistem Kelola Anggota siap digunakan');
+            console.log('✅ Sistem Kelola Anggota siap digunakan dengan integrasi Google Sheets');
         });
-</script>
+    </script>
 </body>
 </html>
