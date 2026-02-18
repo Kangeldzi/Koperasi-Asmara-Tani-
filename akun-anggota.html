@@ -2749,14 +2749,14 @@
 <body>
     <div class="container">
         <!-- Halaman Home/Beranda -->
-        <div id="home-page" class="page">
+        <div id="home-page" class="page active">
             <!-- Header -->
             <div class="header-home">
                 <div class="welcome-section">
                     <div class="welcome-text">
                         <div class="welcome-greeting">SELAMAT DATANG</div>
                         <div class="member-name" id="homeMemberName">Eldi Sugianto, S.Kom</div>
-                        <div class="member-id" id="homeMemberId">#01-2026-001</div>
+                        <div class="member-id" id="homeMemberId">01-2026-001</div>
                     </div>
                     <div class="profile-photo">
                         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png" alt="Foto Profil">
@@ -2945,7 +2945,7 @@
                         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png" alt="Foto Profil">
                     </div>
                     <div class="total-header-text">
-                        <div class="member-id-small" id="savingsMemberId">#01-2026-001</div>
+                        <div class="member-id-small" id="savingsMemberId">01-2026-001</div>
                         <div class="card-title">Total Simpanan</div>
                     </div>
                     <button class="eye-toggle" id="eyeToggleSavings" onclick="toggleAmountVisibilitySavings()">
@@ -3258,7 +3258,7 @@
                     <div class="profile-main-info">
                         <h2 id="accountMemberName">Eldi Sugianto, S.Kom <span class="badge">✔</span></h2>
                         <div class="plan-text">
-                            <p>Tabungan Digital Aktif hingga: 10 Oktober 2024</p>
+                            <p>Tabungan Digital Aktif hingga: 10 Oktober 2029</p>
                         </div>
                     </div>
                 </div>
@@ -3266,7 +3266,7 @@
                 <div class="profile-details">
                     <div class="detail-row">
                         <div class="detail-label">ID/NIA:</div>
-                        <div class="detail-value" id="accountMemberId">#01-2026-001</div>
+                        <div class="detail-value" id="accountMemberId">01-2026-001</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Posisi:</div>
@@ -3546,7 +3546,7 @@
                         <div class="kartu-info">
                             <div class="kartu-info-row">
                                 <span class="kartu-info-label">NIA</span>
-                                <span class="kartu-info-value" id="kartuNIA">#01-2026-001</span>
+                                <span class="kartu-info-value" id="kartuNIA">01-2026-001</span>
                             </div>
                             <div class="kartu-info-row">
                                 <span class="kartu-info-label">Nama</span>
@@ -3691,7 +3691,7 @@
                 <div class="profile-detail-grid">
                     <div class="profile-detail-item">
                         <div class="profile-detail-label">ID/NIA</div>
-                        <div class="profile-detail-value" id="profileNIA">#01-2026-001</div>
+                        <div class="profile-detail-value" id="profileNIA">01-2026-001</div>
                     </div>
                     <div class="profile-detail-item">
                         <div class="profile-detail-label">Posisi</div>
@@ -4211,7 +4211,7 @@
                     
                     <div class="info-item">
                         <span class="info-item-label">Nomor Induk Anggota</span>
-                        <span class="info-item-value" id="menungguNIA">#01-2026-001</span>
+                        <span class="info-item-value" id="menungguNIA">01-2026-001</span>
                     </div>
                     
                     <div class="info-item">
@@ -4406,7 +4406,7 @@
         </div>
 
         <div class="top-section">
-            <div class="subtitle" id="ditolakSubtitle">Pinjaman Berjangka untuk Pernikahan</div>
+            <div class="subtitle" id="ditolakSubtitle">Pinjaman Berjangka</div>
             <div class="premium-icon">❌</div>
             <div class="badge" style="background: rgba(231, 76, 60, 0.25);">Ditolak</div>
 
@@ -4733,10 +4733,8 @@
     </div>
 
     <script>
-        // ================ SISTEM DATABASE TERINTEGRASI ================
-        // 1. LocalStorage untuk penyimpanan lokal
-        // 2. Google Sheets untuk database cloud (Spreadsheet)
-        
+        // ================ SISTEM DATABASE TERINTEGRASI DENGAN APPS SCRIPT ================
+        // Konfigurasi Google Sheets dan Apps Script (SESUAI YANG ANDA KIRIM)
         const CONFIG = {
             // URL Web App Google Apps Script
             GOOGLE_SHEETS_WEBAPP_URL: 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec',
@@ -4744,52 +4742,78 @@
             // Spreadsheet ID yang benar
             SPREADSHEET_ID: '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA',
             
+            // Data Anggota (sesuai data yang Anda berikan)
             MEMBER_ID: '01-2026-001',
             MEMBER_NAME: 'Eldi Sugianto, S.Kom',
+            MEMBER_POSISI: 'Ketua',
             MEMBER_EMAIL: 'siliwangi4212@gmail.com',
-            MEMBER_PHONE: '6285218483129',
-            MEMBER_ADDRESS: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810'
+            MEMBER_PHONE: '085218483129',
+            MEMBER_ADDRESS: 'Kp. Banjar Karya Rt. 02 Rw. 01 Desa Ciasmara Kecamatan Pamijahan Kabupaten Bogor Kode POS 16810',
+            MEMBER_NIK: '3201171212810011',
+            MEMBER_AGAMA: 'Islam',
+            MEMBER_STATUS: 'AKTIF',
+            MEMBER_JOIN_DATE: '2020/09/18',
+            MEMBER_PHOTO: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEitHwKW04cRgPXw3b8d7SBgwklv_0jmxB-cAiU3m_kPBMh459fH74hQ9O4xp3evk1E44AUsPu08yFElOe40HlvY1ouC4QDsdu2GI-IM5Jm5gXhtwOA5lQEGba2eAEX1kAV4XeG9HpUN-ouz3fn-7rzinxdhjk3GD9a8c5-FHqY0WXVwXff1ftHS4NHwRZo/s320/1000577072.png',
+            
+            // Data Keuangan Awal
+            SIMPANAN_POKOK: 200000,
+            SIMPANAN_WAJIB: 0,
+            SIMPANAN_SUKARELA: 200000,
+            TOTAL_PINJAMAN: 0,
+            PINJAMAN_AKTIF: 0,
+            PINJAMAN_BERJALAN: 0,
+            PINJAMAN_DITOLAK: 0,
+            PINJAMAN_LUNAS: 0,
+            BELANJA_TOKO: 0,
+            HUTANG_TOKO: 0,
+            SHU_ESTIMASI: 0
         };
 
-        // ================ DATA ANGGOTA (SINGLE SOURCE OF TRUTH) ================
+        // ================ DATA ANGGOTA (DEFAULT DARI CONFIG) ================
         let memberData = {
             // Data Profil
             id: CONFIG.MEMBER_ID,
             nama: CONFIG.MEMBER_NAME,
+            posisi: CONFIG.MEMBER_POSISI,
             email: CONFIG.MEMBER_EMAIL,
             wa: CONFIG.MEMBER_PHONE,
             alamat: CONFIG.MEMBER_ADDRESS,
+            nik: CONFIG.MEMBER_NIK,
+            agama: CONFIG.MEMBER_AGAMA,
+            status: CONFIG.MEMBER_STATUS,
+            joinDate: CONFIG.MEMBER_JOIN_DATE,
+            photo: CONFIG.MEMBER_PHOTO,
             
             // Data Keuangan
-            pokok: 200000,
-            wajib: 0,
-            sukarela: 200000,
+            pokok: CONFIG.SIMPANAN_POKOK,
+            wajib: CONFIG.SIMPANAN_WAJIB,
+            sukarela: CONFIG.SIMPANAN_SUKARELA,
             
             // Data Pinjaman
-            loanActive: 10000000,
-            loanActiveCount: 1,
-            loanRejected: 1000000,
-            loanRejectedCount: 1,
-            loanPaid: 6000000,
-            loanPaidCount: 1,
+            loanActive: CONFIG.PINJAMAN_AKTIF,
+            loanActiveCount: 0,
+            loanRejected: CONFIG.PINJAMAN_DITOLAK,
+            loanRejectedCount: 0,
+            loanPaid: CONFIG.PINJAMAN_LUNAS,
+            loanPaidCount: 0,
             loanPending: 0,
             
             // Data KUD Toko
-            ksuShopping: 0,
-            ksuDebt: 0,
+            ksuShopping: CONFIG.BELANJA_TOKO,
+            ksuDebt: CONFIG.HUTANG_TOKO,
             
             // Persentase
             shuPercentage: 0.05,
             loanLimitPercentage: 0.4
         };
 
-        // Data Transaksi
+        // Data Transaksi Default
         let transactions = [
             {
                 id: 1,
                 type: 'deposit',
                 category: 'pokok',
-                amount: 200000,
+                amount: CONFIG.SIMPANAN_POKOK,
                 date: '2020-09-18T10:30:00',
                 description: 'Setoran Awal Simpanan Pokok'
             },
@@ -4797,7 +4821,7 @@
                 id: 2,
                 type: 'deposit',
                 category: 'sukarela',
-                amount: 200000,
+                amount: CONFIG.SIMPANAN_SUKARELA,
                 date: '2020-09-20T14:15:00',
                 description: 'Setoran Simpanan Sukarela'
             },
@@ -4811,106 +4835,73 @@
             }
         ];
 
-        // Data Pinjaman
+        // Data Pinjaman Default
         let loanData = {
             berjalan: {
-                id: 'LN-2025-001',
-                nominal: 10000000,
-                danaDiterima: 9000000,
+                id: 'NIA 01-2026-001',
+                nominal: 0,
+                danaDiterima: 0,
                 jenis: 'berjangka',
-                peruntukan: 'pernikahan',
+                peruntukan: 'modal usaha',
                 skema: 'bulanan',
-                jangkaWaktu: 3,
-                jangkaWaktuText: '3 Bulan',
-                jatuhTempo: '20 Setiap Bulan',
-                tanggalDisetujui: '2025-01-25',
-                tanggalPerkiraanLunas: '2025-04-25',
+                jangkaWaktu: 0,
+                jangkaWaktuText: '0 Bulan',
+                jatuhTempo: '',
+                tanggalDisetujui: '',
+                tanggalPerkiraanLunas: '',
                 tanggalCicilan: 'Tanggal 10 Setiap Bulan',
-                jumlahBayarPerPeriode: 3333333,
-                jasaPinjaman: 1000000,
-                totalDiterima: 9000000,
-                angsuranTerbayarkan: [
-                    {
-                        periode: 1,
-                        total: 100000,
-                        pokok: 100000,
-                        biayaLain: 100,
-                        tanggal: '2025-03-10T14:00:00'
-                    },
-                    {
-                        periode: 2,
-                        total: 100000,
-                        pokok: 100000,
-                        biayaLain: 100,
-                        tanggal: '2025-02-10T14:00:00'
-                    }
-                ],
-                angsuranAkanDatang: [
-                    {
-                        periode: 3,
-                        total: 100000,
-                        pokok: 100000,
-                        biayaLain: 100,
-                        tanggal: '2025-04-10T14:00:00'
-                    },
-                    {
-                        periode: 4,
-                        total: 100000,
-                        pokok: 100000,
-                        biayaLain: 100,
-                        tanggal: '2025-05-10T14:00:00'
-                    }
-                ]
+                jumlahBayarPerPeriode: 0,
+                jasaPinjaman: 0,
+                totalDiterima: 0,
+                angsuranTerbayarkan: [],
+                angsuranAkanDatang: []
             },
             ditolak: {
-                id: 'LN-2025-002',
-                nominal: 1000000,
-                danaDitolak: 900000,
+                id: 'NIA 01-2026-002',
+                nominal: 0,
+                danaDitolak: 0,
                 jenis: 'berjangka',
-                peruntukan: 'pernikahan',
+                peruntukan: 'modal usaha',
                 skema: 'bulanan',
-                jangkaWaktu: 2,
-                jangkaWaktuText: '2 Bulan',
-                jatuhTempo: '20 Maret 2025',
-                tanggalPengajuan: '2025-01-20',
-                tanggalPenolakan: '2025-01-22',
+                jangkaWaktu: 0,
+                jangkaWaktuText: '0 Bulan',
+                jatuhTempo: '',
+                tanggalPengajuan: '',
+                tanggalPenolakan: '',
                 tanggalCicilan: 'Tanggal 20 Setiap Bulan',
-                jumlahBayarPerPeriode: 500000,
-                jasaPinjaman: 100000,
-                totalDiterima: 900000,
+                jumlahBayarPerPeriode: 0,
+                jasaPinjaman: 0,
+                totalDiterima: 0,
                 ingkarJanji: {
-                    totalKeterlambatan: 3,
-                    totalDenda: 150000,
-                    hariKeterlambatan: 15,
-                    catatan: 'Jadwal pembayaran selalu melar dan tidak ditepati'
+                    totalKeterlambatan: 0,
+                    totalDenda: 0,
+                    hariKeterlambatan: 0,
+                    catatan: ''
                 },
-                alasanPenolakan: [
-                    'Dokumen Pendukung Tidak Lengkap - KTP, NPWP, dan slip gaji belum dilengkapi',
-                    'Riwayat Pembayaran Buruk - 3 kali keterlambatan dengan total denda Rp 150.000'
-                ]
+                alasanPenolakan: []
             },
             lunas: {
-                id: 'LN-2025-003',
-                nominal: 6000000,
-                totalDibayarkan: 6050000,
+                id: 'NIA 01-2026-003',
+                nominal: 0,
+                totalDibayarkan: 0,
                 jenis: 'berjangka',
-                peruntukan: 'pernikahan',
+                peruntukan: 'modal usaha',
                 skema: 'harian',
-                jangkaWaktu: 20,
-                jangkaWaktuText: '20 Hari',
-                jatuhTempo: '9 Februari 2025',
-                tanggalPencairan: '2025-01-20',
-                tanggalPelunasan: '2025-02-09',
+                jangkaWaktu: 0,
+                jangkaWaktuText: '0 Hari',
+                jatuhTempo: '',
+                tanggalPencairan: '',
+                tanggalPelunasan: '',
                 tanggalCicilan: 'Setiap Hari',
-                jumlahBayarPerPeriode: 300000,
-                jasaPinjaman: 50000,
-                persentaseJasa: 0.83,
-                totalDiterima: 5950000,
+                jumlahBayarPerPeriode: 0,
+                jasaPinjaman: 0,
+                persentaseJasa: 0,
+                totalDiterima: 0,
                 riwayatPelunasan: {
-                    totalDibayar: 6050000,
-                    pokok: 6000000,
-                    bunga: 50000,
-                    tanggal: '2025-02-09T14:20:00'
+                    totalDibayar: 0,
+                    pokok: 0,
+                    bunga: 0,
+                    tanggal: ''
                 }
             }
         };
@@ -4972,10 +4963,98 @@
             return false;
         }
 
-        // ================ SISTEM GOOGLE SHEETS ================
+        // ================ SISTEM GOOGLE SHEETS DENGAN APPS SCRIPT ================
+        // Fungsi untuk mengambil data dari Google Sheets via Apps Script
+        async function syncFromGoogleSheets() {
+            try {
+                console.log('🔄 Mengambil data dari Google Sheets via Apps Script...');
+                
+                // Tampilkan status loading
+                const lastSyncInfo = document.getElementById('lastSyncInfo');
+                if (lastSyncInfo) lastSyncInfo.textContent = 'Menyinkronkan data...';
+                
+                // URL dengan parameter memberId
+                const url = `${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?memberId=${memberData.id}&action=get`;
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ Data diterima dari Google Sheets:', result);
+                    
+                    if (result.success && result.data) {
+                        // Update data member dari Google Sheets
+                        if (result.data.member) {
+                            const member = result.data.member;
+                            
+                            // Update data profil
+                            if (member.nama) memberData.nama = member.nama;
+                            if (member.email) memberData.email = member.email;
+                            if (member.wa) memberData.wa = member.wa;
+                            if (member.alamat) memberData.alamat = member.alamat;
+                            if (member.nik) memberData.nik = member.nik;
+                            if (member.agama) memberData.agama = member.agama;
+                            if (member.status) memberData.status = member.status;
+                            if (member.joinDate) memberData.joinDate = member.joinDate;
+                            
+                            // Update data keuangan
+                            if (member.pokok) memberData.pokok = parseInt(member.pokok) || CONFIG.SIMPANAN_POKOK;
+                            if (member.wajib) memberData.wajib = parseInt(member.wajib) || 0;
+                            if (member.sukarela) memberData.sukarela = parseInt(member.sukarela) || CONFIG.SIMPANAN_SUKARELA;
+                            if (member.loanActive) memberData.loanActive = parseInt(member.loanActive) || 0;
+                            if (member.loanRejected) memberData.loanRejected = parseInt(member.loanRejected) || 0;
+                            if (member.loanPaid) memberData.loanPaid = parseInt(member.loanPaid) || 0;
+                            if (member.ksuShopping) memberData.ksuShopping = parseInt(member.ksuShopping) || 0;
+                            if (member.ksuDebt) memberData.ksuDebt = parseInt(member.ksuDebt) || 0;
+                        }
+                        
+                        // Update data pinjaman jika ada
+                        if (result.data.loans) {
+                            if (result.data.loans.berjalan) loanData.berjalan = { ...loanData.berjalan, ...result.data.loans.berjalan };
+                            if (result.data.loans.ditolak) loanData.ditolak = { ...loanData.ditolak, ...result.data.loans.ditolak };
+                            if (result.data.loans.lunas) loanData.lunas = { ...loanData.lunas, ...result.data.loans.lunas };
+                        }
+                        
+                        // Update transaksi jika ada
+                        if (result.data.transactions && result.data.transactions.length > 0) {
+                            transactions = result.data.transactions.slice(0, 10);
+                        }
+                        
+                        console.log('✅ Data berhasil diupdate dari Google Sheets');
+                    }
+                } else {
+                    console.log('⚠️ Gagal mengambil data dari Google Sheets, menggunakan data default');
+                }
+                
+                // Update semua tampilan
+                updateAllFinancialData();
+                
+                // Update last sync info
+                updateLastSyncInfo('Google Sheets');
+                
+                // Simpan ke localStorage sebagai cadangan
+                saveToLocalStorage();
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Gagal mengambil dari Google Sheets:', error);
+                
+                // Tetap update dengan data yang ada
+                updateAllFinancialData();
+                updateLastSyncInfo('LocalStorage');
+                
+                return false;
+            }
+        }
+
+        // Fungsi untuk mengirim data ke Google Sheets via Apps Script
         async function syncToGoogleSheets() {
             try {
-                console.log('🔄 Menyinkronkan data ke Google Sheets...');
+                console.log('🔄 Mengirim data ke Google Sheets via Apps Script...');
                 
                 // Data yang akan dikirim
                 const dataToSend = {
@@ -5002,22 +5081,21 @@
                 // Kirim ke Google Sheets via Apps Script
                 const response = await fetch(CONFIG.GOOGLE_SHEETS_WEBAPP_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'no-cors', // no-cors untuk menghindari CORS issues
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(dataToSend)
                 });
                 
-                console.log('✅ Data tersinkron ke Google Sheets');
-
+                console.log('✅ Data terkirim ke Google Sheets');
+                
                 // Simpan ke localStorage sebagai bukti sinkronisasi
                 localStorage.setItem('lastSyncToSheets', JSON.stringify({
                     timestamp: new Date().toISOString(),
                     data: dataToSend
                 }));
                 
-                updateLastSyncInfo('Google Sheets');
                 return true;
             } catch (error) {
                 console.error('❌ Gagal sinkron ke Google Sheets:', error);
@@ -5025,45 +5103,7 @@
             }
         }
 
-        async function syncFromGoogleSheets() {
-            try {
-                console.log('🔄 Mengambil data dari Google Sheets...');
-                
-                // Ambil data dari Google Sheets via Apps Script
-                const response = await fetch(`${CONFIG.GOOGLE_SHEETS_WEBAPP_URL}?memberId=${memberData.id}`, {
-                    method: 'GET',
-                    mode: 'cors'
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.success && result.data) {
-                        // Update memberData dengan data dari Google Sheets
-                        if (result.data.member) {
-                            if (result.data.member.pokok) memberData.pokok = parseInt(result.data.member.pokok);
-                            if (result.data.member.wajib) memberData.wajib = parseInt(result.data.member.wajib);
-                            if (result.data.member.sukarela) memberData.sukarela = parseInt(result.data.member.sukarela);
-                        }
-                        if (result.data.loans) {
-                            if (result.data.loans.berjalan) loanData.berjalan = result.data.loans.berjalan;
-                            if (result.data.loans.ditolak) loanData.ditolak = result.data.loans.ditolak;
-                            if (result.data.loans.lunas) loanData.lunas = result.data.loans.lunas;
-                        }
-                        if (result.data.transactions && result.data.transactions.length > 0) {
-                            transactions = result.data.transactions;
-                        }
-                        console.log('✅ Data dimuat dari Google Sheets');
-                    }
-                }
-                
-                updateLastSyncInfo('Google Sheets (baca)');
-                return true;
-            } catch (error) {
-                console.error('❌ Gagal mengambil dari Google Sheets:', error);
-                return false;
-            }
-        }
-
+        // Fungsi untuk update info sinkronisasi terakhir
         function updateLastSyncInfo(source = 'sistem') {
             const now = new Date();
             const options = { 
@@ -5087,7 +5127,7 @@
             }
         }
 
-        // ================ FUNGSI UPDATE DATA TERINTEGRASI ================
+        // ================ FUNGSI UPDATE DATA ================
         function updateAllFinancialData() {
             // Hitung ulang semua nilai
             const totalSimpanan = memberData.pokok + memberData.wajib + memberData.sukarela;
@@ -5095,11 +5135,18 @@
             const tersediaPinjaman = limitPinjaman - memberData.loanActive;
             const shuEstimation = Math.floor(totalSimpanan * memberData.shuPercentage);
             
+            // Update data member untuk perhitungan
+            memberData.loanActiveCount = memberData.loanActive > 0 ? 1 : 0;
+            memberData.loanPaidCount = memberData.loanPaid > 0 ? 1 : 0;
+            
             // ===== UPDATE HALAMAN HOME =====
+            updateElementText('homeMemberName', memberData.nama);
+            updateElementText('homeMemberId', memberData.id);
+            updateElementText('homeMemberIdSmall', memberData.id);
             updateElementText('homeLimitPinjaman', formatRupiah(limitPinjaman));
             updateElementText('homePinjamanAktif', formatRupiah(memberData.loanActive));
-            updateElementText('homeAktifCount', memberData.loanActive > 0 ? memberData.loanActiveCount : '0');
-            updateElementText('homeLunasCount', memberData.loanPaid > 0 ? memberData.loanPaidCount : '0');
+            updateElementText('homeAktifCount', memberData.loanActiveCount);
+            updateElementText('homeLunasCount', memberData.loanPaidCount);
             updateElementText('totalAmount', formatRupiah(totalSimpanan));
             updateElementText('shuTotal', formatRupiah(shuEstimation));
             updateElementText('modalShuAmount', shuEstimation.toLocaleString('id-ID'));
@@ -5110,10 +5157,17 @@
             updateElementText('homeHutangToko', formatRupiah(memberData.ksuDebt));
             
             // ===== UPDATE HALAMAN SIMPANAN =====
+            updateElementText('savingsMemberId', memberData.id);
             updateElementText('totalAmountSavings', formatRupiah(totalSimpanan));
             updateElementText('savingsSimpananPokok', formatRupiah(memberData.pokok));
             updateElementText('savingsSimpananWajib', formatRupiah(memberData.wajib));
             updateElementText('savingsSimpananSukarela', formatRupiah(memberData.sukarela));
+            
+            // Update withdrawal saldo
+            const withdrawalSaldo = document.getElementById('withdrawalSaldo');
+            if (withdrawalSaldo) {
+                withdrawalSaldo.value = formatRupiah(memberData.sukarela);
+            }
             
             // ===== UPDATE HALAMAN PINJAMAN =====
             updateElementText('limitPinjaman', formatRupiah(limitPinjaman));
@@ -5136,32 +5190,28 @@
             updateElementText('limitPinjamanInfo', formatRupiah(limitPinjaman));
             
             // Update riwayat pinjaman
+            updateElementText('menungguAmount', formatRupiah(memberData.loanPending));
             updateElementText('berjalanAmount', formatRupiah(memberData.loanActive));
             updateElementText('ditolakAmount', formatRupiah(memberData.loanRejected));
             updateElementText('lunasAmount', formatRupiah(memberData.loanPaid));
             
-            if (memberData.loanActive > 0) {
-                updateElementText('berjalanDetail', `${loanData.berjalan.jangkaWaktuText} • Pinjaman Berjangka untuk Pernikahan`);
-                updateElementText('berjalanTenor', `Tenor: ${loanData.berjalan.jangkaWaktuText}`);
-                updateElementText('berjalanDate', formatDate(loanData.berjalan.tanggalDisetujui) + ' - 10:30');
+            // Update detail jika ada data
+            if (memberData.loanActive > 0 && loanData.berjalan) {
+                updateElementText('berjalanDetail', `${loanData.berjalan.jangkaWaktuText || ''} • Pinjaman Berjalan`);
+                updateElementText('berjalanTenor', `Tenor: ${loanData.berjalan.jangkaWaktuText || '-'}`);
+                updateElementText('berjalanDate', loanData.berjalan.tanggalDisetujui ? formatDate(loanData.berjalan.tanggalDisetujui) + ' - 10:30' : '-');
             }
             
-            if (memberData.loanRejected > 0) {
-                updateElementText('ditolakDetail', `${loanData.ditolak.jangkaWaktuText} • Pinjaman Berjangka untuk Pernikahan`);
-                updateElementText('ditolakTenor', `Tenor: ${loanData.ditolak.jangkaWaktuText}`);
-                updateElementText('ditolakDate', formatDate(loanData.ditolak.tanggalPengajuan) + ' - 06:45');
+            if (memberData.loanRejected > 0 && loanData.ditolak) {
+                updateElementText('ditolakDetail', `${loanData.ditolak.jangkaWaktuText || ''} • Pinjaman Ditolak`);
+                updateElementText('ditolakTenor', `Tenor: ${loanData.ditolak.jangkaWaktuText || '-'}`);
+                updateElementText('ditolakDate', loanData.ditolak.tanggalPengajuan ? formatDate(loanData.ditolak.tanggalPengajuan) + ' - 06:45' : '-');
             }
             
-            if (memberData.loanPaid > 0) {
-                updateElementText('lunasDetail', `${loanData.lunas.jangkaWaktuText} • Pinjaman Berjangka untuk Pernikahan`);
-                updateElementText('lunasTenor', `Tenor: ${loanData.lunas.jangkaWaktuText}`);
-                updateElementText('lunasDate', formatDate(loanData.lunas.tanggalPelunasan) + ' - 14:20');
-            }
-            
-            // Update withdrawal saldo
-            const withdrawalSaldo = document.getElementById('withdrawalSaldo');
-            if (withdrawalSaldo) {
-                withdrawalSaldo.value = formatRupiah(memberData.sukarela);
+            if (memberData.loanPaid > 0 && loanData.lunas) {
+                updateElementText('lunasDetail', `${loanData.lunas.jangkaWaktuText || ''} • Pinjaman Lunas`);
+                updateElementText('lunasTenor', `Tenor: ${loanData.lunas.jangkaWaktuText || '-'}`);
+                updateElementText('lunasDate', loanData.lunas.tanggalPelunasan ? formatDate(loanData.lunas.tanggalPelunasan) + ' - 14:20' : '-');
             }
             
             // Update profil
@@ -5172,6 +5222,9 @@
             
             // Update kartu preview
             updateKartuPreview();
+            
+            // Update aktivitas terakhir
+            updateActivityList();
         }
 
         function updateProfileData() {
@@ -5188,18 +5241,24 @@
             
             // Update modal profil
             updateElementText('profileNIA', memberData.id);
+            updateElementText('profilePosisi', memberData.posisi);
             updateElementText('profileNama', memberData.nama);
             updateElementText('profileAlamat', memberData.alamat);
+            updateElementText('profileJK', 'Laki-laki');
             updateElementText('profileEmail', memberData.email);
             updateElementText('profileWA', memberData.wa);
+            updateElementText('profileNIK', memberData.nik);
+            updateElementText('profileAgama', memberData.agama);
+            updateElementText('profileStatus', memberData.status);
+            updateElementText('profileTglGabung', memberData.joinDate);
             updateElementText('profilePokok', formatRupiah(memberData.pokok));
             updateElementText('profileWajib', formatRupiah(memberData.wajib));
             updateElementText('profileSukarela', formatRupiah(memberData.sukarela));
-            updateElementText('profileTotalSimpanan', formatRupiah(memberData.pokok + memberData.wajib + memberData.sukarela));
-            updateElementText('profileTotalPinjaman', formatRupiah(memberData.loanActive));
             
             const totalSimpanan = memberData.pokok + memberData.wajib + memberData.sukarela;
             const shuEstimation = Math.floor(totalSimpanan * memberData.shuPercentage);
+            updateElementText('profileTotalSimpanan', formatRupiah(totalSimpanan));
+            updateElementText('profileTotalPinjaman', formatRupiah(memberData.loanActive));
             updateElementText('profileSHU', formatRupiah(shuEstimation));
             
             // Update laporan
@@ -5208,7 +5267,7 @@
             updateElementText('reportPokok', memberData.pokok.toLocaleString('id-ID'));
             updateElementText('reportWajib', memberData.wajib.toLocaleString('id-ID'));
             updateElementText('reportSukarela', memberData.sukarela.toLocaleString('id-ID'));
-            updateElementText('reportTotal', (memberData.pokok + memberData.wajib + memberData.sukarela).toLocaleString('id-ID'));
+            updateElementText('reportTotal', totalSimpanan.toLocaleString('id-ID'));
             updateElementText('reportBunga', formatRupiah(Math.floor(totalSimpanan * 0.005)));
             updateElementText('reportSHU', formatRupiah(shuEstimation));
             
@@ -5224,12 +5283,49 @@
             
             const dateOptions = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
             updateElementText('reportDate', now.toLocaleDateString('id-ID', dateOptions) + ' WIB');
+            
+            // Update modal menunggu
+            updateElementText('menungguNIA', memberData.id);
+            updateElementText('menungguNama', memberData.nama);
         }
 
         function updateKartuPreview() {
             updateElementText('kartuNIA', memberData.id);
             updateElementText('kartuNama', memberData.nama);
-            updateElementText('kartuTglGabung', '18/09/2020');
+            updateElementText('kartuTglGabung', memberData.joinDate.replace(/-/g, '/'));
+        }
+
+        function updateActivityList() {
+            const activityList = document.getElementById('homeActivityList');
+            if (!activityList) return;
+            
+            let html = '';
+            transactions.slice(0, 5).forEach(t => {
+                const date = new Date(t.date);
+                const dateStr = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + 
+                               ', ' + date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas ${t.type === 'deposit' ? 'fa-plus' : t.type === 'withdrawal' ? 'fa-minus' : 'fa-info-circle'}"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-name">${t.description}</div>
+                            <div class="activity-date">${dateStr}</div>
+                        </div>
+                        <div class="activity-amount ${t.type === 'withdrawal' ? 'withdrawal' : ''}">
+                            ${t.type === 'withdrawal' ? '-' : '+'}Rp ${t.amount.toLocaleString('id-ID')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (transactions.length === 0) {
+                html = '<div class="activity-item"><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-details"><div class="activity-name">Tidak ada aktivitas</div><div class="activity-date">-</div></div><div class="activity-amount">Rp 0</div></div>';
+            }
+            
+            activityList.innerHTML = html;
         }
 
         function updateElementText(id, value) {
@@ -5244,6 +5340,14 @@
             const date = new Date(dateString);
             const options = { day: 'numeric', month: 'long', year: 'numeric' };
             return date.toLocaleDateString('id-ID', options);
+        }
+
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const timeStr = now.toLocaleDateString('id-ID', options) + ' WIB';
+            const lastUpdated = document.getElementById('lastUpdatedTime');
+            if (lastUpdated) lastUpdated.textContent = timeStr;
         }
 
         // ================ FUNGSI FORMAT RUPIAH ================
@@ -5306,174 +5410,8 @@
             const modalId = `premiumModal${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`;
             const modal = document.getElementById(modalId);
             if (modal) {
-                // Update data sebelum membuka modal
-                if (jenis === 'berjalan') {
-                    updatePremiumModalBerjalan();
-                } else if (jenis === 'ditolak') {
-                    updatePremiumModalDitolak();
-                } else if (jenis === 'lunas') {
-                    updatePremiumModalLunas();
-                }
-                
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
-            }
-        }
-
-        function updatePremiumModalBerjalan() {
-            const data = loanData.berjalan;
-            
-            updateElementText('berjalanSubtitle', `Pinjaman ${data.jenis} untuk ${data.peruntukan}`);
-            updateElementText('berjalanNominal', formatRupiah(data.nominal));
-            updateElementText('berjalanDanaDiterima', formatRupiah(data.danaDiterima));
-            updateElementText('berjalanJangkaWaktu', data.jangkaWaktuText);
-            updateElementText('berjalanJatuhTempo', data.jatuhTempo);
-            
-            // Detail
-            updateElementText('detailBerjalanDiajukan', formatRupiahNoSymbol(data.nominal));
-            updateElementText('detailBerjalanTglDisetujui', formatDate(data.tanggalDisetujui));
-            updateElementText('detailBerjalanTglLunas', formatDate(data.tanggalPerkiraanLunas));
-            updateElementText('detailBerjalanSkema', data.skema);
-            updateElementText('detailBerjalanJangka', data.jangkaWaktuText);
-            updateElementText('detailBerjalanTanggalCicilan', data.tanggalCicilan);
-            updateElementText('detailBerjalanJumlahBayar', formatRupiah(data.jumlahBayarPerPeriode));
-            updateElementText('detailBerjalanJasa', `-Rp ${formatRupiahNoSymbol(data.jasaPinjaman)}`);
-            updateElementText('detailBerjalanProvisi', '-Rp 0');
-            updateElementText('detailBerjalanBiayaLain', '-Rp 0');
-            updateElementText('detailBerjalanTotalDiterima', formatRupiah(data.totalDiterima));
-            
-            // Angsuran Terbayarkan
-            const angsuranTerbayarkanList = document.getElementById('angsuranTerbayarkanList');
-            if (angsuranTerbayarkanList && data.angsuranTerbayarkan) {
-                let html = '';
-                data.angsuranTerbayarkan.forEach((item, index) => {
-                    html += `
-                        <div class="timeline-item">
-                            <div class="icon green">✓</div>
-                            <div class="timeline-box">
-                                <h3>Angsuran ke-${item.periode}</h3>
-                                <h2>${formatRupiah(item.total)}</h2>
-                                <div class="detail-row">
-                                    <span>Angsuran Pokok ${formatRupiah(item.pokok)}</span>
-                                    <span>Biaya Lain ${formatRupiah(item.biayaLain)}</span>
-                                </div>
-                                <p style="font-size:12px; color:#888; margin-top:5px;">
-                                    Dibayar pada ${formatDate(item.tanggal)} - ${new Date(item.tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                });
-                angsuranTerbayarkanList.innerHTML = html;
-            }
-            
-            // Angsuran Akan Datang
-            const angsuranAkanDatangList = document.getElementById('angsuranAkanDatangList');
-            if (angsuranAkanDatangList && data.angsuranAkanDatang) {
-                let html = '';
-                data.angsuranAkanDatang.forEach((item, index) => {
-                    html += `
-                        <div class="timeline-item">
-                            <div class="icon yellow-icon">⏰</div>
-                            <div class="timeline-box">
-                                <h3>Angsuran ke-${item.periode}</h3>
-                                <h2>${formatRupiah(item.total)}</h2>
-                                <div class="detail-row">
-                                    <span>Angsuran Pokok ${formatRupiah(item.pokok)}</span>
-                                    <span>Biaya Lain ${formatRupiah(item.biayaLain)}</span>
-                                </div>
-                                <p style="font-size:12px; color:#888; margin-top:5px;">
-                                    Harus dibayar pada ${formatDate(item.tanggal)} - ${new Date(item.tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                });
-                angsuranAkanDatangList.innerHTML = html;
-            }
-        }
-
-        function updatePremiumModalDitolak() {
-            const data = loanData.ditolak;
-            
-            updateElementText('ditolakSubtitle', `Pinjaman ${data.jenis} untuk ${data.peruntukan}`);
-            updateElementText('ditolakNominal', formatRupiah(data.nominal));
-            updateElementText('ditolakDana', formatRupiah(data.danaDitolak));
-            updateElementText('ditolakJangkaWaktu', data.jangkaWaktuText);
-            updateElementText('ditolakJatuhTempo', data.jatuhTempo);
-            
-            // Detail
-            updateElementText('detailDitolakDiajukan', formatRupiahNoSymbol(data.nominal));
-            updateElementText('detailDitolakTglPengajuan', formatDate(data.tanggalPengajuan));
-            updateElementText('detailDitolakTglPenolakan', formatDate(data.tanggalPenolakan));
-            updateElementText('detailDitolakSkema', data.skema);
-            updateElementText('detailDitolakJangka', data.jangkaWaktuText);
-            updateElementText('detailDitolakTanggalCicilan', data.tanggalCicilan);
-            updateElementText('detailDitolakJumlahBayar', formatRupiah(data.jumlahBayarPerPeriode));
-            updateElementText('detailDitolakJasa', `-Rp ${formatRupiahNoSymbol(data.jasaPinjaman)}`);
-            updateElementText('detailDitolakProvisi', '-Rp 0');
-            updateElementText('detailDitolakBiayaLain', '-Rp 0');
-            updateElementText('detailDitolakTotalDiterima', formatRupiah(data.totalDiterima));
-            
-            // Ingkar Janji
-            if (data.ingkarJanji) {
-                updateElementText('ditolakTotalKeterlambatan', `${data.ingkarJanji.totalKeterlambatan} Kali`);
-                updateElementText('ditolakTotalDenda', formatRupiah(data.ingkarJanji.totalDenda));
-                updateElementText('ditolakHariKeterlambatan', `${data.ingkarJanji.hariKeterlambatan} Hari`);
-                updateElementText('ditolakCatatan', data.ingkarJanji.catatan);
-            }
-            
-            // Alasan Penolakan
-            const alasanPenolakanList = document.getElementById('alasanPenolakanList');
-            if (alasanPenolakanList && data.alasanPenolakan) {
-                let html = '';
-                data.alasanPenolakan.forEach((alasan, index) => {
-                    const [judul, detail] = alasan.split(' - ');
-                    html += `
-                        <div class="timeline-item">
-                            <div class="icon red-icon">!</div>
-                            <div class="timeline-box">
-                                <h3>${judul}</h3>
-                                <h2>Tidak Lengkap</h2>
-                                <p>${detail || alasan}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-                alasanPenolakanList.innerHTML = html;
-            }
-        }
-
-        function updatePremiumModalLunas() {
-            const data = loanData.lunas;
-            
-            updateElementText('lunasSubtitle', `Pinjaman ${data.jenis} untuk ${data.peruntukan}`);
-            updateElementText('lunasNominal', formatRupiah(data.nominal));
-            updateElementText('lunasTotalDibayarkan', formatRupiah(data.totalDibayarkan));
-            updateElementText('lunasJangkaWaktu', data.jangkaWaktuText);
-            updateElementText('lunasJatuhTempo', data.jatuhTempo);
-            
-            // Detail
-            updateElementText('detailLunasDiajukan', formatRupiahNoSymbol(data.nominal));
-            updateElementText('detailLunasTglPencairan', formatDate(data.tanggalPencairan));
-            updateElementText('detailLunasTglPelunasan', formatDate(data.tanggalPelunasan));
-            updateElementText('detailLunasSkema', data.skema);
-            updateElementText('detailLunasJangka', data.jangkaWaktuText);
-            updateElementText('detailLunasTanggalCicilan', data.tanggalCicilan);
-            updateElementText('detailLunasJumlahBayar', formatRupiah(data.jumlahBayarPerPeriode));
-            updateElementText('detailLunasJasa', `-Rp ${formatRupiahNoSymbol(data.jasaPinjaman)}`);
-            updateElementText('detailLunasCatatanJasa', `${data.persentaseJasa}% dari Pinjaman yang Diajukan`);
-            updateElementText('detailLunasProvisi', '-Rp 0');
-            updateElementText('detailLunasBiayaLain', '-Rp 0');
-            updateElementText('detailLunasTotalDiterima', formatRupiah(data.totalDiterima));
-            
-            // Riwayat Pelunasan
-            if (data.riwayatPelunasan) {
-                updateElementText('riwayatTotalDibayar', formatRupiah(data.riwayatPelunasan.totalDibayar));
-                updateElementText('riwayatPokok', formatRupiah(data.riwayatPelunasan.pokok));
-                updateElementText('riwayatBunga', formatRupiah(data.riwayatPelunasan.bunga));
-                updateElementText('riwayatTanggalLunas', `Lunas pada ${formatDate(data.riwayatPelunasan.tanggal)} - ${new Date(data.riwayatPelunasan.tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`);
-                updateElementText('riwayatPeriodeBunga', `Bunga ${data.jangkaWaktu} hari periode pinjaman`);
             }
         }
 
@@ -5566,85 +5504,6 @@
             
             const waUrl = `https://wa.me/${WA_ADMIN}?text=${encodeURIComponent(message)}`;
             window.open(waUrl, '_blank');
-        }
-
-        // ================ FUNGSI SIMPANAN ================
-        function toggleAmountVisibility() {
-            isAmountVisible = !isAmountVisible;
-            const eyeToggle = document.getElementById('eyeToggle');
-            const totalAmount = document.getElementById('totalAmount');
-            const hiddenAmount = document.getElementById('hiddenAmount');
-            
-            if (eyeToggle) eyeToggle.innerHTML = isAmountVisible ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            if (totalAmount) totalAmount.style.display = isAmountVisible ? 'block' : 'none';
-            if (hiddenAmount) hiddenAmount.style.display = isAmountVisible ? 'none' : 'block';
-        }
-
-        function toggleAmountVisibilitySavings() {
-            isAmountVisibleSavings = !isAmountVisibleSavings;
-            const eyeToggle = document.getElementById('eyeToggleSavings');
-            const totalAmount = document.getElementById('totalAmountSavings');
-            const hiddenAmount = document.getElementById('hiddenAmountSavings');
-            
-            if (eyeToggle) eyeToggle.innerHTML = isAmountVisibleSavings ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-            if (totalAmount) totalAmount.style.display = isAmountVisibleSavings ? 'block' : 'none';
-            if (hiddenAmount) hiddenAmount.style.display = isAmountVisibleSavings ? 'none' : 'block';
-        }
-
-        function openDepositModal() { openAkunModal('modalDeposit'); }
-        function openWithdrawalModal() { 
-            updateAllFinancialData();
-            openAkunModal('modalWithdrawal'); 
-        }
-        function openTransferModal() { 
-            openAkunModal('modalTransfer'); 
-        }
-        function openReportModal() { 
-            updateAllFinancialData();
-            openAkunModal('modalReport'); 
-        }
-
-        function filterTransactions(filter) {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase().includes(filter)) {
-                    btn.classList.add('active');
-                }
-            });
-            alert(`Menampilkan transaksi: ${filter === 'all' ? 'Semua' : filter === 'deposit' ? 'Setoran' : 'Penarikan'}`);
-        }
-
-        function showSavingsDetail(type) {
-            let title = '', content = '';
-            if (type === 'pokok') {
-                title = 'Detail Simpanan Pokok';
-                content = `<p><strong>Simpanan Pokok</strong> adalah simpanan yang dibayarkan sekali oleh anggota saat pertama kali menjadi anggota koperasi.</p>
-                    <p><strong>Jumlah:</strong> ${formatRupiah(memberData.pokok)}</p>
-                    <p><strong>Karakteristik:</strong></p>
-                    <ul><li>Dibayar sekali saat pendaftaran</li><li>Tidak dapat ditarik selama menjadi anggota</li>
-                    <li>Dikembalikan saat keluar dari keanggotaan</li><li>Besarnya sama untuk semua anggota</li></ul>`;
-            } else if (type === 'wajib') {
-                title = 'Detail Simpanan Wajib';
-                content = `<p><strong>Simpanan Wajib</strong> adalah simpanan yang harus dibayarkan secara berkala oleh anggota setiap bulan.</p>
-                    <p><strong>Jumlah Saat Ini:</strong> ${formatRupiah(memberData.wajib)}</p>
-                    <p><strong>Karakteristik:</strong></p>
-                    <ul><li>Dibayar setiap bulan</li><li>Besarnya sama untuk semua anggota</li>
-                    <li>Tidak dapat ditarik selama menjadi anggota</li><li>Dikembalikan saat keluar dari keanggotaan</li></ul>`;
-            } else if (type === 'sukarela') {
-                title = 'Detail Simpanan Sukarela';
-                content = `<p><strong>Simpanan Sukarela</strong> adalah simpanan yang dapat disetor dan ditarik kapan saja sesuai keinginan anggota.</p>
-                    <p><strong>Jumlah Saat Ini:</strong> ${formatRupiah(memberData.sukarela)}</p>
-                    <p><strong>Karakteristik:</strong></p>
-                    <ul><li>Dapat disetor kapan saja</li><li>Dapat ditarik kapan saja</li>
-                    <li>Besarnya bebas (tidak ditentukan)</li><li>Mendapatkan bunga</li></ul>`;
-            }
-            
-            const titleEl = document.getElementById('savingsDetailTitle');
-            if (titleEl) titleEl.textContent = title;
-            const contentEl = document.getElementById('savingsDetailContent');
-            if (contentEl) contentEl.innerHTML = content;
-            openAkunModal('modalSavingsDetail');
         }
 
         function sendDepositToWhatsApp() {
@@ -5784,52 +5643,83 @@ ________________________________
             if (note) note.value = '';
         }
 
-        function printReport() {
-            const printContent = document.getElementById('reportPreview')?.innerHTML;
-            if (printContent) {
-                const originalContent = document.body.innerHTML;
-                document.body.innerHTML = printContent;
-                window.print();
-                document.body.innerHTML = originalContent;
-                location.reload();
-            }
+        // ================ FUNGSI SIMPANAN ================
+        function toggleAmountVisibility() {
+            isAmountVisible = !isAmountVisible;
+            const eyeToggle = document.getElementById('eyeToggle');
+            const totalAmount = document.getElementById('totalAmount');
+            const hiddenAmount = document.getElementById('hiddenAmount');
+            
+            if (eyeToggle) eyeToggle.innerHTML = isAmountVisible ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            if (totalAmount) totalAmount.style.display = isAmountVisible ? 'block' : 'none';
+            if (hiddenAmount) hiddenAmount.style.display = isAmountVisible ? 'none' : 'block';
         }
 
-        function printKartuAnggota() {
-            const kartuContent = document.querySelector('.kartu-preview')?.innerHTML;
-            if (kartuContent) {
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <html><head><title>Kartu Anggota Koperasi</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-                    <style>
-                        body{font-family:'Poppins',sans-serif;padding:40px;max-width:400px;margin:0 auto;background:#f0f7f0;}
-                        .kartu-preview{background:white;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;text-align:center;border:2px solid #2E7D32;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
-                        .kartu-header{background:linear-gradient(135deg,#2E7D32,#4CAF50);color:white;padding:12px;border-radius:12px 12px 0 0;width:100%;margin-bottom:15px;}
-                        .kartu-header h4{font-size:1.1rem;font-weight:700;margin:0;}
-                        .kartu-photo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:4px solid #4CAF50;margin:0 auto 15px;}
-                        .kartu-photo img{width:100%;height:100%;object-fit:cover;}
-                        .kartu-info{width:100%;text-align:left;background:#f5f5f5;padding:15px;border-radius:12px;}
-                        .kartu-info-row{display:flex;margin-bottom:8px;font-size:0.9rem;}
-                        .kartu-info-label{font-weight:700;width:100px;color:#333;}
-                        .kartu-info-value{flex:1;color:#2E7D32;font-weight:600;}
-                        .kartu-footer{margin-top:15px;font-size:0.8rem;color:#666;border-top:1px solid #ddd;padding-top:10px;width:100%;}
-                    </style>
-                    </head>
-                    <body>
-                        <div class="kartu-preview">${kartuContent}</div>
-                        <div style="text-align:center; margin-top:30px;">
-                            <button onclick="window.print()" style="padding:12px 30px; background:#2E7D32; color:white; border:none; border-radius:50px; font-weight:600; cursor:pointer;">Cetak Kartu</button>
-                        </div>
-                        <script>window.onload=function(){ setTimeout(function(){ window.print(); }, 500); }<\/script>
-                    </body></html>
-                `);
-                printWindow.document.close();
-            }
+        function toggleAmountVisibilitySavings() {
+            isAmountVisibleSavings = !isAmountVisibleSavings;
+            const eyeToggle = document.getElementById('eyeToggleSavings');
+            const totalAmount = document.getElementById('totalAmountSavings');
+            const hiddenAmount = document.getElementById('hiddenAmountSavings');
+            
+            if (eyeToggle) eyeToggle.innerHTML = isAmountVisibleSavings ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            if (totalAmount) totalAmount.style.display = isAmountVisibleSavings ? 'block' : 'none';
+            if (hiddenAmount) hiddenAmount.style.display = isAmountVisibleSavings ? 'none' : 'block';
         }
 
-        function downloadPDF() {
-            alert('Fitur download PDF akan segera tersedia!');
+        function openDepositModal() { openAkunModal('modalDeposit'); }
+        function openWithdrawalModal() { 
+            updateAllFinancialData();
+            openAkunModal('modalWithdrawal'); 
+        }
+        function openTransferModal() { 
+            openAkunModal('modalTransfer'); 
+        }
+        function openReportModal() { 
+            updateAllFinancialData();
+            openAkunModal('modalReport'); 
+        }
+
+        function filterTransactions(filter) {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(filter === 'all' ? 'semua' : filter === 'deposit' ? 'setor' : 'tarik')) {
+                    btn.classList.add('active');
+                }
+            });
+            alert(`Menampilkan transaksi: ${filter === 'all' ? 'Semua' : filter === 'deposit' ? 'Setoran' : 'Penarikan'}`);
+        }
+
+        function showSavingsDetail(type) {
+            let title = '', content = '';
+            if (type === 'pokok') {
+                title = 'Detail Simpanan Pokok';
+                content = `<p><strong>Simpanan Pokok</strong> adalah simpanan yang dibayarkan sekali oleh anggota saat pertama kali menjadi anggota koperasi.</p>
+                    <p><strong>Jumlah:</strong> ${formatRupiah(memberData.pokok)}</p>
+                    <p><strong>Karakteristik:</strong></p>
+                    <ul><li>Dibayar sekali saat pendaftaran</li><li>Tidak dapat ditarik selama menjadi anggota</li>
+                    <li>Dikembalikan saat keluar dari keanggotaan</li><li>Besarnya sama untuk semua anggota</li></ul>`;
+            } else if (type === 'wajib') {
+                title = 'Detail Simpanan Wajib';
+                content = `<p><strong>Simpanan Wajib</strong> adalah simpanan yang harus dibayarkan secara berkala oleh anggota setiap bulan.</p>
+                    <p><strong>Jumlah Saat Ini:</strong> ${formatRupiah(memberData.wajib)}</p>
+                    <p><strong>Karakteristik:</strong></p>
+                    <ul><li>Dibayar setiap bulan</li><li>Besarnya sama untuk semua anggota</li>
+                    <li>Tidak dapat ditarik selama menjadi anggota</li><li>Dikembalikan saat keluar dari keanggotaan</li></ul>`;
+            } else if (type === 'sukarela') {
+                title = 'Detail Simpanan Sukarela';
+                content = `<p><strong>Simpanan Sukarela</strong> adalah simpanan yang dapat disetor dan ditarik kapan saja sesuai keinginan anggota.</p>
+                    <p><strong>Jumlah Saat Ini:</strong> ${formatRupiah(memberData.sukarela)}</p>
+                    <p><strong>Karakteristik:</strong></p>
+                    <ul><li>Dapat disetor kapan saja</li><li>Dapat ditarik kapan saja</li>
+                    <li>Besarnya bebas (tidak ditentukan)</li><li>Mendapatkan bunga</li></ul>`;
+            }
+            
+            const titleEl = document.getElementById('savingsDetailTitle');
+            if (titleEl) titleEl.textContent = title;
+            const contentEl = document.getElementById('savingsDetailContent');
+            if (contentEl) contentEl.innerHTML = content;
+            openAkunModal('modalSavingsDetail');
         }
 
         // ================ FUNGSI PINJAMAN ================
@@ -5969,27 +5859,27 @@ ________________________________
 
         function ajukanPinjaman() {
             memberData.loanPending = pengajuanPinjaman.nominal;
-            memberData.loanActive += pengajuanPinjaman.nominal;
-            memberData.loanActiveCount++;
             
             // Update data pinjaman berjalan
             if (!loanData.berjalan) {
                 loanData.berjalan = {
-                    id: `LN-${new Date().getFullYear()}-${String(loanData.berjalan?.id || 0).padStart(3, '0')}`,
-                    nominal: 0,
-                    danaDiterima: 0,
-                    jenis: '',
-                    peruntukan: '',
-                    skema: '',
-                    jangkaWaktu: 0,
-                    jangkaWaktuText: '',
-                    jatuhTempo: '',
+                    id: `LN-${new Date().getFullYear()}-001`,
+                    nominal: pengajuanPinjaman.nominal,
+                    danaDiterima: pengajuanPinjaman.totalDiterima,
+                    jenis: pengajuanPinjaman.jenis,
+                    peruntukan: pengajuanPinjaman.peruntukan,
+                    skema: pengajuanPinjaman.skema,
+                    jangkaWaktu: pengajuanPinjaman.jangkaWaktu,
+                    jangkaWaktuText: pengajuanPinjaman.skema === 'harian' ? `${pengajuanPinjaman.jangkaWaktu} Hari` : 
+                                   pengajuanPinjaman.skema === 'bulanan' ? `${pengajuanPinjaman.jangkaWaktu} Bulan` : 
+                                   `${pengajuanPinjaman.jangkaWaktu} Tahun`,
+                    jatuhTempo: document.getElementById('tanggalJatuhTempo')?.textContent || '-',
                     tanggalDisetujui: new Date().toISOString().split('T')[0],
                     tanggalPerkiraanLunas: '',
                     tanggalCicilan: 'Tanggal 10 Setiap Bulan',
-                    jumlahBayarPerPeriode: 0,
-                    jasaPinjaman: 0,
-                    totalDiterima: 0,
+                    jumlahBayarPerPeriode: pengajuanPinjaman.jumlahDibayarkan,
+                    jasaPinjaman: pengajuanPinjaman.jasaPinjaman,
+                    totalDiterima: pengajuanPinjaman.totalDiterima,
                     angsuranTerbayarkan: [],
                     angsuranAkanDatang: []
                 };
@@ -6012,7 +5902,7 @@ ________________________________
             
             const now = new Date();
             const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-            updateElementText('menungguDate', now.toLocaleDateString('id-ID', options));
+            updateElementText('menungguDate', now.toLocaleDateString('id-ID', options) + ' WIB');
             
             // Update modal menunggu
             updateElementText('menungguPinjamanDiajukan', formatRupiah(pengajuanPinjaman.nominal));
@@ -6047,24 +5937,57 @@ ________________________________
             if (tanggalJatuhTempoEl) tanggalJatuhTempoEl.textContent = formattedDate;
         }
 
-        // ================ FUNGSI UMUM ================
-        function updateLastUpdatedTime() {
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const timeStr = now.toLocaleDateString('id-ID', options) + ' WIB';
-            const lastUpdated = document.getElementById('lastUpdatedTime');
-            if (lastUpdated) lastUpdated.textContent = timeStr;
-        }
-
-        function showNotification(message) {
-            alert(message);
-        }
-
-        function logout() {
-            if (confirm('Apakah Anda yakin ingin logout?')) {
-                alert('Anda telah logout. Mengarahkan ke halaman utama...');
-                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+        // ================ FUNGSI CETAK ================
+        function printReport() {
+            const printContent = document.getElementById('reportPreview')?.innerHTML;
+            if (printContent) {
+                const originalContent = document.body.innerHTML;
+                document.body.innerHTML = printContent;
+                window.print();
+                document.body.innerHTML = originalContent;
+                location.reload();
             }
+        }
+
+        function printKartuAnggota() {
+            const kartuContent = document.querySelector('.kartu-preview')?.innerHTML;
+            if (kartuContent) {
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html><head><title>Kartu Anggota Koperasi</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        body{font-family:'Poppins',sans-serif;padding:40px;max-width:400px;margin:0 auto;background:#f0f7f0;}
+                        .kartu-preview{background:white;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;text-align:center;border:2px solid #2E7D32;box-shadow:0 10px 25px rgba(0,0,0,0.1);}
+                        .kartu-header{background:linear-gradient(135deg,#2E7D32,#4CAF50);color:white;padding:12px;border-radius:12px 12px 0 0;width:100%;margin-bottom:15px;}
+                        .kartu-header h4{font-size:1.1rem;font-weight:700;margin:0;}
+                        .kartu-photo{width:100px;height:100px;border-radius:50%;overflow:hidden;border:4px solid #4CAF50;margin:0 auto 15px;}
+                        .kartu-photo img{width:100%;height:100%;object-fit:cover;}
+                        .kartu-info{width:100%;text-align:left;background:#f5f5f5;padding:15px;border-radius:12px;}
+                        .kartu-info-row{display:flex;margin-bottom:8px;font-size:0.9rem;}
+                        .kartu-info-label{font-weight:700;width:100px;color:#333;}
+                        .kartu-info-value{flex:1;color:#2E7D32;font-weight:600;}
+                        .kartu-footer{margin-top:15px;font-size:0.8rem;color:#666;border-top:1px solid #ddd;padding-top:10px;width:100%;}
+                    </style>
+                    </head>
+                    <body>
+                        <div class="kartu-preview">${kartuContent}</div>
+                        <div style="text-align:center; margin-top:30px;">
+                            <button onclick="window.print()" style="padding:12px 30px; background:#2E7D32; color:white; border:none; border-radius:50px; font-weight:600; cursor:pointer;">Cetak Kartu</button>
+                        </div>
+                        <script>window.onload=function(){ setTimeout(function(){ window.print(); }, 500); }<\/script>
+                    </body></html>
+                `);
+                printWindow.document.close();
+            }
+        }
+
+        function downloadPDF() {
+            alert('Fitur download PDF akan segera tersedia!');
+        }
+
+        function printCertificate() {
+            alert('Fitur cetak sertifikat akan segera tersedia!');
         }
 
         function changePassword() {
@@ -6087,24 +6010,11 @@ ________________________________
             if (confirmEl) confirmEl.value = '';
         }
 
-        function printCertificate() {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html><head><title>Bukti Pelunasan Pinjaman</title>
-                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-                <style>body{font-family:'Poppins',sans-serif;padding:40px;max-width:800px;margin:0 auto;}</style></head>
-                <body><div style="border:2px solid #2c5f2d;border-radius:20px;padding:40px;background:white;">
-                <h1 style="color:#2c5f2d;">BUKTI PELUNASAN PINJAMAN</h1>
-                <p>Koperasi KUD Asmara Tani</p>
-                <hr><p><strong>Nama:</strong> ${memberData.nama}</p>
-                <p><strong>ID/NIA:</strong> ${memberData.id}</p>
-                <p><strong>Nominal Pinjaman:</strong> ${formatRupiah(loanData.lunas.nominal)}</p>
-                <p><strong>Tanggal Pelunasan:</strong> ${formatDate(loanData.lunas.tanggalPelunasan)}</p>
-                <p><strong>Status:</strong> LUNAS</p>
-                <hr><p style="text-align:center;">Dokumen ini adalah bukti sah pelunasan pinjaman</p>
-                </div><script>window.onload=function(){window.print();}<\/script></body></html>
-            `);
-            printWindow.document.close();
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                alert('Anda telah logout. Mengarahkan ke halaman utama...');
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+            }
         }
 
         // ================ INISIALISASI ================
