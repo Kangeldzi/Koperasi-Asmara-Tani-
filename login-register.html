@@ -6,6 +6,7 @@
     <title>Login & Register - Koperasi Asmara Tani</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== CSS SAMA PERSIS DENGAN SEBELUMNYA (TIDAK BERUBAH) ===== */
         :root {
             --primary: #2e7d32;
             --primary-light: #4caf50;
@@ -638,7 +639,7 @@
                             <span>ID-NIA <span class="optional-label">(wajib)</span></span>
                         </div>
                         <input type="text" id="token" class="form-control" 
-                               placeholder="Masukkan ID/NIA Anda" 
+                               placeholder="Masukkan ID/NIA Anda.!" 
                                autocomplete="off">
                     </div>
                     
@@ -716,7 +717,7 @@
                             <span class="optional-label">(wajib untuk anggota)</span>
                         </label>
                         <input type="text" id="niaRegister" name="nia" class="form-control" 
-                               placeholder="************" 
+                               placeholder="Contoh: **-****-***" 
                                autocomplete="off">
                     </div>
                     
@@ -822,7 +823,7 @@
                     
                     <!-- SECTION 8: Data Simpanan -->
                     <div class="form-row">
-                        <div class="form-col">
+                        <div class="form-col">uu7
                             <div class="form-group">
                                 <label for="simpananPokok">Simpanan Pokok <span class="required">*</span></label>
                                 <div class="input-group">
@@ -898,7 +899,7 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqPS3eNKzgT4NW9wCJTxO902ARq15MRy2B7fNjdRiJ1qqdPWqp_9MuXsNc16du6YaM/exec';
     const SPREADSHEET_ID = '1L4zbMihd_ViXHZEQu1Fjnv0QI0HY4s8c1UdEudzKuwA';
     
-    // ===== DATA ROLE SESUAI PERMINTAAN =====
+    // ===== DATA ROLE & TOKEN =====
     const ROLE_ADMIN_UTAMA = {
         email: 'admin@koperasi.com',
         password: 'admin014212',
@@ -906,12 +907,24 @@
         role: 'Admin Utama'
     };
 
+    // Token khusus untuk Admin Opsional (dari data referensi)
+    const TOKEN_ADMIN_OPSIONAL = '01-2026-001';
+    
     // ===== FUNGSI UTILITY =====
     function formatTokenWithPrefix(token) {
         if (!token) return '';
+        // Hapus spasi dan ubah ke format standar
+        token = token.trim();
         if (token.startsWith('01-')) return token;
         if (/^[0-9]{4}-[0-9]{3}$/.test(token)) return `01-${token}`;
         return token;
+    }
+    
+    // Validasi format token (01-YYYY-NNN)
+    function isValidTokenFormat(token) {
+        if (!token) return false;
+        const pattern = /^01-[0-9]{4}-[0-9]{3}$/;
+        return pattern.test(token);
     }
     
     // ===== NAVIGASI =====
@@ -982,7 +995,7 @@
         }
     };
     
-    // ===== FORM LOGIN =====
+    // ===== FORM LOGIN (DENGAN SISTEM TOKEN LENGKAP) =====
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -1002,13 +1015,13 @@
         submitBtn.disabled = true;
         
         try {
-            // 1. CEK ROLE ADMIN UTAMA (Email dan Password Fix)
+            // 1. CEK ROLE ADMIN UTAMA (tidak perlu token)
             if (email === ROLE_ADMIN_UTAMA.email && password === ROLE_ADMIN_UTAMA.password) {
-                // Login sebagai Admin Utama
                 const userData = {
                     email: email,
                     role: 'Admin Utama',
                     posisi: 'Admin Utama',
+                    token: null,
                     redirect: ROLE_ADMIN_UTAMA.redirect
                 };
                 localStorage.setItem('currentUser', JSON.stringify(userData));
@@ -1019,38 +1032,55 @@
                 return;
             }
             
-            // 2. CEK ROLE ADMIN OPSIONAL (Bebas, asalkan ada email & password)
-            //    Syarat: Bukan admin utama, tapi login berhasil (kita anggap semua login selain admin utama adalah admin opsional/anggota)
-            //    Catatan: Kita akan cek dulu di data registrasi, jika tidak ada, anggap sebagai admin opsional.
-            
-            // Cek di data registrasi (localStorage) dulu
+            // 2. CEK DATA REGISTRASI (untuk anggota yang sudah daftar)
             const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
-            const foundUser = users.find(u => u.email === email && u.password === password);
+            
+            // Cari user berdasarkan email DAN password
+            let foundUser = users.find(u => u.email === email && u.password === password);
             
             if (foundUser) {
-                // Login sebagai anggota yang terdaftar
+                // Validasi token jika user punya token di datanya
+                if (foundUser.token) {
+                    // Jika user punya token, tapi token yang dimasukkan tidak sesuai
+                    if (!token || formatTokenWithPrefix(token) !== foundUser.token) {
+                        showError('Token/NIA tidak sesuai dengan data registrasi');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                } else {
+                    // Jika user tidak punya token di data registrasi, token boleh kosong
+                    // Tapi jika user mengisi token padahal tidak punya, tolak
+                    if (token) {
+                        showError('Akun Anda tidak terdaftar dengan token');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+                }
+                
+                // Login berhasil sebagai anggota terdaftar
                 localStorage.setItem('currentUser', JSON.stringify(foundUser));
                 if (remember) localStorage.setItem('rememberedEmail', email);
                 
                 showSuccess('Login anggota berhasil!');
-                // Semua anggota (termasuk yang milih posisi Admin di form) diarahkan ke akun-anggota.html
                 setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
                 return;
             }
             
-            // 3. Jika tidak ditemukan di registrasi, tapi email dan password diisi (bebas),
-            //    anggap sebagai Admin Opsional (seperti contoh eldisugih@gmail.com / berkah)
-            //    Ini memenuhi kriteria "Admin Opsional bersifat bebas tidak baku"
-            if (email && password) {
-                // Ini adalah Admin Opsional (atau anggota dummy)
-                const dummyUser = {
+            // 3. CEK ADMIN OPSIONAL (menggunakan token 01-2026-001)
+            //    Bisa login dengan email/password bebas ASAL tokennya 01-2026-001
+            if (token && formatTokenWithPrefix(token) === TOKEN_ADMIN_OPSIONAL) {
+                // Ini adalah Admin Opsional dengan token khusus
+                const adminOpsionalData = {
                     email: email,
                     nama: email.split('@')[0] || 'Admin Opsional',
-                    posisi: 'Admin Opsional', // Memberi label
+                    posisi: 'Admin Opsional',
+                    token: TOKEN_ADMIN_OPSIONAL,
                     role: 'Admin Opsional',
                     redirect: 'akun-anggota.html'
                 };
-                localStorage.setItem('currentUser', JSON.stringify(dummyUser));
+                localStorage.setItem('currentUser', JSON.stringify(adminOpsionalData));
                 if (remember) localStorage.setItem('rememberedEmail', email);
                 
                 showSuccess('Login Admin Opsional berhasil!');
@@ -1058,8 +1088,52 @@
                 return;
             }
             
-            // Jika tidak ada kondisi yang terpenuhi
-            showError('Email/password tidak valid');
+            // 4. CEK ANGGOTA DENGAN TOKEN VALID (01-2026-002, 003, 004, dst)
+            //    Bisa login dengan email/password bebas ASAL tokennya berformat 01-YYYY-NNN
+            //    dan bukan token admin opsional (001)
+            if (token && isValidTokenFormat(formatTokenWithPrefix(token))) {
+                const formattedToken = formatTokenWithPrefix(token);
+                
+                // Cek apakah token ini sudah terdaftar di suatu akun?
+                const existingUserWithToken = users.find(u => u.token === formattedToken);
+                
+                if (existingUserWithToken) {
+                    // Token sudah dipakai, harus login dengan email yang sesuai
+                    showError(`Token ${formattedToken} sudah terdaftar dengan email ${existingUserWithToken.email}. Gunakan email tersebut.`);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                // Token valid dan belum terdaftar -> ini adalah anggota baru/login pertama dengan token
+                const anggotaData = {
+                    email: email,
+                    nama: email.split('@')[0] || 'Anggota Baru',
+                    posisi: 'Anggota Biasa',
+                    token: formattedToken,
+                    role: 'Anggota',
+                    redirect: 'akun-anggota.html',
+                    // Data default lainnya
+                    simpananPokok: 200000,
+                    simpananWajib: 20000,
+                    simpananSukarela: 0,
+                    status: 'Aktif'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(anggotaData));
+                
+                // Simpan juga ke registered_users agar tidak perlu daftar ulang
+                users.push(anggotaData);
+                localStorage.setItem('registered_users', JSON.stringify(users));
+                
+                if (remember) localStorage.setItem('rememberedEmail', email);
+                
+                showSuccess('Login dengan token berhasil! Data tersimpan.');
+                setTimeout(() => window.location.href = 'akun-anggota.html', 1000);
+                return;
+            }
+            
+            // 5. Jika tidak ada kondisi yang terpenuhi
+            showError('Email/password/token tidak valid');
             
         } catch (error) {
             showError('Error: ' + error.message);
@@ -1069,7 +1143,7 @@
         }
     });
     
-    // ===== FORM REGISTRASI (Tetap sama, untuk mendaftarkan anggota baru) =====
+    // ===== FORM REGISTRASI (dengan validasi token) =====
     document.getElementById('registrationForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -1087,10 +1161,37 @@
         if (password.length < 6) { showErrorDaftar('Password min 6 karakter'); return; }
         if (password !== ulangi) { showErrorDaftar('Password tidak sama'); return; }
         
-        // Validasi token (opsional, sesuai kebutuhan)
-        if (posisi !== 'Admin' && !token) {
-            showErrorDaftar('Token/NIA wajib diisi untuk non-Admin');
-            return;
+        // Validasi token
+        if (token) {
+            const formattedToken = formatTokenWithPrefix(token);
+            
+            // Cek format token
+            if (!isValidTokenFormat(formattedToken)) {
+                showErrorDaftar('Format token harus 01-YYYY-NNN (contoh: 01-2026-002)');
+                return;
+            }
+            
+            // Cek apakah token sudah digunakan
+            const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
+            const tokenExists = users.some(u => u.token === formattedToken);
+            
+            if (tokenExists) {
+                showErrorDaftar(`Token ${formattedToken} sudah terdaftar dengan akun lain`);
+                return;
+            }
+            
+            // Token 01-2026-001 khusus untuk Admin Opsional
+            if (formattedToken === TOKEN_ADMIN_OPSIONAL && posisi !== 'Admin') {
+                if (!confirm('Token ini khusus untuk Admin Opsional. Lanjutkan registrasi sebagai Admin?')) {
+                    return;
+                }
+            }
+        } else {
+            // Jika tidak ada token, hanya Admin yang bisa daftar tanpa token
+            if (posisi !== 'Admin') {
+                showErrorDaftar('Token/NIA wajib diisi untuk non-Admin');
+                return;
+            }
         }
         
         const submitBtn = this.querySelector('button[type="submit"]');
@@ -1147,7 +1248,7 @@
             };
             
             // Kirim ke Apps Script
-            const response = await fetch(APPS_SCRIPT_URL, {
+            await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -1227,10 +1328,11 @@
         alert('🔐 Hubungi Admin Koperasi\n📧 admin@koperasiasmaratani.id\n📱 0852-1848-3129');
     });
     
-    console.log('✅ Sistem Login dengan 3 Role:');
-    console.log('1. Admin Utama: admin@koperasi.com / admin014212 -> dashboard-admin.html');
-    console.log('2. Admin Opsional: (email/password bebas, contoh: eldisugih@gmail.com / berkah) -> akun-anggota.html');
-    console.log('3. Anggota: (data registrasi) -> akun-anggota.html');
+    console.log('✅ Sistem Token Aktif:');
+    console.log('1. Admin Utama: admin@koperasi.com (tanpa token) -> dashboard-admin.html');
+    console.log('2. Admin Opsional: token 01-2026-001 (email/password bebas) -> akun-anggota.html');
+    console.log('3. Anggota: token 01-2026-002, 003, dst (email/password bebas) -> akun-anggota.html');
+    console.log('4. Anggota terdaftar: login dengan email & password hasil registrasi');
     </script>
 </body>
 </html>
