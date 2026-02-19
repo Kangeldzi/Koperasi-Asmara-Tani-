@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Usaha KUD Asmara Tani - #KopSmart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.1.5/emoji-picker.min.css">
+    <style>
+        /* ========== ORIGINAL BASE (KONSISTEN) ========== */
+        body {
+            font-family: "Poppins", sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f7f9fc;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ---------- TOMBOL KEMBALI ---------- */
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(27, 94, 32, 0.9);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-family: "Poppins", sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .back-home:hover {
+            background: rgba(27, 94, 32, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27, 94, 32, 0.4);
+        }
+        @media (max-width: 768px) {
+            .back-home { top: 15px; left: 15px; padding: 10px 16px; font-size: 13px; }
+        }
+
+        /* ---------- HERO DENGAN FOTO KOPERASI (PEMANIS) ---------- */
+        .hero {
+            position: relative;
+            background: linear-gradient(97deg, #1b5e20 0%, #3e8e3b 60%, #4caf50 100%);
+            color: white;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-bg-image {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1609921212029-bb5a28e60960?q=80&w=2074&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center 30%;
+            opacity: 0.25;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+        .hero .content {
+            position: relative;
+            z-index: 5;
+            max-width: 1000px;
+            padding: 70px 20px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            animation: floatIn 700ms cubic-bezier(.2,.9,.3,1);
+        }
+        .hero h1 i { margin-right: 10px; color: #ffd966; }
+        .hero p {
+            font-size: 20px;
+            max-width: 750px;
+            margin: 0 auto;
+            opacity: 0.95;
+            line-height: 1.6;
+            animation: fadeInUp 900ms cubic-bezier(.2,.9,.3,1) 120ms both;
+        }
+        .hero .tagline-highlight {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 500;
+            margin-top: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 1.2rem;
+        }
+        .hero h1::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 4px;
+            margin: 20px auto 0;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #fff8, #fff);
+            box-shadow: 0 6px 20px rgba(76,175,80,0.18);
+            animation: pulse 2.4s infinite;
+        }
+
+        /* ---------- CONTAINER & CARD (SAMA PERSIS) ---------- */
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 40px auto;
+            line-height: 1.7;
+        }
+        .card {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+            padding: 28px;
+            margin-bottom: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 22px rgba(16, 24, 40, 0.06), 0 2px 6px rgba(16,24,40,0.04);
+            position: relative;
+            border: 1px solid rgba(27,94,32,0.04);
+            transition: transform 280ms cubic-bezier(.2,.9,.3,1), box-shadow 280ms;
+            animation: cardPop .6s ease both;
+        }
+        .card:hover {
+            transform: translateY(-8px) rotateX(0.6deg);
+            box-shadow: 0 18px 50px rgba(27,94,32,0.09), 0 6px 18px rgba(16,24,40,0.06);
+            border-color: rgba(27,94,32,0.12);
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 26px;
+            color: #1b5e20;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h2 i { color: #4caf50; width: 1.8rem; }
+        .card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            border-top-left-radius: 14px;
+            border-bottom-left-radius: 14px;
+            background: linear-gradient(180deg, rgba(27,94,32,0.95), rgba(76,175,80,0.85));
+        }
+        ul {
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+        ul li::marker { color: #1b5e20; font-weight: 700; }
+
+        blockquote {
+            background:#e8f5e9;
+            padding:15px 20px;
+            border-left:6px solid #1b5e20;
+            font-style:italic;
+            border-radius:8px;
+            margin: 20px 0 10px;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            background: #1b5e20;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 14px;
+            box-shadow: 0 -8px 40px rgba(27,94,32,0.12);
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 34px; }
+            .card { padding: 20px; }
+        }
+
+        /* animasi */
+        @keyframes floatIn { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeInUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scaleX(0.98); opacity: .95; } 50% { transform: scaleX(1.02); opacity: 1; } 100% { transform: scaleX(0.98); opacity: .95; } }
+        @keyframes cardPop { from { transform: translateY(12px) scale(.995); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+        /* ---------- SISTEM KOMENTAR (UTUH) ---------- */
+        .comment-section { margin-top: 40px; }
+        .comment-form-container { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .form-group { margin-bottom: 15px; }
+        .form-input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: "Poppins", sans-serif; font-size: 14px; transition: border-color 0.3s; }
+        .form-input:focus { outline: none; border-color: #4caf50; box-shadow: 0 0 0 3px rgba(76,175,80,0.1); }
+        .textarea-container { position: relative; }
+        .emoji-toggle { position: absolute; right: 10px; bottom: 10px; background: none; border: none; font-size: 20px; cursor: pointer; color: #666; transition: color 0.3s; }
+        .emoji-toggle:hover { color: #4caf50; }
+        .emoji-picker-container { position: absolute; bottom: 50px; right: 0; z-index: 100; background: white; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); display: none; }
+        .emoji-picker-container.show { display: block; }
+        .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-family: "Poppins", sans-serif; font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: #1b5e20; color: white; }
+        .btn-primary:hover { background: #15521a; transform: translateY(-2px); }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-secondary:hover { background: #e0e0e0; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-danger:hover { background: #d32f2f; }
+        .btn-small { padding: 5px 10px; font-size: 12px; }
+
+        .comment-list { margin-top: 30px; }
+        .comment-item { background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); border-left: 3px solid #4caf50; transition: transform 0.3s; }
+        .comment-item:hover { transform: translateY(-2px); }
+        .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .comment-author { font-weight: 600; color: #1b5e20; display: flex; align-items: center; gap: 8px; }
+        .comment-author i { color: #4caf50; }
+        .comment-date { font-size: 12px; color: #888; }
+        .comment-content { margin-bottom: 15px; line-height: 1.5; font-size: 15px; }
+        .comment-actions { display: flex; gap: 15px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+        .reply-form { margin-top: 15px; padding-left: 20px; border-left: 2px dashed #ddd; display: none; }
+        .reply-form.show { display: block; }
+        .reactions-container { margin-top: 10px; }
+        .reactions-toggle { background: none; border: none; color: #666; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .reactions-panel { background: white; border-radius: 20px; padding: 5px 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); display: inline-flex; gap: 8px; margin-top: 5px; display: none; }
+        .reactions-panel.show { display: inline-flex; }
+        .reaction-btn { background: none; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s; }
+        .reaction-btn:hover { transform: scale(1.3); }
+        .reaction-count { margin-left: 5px; font-size: 12px; color: #666; }
+        .replies-container { margin-left: 30px; margin-top: 15px; padding-left: 20px; border-left: 2px solid #eee; }
+        .reply-item { background: #f9f9f9; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 2px solid #a5d6a7; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #888; }
+        .empty-state i { font-size: 48px; margin-bottom: 15px; color: #ccc; }
+        @media (max-width: 768px) { .form-actions { flex-direction: column; align-items: stretch; } .replies-container { margin-left: 15px; } }
+    </style>
+</head>
+<body>
+
+<!-- TOMBOL KEMBALI -->
+<button class="back-home" onclick="window.location.href='#'">
+    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+</button>
+
+<!-- HEADER DENGAN FOTO ILUSTRASI KOPERASI -->
+<section class="hero" id="hero">
+    <div class="hero-bg-image"></div> <!-- foto pemanis: suasana koperasi/pertemuan -->
+    <div class="content">
+        <h1><i class="fas fa-building"></i> Unit Usaha KUD Asmara Tani</h1>
+        <p>Solusi lengkap dari simpan pinjam hingga jasa konstruksi. Satu atap, kekeluargaan, dan profesional.</p>
+        <div class="tagline-highlight">
+            <i class="fas fa-hashtag"></i> KopSmart : Koperasi Modern, Layanan Terintegrasi
+        </div>
+    </div>
+    <div class="parallax-layer" aria-hidden="true"></div>
+</section>
+
+<!-- KONTEN UNIT USAHA (Simpan Pinjam, Konsultasi, Desain, Konstruksi, Sewa, Tukang) -->
+<div class="container">
+
+    <!-- PENJELASAN UMUM -->
+    <div class="card">
+        <h2><i class="fas fa-store-alt"></i> 6 Unit Usaha Unggulan</h2>
+        <p>KUD Asmara Tani mengembangkan 6 unit usaha untuk melayani anggota dan masyarakat secara terintegrasi. Setiap unit dikelola secara digital dan transparan dengan prinsip koperasi.</p>
+        <p>Berikut adalah layanan lengkap yang siap membantu kebutuhan ekonomi, pembangunan, dan konsultasi Anda.</p>
+    </div>
+
+    <!-- 1. SIMPAN PINJAM - IKON DIGANTI MENJADI HANDS HOLDING COIN (Lebih merepresentasikan simpan pinjam) -->
+    <div class="card">
+        <h2><i class="fas fa-hand-holding-usd"></i> Unit Simpan Pinjam</h2>
+        <p><b>Layanan keuangan yang mudah dan adil bagi anggota.</b> Kami menyediakan simpanan sukarela, simpanan pokok, dan pinjaman modal usaha dengan bunga ringan.</p>
+        <ul>
+            <li>💸 Pinjaman cepat tanpa agunan (maksimal Rp5 juta).</li>
+            <li>📈 Bagi hasil kompetitif untuk simpanan berjangka.</li>
+            <li>📱 Monitoring saldo dan angsuran via aplikasi KUD.</li>
+            <li>🔒 Proses pencairan 1x24 jam untuk anggota aktif.</li>
+        </ul>
+    </div>
+
+    <!-- 2. JASA KONSULTASI -->
+    <div class="card">
+        <h2><i class="fas fa-chart-line"></i> Jasa Konsultasi</h2>
+        <p>Tim ahli KUD siap mendampingi anggota dalam berbagai bidang: pertanian, keuangan, legalitas usaha, dan manajemen koperasi.</p>
+        <ul>
+            <li>🌾 Konsultasi agribisnis dan budidaya tanaman.</li>
+            <li>📊 Pendampingan pembukuan & laporan keuangan UMKM.</li>
+            <li>⚖️ Bantuan pengurusan NIB, PIRT, dan sertifikasi halal.</li>
+            <li>🧑‍🏫 Pelatihan digital marketing untuk produk lokal.</li>
+        </ul>
+    </div>
+
+    <!-- 3. JASA DESAIN -->
+    <div class="card">
+        <h2><i class="fas fa-pencil-ruler"></i> Jasa Desain</h2>
+        <p>Bantu wujudkan ide Anda menjadi visual yang menarik. Layanan desain grafis dan arsitektur sederhana untuk kebutuhan anggota.</p>
+        <ul>
+            <li>🖌️ Desain logo, kemasan produk, brosur, dan spanduk.</li>
+            <li>🏡 Desain rumah tinggal sederhana dan renovasi.</li>
+            <li>📐 Gambar teknik untuk bangunan usaha tani (gudang, greenhouse).</li>
+            <li>🎨 Konsultasi desain interior dengan harga khusus anggota.</li>
+        </ul>
+    </div>
+
+    <!-- 4. JASA KONSTRUKSI -->
+    <div class="card">
+        <h2><i class="fas fa-hard-hat"></i> Jasa Konstruksi</h2>
+        <p>Tim konstruksi KUD siap membangun dan merenovasi infrastruktur perdesaan serta rumah anggota dengan material berkualitas.</p>
+        <ul>
+            <li>🏗️ Pembangunan jalan usaha tani dan drainase.</li>
+            <li>🏠 Renovasi rumah tidak layak huni (program gotong royong).</li>
+            <li>🌱 Pembangunan instalasi irigasi sederhana.</li>
+            <li>🧱 Tenaga ahli berpengalaman dan diawasi insinyur koperasi.</li>
+        </ul>
+    </div>
+
+    <!-- 5. JASA SEWA -->
+    <div class="card">
+        <h2><i class="fas fa-tools"></i> Jasa Sewa</h2>
+        <p>Sewa alat dan perlengkapan dengan tarif terjangkau untuk mendukung usaha dan kegiatan anggota.</p>
+        <ul>
+            <li>🚜 Traktor tangan, mesin perontok padi, dan pompa air.</li>
+            <li>📽️ Perlengkapan event: sound system, tenda, kursi.</li>
+            <li>🚛 Sewa pick-up untuk angkut hasil panen & material.</li>
+            <li>⛺ Tenda camping dan alat outbond untuk kegiatan pemuda.</li>
+        </ul>
+    </div>
+
+    <!-- 6. JASA TUKANG -->
+    <div class="card">
+        <h2><i class="fas fa-user-cog"></i> Jasa Tukang</h2>
+        <p>Butuh tenaga terampil untuk proyek rumahan? KUD menyediakan tukang bangungan, listrik, dan mebel dengan sistem borongan atau harian.</p>
+        <ul>
+            <li>🔨 Tukang batu, kayu, dan cat profesional.</li>
+            <li>⚡ Tukang listrik untuk instalasi dan perbaikan.</li>
+            <li>🪑 Pembuatan furniture sederhana (dari kayu lokal).</li>
+            <li>🧑‍🤝‍🧑 Pekerja tersertifikasi dan direkomendasikan koperasi.</li>
+        </ul>
+        <blockquote>
+            "Semua unit usaha dikelola dengan prinsip transparansi dan keuntungan dikembalikan ke anggota dalam bentuk SHU."
+        </blockquote>
+    </div>
+
+    <!-- SISTEM KOMENTAR LENGKAP (SAMA PERSIS DENGAN PERMINTAAN) -->
+    <div class="comment-section" id="comment-section">
+        <div class="card">
+            <h2><i class="fas fa-comments"></i> Komentar & Ulasan</h2>
+            <p>Bagikan pendapat dan pengalaman Anda tentang layanan unit usaha KUD Asmara Tani.</p>
+            
+            <!-- Form Komentar Utama -->
+            <div class="comment-form-container">
+                <form id="main-comment-form">
+                    <div class="form-group">
+                        <input type="text" id="comment-name" class="form-input" placeholder="Nama Anda" required>
+                    </div>
+                    <div class="form-group textarea-container">
+                        <textarea id="comment-text" class="form-input" rows="3" placeholder="Tulis komentar Anda di sini... (Gunakan emoji untuk ekspresi 😊)" required></textarea>
+                        <button type="button" class="emoji-toggle" id="emoji-toggle-main">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <div class="emoji-picker-container" id="emoji-picker-main"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="add-emoji-btn">
+                            <i class="far fa-smile"></i> Tambah Emoji
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Kirim Komentar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Daftar Komentar -->
+            <div class="comment-list" id="comments-list">
+                <div class="empty-state" id="empty-comments">
+                    <i class="far fa-comment-dots"></i>
+                    <h3>Belum ada komentar</h3>
+                    <p>Jadilah yang pertama memberi ulasan tentang unit usaha KUD Asmara Tani!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    © 1972 - Sekarang | KUD Asmara Tani — 6 Unit Usaha #KopSmart : Simpan Pinjam, Konsultasi, Desain, Konstruksi, Sewa, Tukang
+</footer>
+
+<!-- Emoji Picker Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.1.5/emoji-picker.min.js"></script>
+
+<script>
+// ---------- TOMBOL KEMBALI ----------
+function goToDashboard() { window.location.href = '#'; }
+document.querySelector('.back-home').addEventListener('click', goToDashboard);
+document.addEventListener('keydown', (e) => { if (e.altKey && e.key === 'ArrowLeft') goToDashboard(); });
+
+// ---------- Parallax sederhana ----------
+(function(){
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+    const layer = hero.querySelector('.parallax-layer');
+    window.addEventListener('scroll', () => {
+        if (layer) {
+            const move = Math.min(60, window.scrollY * 0.12);
+            layer.style.transform = `translateY(${move}px)`;
+        }
+    });
+})();
+
+// ---------- SISTEM KOMENTAR LENGKAP (COPY PASTE DARI ORIGINAL AGAR FUNGSIONAL) ----------
+class CommentSystem {
+    constructor() {
+        this.comments = JSON.parse(localStorage.getItem('comments-asmara-tani')) || [];
+        this.emojiPicker = null;
+        this.currentReplyingTo = null;
+        this.init();
+    }
+    init() { this.renderComments(); this.setupEventListeners(); this.initEmojiPicker(); }
+    initEmojiPicker() {
+        const emojis = ['😊', '😂', '❤️', '😍', '👍', '👏', '🎉', '🙏', '😎', '🤔', '😮', '😢', '😡', '💯', '🔥'];
+        const pickerMain = document.getElementById('emoji-picker-main');
+        if (pickerMain) {
+            emojis.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.textContent = emoji;
+                btn.className = 'reaction-btn';
+                btn.style.fontSize = '20px';
+                btn.style.padding = '5px';
+                btn.addEventListener('click', () => {
+                    this.insertEmoji(emoji, 'comment-text');
+                    pickerMain.classList.remove('show');
+                });
+                pickerMain.appendChild(btn);
+            });
+        }
+    }
+    setupEventListeners() {
+        const mainForm = document.getElementById('main-comment-form');
+        if (mainForm) mainForm.addEventListener('submit', (e) => { e.preventDefault(); this.addComment(); });
+        const emojiToggle = document.getElementById('emoji-toggle-main');
+        if (emojiToggle) emojiToggle.addEventListener('click', () => { document.getElementById('emoji-picker-main').classList.toggle('show'); });
+        document.getElementById('add-emoji-btn').addEventListener('click', () => { this.showQuickEmojiPanel('comment-text'); });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.emoji-picker-container') && !e.target.closest('.emoji-toggle')) {
+                document.querySelectorAll('.emoji-picker-container').forEach(p => p.classList.remove('show'));
+            }
+        });
+    }
+    insertEmoji(emoji, textareaId) {
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+        const start = textarea.selectionStart, end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + emoji + textarea.value.substring(end);
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+    }
+    showQuickEmojiPanel(textareaId) {
+        const quickEmojis = ['😊', '👍', '❤️', '🎉', '👏', '💯'];
+        const panel = document.createElement('div');
+        panel.className = 'reactions-panel show';
+        panel.style.position = 'absolute';
+        quickEmojis.forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.textContent = emoji;
+            btn.className = 'reaction-btn';
+            btn.addEventListener('click', () => { this.insertEmoji(emoji, textareaId); panel.remove(); });
+            panel.appendChild(btn);
+        });
+        const textarea = document.getElementById(textareaId);
+        if (textarea) { textarea.parentNode.appendChild(panel); setTimeout(() => { if (panel.parentNode) panel.remove(); }, 3000); }
+    }
+    addComment(parentId = null) {
+        const nameInput = document.getElementById('comment-name');
+        const textInput = document.getElementById('comment-text');
+        if (!nameInput || !textInput) return;
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+        if (!name || !text) { alert('Silakan isi nama dan komentar Anda!'); return; }
+        const comment = {
+            id: Date.now().toString(),
+            parentId: parentId,
+            author: name,
+            content: text,
+            date: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            timestamp: Date.now(),
+            reactions: { '❤️': 0, '😂': 0, '😮': 0, '😢': 0, '😡': 0 },
+            userReactions: {},
+            replies: []
+        };
+        if (parentId) {
+            const parentComment = this.findComment(parentId, this.comments);
+            if (parentComment) parentComment.replies.push(comment);
+        } else { this.comments.push(comment); }
+        this.saveComments(); this.renderComments();
+        if (!parentId) textInput.value = '';
+        else {
+            const replyForm = document.querySelector(`.reply-form[data-parent="${parentId}"]`);
+            if (replyForm) { replyForm.querySelector('textarea').value = ''; replyForm.classList.remove('show'); }
+        }
+    }
+    findComment(id, comments) {
+        for (const c of comments) {
+            if (c.id === id) return c;
+            if (c.replies?.length) { const f = this.findComment(id, c.replies); if (f) return f; }
+        } return null;
+    }
+    addReaction(commentId, emoji) {
+        const comment = this.findComment(commentId, this.comments);
+        if (!comment) return;
+        const userId = 'user_' + (localStorage.getItem('user_id') || Math.random().toString(36).substr(2,9));
+        if (!comment.userReactions) comment.userReactions = {};
+        if (comment.userReactions[userId] === emoji) {
+            comment.reactions[emoji] = Math.max(0, comment.reactions[emoji] - 1);
+            delete comment.userReactions[userId];
+        } else {
+            if (comment.userReactions[userId]) {
+                const prev = comment.userReactions[userId];
+                comment.reactions[prev] = Math.max(0, comment.reactions[prev] - 1);
+            }
+            comment.reactions[emoji] = (comment.reactions[emoji] || 0) + 1;
+            comment.userReactions[userId] = emoji;
+        }
+        this.saveComments(); this.renderComments();
+    }
+    deleteComment(commentId) {
+        if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) return;
+        const deleteRecursive = (comments) => {
+            for (let i = comments.length-1; i>=0; i--) {
+                if (comments[i].id === commentId) { comments.splice(i,1); return true; }
+                if (comments[i].replies?.length && deleteRecursive(comments[i].replies)) return true;
+            } return false;
+        };
+        if (deleteRecursive(this.comments)) { this.saveComments(); this.renderComments(); }
+    }
+    saveComments() { localStorage.setItem('comments-asmara-tani', JSON.stringify(this.comments)); }
+    renderComments() {
+        const commentsList = document.getElementById('comments-list');
+        const emptyState = document.getElementById('empty-comments');
+        if (!commentsList) return;
+        if (this.comments.length === 0) { commentsList.innerHTML = ''; if (emptyState) commentsList.appendChild(emptyState); return; }
+        commentsList.innerHTML = '';
+        [...this.comments].sort((a,b) => b.timestamp - a.timestamp).forEach(c => commentsList.appendChild(this.createCommentElement(c)));
+    }
+    createCommentElement(comment) {
+        const div = document.createElement('div'); div.className='comment-item'; div.dataset.id=comment.id;
+        const header = document.createElement('div'); header.className='comment-header';
+        header.innerHTML = `<div class="comment-author"><i class="fas fa-user-circle"></i> ${comment.author}</div><div class="comment-date">${comment.date}</div>`;
+        const content = document.createElement('div'); content.className='comment-content'; content.textContent = comment.content;
+        const reactionsContainer = document.createElement('div'); reactionsContainer.className='reactions-container';
+        const reactionsToggle = document.createElement('button'); reactionsToggle.className='reactions-toggle'; reactionsToggle.innerHTML = '<i class="far fa-smile"></i> Reactions';
+        reactionsToggle.addEventListener('click', (e) => { e.stopPropagation(); reactionsToggle.nextElementSibling.classList.toggle('show'); });
+        const reactionsPanel = document.createElement('div'); reactionsPanel.className='reactions-panel';
+        ['❤️','😂','😮','😢','😡'].forEach(emoji => {
+            const btn = document.createElement('button'); btn.className='reaction-btn'; btn.textContent = emoji;
+            const cnt = comment.reactions[emoji] || 0; if (cnt>0) btn.innerHTML += `<span class="reaction-count">${cnt}</span>`;
+            btn.addEventListener('click', (e) => { e.stopPropagation(); this.addReaction(comment.id, emoji); });
+            reactionsPanel.appendChild(btn);
+        });
+        reactionsContainer.append(reactionsToggle, reactionsPanel);
+        const actions = document.createElement('div'); actions.className='comment-actions';
+        const replyBtn = document.createElement('button'); replyBtn.className='btn btn-secondary btn-small'; replyBtn.innerHTML = '<i class="fas fa-reply"></i> Balas';
+        replyBtn.addEventListener('click', () => this.toggleReplyForm(comment.id));
+        const deleteBtn = document.createElement('button'); deleteBtn.className='btn btn-danger btn-small'; deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Hapus';
+        deleteBtn.addEventListener('click', () => this.deleteComment(comment.id));
+        actions.append(replyBtn, deleteBtn);
+        const replyForm = document.createElement('div'); replyForm.className='reply-form'; replyForm.dataset.parent = comment.id;
+        replyForm.innerHTML = `<textarea class="form-input" rows="2" placeholder="Balas ${comment.author}..." id="reply-text-${comment.id}"></textarea>`;
+        const replyActions = document.createElement('div'); replyActions.className='form-actions'; replyActions.style.marginTop='10px';
+        const emojiReply = document.createElement('button'); emojiReply.type='button'; emojiReply.className='btn btn-secondary btn-small'; emojiReply.innerHTML='<i class="far fa-smile"></i> Emoji';
+        emojiReply.addEventListener('click', () => this.showQuickEmojiPanel(`reply-text-${comment.id}`));
+        const cancelReply = document.createElement('button'); cancelReply.type='button'; cancelReply.className='btn btn-secondary btn-small'; cancelReply.textContent='Batal';
+        cancelReply.addEventListener('click', () => replyForm.classList.remove('show'));
+        const submitReply = document.createElement('button'); submitReply.type='button'; submitReply.className='btn btn-primary btn-small'; submitReply.textContent='Kirim Balasan';
+        submitReply.addEventListener('click', () => { if (replyForm.querySelector('textarea').value.trim()) { setTimeout(() => this.addComment(comment.id), 200); } });
+        replyActions.append(emojiReply, cancelReply, submitReply); replyForm.appendChild(replyActions);
+        const repliesContainer = document.createElement('div'); repliesContainer.className='replies-container';
+        if (comment.replies?.length) {
+            comment.replies.sort((a,b)=>a.timestamp-b.timestamp).forEach(r => repliesContainer.appendChild(this.createReplyElement(r)));
+        }
+        div.append(header, content, reactionsContainer, actions, replyForm, repliesContainer);
+        return div;
+    }
+    createReplyElement(reply) {
+        const div = document.createElement('div'); div.className='reply-item'; div.dataset.id=reply.id;
+        div.innerHTML = `<div class="comment-header" style="margin-bottom:5px"><div class="comment-author"><i class="fas fa-reply"></i> ${reply.author}</div><div class="comment-date">${reply.date}</div></div><div class="comment-content" style="font-size:14px">${reply.content}</div>`;
+        const actions = document.createElement('div'); actions.className='comment-actions'; actions.style.marginTop='8px';
+        const deleteBtn = document.createElement('button'); deleteBtn.className='btn btn-danger btn-small'; deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Hapus';
+        deleteBtn.addEventListener('click', () => this.deleteComment(reply.id));
+        actions.appendChild(deleteBtn); div.appendChild(actions);
+        return div;
+    }
+    toggleReplyForm(commentId) {
+        const f = document.querySelector(`.reply-form[data-parent="${commentId}"]`);
+        if (!f) return; document.querySelectorAll('.reply-form.show').forEach(ff => { if (ff !== f) ff.classList.remove('show'); });
+        f.classList.toggle('show'); if (f.classList.contains('show')) f.querySelector('textarea')?.focus();
+    }
+    getReactionLabel(e) { return e; }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    window.commentSystem = new CommentSystem();
+    if (!localStorage.getItem('user_id')) localStorage.setItem('user_id', Math.random().toString(36).substr(2,9));
+    const backBtn = document.querySelector('.back-home'); let lastScroll = 0;
+    window.addEventListener('scroll', () => { 
+        let curr = window.pageYOffset;
+        if (curr > 300 && curr > lastScroll) backBtn.style.transform = 'translateY(-70px)';
+        else backBtn.style.transform = 'translateY(0)';
+        lastScroll = curr;
+    });
+});
+</script>
+</body>
+</html>
