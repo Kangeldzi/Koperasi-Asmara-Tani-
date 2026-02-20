@@ -874,6 +874,7 @@
             filter: brightness(1.1) contrast(1.15);
         }
         
+        /* TOMBOL BELANJA SEKARANG - DIUBAH MENJADI LINK DENGAN TARGET _BLANK */
         .btn-shopping {
             display: inline-flex;
             align-items: center;
@@ -893,6 +894,8 @@
             position: relative;
             z-index: 2;
             margin-top: 1rem;
+            cursor: pointer;
+            border: none;
         }
 
         .btn-shopping:hover {
@@ -2363,8 +2366,8 @@
                 
                 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhlyTddJSUBmw0x3OiivzaNnjPdVyujRYRPXVzbQHe_crT8L8d-rV2MinoLEi6-G4erS_jQpn_kXxWwLYBgONYnzcOa7sIBnd9nAfUqxzkovWqJrcahkN2b32nj6sP3vW3sGdc1iwKsKbzTTiGqSCl3HqIU6_Y84hnyOwV84TJvSY-yJchX3Uu142OJaRA/s1080/1000479969.png" alt="Koperasi Digital" class="hero-image">
                 
-                <!-- TOMBOL BELANJA SEKARANG -->
-                <a href="kud-toko.html" class="btn-shopping" id="belanjaHeroBtn">
+                <!-- TOMBOL BELANJA SEKARANG - DIUBAH MENJADI LINK DENGAN TARGET _BLANK -->
+                <a href="kud-toko.html" target="_blank" class="btn-shopping" id="belanjaHeroBtn">
                     <i class="fas fa-shopping-cart"></i>
                     BELANJA SEKARANG
                 </a>
@@ -2895,11 +2898,6 @@
             }
         }
 
-        // Belanja function
-        function handleBelanja() {
-            alert('Fitur belanja akan segera tersedia. Nantikan integrasi dengan GitHub!');
-        }
-
         // Join now buttons
         joinNowBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -2926,11 +2924,6 @@
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             handleLogout();
-        });
-
-        belanjaHeroBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleBelanja();
         });
 
         // Toggle sidebar
